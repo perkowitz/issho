@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -cp target/sequence-0.1-shaded.jar net.perkowitz.issho.RunSequencer sample.properties
