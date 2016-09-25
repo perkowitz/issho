@@ -2,7 +2,7 @@ package net.perkowitz.issho.devices.launchpadpro;
 
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridPad;
-import net.perkowitz.sequence.MidiUtil;
+import net.perkowitz.issho.util.MidiUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sound.midi.MidiDevice;

@@ -4,7 +4,6 @@ package net.perkowitz.issho.util;
  * Created by optic on 7/8/16.
  */
 
-import net.perkowitz.sequence.RunSequencer;
 
 import java.io.*;
 import java.util.Properties;
@@ -21,7 +20,7 @@ public class PropertiesUtil {
             if (file.exists()) {
                 inputStream = new FileInputStream(file);
             } else {
-                inputStream = RunSequencer.class.getClassLoader().getResourceAsStream(filename);
+                inputStream = PropertiesUtil.class.getClassLoader().getResourceAsStream(filename);
             }
 
             if (inputStream != null) {

@@ -6,11 +6,11 @@ import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
-import net.perkowitz.sequence.devices.launchpadpro.LaunchpadProUtil;
 
 import java.util.Set;
 
-import static net.perkowitz.sequence.devices.launchpadpro.LaunchpadProUtil.*;
+import static net.perkowitz.issho.devices.launchpadpro.LppRhythmUtil.*;
+
 
 /**
  * Created by mperkowi on 7/15/16.
@@ -169,7 +169,7 @@ public class LppRhythmController implements GridListener, RhythmController {
             sequencer.selectMode(RhythmInterface.Mode.PLAY);
 
         } else if (button.equals(modeButtonMap.get(RhythmInterface.Mode.EXIT))) {
-            if (LaunchpadProUtil.debugMode) {
+            if (LppRhythmUtil.debugMode) {
                 sequencer.selectMode(RhythmInterface.Mode.EXIT);
             }
 
