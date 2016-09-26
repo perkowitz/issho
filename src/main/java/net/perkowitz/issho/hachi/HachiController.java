@@ -6,6 +6,10 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
 
 import java.util.List;
+import java.util.Set;
+
+import static net.perkowitz.issho.hachi.HachiUtil.EXIT_BUTTON;
+import static net.perkowitz.issho.hachi.HachiUtil.PLAY_BUTTON;
 
 /**
  * Created by optic on 9/12/16.
@@ -59,7 +63,7 @@ public class HachiController implements GridListener, Clockable {
         } catch (InterruptedException e) {}
         Graphics.setPads(display, Graphics.issho, Color.OFF);
         Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
-        selectModule(0);
+        selectModule(5);
     }
 
     /***** private implementation ***************/
@@ -102,9 +106,8 @@ public class HachiController implements GridListener, Clockable {
             }
         }
 
-        // exit button
-        GridButton button = GridButton.at(HachiUtil.MODULE_BUTTON_SIDE, 7);
-        display.setButton(button, unselectedColor);
+        display.setButton(PLAY_BUTTON, unselectedColor);
+        display.setButton(EXIT_BUTTON, unselectedColor);
 
     }
 
@@ -112,21 +115,21 @@ public class HachiController implements GridListener, Clockable {
     /***** GridListener implementation ***************/
 
     public void onPadPressed(GridPad pad, int velocity) {
-//        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
+        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
         if (activeListener != null) {
             activeListener.onPadPressed(pad, velocity);
         }
     }
 
     public void onPadReleased(GridPad pad) {
-//        System.out.printf("Hachi padRelease: %s, %d\n", pad);
+        System.out.printf("Hachi padRelease: %s\n", pad);
         if (activeListener != null) {
             activeListener.onPadReleased(pad);
         }
     }
 
     public void onButtonPressed(GridButton button, int velocity) {
-//        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
+        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
             int index = button.getIndex();
@@ -135,6 +138,8 @@ public class HachiController implements GridListener, Clockable {
             } else {
                 selectModule(button.getIndex());
             }
+        } else if (button.equals(PLAY_BUTTON)) {
+
         } else {
             // everything else passed through to active module
             if (activeListener != null) {
@@ -144,9 +149,10 @@ public class HachiController implements GridListener, Clockable {
     }
 
     public void onButtonReleased(GridButton button) {
-//        System.out.printf("Hachi buttonReleased: %s, %d\n", button);
+        System.out.printf("Hachi buttonReleased: %s\n", button);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
+        } else if (button.equals(PLAY_BUTTON)) {
         } else {
             // everything else passed through to active module
             if (activeListener != null) {

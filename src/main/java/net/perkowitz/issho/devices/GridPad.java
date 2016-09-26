@@ -15,7 +15,33 @@ public class GridPad {
         this.y = y;
     }
 
+
+    /***** overrides ****************************************/
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof GridPad) {
+            GridPad pad = (GridPad) object;
+            return x == pad.getX() && y == pad.getY();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "GridPad:" + x + ":" + y;
+    }
+
+
+    /***** static helpers ************************************/
+
     public static GridPad at(int x, int y) {
         return new GridPad(x, y);
     }
+
 }

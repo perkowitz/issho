@@ -424,7 +424,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
     public void close() {}
 
     public GridListener getGridListener() {
-        return null;
+        return controller;
     }
 
     public void setDisplay(GridDisplay display) {
