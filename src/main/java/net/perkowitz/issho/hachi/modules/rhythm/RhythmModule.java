@@ -634,6 +634,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 
     public void start(boolean restart) {
         if (restart) {
+            totalStepCount = 0;
+            totalMeasureCount = 0;
         }
     }
 

@@ -7,6 +7,9 @@ import net.perkowitz.issho.hachi.modules.Module;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 
 import static net.perkowitz.issho.hachi.HachiUtil.EXIT_BUTTON;
 import static net.perkowitz.issho.hachi.HachiUtil.PLAY_BUTTON;
@@ -28,6 +31,11 @@ public class HachiController implements GridListener, Clockable {
     private GridColor selectedColor = Color.BRIGHT_ORANGE;
     private GridColor unselectedColor = Color.DARK_GRAY;
 
+    private static CountDownLatch stop = new CountDownLatch(1);
+    private static Timer timer = null;
+    private boolean clockRunning = false;
+    private int clockTickMillis = 125;
+    private int tickCount = 0;
 
     public HachiController(Module[] modules, GridDisplay display) {
 
@@ -63,7 +71,10 @@ public class HachiController implements GridListener, Clockable {
         } catch (InterruptedException e) {}
         Graphics.setPads(display, Graphics.issho, Color.OFF);
         Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
-        selectModule(5);
+        selectModule(3);
+
+        startTimer();
+
     }
 
     /***** private implementation ***************/
@@ -106,10 +117,34 @@ public class HachiController implements GridListener, Clockable {
             }
         }
 
-        display.setButton(PLAY_BUTTON, unselectedColor);
+        if (clockRunning) {
+            display.setButton(PLAY_BUTTON, selectedColor);
+        } else {
+            display.setButton(PLAY_BUTTON, unselectedColor);
+        }
+
         display.setButton(EXIT_BUTTON, unselectedColor);
 
     }
+
+    public void startTimer() {
+
+        if (timer != null) {
+            timer.cancel();
+        }
+
+        timer = new Timer();
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (clockRunning) {
+                    tick();
+                    tickCount++;
+                }
+            }
+        }, clockTickMillis, clockTickMillis);
+    }
+
 
 
     /***** GridListener implementation ***************/
@@ -130,15 +165,22 @@ public class HachiController implements GridListener, Clockable {
 
     public void onButtonPressed(GridButton button, int velocity) {
         System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
-        if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
+        if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE && button.getIndex() < modules.length) {
             // top row used for module switching
             int index = button.getIndex();
-            if (index == 7) {
-                shutdown();
-            } else {
-                selectModule(button.getIndex());
-            }
+            selectModule(button.getIndex());
+
         } else if (button.equals(PLAY_BUTTON)) {
+            clockRunning = !clockRunning;
+            if (clockRunning) {
+                start(true);
+            } else {
+                stop();
+            }
+            redraw();
+
+        } else if (button.equals(EXIT_BUTTON)) {
+            shutdown();
 
         } else {
             // everything else passed through to active module

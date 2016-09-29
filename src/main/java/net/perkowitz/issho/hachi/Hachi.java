@@ -37,7 +37,6 @@ public class Hachi {
 
     private static HachiController controller;
     private static CountDownLatch stop = new CountDownLatch(1);
-    private static Timer timer = null;
 
 
     /**
@@ -74,14 +73,11 @@ public class Hachi {
 //            gridDisplay = new Console();
         }
 
-        Module[] modules = new Module[6];
+        Module[] modules = new Module[4];
         modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);
-        modules[1] = new LogoModule(Graphics.issho, Color.MED_GRAY);
-        modules[2] = new PaletteModule(false);
-        modules[3] = new PaletteModule(true);
-        modules[4] = new ClockModule();
-//        modules[5] = new ClockModule();
-        modules[5] = rhythm(launchpadPro);
+        modules[1] = new PaletteModule(false);
+        modules[2] = new ClockModule();
+        modules[3] = rhythm(launchpadPro);
 
         System.out.println("Creating modules...");
         controller = new HachiController(modules, gridDisplay);
@@ -106,25 +102,10 @@ public class Hachi {
 
         controller.run();
 
-        startTimer();
         stop.await();
 
     }
 
-    public static void startTimer() {
-
-        if (timer != null) {
-            timer.cancel();
-        }
-
-        timer = new Timer();
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                controller.tick();
-            }
-        }, 125, 125);
-    }
 
     private static Module rhythm(LaunchpadPro launchpadPro) {
 
