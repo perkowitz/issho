@@ -76,7 +76,8 @@ public class Hachi {
         Module[] modules = new Module[4];
         modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);
         modules[1] = new PaletteModule(false);
-        modules[2] = new ClockModule();
+//        modules[2] = new ClockModule();
+        modules[2] = new DrawingModule();
         modules[3] = rhythm(launchpadPro);
 
         System.out.println("Creating modules...");
