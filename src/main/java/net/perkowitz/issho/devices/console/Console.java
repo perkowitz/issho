@@ -2,6 +2,8 @@ package net.perkowitz.issho.devices.console;
 
 import net.perkowitz.issho.devices.*;
 
+import java.util.Set;
+
 /**
  * Created by mperkowi on 9/20/16.
  */
@@ -31,6 +33,7 @@ public class Console implements GridListener, GridDisplay {
     /***** GridDisplay implementation ************************************/
 
     public void initialize() {}
+    public void initialize(boolean pads, Set<GridButton.Side> buttonSides) {}
 
     public void setPad(GridPad pad, GridColor color) {
         System.out.printf("[][][][] SetPad: %s, %s\n", pad, color);

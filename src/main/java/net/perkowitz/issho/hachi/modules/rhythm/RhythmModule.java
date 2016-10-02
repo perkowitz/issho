@@ -53,8 +53,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
     private int totalStepCount = 0;
     private int nextStepIndex = 0;
     private int totalMeasureCount = 0;
-    private int tempo = 120;
-    private int tempoIntervalInMillis = 125 * 120 / tempo;
 
     // sequencer states
     private boolean playing = false;
@@ -70,8 +68,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
     private int clockTicksPerTrigger = 6;
     private int tickCount = 0;
 
-    private static CountDownLatch stop = new CountDownLatch(1);
-    private Timer timer = null;
 
 
     /***** constructor *********************************************************************/
@@ -273,13 +269,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
                 rhythmDisplay.displayValue(velocity, VELOCITY_MIN, VELOCITY_MAX, VELOCITY);
             }
 
-        } else if (valueMode == TEMPO) {
-            tempo = index * (TEMPO_MAX - TEMPO_MIN) / 8 + TEMPO_MIN;
-            tempoIntervalInMillis = 125 * 120 / tempo;
-//            System.out.printf("Tempo: %d, %d\n", tempo, tempoIntervalInMillis);
-            rhythmDisplay.displayValue(tempo, TEMPO_MIN, TEMPO_MAX, TEMPO);
-            startTimer();
-
         } else if (valueMode == FILL_PERCENT) {
             Pattern pattern = memory.selectedPattern();
             if (pattern instanceof FillPattern) {
@@ -350,11 +339,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 
             case PLAY:
                 toggleStartStop();
-                break;
-
-            case TEMPO:
-                valueMode = TEMPO;
-                rhythmDisplay.displayValue(tempo, TEMPO_MIN, TEMPO_MAX, TEMPO);
                 break;
 
             case NO_VALUE:
@@ -451,14 +435,10 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
         playing = setToPlaying;
         if (playing) {
             rhythmDisplay.displayMode(Mode.PLAY, true);
-            startTimer();
         } else {
             rhythmDisplay.displayMode(Mode.PLAY, false);
             totalStepCount = 0;
             totalMeasureCount = 0;
-            if (timer != null) {
-                timer.cancel();
-            }
         }
         nextStepIndex = 0;
         memory.resetPatternChainIndex();
@@ -477,28 +457,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
             rhythmDisplay.displaySession(nextSession);
             nextSession = null;
         }
-    }
-
-
-    public void startTimer() {
-
-        if (timer != null) {
-            timer.cancel();
-        }
-
-        timer = new Timer();
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                if (playing && memory.isSet(Switch.INTERNAL_CLOCK_ENABLED)) {
-                    boolean andReset = false;
-                    if (totalStepCount % Track.getStepCount() == 0) {
-                        andReset = true;
-                    }
-                    advance(andReset);
-                }
-            }
-        }, tempoIntervalInMillis, tempoIntervalInMillis);
     }
 
     private void setNextStepIndex(int stepNumber) {

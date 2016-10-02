@@ -6,7 +6,6 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
 
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
@@ -24,7 +23,7 @@ public class HachiController implements GridListener, Clockable {
     private GridListener[] moduleListeners = null;
     private GridListener activeListener = null;
     private GridDisplay display;
-    private SwitchableDisplay[] displays;
+    private ModuleDisplay[] displays;
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
 
@@ -34,21 +33,24 @@ public class HachiController implements GridListener, Clockable {
     private static CountDownLatch stop = new CountDownLatch(1);
     private static Timer timer = null;
     private boolean clockRunning = false;
-    private int clockTickMillis = 125;
     private int tickCount = 0;
+
+    private int tempo = 120;
+    private int tempoIntervalInMillis = 125 * 120 / tempo;
+
 
     public HachiController(Module[] modules, GridDisplay display) {
 
         this.modules = modules;
         moduleListeners = new GridListener[modules.length];
         this.display = display;
-        displays = new SwitchableDisplay[modules.length];
+        displays = new ModuleDisplay[modules.length];
         for (int i = 0; i < modules.length; i++) {
             System.out.printf("Loading module: %s\n", modules[i]);
             moduleListeners[i] = modules[i].getGridListener();
-            SwitchableDisplay switchableDisplay = new SwitchableDisplay(display);
-            displays[i] = switchableDisplay;
-            modules[i].setDisplay(switchableDisplay);
+            ModuleDisplay moduleDisplay = new ModuleDisplay(display);
+            displays[i] = moduleDisplay;
+            modules[i].setDisplay(moduleDisplay);
 
             if (modules[i] instanceof Clockable) {
                 clockables.add((Clockable)modules[i]);
@@ -142,7 +144,7 @@ public class HachiController implements GridListener, Clockable {
                     tickCount++;
                 }
             }
-        }, clockTickMillis, clockTickMillis);
+        }, tempoIntervalInMillis, tempoIntervalInMillis);
     }
 
 
@@ -150,21 +152,21 @@ public class HachiController implements GridListener, Clockable {
     /***** GridListener implementation ***************/
 
     public void onPadPressed(GridPad pad, int velocity) {
-        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
+//        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
         if (activeListener != null) {
             activeListener.onPadPressed(pad, velocity);
         }
     }
 
     public void onPadReleased(GridPad pad) {
-        System.out.printf("Hachi padRelease: %s\n", pad);
+//        System.out.printf("Hachi padRelease: %s\n", pad);
         if (activeListener != null) {
             activeListener.onPadReleased(pad);
         }
     }
 
     public void onButtonPressed(GridButton button, int velocity) {
-        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
+//        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE && button.getIndex() < modules.length) {
             // top row used for module switching
             int index = button.getIndex();
@@ -191,7 +193,7 @@ public class HachiController implements GridListener, Clockable {
     }
 
     public void onButtonReleased(GridButton button) {
-        System.out.printf("Hachi buttonReleased: %s\n", button);
+//        System.out.printf("Hachi buttonReleased: %s\n", button);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {

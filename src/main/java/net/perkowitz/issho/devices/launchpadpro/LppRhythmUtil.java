@@ -60,8 +60,8 @@ public class LppRhythmUtil {
     public static Map<RhythmInterface.Mode, GridPad> modePadMap = Maps.newHashMap();
     static {
         modeButtonMap.put(RhythmInterface.Mode.PATTERN_EDIT, GridButton.at(GridButton.Side.Left, 0));
-        modeButtonMap.put(RhythmInterface.Mode.TEMPO, GridButton.at(GridButton.Side.Left, 2));
-        modeButtonMap.put(RhythmInterface.Mode.PLAY, GridButton.at(GridButton.Side.Left, 3));
+//        modeButtonMap.put(RhythmInterface.Mode.TEMPO, GridButton.at(GridButton.Side.Left, 2));
+//        modeButtonMap.put(RhythmInterface.Mode.PLAY, GridButton.at(GridButton.Side.Left, 3));
         modeButtonMap.put(RhythmInterface.Mode.SAVE, GridButton.at(GridButton.Side.Left, 4));
         modeButtonMap.put(RhythmInterface.Mode.SEQUENCE, GridButton.at(GridButton.Side.Left, 5));
         modeButtonMap.put(RhythmInterface.Mode.SETTINGS, GridButton.at(GridButton.Side.Left, 6));

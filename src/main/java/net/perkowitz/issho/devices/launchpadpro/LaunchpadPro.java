@@ -1,6 +1,7 @@
 package net.perkowitz.issho.devices.launchpadpro;
 
 
+import com.google.common.collect.Sets;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 
@@ -8,6 +9,8 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
+
+import java.util.Set;
 
 import static javax.sound.midi.ShortMessage.*;
 import static net.perkowitz.issho.devices.GridButton.Side.*;
@@ -33,29 +36,23 @@ public class LaunchpadPro implements Receiver, GridDisplay {
 
     /****** public logical implementation ***********************************************************/
 
-    public void initialize(Color color, boolean doButtons) {
+    public void initialize(boolean pads, Set<GridButton.Side> buttonSides) {
         for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                setPad(GridPad.at(x, y), color);
-                if (doButtons) {
-                    setButton(GridButton.at(GridButton.Side.Top, x), color);
-                    setButton(GridButton.at(GridButton.Side.Bottom, x), color);
+            if (pads) {
+                for (int x = 0; x < 8; x++) {
+                    setPad(GridPad.at(x, y), Color.OFF);
                 }
             }
-            if (doButtons) {
-                setButton(GridButton.at(GridButton.Side.Left, y), color);
-                setButton(GridButton.at(GridButton.Side.Right, y), color);
+            if (buttonSides != null) {
+                for (GridButton.Side side : buttonSides) {
+                    setButton(GridButton.at(side, y), Color.OFF);
+                }
             }
         }
-
-    }
-
-    public void initialize(boolean doButtons) {
-        initialize(Color.OFF, doButtons);
     }
 
     public void initialize() {
-        initialize(Color.OFF, true);
+        initialize(true, Sets.newHashSet(Top, Bottom, Left, Right));
     }
 
     public void setPads(GridPad[] pads, Color color) {
