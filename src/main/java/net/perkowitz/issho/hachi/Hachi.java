@@ -27,6 +27,7 @@ public class Hachi {
 
     private static String CONTROLLER_NAME_PROPERTY = "controller.name";
     private static String CONTROLLER_TYPE_PROPERTY = "controller.type";
+    private static String MIDI_NAME_PROPERTY = "midi.name";
 
     private static Properties properties;
 
@@ -34,6 +35,11 @@ public class Hachi {
     private static MidiDevice controllerOutput;
     private static Transmitter controllerTransmitter;
     private static Receiver controllerReceiver;
+
+    private static MidiDevice midiInput;
+    private static MidiDevice midiOutput;
+    private static Transmitter midiTransmitter;
+    private static Receiver midiReceiver;
 
     private static HachiController controller;
     private static CountDownLatch stop = new CountDownLatch(1);
@@ -112,7 +118,7 @@ public class Hachi {
 
         RhythmController rhythmController = new LppRhythmController();
         RhythmDisplay rhythmDisplay = new LppRhythmDisplay(launchpadPro);
-        Module rhythm = new RhythmModule(rhythmController, rhythmDisplay, controllerTransmitter, controllerReceiver);
+        Module rhythm = new RhythmModule(rhythmController, rhythmDisplay, midiTransmitter, midiReceiver);
 
         return rhythm;
     }
@@ -121,7 +127,7 @@ public class Hachi {
 
     private static LaunchpadPro findDevice() {
 
-        // find the controller midi device
+        // find the controller device
         System.out.println("Finding controller device..");
         String[] controllerNames = properties.getProperty(CONTROLLER_NAME_PROPERTY).split("/");
         controllerInput = MidiUtil.findMidiDevice(controllerNames, false, true);
@@ -130,13 +136,29 @@ public class Hachi {
             return null;
         }
 
+        // find the midi device
+        System.out.println("Finding midi device..");
+        String[] midiNames = properties.getProperty(MIDI_NAME_PROPERTY).split("/");
+        midiInput = MidiUtil.findMidiDevice(midiNames, false, true);
+        midiOutput = MidiUtil.findMidiDevice(midiNames, true, false);
+        if (midiInput == null || midiOutput == null) {
+            return null;
+        }
+
         try {
             String type = properties.getProperty(CONTROLLER_TYPE_PROPERTY);
             if (type.toLowerCase().equals("launchpadpro")) {
+
                 controllerInput.open();
                 controllerOutput.open();
                 controllerTransmitter = controllerInput.getTransmitter();
                 controllerReceiver = controllerOutput.getReceiver();
+
+                midiInput.open();
+                midiOutput.open();
+                midiTransmitter = midiInput.getTransmitter();
+                midiReceiver = midiOutput.getReceiver();
+
                 LaunchpadPro launchpadPro = new LaunchpadPro(controllerOutput.getReceiver(), null);
                 controllerInput.getTransmitter().setReceiver(launchpadPro);
                 return launchpadPro;
