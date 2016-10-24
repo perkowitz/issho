@@ -65,7 +65,6 @@ public class LppRhythmUtil {
         modeButtonMap.put(RhythmInterface.Mode.SAVE, GridButton.at(GridButton.Side.Left, 4));
         modeButtonMap.put(RhythmInterface.Mode.SEQUENCE, GridButton.at(GridButton.Side.Left, 5));
         modeButtonMap.put(RhythmInterface.Mode.SETTINGS, GridButton.at(GridButton.Side.Left, 6));
-        modeButtonMap.put(RhythmInterface.Mode.EXIT, GridButton.at(GridButton.Side.Left, 7));
 
         modePadMap.put(RhythmInterface.Mode.TRACK_MUTE, GridPad.at(0, MODE_ROW));
         modePadMap.put(RhythmInterface.Mode.TRACK_EDIT, GridPad.at(1, MODE_ROW));
