@@ -95,12 +95,12 @@ public class LppRhythmUtil {
     );
 
     public static List<Color> PALETTE_RED = Lists.newArrayList(
-             Color.OFF,Color.MED_GRAY, Color.BRIGHT_YELLOW,                                                      // step
-             Color.DARK_GRAY, Color.WHITE, Color.BRIGHT_YELLOW, Color.OFF, Color.DIM_YELLOW, Color.LIGHT_GRAY,    // track
-             Color.DIM_RED, Color.WHITE, Color.DIM_YELLOW, Color.DARK_GRAY, Color.BRIGHT_YELLOW,                  // pattern
-             Color.DIM_RED, Color.BRIGHT_YELLOW, Color.DARK_GRAY,                                                // session
-             Color.DARK_GRAY, Color.BRIGHT_YELLOW,                                                               // file
-             Color.BRIGHT_RED, Color.DARK_GRAY,                                                                   // mode
+             Color.OFF,Color.MED_GRAY, Color.BRIGHT_YELLOW,                                                     // step
+             Color.DIM_RED, Color.WHITE, Color.BRIGHT_YELLOW, Color.OFF, Color.DIM_YELLOW, Color.LIGHT_GRAY,  // track
+             Color.DIM_RED, Color.WHITE, Color.DIM_YELLOW, Color.DARK_GRAY, Color.BRIGHT_YELLOW,                // pattern
+             Color.DIM_RED, Color.BRIGHT_YELLOW, Color.DARK_GRAY,                                               // session
+             Color.DARK_GRAY, Color.BRIGHT_YELLOW,                                                              // file
+             Color.BRIGHT_RED, Color.DARK_GRAY,                                                                 // mode
              Color.OFF                                                                                          // value
     );
 
