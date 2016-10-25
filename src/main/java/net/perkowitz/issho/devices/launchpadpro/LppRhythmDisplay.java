@@ -8,6 +8,7 @@ import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static net.perkowitz.issho.devices.GridButton.Side.Right;
@@ -22,10 +23,11 @@ public class LppRhythmDisplay implements RhythmDisplay {
 
     @Setter private GridDisplay display;
     private RhythmInterface.Module currentModule = RhythmInterface.Module.SEQUENCE;
+    @Setter public List<Color> palette = LppRhythmUtil.PALETTE_BLUE;
 
-
-    public LppRhythmDisplay(GridDisplay display) {
+    public LppRhythmDisplay(GridDisplay display, List<Color> palette) {
         this.display = display;
+        this.palette = palette;
     }
 
     public void initialize() {
@@ -57,7 +59,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
     public void displayHelp() {
 
         // pattern buttons are green
-        Color patternColor = LppRhythmUtil.COLOR_PATTERN;
+        Color patternColor = palette.get(LppRhythmUtil.COLOR_PATTERN);
         for (int y = LppRhythmUtil.PATTERNS_MIN_ROW; y <= LppRhythmUtil.PATTERNS_MAX_ROW; y++) {
             for (int x = 0; x < 8; x++) {
                 display.setPad(GridPad.at(x, y), patternColor);
@@ -72,7 +74,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
         display.setPad(modePadMap.get(RhythmInterface.Mode.TRACK_EDIT), patternColor);
 
         // track buttons are orange
-        Color trackColor = LppRhythmUtil.COLOR_PATTERN_SELECTED;
+        Color trackColor = palette.get(LppRhythmUtil.COLOR_PATTERN_SELECTED);
         for (int y = LppRhythmUtil.TRACKS_MIN_ROW; y <= LppRhythmUtil.TRACKS_MAX_ROW; y++) {
             for (int x = 0; x < 8; x++) {
                 display.setPad(GridPad.at(x, y), trackColor);
@@ -82,7 +84,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
         display.setPad(modePadMap.get(RhythmInterface.Mode.TRACK_EDIT), trackColor);
 
         // step buttons are red
-        Color stepColor = LppRhythmUtil.COLOR_TRACK;
+        Color stepColor = palette.get(LppRhythmUtil.COLOR_TRACK);
         for (int y = STEPS_MIN_ROW; y <= LppRhythmUtil.STEPS_MAX_ROW; y++) {
             for (int x = 0; x < 8; x++) {
                 display.setPad(GridPad.at(x, y), stepColor);
@@ -127,11 +129,11 @@ public class LppRhythmDisplay implements RhythmDisplay {
         int x = getX(session.getIndex());
         int y = LppRhythmUtil.PATTERNS_MIN_ROW + getY(session.getIndex());
 
-        Color color = LppRhythmUtil.COLOR_PATTERN;
+        Color color = palette.get(LppRhythmUtil.COLOR_SESSION);
         if (session.isSelected()) {
-            color = LppRhythmUtil.COLOR_PATTERN_SELECTED;
+            color = palette.get(LppRhythmUtil.COLOR_SESSION_SELECTED);
         } else if (session.isNext()) {
-            color = LppRhythmUtil.COLOR_PATTERN_CHAINED;
+            color = palette.get(LppRhythmUtil.COLOR_SESSION_NEXT);
         }
         display.setPad(GridPad.at(x, y), color);
 
@@ -141,11 +143,11 @@ public class LppRhythmDisplay implements RhythmDisplay {
 
         for (int x = 0; x < 8; x++) {
             if (x == currentFileIndex) {
-                display.setPad(GridPad.at(x, LOAD_ROW), LppRhythmUtil.COLOR_PATTERN_PLAYING);
-                display.setPad(GridPad.at(x, SAVE_ROW), LppRhythmUtil.COLOR_TRACK_SELECTED);
+                display.setPad(GridPad.at(x, LOAD_ROW), palette.get(LppRhythmUtil.COLOR_FILE_SELECTED));
+                display.setPad(GridPad.at(x, SAVE_ROW), palette.get(LppRhythmUtil.COLOR_FILE_SELECTED));
             } else {
-                display.setPad(GridPad.at(x, LOAD_ROW), LppRhythmUtil.COLOR_PATTERN);
-                display.setPad(GridPad.at(x, SAVE_ROW), LppRhythmUtil.COLOR_TRACK);
+                display.setPad(GridPad.at(x, LOAD_ROW), palette.get(LppRhythmUtil.COLOR_FILE));
+                display.setPad(GridPad.at(x, SAVE_ROW), palette.get(LppRhythmUtil.COLOR_FILE));
             }
         }
 
@@ -163,15 +165,15 @@ public class LppRhythmDisplay implements RhythmDisplay {
         }
 
 
-        Color color = COLOR_PATTERN;
+        Color color = palette.get(LppRhythmUtil.COLOR_PATTERN);
         if (pattern.isSelected() && pattern.isPlaying()) {
-            color = COLOR_PATTERN_SELECTED_PLAYING;
+            color = palette.get(LppRhythmUtil.COLOR_PATTERN_SELECTED_PLAYING);
         } else if (pattern.isSelected()) {
-            color = COLOR_PATTERN_SELECTED;
+            color = palette.get(LppRhythmUtil.COLOR_PATTERN_SELECTED);
         } else if (pattern.isPlaying())  {
-            color = COLOR_PATTERN_PLAYING;
+            color = palette.get(LppRhythmUtil.COLOR_PATTERN_PLAYING);
         } else if (pattern.isChained())  {
-            color = COLOR_PATTERN_CHAINED;
+            color = palette.get(LppRhythmUtil.COLOR_PATTERN_CHAINED);
         }
 //        System.out.printf("displayPattern: %s, x=%d, y=%d, sel=%s, play=%s, chained=%s, color=%d,%d\n",
 //                pattern, x, y, pattern.isSelected(), pattern.isPlaying(), pattern.isChained(),
@@ -208,15 +210,15 @@ public class LppRhythmDisplay implements RhythmDisplay {
 //        }
         if (track.isPlaying()) {
             if (track.isEnabled()) {
-                display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_TRACK_PLAYING);
+                display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_TRACK_PLAYING));
             } else {
-                display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_TRACK_MUTED_PLAYING);
+                display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_TRACK_MUTED_PLAYING));
             }
         } else if (track.isSelected()) {
             if (track.isEnabled()) {
-                display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_TRACK_SELECTED);
+                display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_TRACK_SELECTED));
             } else {
-                display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_TRACK_MUTED_SELECTED);
+                display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_TRACK_MUTED_SELECTED));
             }
             if (displaySteps) {
                 for (int i = 0; i < Track.getStepCount(); i++) {
@@ -225,9 +227,9 @@ public class LppRhythmDisplay implements RhythmDisplay {
             }
         } else {
             if (track.isEnabled()) {
-                display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_TRACK);
+                display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_TRACK));
             } else {
-                display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_TRACK_MUTED);
+                display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_TRACK_MUTED));
             }
         }
     }
@@ -243,9 +245,9 @@ public class LppRhythmDisplay implements RhythmDisplay {
 //            display.setPad(GridPad.at(x, y), COLOR_SELECTED);
 //        } else if (step.isOn()) {
         if (step.isOn()) {
-            display.setPad(GridPad.at(x, y), COLOR_STEP_ON);
+            display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_STEP_ON));
         } else {
-            display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_STEP);
+            display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_STEP));
         }
     }
 
@@ -258,7 +260,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
 //            displayStep(step);
             int x = getX(index);
             int y = STEPS_MIN_ROW + getY(index);
-            display.setPad(GridPad.at(x, y), LppRhythmUtil.COLOR_STEP);
+            display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_STEP));
         }
     }
 
@@ -268,7 +270,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
 
         int x = getX(stepNumber);
         int y = STEPS_MIN_ROW + getY(stepNumber);
-        display.setPad(GridPad.at(x, y), COLOR_STEP_PLAYING);
+        display.setPad(GridPad.at(x, y), palette.get(LppRhythmUtil.COLOR_STEP_PLAYING));
     }
 
     public void displayMode(RhythmInterface.Mode mode, boolean isActive) {
@@ -281,9 +283,9 @@ public class LppRhythmDisplay implements RhythmDisplay {
             return;
         }
 
-        Color color = COLOR_MODE_INACTIVE;// Color.of(2,1);
+        Color color = palette.get(LppRhythmUtil.COLOR_MODE_INACTIVE);
         if (isActive) {
-            color = COLOR_MODE_ACTIVE;
+            color = palette.get(LppRhythmUtil.COLOR_MODE_ACTIVE);
         }
 
         if (modeButtonMap.get(mode) != null) {
@@ -312,7 +314,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
 
     public void clearValue() {
         for (int b = 0; b < 8; b++) {
-            display.setButton(GridButton.at(Right, 7-b), COLOR_VALUE);
+            display.setButton(GridButton.at(Right, 7-b), palette.get(LppRhythmUtil.COLOR_VALUE));
         }
     }
 
@@ -320,15 +322,15 @@ public class LppRhythmDisplay implements RhythmDisplay {
 
         int buttons = 8 * (value - minValue) / (maxValue - minValue);
 
-        Color color = LppRhythmUtil.COLOR_STEP_ON;
+        Color color = palette.get(LppRhythmUtil.COLOR_STEP_ON);
         if (valueMode == RhythmInterface.ValueMode.TEMPO) {
-            color = LppRhythmUtil.COLOR_STEP_PLAYING;
+            color = palette.get(LppRhythmUtil.COLOR_STEP_PLAYING);
         } else if (valueMode == RhythmInterface.ValueMode.FILL_PERCENT) {
-            color = LppRhythmUtil.COLOR_PATTERN;
+            color = palette.get(LppRhythmUtil.COLOR_PATTERN);
         }
 
         for (int b = 0; b < 8; b++) {
-            Color buttonColor = LppRhythmUtil.COLOR_VALUE;
+            Color buttonColor = palette.get(LppRhythmUtil.COLOR_VALUE);
             if (b <= buttons) {
                 buttonColor = color;
             }
@@ -345,8 +347,8 @@ public class LppRhythmDisplay implements RhythmDisplay {
 
         if (currentModule != RhythmInterface.Module.SETTINGS) { return; }
 
-        Color off = LppRhythmUtil.COLOR_MODE_INACTIVE;
-        Color on = LppRhythmUtil.COLOR_MODE_ACTIVE;
+        Color off = palette.get(LppRhythmUtil.COLOR_MODE_INACTIVE);
+        Color on = palette.get(LppRhythmUtil.COLOR_MODE_ACTIVE);
 
         for (RhythmInterface.Switch switchx : switches.keySet()) {
             if (switchPadMap.get(switchx) != null) {
