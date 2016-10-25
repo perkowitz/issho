@@ -346,10 +346,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
                 rhythmDisplay.clearValue();
                 break;
 
-            case EXIT:
-                shutdown();
-                break;
-
             case SAVE:
                 save(FILENAME_PREFIX + currentFileIndex + FILENAME_SUFFIX);
                 break;
@@ -421,11 +417,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 
 
     /***** private implementation *********************************************************************/
-
-    public void shutdown() {
-        rhythmDisplay.initialize();
-        System.exit(0);
-    }
 
     public void toggleStartStop() {
         startStop(!playing);
@@ -594,6 +585,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
         if (restart) {
             totalStepCount = 0;
             totalMeasureCount = 0;
+            memory.resetPatternChainIndex();
         }
     }
 

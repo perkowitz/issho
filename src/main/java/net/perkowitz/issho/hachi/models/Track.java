@@ -15,7 +15,7 @@ public class Track {
     @Getter @Setter private boolean selected = false;
     @Getter @Setter private boolean playing = false;
 
-    @Getter @Setter private int midiChannel = 0;
+    @Getter @Setter private int midiChannel = 9;
     @Getter @Setter private int noteNumber = 60;
     @Getter @Setter private boolean enabled = true;
 

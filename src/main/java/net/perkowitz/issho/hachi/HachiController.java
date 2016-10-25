@@ -152,21 +152,21 @@ public class HachiController implements GridListener, Clockable {
     /***** GridListener implementation ***************/
 
     public void onPadPressed(GridPad pad, int velocity) {
-        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
+//        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
         if (activeListener != null) {
             activeListener.onPadPressed(pad, velocity);
         }
     }
 
     public void onPadReleased(GridPad pad) {
-        System.out.printf("Hachi padRelease: %s\n", pad);
+//        System.out.printf("Hachi padRelease: %s\n", pad);
         if (activeListener != null) {
             activeListener.onPadReleased(pad);
         }
     }
 
     public void onButtonPressed(GridButton button, int velocity) {
-        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
+//        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE && button.getIndex() < modules.length) {
             // top row used for module switching
             int index = button.getIndex();
@@ -193,7 +193,7 @@ public class HachiController implements GridListener, Clockable {
     }
 
     public void onButtonReleased(GridButton button) {
-        System.out.printf("Hachi buttonReleased: %s\n", button);
+//        System.out.printf("Hachi buttonReleased: %s\n", button);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {

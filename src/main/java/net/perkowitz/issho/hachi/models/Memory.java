@@ -19,7 +19,7 @@ import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.Switch.TR
  */
 public class Memory {
 
-    @Getter @Setter private static int sessionCount = 8;
+    @Getter @Setter private static int sessionCount = 16;
     @Getter private Session[] sessions;
 
     @Getter private int selectedSessionIndex;

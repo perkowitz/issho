@@ -23,7 +23,7 @@ public class LaunchpadPro implements Receiver, GridDisplay {
 
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
-    private static int CHANNEL = 15;
+    private static int CHANNEL = 0;
 
     private Receiver receiver;
     @Setter private GridListener listener;
