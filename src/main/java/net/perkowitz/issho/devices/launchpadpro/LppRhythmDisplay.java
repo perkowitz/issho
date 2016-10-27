@@ -3,7 +3,7 @@ package net.perkowitz.issho.devices.launchpadpro;
 
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.hachi.models.*;
+import net.perkowitz.issho.hachi.modules.rhythm.models.*;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
 

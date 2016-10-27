@@ -7,7 +7,6 @@ import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
-import net.perkowitz.issho.hachi.models.Memory;
 
 /**
  * Created by optic on 9/12/16.
@@ -19,14 +18,6 @@ public class BasicModule implements Module, GridListener {
 
     /***** Module interface ****************************************/
 
-    public void open() {
-
-    }
-
-    public void close() {
-
-    }
-
     public GridListener getGridListener() {
         return this;
     }
@@ -34,19 +25,6 @@ public class BasicModule implements Module, GridListener {
     public void redraw() {
 
     }
-
-    public Memory getMemory() {
-        return null;
-    }
-
-    public void Save() {
-
-    }
-
-    public void Load() {
-
-    }
-
 
     /***** GridListener interface ****************************************/
 

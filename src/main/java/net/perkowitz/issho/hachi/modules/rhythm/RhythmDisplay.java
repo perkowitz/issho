@@ -2,7 +2,7 @@ package net.perkowitz.issho.hachi.modules.rhythm;
 
 
 import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.hachi.models.*;
+import net.perkowitz.issho.hachi.modules.rhythm.models.*;
 
 import java.util.Map;
 

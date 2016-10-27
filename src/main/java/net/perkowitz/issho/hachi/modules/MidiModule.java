@@ -1,5 +1,7 @@
 package net.perkowitz.issho.hachi.modules;
 
+import net.perkowitz.issho.hachi.modules.mono.MonoDisplay;
+
 import javax.sound.midi.*;
 
 import static javax.sound.midi.ShortMessage.*;
@@ -17,10 +19,25 @@ public class MidiModule extends BasicModule implements Receiver {
     protected Receiver outputReceiver;
 
 
+    public MidiModule(Transmitter inputTransmitter, Receiver outputReceiver) {
+        // connect the provided midi input to the sequencer's clock receiver
+        this.inputTransmitter = inputTransmitter;
+        this.inputTransmitter.setReceiver(this);
+
+        // where to send the sequencer's midi output
+        this.outputReceiver = outputReceiver;
+    }
+
+
+
     /************************************************************************
      * midi output implementation
      *
      */
+
+    public void close() {
+
+    }
 
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);

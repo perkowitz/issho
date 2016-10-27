@@ -73,7 +73,7 @@ public class HachiController implements GridListener, Clockable {
         } catch (InterruptedException e) {}
         Graphics.setPads(display, Graphics.issho, Color.OFF);
         Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
-        selectModule(0);
+        selectModule(4);
 
         startTimer();
 

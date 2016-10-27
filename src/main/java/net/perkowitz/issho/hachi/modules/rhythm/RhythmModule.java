@@ -6,7 +6,8 @@ import com.google.common.io.Files;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.hachi.Clockable;
-import net.perkowitz.issho.hachi.models.*;
+import net.perkowitz.issho.hachi.modules.PatternModule;
+import net.perkowitz.issho.hachi.modules.rhythm.models.*;
 import net.perkowitz.issho.hachi.modules.Module;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -16,17 +17,15 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.FILL_PERCENT;
-import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.TEMPO;
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.VELOCITY;
 
 
 /**
  * Created by optic on 7/8/16.
  */
-public class RhythmModule implements Module, RhythmInterface, Clockable {
+public class RhythmModule implements Module, RhythmInterface, Clockable, PatternModule {
 
     public enum StepMode { MUTE, VELOCITY, JUMP, PLAY }
     private static final int VELOCITY_MIN = 0;
