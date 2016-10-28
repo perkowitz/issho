@@ -3,7 +3,7 @@ package net.perkowitz.issho.hachi.modules.mono;
 import lombok.Getter;
 import lombok.Setter;
 
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepMode.HOLD;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.HOLD;
 
 /**
  * Created by optic on 10/24/16.
@@ -12,14 +12,14 @@ public class MonoStep {
 
     private static int DEFAULT_NOTE = 60;
     private static int DEFAULT_VELOCITY = 100;
-    private static MonoUtil.StepMode DEFAULT_MODE = HOLD;
+    private static MonoUtil.Gate DEFAULT_MODE = HOLD;
 
     @Getter private int index;
 
     @Getter @Setter private int note;
     @Getter @Setter private int velocity;
     @Getter @Setter private int length;
-    @Getter @Setter private MonoUtil.StepMode mode;
+    @Getter @Setter private MonoUtil.Gate mode;
     @Getter @Setter private boolean enabled = false;
     @Getter @Setter private boolean selected = false;
 

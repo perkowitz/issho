@@ -4,12 +4,11 @@ import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.devices.GridPad;
-import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
-import net.perkowitz.issho.hachi.modules.ChordableModule;
+import net.perkowitz.issho.hachi.Chordable;
 import net.perkowitz.issho.hachi.modules.MidiModule;
 import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.hachi.modules.PatternModule;
+import net.perkowitz.issho.hachi.Sessionizeable;
 
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoModule extends MidiModule implements Module, Clockable, GridListener, PatternModule, ChordableModule {
+public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable {
 
     private int midiChannel = 10;
     private MonoMemory memory = new MonoMemory();
@@ -43,29 +42,16 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         // turn off previous note
         MonoStep step = memory.currentPattern().getStep(currentStepIndex);
         sendMidiNote(midiChannel, step.getNote(), 0);
-//        displayStep(step, currentStepIndex, false);
+        monoDisplay.drawStep(step);
 
         // get new note and play it
         currentStepIndex = (currentStepIndex + 1) % MonoPattern.STEP_COUNT;
         step = memory.currentPattern().getStep(currentStepIndex);
-        if (step.isEnabled() && step.getMode() != MonoUtil.StepMode.REST) {
+        if (step.isEnabled() && step.getMode() != MonoUtil.Gate.REST) {
             sendMidiNote(midiChannel, step.getNote(), step.getVelocity());
-//            displayStep(step, currentStepIndex, true);
         }
+        monoDisplay.drawStep(step, true);
 
-    }
-
-
-    /***** display ****************************************/
-
-    private void displayStep(MonoStep step, int index, boolean playing) {
-        int x = index % 8;
-        int y = index / 8 + MonoUtil.STEP_MIN_ROW;
-        if (playing) {
-            display.setPad(GridPad.at(x, y), Color.WHITE);
-        } else {
-            display.setPad(GridPad.at(x, y), Color.OFF);
-        }
     }
 
 
@@ -80,14 +66,14 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         this.monoDisplay.setDisplay(display);
     }
 
-    /***** ChordableModule implementation ***********************************/
+    /***** Chordable implementation ***********************************/
 
     public void setChordNotes(List<Integer> notes) {
 
     }
 
 
-    /***** PatternModule implementation *************************************/
+    /***** Sessionizeable implementation *************************************/
 
     public void selectSession(int index) {
 
@@ -127,6 +113,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                 step.setNote(note + 60);
             }
 
+            monoDisplay.drawKeyboard();
+            monoDisplay.drawStep(step);
+
         }
     }
 
@@ -135,6 +124,14 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     public void onButtonPressed(GridButton button, int velocity) {
+
+        for (MonoUtil.StepEditMode mode : MonoUtil.modeButtonMap.keySet()) {
+            GridButton modeButton = MonoUtil.modeButtonMap.get(mode);
+            if (button.equals(modeButton)) {
+                memory.setStepEditMode(mode);
+                monoDisplay.drawModes(mode);
+            }
+        }
 
     }
 

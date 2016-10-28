@@ -1,11 +1,13 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
 import lombok.Setter;
+import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -24,7 +26,7 @@ public class MonoDisplay {
     public void redraw(MonoMemory memory) {
         drawKeyboard();
         drawSteps(memory.currentPattern().getSteps());
-
+        drawModes(memory.getStepEditMode());
     }
 
     public void drawKeyboard() {
@@ -45,6 +47,10 @@ public class MonoDisplay {
     }
 
     public void drawStep(MonoStep step) {
+        drawStep(step, false);
+    }
+
+    public void drawStep(MonoStep step, boolean highlight) {
 
         // get step location
         int x = step.getIndex() % 8;
@@ -57,7 +63,9 @@ public class MonoDisplay {
         int keyY = MonoUtil.KEYBOARD_MIN_ROW + index / 8;
 
         Color stepColor = palette.get(MonoUtil.COLOR_STEP_OFF);
-        if (step.isSelected()) {
+        if (highlight) {
+            stepColor = palette.get(MonoUtil.COLOR_STEP_HIGHLIGHT);
+        } else if (step.isSelected()) {
             display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
             stepColor = palette.get(MonoUtil.COLOR_STEP_SELECTED);
         } else if (step.isEnabled()) {
@@ -65,9 +73,25 @@ public class MonoDisplay {
         }
         display.setPad(GridPad.at(x, y), stepColor);
 
+    }
 
+    public void drawModes(MonoUtil.StepEditMode currentMode) {
+
+        for (MonoUtil.StepEditMode mode : MonoUtil.StepEditMode.values()) {
+            GridButton button = MonoUtil.modeButtonMap.get(mode);
+            Color color = palette.get(MonoUtil.COLOR_MODE_INACTIVE);
+            if (mode == currentMode) {
+                color = palette.get(MonoUtil.COLOR_MODE_ACTIVE);
+            }
+            display.setButton(button, color);
+        }
 
     }
 
+    public void drawValue(int count, Color color) {
+        for (int index = 0; index < count; index++) {
+            display.setButton(GridButton.at(GridButton.Side.Right, index), color);
+        }
+    }
 
 }

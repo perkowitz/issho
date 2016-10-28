@@ -6,7 +6,7 @@ import com.google.common.io.Files;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.hachi.Clockable;
-import net.perkowitz.issho.hachi.modules.PatternModule;
+import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.rhythm.models.*;
 import net.perkowitz.issho.hachi.modules.Module;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -25,7 +25,7 @@ import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode
 /**
  * Created by optic on 7/8/16.
  */
-public class RhythmModule implements Module, RhythmInterface, Clockable, PatternModule {
+public class RhythmModule implements Module, RhythmInterface, Clockable, Sessionizeable {
 
     public enum StepMode { MUTE, VELOCITY, JUMP, PLAY }
     private static final int VELOCITY_MIN = 0;
