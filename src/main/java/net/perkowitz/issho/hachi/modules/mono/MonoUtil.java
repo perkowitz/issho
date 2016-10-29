@@ -25,9 +25,10 @@ public class MonoUtil {
         MUTE, NOTE, VELOCITY, LENGTH, GATE
     }
 
+    public static int PATTERN_MIN_ROW = 0;
+    public static int PATTERN_MAX_ROW = 1;
     public static int KEYBOARD_MIN_ROW = 4;
     public static int KEYBOARD_MAX_ROW = 5;
-
     public static int STEP_MIN_ROW = 6;
     public static int STEP_MAX_ROW = 7;
 
@@ -52,6 +53,17 @@ public class MonoUtil {
         modeButtonMap.put(GATE, GridButton.at(GridButton.Side.Bottom, 4));
     }
 
+    public static List<GridControl> keyboardControls = Lists.newArrayList();
+    static {
+        keyboardControls.add(new GridControl(GridPad.at(1, KEYBOARD_MIN_ROW)));
+        keyboardControls.add(new GridControl(GridPad.at(2, KEYBOARD_MIN_ROW)));
+        keyboardControls.add(new GridControl(GridPad.at(4, KEYBOARD_MIN_ROW)));
+        keyboardControls.add(new GridControl(GridPad.at(5, KEYBOARD_MIN_ROW)));
+        keyboardControls.add(new GridControl(GridPad.at(6, KEYBOARD_MIN_ROW)));
+        for (int index = 0; index < 8; index++) {
+            keyboardControls.add(new GridControl(GridPad.at(index, KEYBOARD_MAX_ROW)));
+        }
+    }
 
 
     /***** color palettes **********************************************************/
