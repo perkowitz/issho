@@ -1,32 +1,31 @@
-package net.perkowitz.issho.hachi.modules.mono;
+package net.perkowitz.issho.hachi.modules.mono2;
 
-import com.google.common.collect.Maps;
 import lombok.Getter;
-import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridColor;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridPad;
-
-import java.util.Map;
 
 /**
  * Created by optic on 10/27/16.
  */
 public class GridControl {
 
+    @Getter private Integer index = null;
     @Getter private GridPad pad = null;
     @Getter private GridButton button = null;
 
 
     /***** constructors ****************************************/
 
-    public GridControl(GridPad pad) {
+    public GridControl(GridPad pad, Integer index) {
         this.pad = pad;
+        this.index = index;
     }
 
-    public GridControl(GridButton button) {
+    public GridControl(GridButton button, Integer index) {
         this.button = button;
+        this.index = index;
     }
 
 

@@ -65,16 +65,19 @@ public class HachiController implements GridListener, Clockable {
     }
 
     public void run() {
+        System.out.printf("Controller run...\n");
         display.initialize();
         redraw();
         Graphics.setPads(display, Graphics.issho, Color.WHITE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {}
+        System.out.printf("Displaying logo...\n");
         Graphics.setPads(display, Graphics.issho, Color.OFF);
         Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
         selectModule(4);
 
+        System.out.printf("Starting timer...\n");
         startTimer();
 
     }

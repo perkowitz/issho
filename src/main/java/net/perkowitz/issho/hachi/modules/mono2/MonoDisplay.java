@@ -1,4 +1,4 @@
-package net.perkowitz.issho.hachi.modules.mono;
+package net.perkowitz.issho.hachi.modules.mono2;
 
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
@@ -7,7 +7,6 @@ import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -31,7 +30,7 @@ public class MonoDisplay {
 
     public void drawKeyboard() {
 
-        for (int x = 0; x < 8; x++) {
+        for (int x = 0; x < 7; x++) {
             if (x != 0 && x != 3 && x != 7) {
                 display.setPad(GridPad.at(x, MonoUtil.KEYBOARD_MIN_ROW), palette.get(MonoUtil.COLOR_KEYBOARD_BLACK));
             }
@@ -65,9 +64,12 @@ public class MonoDisplay {
         Color stepColor = palette.get(MonoUtil.COLOR_STEP_OFF);
         if (highlight) {
             stepColor = palette.get(MonoUtil.COLOR_STEP_HIGHLIGHT);
-        } else if (step.isSelected()) {
+        } else if (step.isSelected() && step.isEnabled()) {
             display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
             stepColor = palette.get(MonoUtil.COLOR_STEP_SELECTED);
+        } else if (step.isSelected()) {
+            display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+            stepColor = palette.get(MonoUtil.COLOR_STEP_SELECTED_OFF);
         } else if (step.isEnabled()) {
             stepColor = palette.get(MonoUtil.COLOR_STEP_ON);
         }
@@ -79,11 +81,13 @@ public class MonoDisplay {
 
         for (MonoUtil.StepEditState mode : MonoUtil.StepEditState.values()) {
             GridButton button = MonoUtil.modeButtonMap.get(mode);
-            Color color = palette.get(MonoUtil.COLOR_MODE_INACTIVE);
-            if (mode == currentMode) {
-                color = palette.get(MonoUtil.COLOR_MODE_ACTIVE);
+            if (button != null) {
+                Color color = palette.get(MonoUtil.COLOR_MODE_INACTIVE);
+                if (mode == currentMode) {
+                    color = palette.get(MonoUtil.COLOR_MODE_ACTIVE);
+                }
+                display.setButton(button, color);
             }
-            display.setButton(button, color);
         }
 
     }

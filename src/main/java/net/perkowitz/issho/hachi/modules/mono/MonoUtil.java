@@ -5,12 +5,12 @@ import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
-import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
+import net.perkowitz.issho.hachi.modules.mono2.GridControl;
 
 import java.util.List;
 import java.util.Map;
 
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepEditMode.*;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepEditState.*;
 
 /**
  * Created by optic on 10/24/16.
@@ -21,7 +21,7 @@ public class MonoUtil {
         HOLD, STUTTER, TIE, REST
     }
 
-    public enum StepEditMode {
+    public enum StepEditState {
         MUTE, NOTE, VELOCITY, LENGTH, GATE
     }
 
@@ -42,27 +42,16 @@ public class MonoUtil {
             8, 1, 9, 2, 10, 11, 4, 12, 5, 13, 6, 14, 15
     };
 
+
     /***** buttons and pads **********************************************************/
-    public static Map<StepEditMode, GridButton> modeButtonMap = Maps.newHashMap();
-    public static Map<StepEditMode, GridPad> modePadMap = Maps.newHashMap();
+    public static Map<StepEditState, GridButton> modeButtonMap = Maps.newHashMap();
+    public static Map<StepEditState, GridPad> modePadMap = Maps.newHashMap();
     static {
         modeButtonMap.put(MUTE, GridButton.at(GridButton.Side.Bottom, 0));
         modeButtonMap.put(NOTE, GridButton.at(GridButton.Side.Bottom, 1));
         modeButtonMap.put(VELOCITY, GridButton.at(GridButton.Side.Bottom, 2));
         modeButtonMap.put(LENGTH, GridButton.at(GridButton.Side.Bottom, 3));
         modeButtonMap.put(GATE, GridButton.at(GridButton.Side.Bottom, 4));
-    }
-
-    public static List<GridControl> keyboardControls = Lists.newArrayList();
-    static {
-        keyboardControls.add(new GridControl(GridPad.at(1, KEYBOARD_MIN_ROW)));
-        keyboardControls.add(new GridControl(GridPad.at(2, KEYBOARD_MIN_ROW)));
-        keyboardControls.add(new GridControl(GridPad.at(4, KEYBOARD_MIN_ROW)));
-        keyboardControls.add(new GridControl(GridPad.at(5, KEYBOARD_MIN_ROW)));
-        keyboardControls.add(new GridControl(GridPad.at(6, KEYBOARD_MIN_ROW)));
-        for (int index = 0; index < 8; index++) {
-            keyboardControls.add(new GridControl(GridPad.at(index, KEYBOARD_MAX_ROW)));
-        }
     }
 
 

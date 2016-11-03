@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.util.Map;
 
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepEditMode.NOTE;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepEditState.NOTE;
 
 /**
  * Created by optic on 10/24/16.
@@ -18,7 +18,8 @@ public class MonoMemory {
     @Getter private MonoSession[] sessions = new MonoSession[SESSION_COUNT];
     @Getter private int currentSessionIndex = 0;
     @Getter private int currentPatternIndex = 0;
-    @Getter @Setter private MonoUtil.StepEditMode stepEditMode = NOTE;
+    @Getter private int currentStepIndex = 0;
+    @Getter @Setter private MonoUtil.StepEditState stepEditState = NOTE;
 
 
     public MonoMemory() {
@@ -26,7 +27,7 @@ public class MonoMemory {
             sessions[i] = new MonoSession();
         }
 
-        stepEditMode = NOTE;
+        stepEditState = NOTE;
     }
 
 
