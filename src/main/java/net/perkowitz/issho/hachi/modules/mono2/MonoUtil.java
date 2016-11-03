@@ -21,7 +21,12 @@ public class MonoUtil {
     }
 
     public enum StepEditState {
+        // in button layout order
         MUTE, NOTE, VELOCITY, LENGTH, GATE, PLAY
+    }
+
+    public enum Function {
+        SAVE, LOAD
     }
 
     public enum ValueState {
@@ -76,7 +81,8 @@ public class MonoUtil {
         keyboardControls.add(new GridControl(GridPad.at(6, KEYBOARD_MAX_ROW), 11));
     }
 
-    public static List<GridControl> stepControls = Lists.newArrayList();
+    public static GridControl SAVE_CONTROL = new GridControl(GridButton.at(GridButton.Side.Left, 7), 0);
+
 
 
     /***** color palettes **********************************************************/
@@ -97,7 +103,7 @@ public class MonoUtil {
     public static List<Color> PALETTE_FUCHSIA = Lists.newArrayList(
             // 52-55 purple-pinks, 12-15 yellows
             Color.OFF, Color.fromIndex(55), Color.fromIndex(13), Color.fromIndex(15), Color.WHITE,   // step
-            Color.DARK_GRAY, Color.LIGHT_GRAY, Color.fromIndex(13),             // keyboard
+            Color.DARK_GRAY, Color.DARK_GRAY, Color.fromIndex(13),             // keyboard
             Color.DARK_GRAY, Color.fromIndex(55),             // mode
             Color.OFF, Color.fromIndex(55)                    // value
     );

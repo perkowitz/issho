@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi.modules.mono2;
 
+import com.google.common.io.Files;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
@@ -10,9 +11,11 @@ import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.MidiModule;
 import net.perkowitz.issho.hachi.modules.Module;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
+import java.io.File;
 import java.util.List;
 
 import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.ValueState.STEP_OCTAVE;
@@ -25,6 +28,8 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     private static int MAX_VELOCITY = 127;
     private static int MAX_OCTAVE = 7;
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     private int midiChannel = 10;
     private MonoMemory memory = new MonoMemory();
     private int currentStepIndex = 0;
@@ -35,6 +40,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     private GridControlSet keyboardControls = new GridControlSet(MonoUtil.keyboardControls);
     private GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 5);
     private GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
+    private GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, 0, 1);
 
     private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
 
@@ -79,10 +85,48 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
         }
     }
 
+    private void save(String filename) {
+
+        try {
+
+            File file = new File(filename);
+            if (file.exists()) {
+                // make a backup, but will overwrite any previous backups
+                Files.copy(file, new File(filename + ".backup"));
+            }
+
+            objectMapper.writeValue(file, memory);
+//            String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(memory);
+//            System.out.println(json);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void load(String filename) {
+
+        try {
+            File file = new File(filename);
+
+            if (file.exists()) {
+                memory = objectMapper.readValue(file, MonoMemory.class);
+            } else {
+                memory = new MonoMemory();
+//                memory.select(memory.selectedPattern().getTrack(8));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /***** Module implementation ***********************************/
 
     public void redraw() {
         monoDisplay.redraw(memory);
+        monoDisplay.drawFunctions(functionControls);
     }
 
     public void setDisplay(GridDisplay display) {
@@ -192,7 +236,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                 case NOTE:
                 case MUTE:
                 case VELOCITY:
-                    step.setNote(index);
+                    step.setOctaveNote(index);
                     selectedControl.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
                     // todo redraw the old key
                     break;
@@ -231,6 +275,24 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                         break;
 
                 }
+            }
+
+        } else if (functionControls.contains(control)) {
+
+            // find the control's index, get the current step
+            Integer index = functionControls.getIndex(control);
+            if (index != null) {
+                MonoUtil.Function[] functions = MonoUtil.Function.values();
+                MonoUtil.Function function = functions[index];
+                switch (function) {
+                    case SAVE:
+                        save("monomodule-0.json");
+                        break;
+                    case LOAD:
+                        load("monomodule-0.json");
+                        break;
+                }
+                monoDisplay.drawFunctions(functionControls);
             }
 
         }

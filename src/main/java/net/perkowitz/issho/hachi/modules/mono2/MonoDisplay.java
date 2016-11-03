@@ -8,6 +8,8 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;
 
+import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.*;
+
 
 /**
  * Created by optic on 10/25/16.
@@ -82,7 +84,7 @@ public class MonoDisplay {
         for (MonoUtil.StepEditState mode : MonoUtil.StepEditState.values()) {
             GridButton button = MonoUtil.modeButtonMap.get(mode);
             if (button != null) {
-                Color color = palette.get(MonoUtil.COLOR_MODE_INACTIVE);
+                Color color = palette.get(COLOR_MODE_INACTIVE);
                 if (mode == currentMode) {
                     color = palette.get(MonoUtil.COLOR_MODE_ACTIVE);
                 }
@@ -97,5 +99,11 @@ public class MonoDisplay {
             display.setButton(GridButton.at(GridButton.Side.Right, index), color);
         }
     }
+
+    public void drawFunctions(GridControlSet functionControls) {
+        functionControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
+    }
+
+
 
 }
