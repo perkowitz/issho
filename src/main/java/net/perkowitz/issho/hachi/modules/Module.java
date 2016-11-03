@@ -11,5 +11,6 @@ public interface Module {
     public void setDisplay(GridDisplay rhythmDisplay);
     public GridListener getGridListener();
     public void redraw();
+    public void shutdown();
 
 }

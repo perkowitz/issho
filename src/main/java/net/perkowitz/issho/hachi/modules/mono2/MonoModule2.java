@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi.modules.mono2;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridDisplay;
@@ -17,6 +18,9 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.List;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.ValueState.STEP_OCTAVE;
 
@@ -30,7 +34,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private int midiChannel = 10;
+    private int midiChannel = 0;
     private MonoMemory memory = new MonoMemory();
     private int currentStepIndex = 0;
     private MonoDisplay monoDisplay;
@@ -44,6 +48,12 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
 
+    private Set<Integer> onNotes = Sets.newHashSet();
+
+    private static Timer timer = null;
+    private static int flashIntervalMillis = 125;
+    private static int flashCount = 0;
+
 
 
     /***** Constructor ****************************************/
@@ -51,6 +61,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     public MonoModule2(Transmitter inputTransmitter, Receiver outputReceiver) {
         super(inputTransmitter, outputReceiver);
         this.monoDisplay = new MonoDisplay(this.display);
+        startTimer();
     }
 
 
@@ -58,16 +69,23 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     private void advance() {
 
-        // turn off previous note
+        // previous step
         MonoStep step = memory.currentPattern().getStep(currentStepIndex);
-        sendMidiNote(midiChannel, step.getNote(), 0);
         monoDisplay.drawStep(step);
 
         // get new note and play it
         currentStepIndex = (currentStepIndex + 1) % MonoPattern.STEP_COUNT;
         step = memory.currentPattern().getStep(currentStepIndex);
-        if (step.isEnabled() && step.getMode() != MonoUtil.Gate.REST) {
+        monoDisplay.drawKeyboard();
+
+        if (!step.isEnabled() || step.getGate() == MonoUtil.Gate.REST) {
+            notesOff();
+        } else if (step.isEnabled() && step.getGate() == MonoUtil.Gate.PLAY) {
+            notesOff();
             sendMidiNote(midiChannel, step.getNote(), step.getVelocity());
+            onNotes.add(step.getNote());
+        } else if (step.isEnabled() && step.getGate() == MonoUtil.Gate.TIE) {
+            // do nothing
         }
         monoDisplay.drawStep(step, true);
 
@@ -83,6 +101,14 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                 control.draw(display, palette.get(MonoUtil.COLOR_VALUE_OFF));
             }
         }
+    }
+
+    private void notesOff() {
+        for (Integer note : onNotes) {
+            sendMidiNote(midiChannel, note, 0);
+
+        }
+        onNotes.clear();
     }
 
     private void save(String filename) {
@@ -122,6 +148,30 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     }
 
+    public void startTimer() {
+
+        if (timer != null) {
+            timer.cancel();
+        }
+
+        timer = new Timer();
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                MonoStep step = memory.currentStep();
+                if (step != null) {
+                    if (flashCount == 0) {
+                        monoDisplay.drawStepOff(step);
+                    } else {
+                        monoDisplay.drawStep(step);
+                    }
+                }
+                flashCount = (flashCount + 1) % 2;
+            }
+        }, flashIntervalMillis, flashIntervalMillis);
+    }
+
+
     /***** Module implementation ***********************************/
 
     public void redraw() {
@@ -132,6 +182,10 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     public void setDisplay(GridDisplay display) {
         this.display = display;
         this.monoDisplay.setDisplay(display);
+    }
+
+    public void shutdown() {
+        notesOff();
     }
 
     /***** Chordable implementation ***********************************/
@@ -212,6 +266,17 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                     memory.setValueState(MonoUtil.ValueState.VELOCITY);
                     displayValue(step.getVelocity(), MAX_VELOCITY);
                     break;
+                case GATE:
+                    memory.setValueState(MonoUtil.ValueState.NONE);
+                    displayValue(0, -1);
+                    if (step.getGate() == MonoUtil.Gate.PLAY) {
+                        step.setGate(MonoUtil.Gate.TIE);
+                    } else if (step.getGate() == MonoUtil.Gate.TIE) {
+                        step.setGate(MonoUtil.Gate.REST);
+                    } else if (step.getGate() == MonoUtil.Gate.REST) {
+                        step.setGate(MonoUtil.Gate.PLAY);
+                    }
+                    break;
                 case PLAY:
                     memory.setValueState(MonoUtil.ValueState.KEYBOARD_OCTAVE);
                     displayValue(memory.getKeyboardOctave() - MonoUtil.LOWEST_OCTAVE, MAX_OCTAVE);
@@ -273,7 +338,8 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                     case KEYBOARD_OCTAVE:
                         memory.setKeyboardOctave(index + MonoUtil.LOWEST_OCTAVE);
                         break;
-
+                    case NONE:
+                        break;
                 }
             }
 
@@ -309,6 +375,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     }
 
     public void stop() {
+        notesOff();
     }
 
     public void tick() {

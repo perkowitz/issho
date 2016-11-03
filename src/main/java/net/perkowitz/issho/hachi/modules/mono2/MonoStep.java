@@ -3,7 +3,7 @@ package net.perkowitz.issho.hachi.modules.mono2;
 import lombok.Getter;
 import lombok.Setter;
 
-import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.Gate.HOLD;
+import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.Gate.PLAY;
 
 /**
  * Created by optic on 10/24/16.
@@ -12,7 +12,7 @@ public class MonoStep {
 
     private static int DEFAULT_NOTE = 60;
     private static int DEFAULT_VELOCITY = 100;
-    private static MonoUtil.Gate DEFAULT_MODE = HOLD;
+    private static MonoUtil.Gate DEFAULT_GATE = PLAY;
 
     @Getter private int index;
 
@@ -20,8 +20,8 @@ public class MonoStep {
     @Getter @Setter private int octave;
     @Getter @Setter private int velocity;
     @Getter @Setter private int length;
-    @Getter @Setter private MonoUtil.Gate mode;
-    @Getter @Setter private boolean enabled = false;
+    @Getter @Setter private MonoUtil.Gate gate;
+    @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean selected = false;
 
 
@@ -31,13 +31,13 @@ public class MonoStep {
         this.octave = DEFAULT_NOTE / 12;
         this.velocity = DEFAULT_VELOCITY;
         this.length = 1;
-        this.mode = DEFAULT_MODE;
-        this.enabled = false;
+        this.gate = DEFAULT_GATE;
+        this.enabled = true;
         this.selected = false;
     }
 
     public void toggleEnabled() {
-        enabled = !enabled;
+//        enabled = !enabled;
     }
 
     public int getNote() {

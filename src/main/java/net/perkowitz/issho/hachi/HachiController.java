@@ -106,6 +106,9 @@ public class HachiController implements GridListener, Clockable {
     }
 
     private void shutdown() {
+        for (Module module : modules) {
+            module.shutdown();
+        }
         display.initialize();
         System.exit(0);
     }
@@ -181,6 +184,9 @@ public class HachiController implements GridListener, Clockable {
                 start(true);
             } else {
                 stop();
+                for (Clockable clockable: clockables) {
+                    clockable.stop();
+                }
             }
             redraw();
 

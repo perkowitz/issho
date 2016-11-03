@@ -237,7 +237,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 //        System.out.printf("selectStep: %d, %s\n", index, stepMode);
         Step step = memory.selectedTrack().getStep(index);
         if (stepMode == StepMode.MUTE) {
-            // in mute mode, both mute/unmute and select that step
+            // in mute gate, both mute/unmute and select that step
             step.setOn(!step.isOn());
             memory.select(step);
             rhythmDisplay.displayStep(step);
@@ -281,7 +281,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     public void selectMode(Mode mode) {
 
-//        System.out.printf("selectMode: %s\n", mode);
+//        System.out.printf("selectMode: %s\n", gate);
         switch (mode) {
 
             case PATTERN_PLAY:
@@ -301,7 +301,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
             case TRACK_EDIT:
                 if (trackSelectMode) {
-                    // if you press select mode a second time, it unselects the selected track (so no track is selected)
+                    // if you press select gate a second time, it unselects the selected track (so no track is selected)
                     memory.selectedTrack().setSelected(false);
                     rhythmDisplay.displayTrack(memory.selectedTrack());
 //                    rhythmDisplay.clearSteps();
@@ -398,10 +398,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     /***** Module implementation *********************************************************************/
 
-    public void open() {}
-
-    public void close() {}
-
     public GridListener getGridListener() {
         return controller;
     }
@@ -410,10 +406,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
         rhythmDisplay.setDisplay(display);
     }
 
-    public Memory getMemory() { return null; }
-    public void Save() {}
-    public void Load() {}
-
+    public void shutdown() {}
 
     /***** private implementation *********************************************************************/
 

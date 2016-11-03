@@ -71,7 +71,7 @@ public class MonoUtil {
             // 52-55 purple-pinks, 12-15 yellows
             Color.OFF, Color.fromIndex(55), Color.WHITE, Color.fromIndex(13),   // step
             Color.DARK_GRAY, Color.LIGHT_GRAY, Color.fromIndex(53),             // keyboard
-            Color.DARK_GRAY, Color.fromIndex(55)             // mode
+            Color.DARK_GRAY, Color.fromIndex(55)             // gate
     );
 
 

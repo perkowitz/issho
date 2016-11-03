@@ -128,7 +128,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         for (MonoUtil.StepEditState mode : MonoUtil.modeButtonMap.keySet()) {
             GridButton modeButton = MonoUtil.modeButtonMap.get(mode);
             if (button.equals(modeButton)) {
-//                memory.setStepEditMode(mode);
+//                memory.setStepEditMode(gate);
                 monoDisplay.drawModes(mode);
             }
         }

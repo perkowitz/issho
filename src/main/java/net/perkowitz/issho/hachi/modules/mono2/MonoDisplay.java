@@ -51,6 +51,13 @@ public class MonoDisplay {
         drawStep(step, false);
     }
 
+    public void drawStepOff(MonoStep step) {
+        // get step location
+        int x = step.getIndex() % 8;
+        int y = step.getIndex() / 8 + MonoUtil.STEP_MIN_ROW;
+        display.setPad(GridPad.at(x, y), Color.OFF);
+    }
+
     public void drawStep(MonoStep step, boolean highlight) {
 
         // get step location
@@ -63,17 +70,34 @@ public class MonoDisplay {
         int keyX = index % 8;
         int keyY = MonoUtil.KEYBOARD_MIN_ROW + index / 8;
 
+        // display the selected step's note on the keyboard
+        if (step.isSelected() && step.isEnabled()) {
+            display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+        }
+        // display the selected step's note on the keyboard
+        if (step.isSelected() && step.isEnabled()) {
+            display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+        }
+
+
         Color stepColor = palette.get(MonoUtil.COLOR_STEP_OFF);
         if (highlight) {
             stepColor = palette.get(MonoUtil.COLOR_STEP_HIGHLIGHT);
-        } else if (step.isSelected() && step.isEnabled()) {
-            display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
-            stepColor = palette.get(MonoUtil.COLOR_STEP_SELECTED);
-        } else if (step.isSelected()) {
-            display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
-            stepColor = palette.get(MonoUtil.COLOR_STEP_SELECTED_OFF);
+            if (highlight && step.isEnabled()) {
+                display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+            }
         } else if (step.isEnabled()) {
-            stepColor = palette.get(MonoUtil.COLOR_STEP_ON);
+            switch (step.getGate()) {
+                case PLAY:
+                    stepColor = palette.get(MonoUtil.COLOR_STEP_PLAY);
+                    break;
+                case TIE:
+                    stepColor = palette.get(MonoUtil.COLOR_STEP_TIE);
+                    break;
+                case REST:
+                    stepColor = palette.get(MonoUtil.COLOR_STEP_REST);
+                    break;
+            }
         }
         display.setPad(GridPad.at(x, y), stepColor);
 

@@ -22,9 +22,9 @@ public class BasicModule implements Module, GridListener {
         return this;
     }
 
-    public void redraw() {
+    public void redraw() {}
 
-    }
+    public void shutdown() {}
 
     /***** GridListener interface ****************************************/
 

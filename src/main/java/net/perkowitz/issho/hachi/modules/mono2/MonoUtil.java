@@ -17,7 +17,7 @@ import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.StepEditState.*;
 public class MonoUtil {
 
     public enum Gate {
-        HOLD, STUTTER, TIE, REST
+        PLAY, TIE, REST
     }
 
     public enum StepEditState {
@@ -30,7 +30,7 @@ public class MonoUtil {
     }
 
     public enum ValueState {
-        STEP_OCTAVE, VELOCITY, KEYBOARD_OCTAVE
+        STEP_OCTAVE, VELOCITY, KEYBOARD_OCTAVE, NONE
     }
 
     public static int PATTERN_MIN_ROW = 0;
@@ -59,9 +59,9 @@ public class MonoUtil {
         modeButtonMap.put(MUTE, GridButton.at(GridButton.Side.Bottom, 0));
         modeButtonMap.put(NOTE, GridButton.at(GridButton.Side.Bottom, 1));
         modeButtonMap.put(VELOCITY, GridButton.at(GridButton.Side.Bottom, 2));
-        modeButtonMap.put(LENGTH, GridButton.at(GridButton.Side.Bottom, 3));
-//        modeButtonMap.put(PLAY, GridButton.at(GridButton.Side.Bottom, 4));
-        modeButtonMap.put(MonoUtil.StepEditState.GATE, GridButton.at(GridButton.Side.Bottom, 4));
+//        modeButtonMap.put(LENGTH, GridButton.at(GridButton.Side.Bottom, 3));
+        modeButtonMap.put(GATE, GridButton.at(GridButton.Side.Bottom, 3));
+        modeButtonMap.put(PLAY, GridButton.at(GridButton.Side.Bottom, 4));
     }
 
     public static List<GridControl> keyboardControls = Lists.newArrayList();
@@ -88,9 +88,9 @@ public class MonoUtil {
     /***** color palettes **********************************************************/
     // display color functions
     public static Integer COLOR_STEP_OFF = 0;
-    public static Integer COLOR_STEP_ON = 1;
-    public static Integer COLOR_STEP_SELECTED = 2;
-    public static Integer COLOR_STEP_SELECTED_OFF = 3;
+    public static Integer COLOR_STEP_PLAY = 1;
+    public static Integer COLOR_STEP_TIE = 2;
+    public static Integer COLOR_STEP_REST = 3;
     public static Integer COLOR_STEP_HIGHLIGHT = 4;
     public static Integer COLOR_KEYBOARD_BLACK = 5;
     public static Integer COLOR_KEYBOARD_WHITE = 6;
@@ -102,9 +102,9 @@ public class MonoUtil {
 
     public static List<Color> PALETTE_FUCHSIA = Lists.newArrayList(
             // 52-55 purple-pinks, 12-15 yellows
-            Color.OFF, Color.fromIndex(55), Color.fromIndex(13), Color.fromIndex(15), Color.WHITE,   // step
+            Color.OFF, Color.fromIndex(53), Color.fromIndex(55), Color.OFF, Color.WHITE,   // step
             Color.DARK_GRAY, Color.DARK_GRAY, Color.fromIndex(13),             // keyboard
-            Color.DARK_GRAY, Color.fromIndex(55),             // mode
+            Color.DARK_GRAY, Color.fromIndex(55),             // gate
             Color.OFF, Color.fromIndex(55)                    // value
     );
 
