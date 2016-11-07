@@ -83,6 +83,9 @@ public class MonoUtil {
 
     public static GridControl SAVE_CONTROL = new GridControl(GridButton.at(GridButton.Side.Left, 7), 0);
 
+    public static int STEP_CONTROL_SHIFT_LEFT_INDEX = 6;
+    public static int STEP_CONTROL_SHIFT_RIGHT_INDEX = 7;
+
 
 
     /***** color palettes **********************************************************/
@@ -92,8 +95,8 @@ public class MonoUtil {
     public static Integer COLOR_STEP_TIE = 2;
     public static Integer COLOR_STEP_REST = 3;
     public static Integer COLOR_STEP_HIGHLIGHT = 4;
-    public static Integer COLOR_KEYBOARD_BLACK = 5;
-    public static Integer COLOR_KEYBOARD_WHITE = 6;
+    public static Integer COLOR_KEYBOARD_KEY = 5;
+    public static Integer COLOR_KEYBOARD_HIGHLIGHT = 6;
     public static Integer COLOR_KEYBOARD_SELECTED = 7;
     public static Integer COLOR_MODE_INACTIVE = 8;
     public static Integer COLOR_MODE_ACTIVE = 9;
@@ -102,8 +105,8 @@ public class MonoUtil {
 
     public static List<Color> PALETTE_FUCHSIA = Lists.newArrayList(
             // 52-55 purple-pinks, 12-15 yellows
-            Color.OFF, Color.fromIndex(53), Color.fromIndex(55), Color.OFF, Color.WHITE,   // step
-            Color.DARK_GRAY, Color.DARK_GRAY, Color.fromIndex(13),             // keyboard
+            Color.OFF, Color.fromIndex(53), Color.fromIndex(55), Color.OFF, Color.fromIndex(13),   // step
+            Color.DARK_GRAY, Color.fromIndex(13), Color.WHITE,             // keyboard
             Color.DARK_GRAY, Color.fromIndex(55),             // gate
             Color.OFF, Color.fromIndex(55)                    // value
     );

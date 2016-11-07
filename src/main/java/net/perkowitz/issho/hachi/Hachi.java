@@ -85,8 +85,8 @@ public class Hachi {
         modules[1] = new PaletteModule(false);
 //        modules[2] = new ClockModule();
         modules[2] = new DrawingModule();
-//        modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_RED);
-        modules[3] = new DrawingModule();
+        modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_RED);
+//        modules[3] = new DrawingModule();
         modules[4] = new MonoModule2(midiTransmitter, midiReceiver);
 //        modules[4] = new KeyboardModule(midiTransmitter, midiReceiver, 10, 36);
 

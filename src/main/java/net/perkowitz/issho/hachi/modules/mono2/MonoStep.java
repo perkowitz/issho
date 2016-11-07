@@ -14,7 +14,7 @@ public class MonoStep {
     private static int DEFAULT_VELOCITY = 100;
     private static MonoUtil.Gate DEFAULT_GATE = PLAY;
 
-    @Getter private int index;
+    @Getter @Setter private int index;
 
     @Getter @Setter private int octaveNote;
     @Getter @Setter private int octave;
@@ -24,6 +24,7 @@ public class MonoStep {
     @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean selected = false;
 
+    public MonoStep() {}
 
     public MonoStep(int index) {
         this.index = index;
@@ -49,4 +50,18 @@ public class MonoStep {
         octave = note / 12;
     }
 
+    /***** static methods **************************/
+
+    public static MonoStep copy(MonoStep step) {
+        MonoStep newStep = new MonoStep();
+        newStep.index = step.index;
+        newStep.octaveNote = step.octaveNote;
+        newStep.octave = step.octave;
+        newStep.velocity = step.velocity;
+        newStep.length = step.length;
+        newStep.gate = step.gate;
+        newStep.enabled = step.enabled;
+        newStep.selected = step.selected;
+        return newStep;
+    }
 }

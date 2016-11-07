@@ -19,25 +19,43 @@ public class MonoDisplay {
     @Setter private GridDisplay display;
     private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
 
+    private GridControlSet patternControls;
+    private GridControlSet stepControls;
+    private GridControlSet keyboardControls;
+    private GridControlSet stepEditControls;
+    private GridControlSet valueControls;
+    private GridControlSet functionControls;
 
-    public MonoDisplay(GridDisplay display) {
+
+    public MonoDisplay(
+            GridDisplay display,
+            GridControlSet patternControls,
+            GridControlSet stepControls,
+            GridControlSet keyboardControls,
+            GridControlSet stepEditControls,
+            GridControlSet valueControls,
+            GridControlSet functionControls
+            ) {
         this.display = display;
+        this.patternControls = patternControls;
+        this.stepControls = stepControls;
+        this.keyboardControls = keyboardControls;
+        this.stepEditControls = stepEditControls;
+        this.valueControls = valueControls;
+        this.functionControls = functionControls;
     }
 
     public void redraw(MonoMemory memory) {
-        drawKeyboard();
+        drawKeyboard(memory);
         drawSteps(memory.currentPattern().getSteps());
-        drawModes(memory.getStepEditState());
+        drawStepEdits(memory.getStepEditState());
     }
 
-    public void drawKeyboard() {
-
-        for (int x = 0; x < 7; x++) {
-            if (x != 0 && x != 3 && x != 7) {
-                display.setPad(GridPad.at(x, MonoUtil.KEYBOARD_MIN_ROW), palette.get(MonoUtil.COLOR_KEYBOARD_BLACK));
-            }
-            display.setPad(GridPad.at(x, MonoUtil.KEYBOARD_MAX_ROW), palette.get(MonoUtil.COLOR_KEYBOARD_WHITE));
-        }
+    public void drawKeyboard(MonoMemory memory) {
+        keyboardControls.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_KEY));
+//        MonoStep step = memory.currentStep();
+//        GridControl control = controls.get(step.getOctaveNote());
+//        control.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
     }
 
 
@@ -74,17 +92,13 @@ public class MonoDisplay {
         if (step.isSelected() && step.isEnabled()) {
             display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
         }
-        // display the selected step's note on the keyboard
-        if (step.isSelected() && step.isEnabled()) {
-            display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
-        }
 
 
         Color stepColor = palette.get(MonoUtil.COLOR_STEP_OFF);
         if (highlight) {
             stepColor = palette.get(MonoUtil.COLOR_STEP_HIGHLIGHT);
             if (highlight && step.isEnabled()) {
-                display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+//                display.setPad(GridPad.at(keyX, keyY), palette.get(MonoUtil.COLOR_KEYBOARD_HIGHLIGHT));
             }
         } else if (step.isEnabled()) {
             switch (step.getGate()) {
@@ -103,18 +117,23 @@ public class MonoDisplay {
 
     }
 
-    public void drawModes(MonoUtil.StepEditState currentMode) {
+    public void drawStepEdits(MonoUtil.StepEditState currentState) {
 
-        for (MonoUtil.StepEditState mode : MonoUtil.StepEditState.values()) {
-            GridButton button = MonoUtil.modeButtonMap.get(mode);
-            if (button != null) {
-                Color color = palette.get(COLOR_MODE_INACTIVE);
-                if (mode == currentMode) {
-                    color = palette.get(MonoUtil.COLOR_MODE_ACTIVE);
-                }
-                display.setButton(button, color);
+        // some of the step edit controls are step edit mode buttons
+        MonoUtil.StepEditState[] states = MonoUtil.StepEditState.values();
+        for (int i = 0; i < states.length; i++) {
+            GridControl control = stepEditControls.get(i);
+            StepEditState state = states[i];
+            Color color = palette.get(COLOR_MODE_INACTIVE);
+            if (state == currentState) {
+                color = palette.get(MonoUtil.COLOR_MODE_ACTIVE);
             }
+            control.draw(display, color);
         }
+
+        // and there's some other stuff
+        stepEditControls.get(MonoUtil.STEP_CONTROL_SHIFT_LEFT_INDEX).draw(display, palette.get(COLOR_MODE_INACTIVE));
+        stepEditControls.get(MonoUtil.STEP_CONTROL_SHIFT_RIGHT_INDEX).draw(display, palette.get(COLOR_MODE_INACTIVE));
 
     }
 
@@ -124,7 +143,7 @@ public class MonoDisplay {
         }
     }
 
-    public void drawFunctions(GridControlSet functionControls) {
+    public void drawFunctions() {
         functionControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
     }
 

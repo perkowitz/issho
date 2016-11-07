@@ -10,8 +10,9 @@ public class MonoSession {
     private static int PATTERN_COUNT = 16;
 
     @Getter private int index;
-    private MonoPattern[] patterns = new MonoPattern[PATTERN_COUNT];
+    @Getter private MonoPattern[] patterns = new MonoPattern[PATTERN_COUNT];
 
+    public MonoSession() {}
 
     public MonoSession(int index) {
         this.index = index;
