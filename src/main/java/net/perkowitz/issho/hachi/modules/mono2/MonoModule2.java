@@ -39,13 +39,6 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     private int currentStepIndex = 0;
     private MonoDisplay monoDisplay;
 
-    private GridControlSet patternControls = GridControlSet.padRows(MonoUtil.PATTERN_MIN_ROW, MonoUtil.PATTERN_MAX_ROW);
-    private GridControlSet stepControls = GridControlSet.padRows(MonoUtil.STEP_MIN_ROW, MonoUtil.STEP_MAX_ROW);
-    private GridControlSet keyboardControls = new GridControlSet(MonoUtil.keyboardControls);
-    private GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 8);
-    private GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
-    private GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, 0, 1);
-
     private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
 
     private Set<Integer> onNotes = Sets.newHashSet();
@@ -61,7 +54,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     public MonoModule2(Transmitter inputTransmitter, Receiver outputReceiver) {
         super(inputTransmitter, outputReceiver);
-        this.monoDisplay = new MonoDisplay(this.display, patternControls, stepControls, keyboardControls, stepEditControls, valueControls, functionControls);
+        this.monoDisplay = new MonoDisplay(this.display);
         startTimer();
         load("monomodule-0.json");
     }
@@ -77,7 +70,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
         }
 
         MonoStep step = memory.currentPattern().getStep(currentStepIndex);
-//        monoDisplay.drawKeyboard(memory, keyboardControls);
+//        monoDisplay.drawKeyboard(memory, keyboardList);
 
         if (!step.isEnabled() || step.getGate() == MonoUtil.Gate.REST) {
             notesOff();
@@ -98,7 +91,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     private void displayValue(int value, int maxValue) {
         int valueAsEight = (value * 8) / maxValue;
         for (int index = 0; index < 8; index++) {
-            GridControl control = valueControls.get(index);
+            GridControl control = MonoUtil.valueControls.get(index);
             if (index <= valueAsEight) {
                 control.draw(display, palette.get(MonoUtil.COLOR_VALUE_ON));
             } else {
@@ -231,9 +224,9 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     private void onControlPressed(GridControl control, int velocity) {
 
-        if (patternControls.contains(control)) {
+        if (MonoUtil.patternControls.contains(control)) {
 
-        } else if (stepControls.contains(control)) {
+        } else if (MonoUtil.stepControls.contains(control)) {
 
             // unselect the current selected step and redraw it
             MonoStep step = memory.currentStep();
@@ -241,7 +234,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
             monoDisplay.drawStep(step);
 
             // find the control's index and get the corresponding step
-            GridControl selectedControl = stepControls.get(control);
+            GridControl selectedControl = MonoUtil.stepControls.get(control);
             Integer index = selectedControl.getIndex();   // todo null check
             memory.selectStep(index);
             step = memory.currentStep();
@@ -249,26 +242,16 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
             monoDisplay.drawSteps(memory.currentPattern().getSteps());
 
             // highlight the step's note in the keyboard
-            keyboardControls.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_KEY)); // or just redraw the current key?
+            MonoUtil.keyboardControls.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_KEY)); // or just redraw the current key?
             int note = step.getOctaveNote();
-            GridControl keyControl = keyboardControls.get(note);
+            GridControl keyControl = MonoUtil.keyboardControls.get(note);
 //            keyControl.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_HIGHLIGHT));
 
             // what to update based on current step edit state
             switch (memory.getStepEditState()) {
-                case MUTE:
-                    memory.setValueState(STEP_OCTAVE);
-                    displayValue(step.getOctave() - MonoUtil.LOWEST_OCTAVE, MAX_OCTAVE); // todo need to scale by MonoUtil.LOWEST_OCTAVE
-                    step.toggleEnabled();
-                    monoDisplay.drawStep(step);
-                    break;
                 case NOTE:
                     memory.setValueState(STEP_OCTAVE);
                     displayValue(step.getOctave() - MonoUtil.LOWEST_OCTAVE, MAX_OCTAVE);
-                    break;
-                case VELOCITY:
-                    memory.setValueState(MonoUtil.ValueState.VELOCITY);
-                    displayValue(step.getVelocity(), MAX_VELOCITY);
                     break;
                 case GATE:
                     memory.setValueState(MonoUtil.ValueState.NONE);
@@ -281,15 +264,19 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                         step.setGate(MonoUtil.Gate.PLAY);
                     }
                     break;
-                case PLAY:
-                    memory.setValueState(MonoUtil.ValueState.KEYBOARD_OCTAVE);
-                    displayValue(memory.getKeyboardOctave() - MonoUtil.LOWEST_OCTAVE, MAX_OCTAVE);
-                    break;
+//                case VELOCITY:
+//                    memory.setValueState(MonoUtil.ValueState.VELOCITY);
+//                    displayValue(step.getVelocity(), MAX_VELOCITY);
+//                    break;
+//                case PLAY:
+//                    memory.setValueState(MonoUtil.ValueState.KEYBOARD_OCTAVE);
+//                    displayValue(memory.getKeyboardOctave() - MonoUtil.LOWEST_OCTAVE, MAX_OCTAVE);
+//                    break;
 
             }
             monoDisplay.drawSteps(memory.currentPattern().getSteps());
 
-        } else if (keyboardControls.contains(control)) {
+        } else if (MonoUtil.keyboardControls.contains(control)) {
 
             // get current note index
             int currentOctaveNote = 0; // todo ???
@@ -297,29 +284,28 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
             monoDisplay.drawKeyboard(memory);
 
             // find the control's index, get the current step
-            GridControl selectedControl = keyboardControls.get(control);
+            GridControl selectedControl = MonoUtil.keyboardControls.get(control);
             Integer index = selectedControl.getIndex();
             MonoStep step = memory.currentStep();
 
             switch (memory.getStepEditState()) {
                 case NOTE:
-                case MUTE:
-                case VELOCITY:
-                    step.setOctaveNote(index);
-                    selectedControl.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
-                    // todo redraw the old key
-                    break;
-                case PLAY:
-                    int note = memory.getKeyboardOctave() * 12 + index;
-                    sendMidiNote(midiChannel, note, velocity);
-                    break;
+//                case MUTE:
+//                case VELOCITY:
+//                    step.setOctaveNote(index);
+//                    selectedControl.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+//                    // todo redraw the old key
+//                    break;
+//                case PLAY:
+//                    int note = memory.getKeyboardOctave() * 12 + index;
+//                    sendMidiNote(midiChannel, note, velocity);
+//                    break;
             }
 
-        } else if (stepEditControls.contains(control)) {
+        } else if (MonoUtil.stepEditControls.contains(control)) {
 
             // find the control's index, get the current step
-            GridControl selectedControl = stepEditControls.get(control);
-            Integer index = selectedControl.getIndex();
+            Integer index = MonoUtil.stepEditControls.getIndex(control);
             if (index != null) {
                 MonoUtil.StepEditState[] states = MonoUtil.StepEditState.values();
                 if (index >= 0 && index < states.length) {
@@ -334,11 +320,11 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
             }
             monoDisplay.drawStepEdits(memory.getStepEditState());
 
-        } else if (valueControls.contains(control)) {
+        } else if (MonoUtil.valueControls.contains(control)) {
 
             MonoStep step = memory.currentStep();
             if (step != null) {
-                Integer index = valueControls.getIndex(control);
+                Integer index = MonoUtil.valueControls.getIndex(control);
                 displayValue(index, 7);
                 switch (memory.getValueState()) {
                     case STEP_OCTAVE:
@@ -355,10 +341,10 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                 }
             }
 
-        } else if (functionControls.contains(control)) {
+        } else if (MonoUtil.functionControls.contains(control)) {
 
             // find the control's index, get the current step
-            Integer index = functionControls.getIndex(control);
+            Integer index = MonoUtil.functionControls.getIndex(control);
             if (index != null) {
                 MonoUtil.Function[] functions = MonoUtil.Function.values();
                 MonoUtil.Function function = functions[index];

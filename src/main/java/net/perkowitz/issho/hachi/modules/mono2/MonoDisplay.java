@@ -19,30 +19,8 @@ public class MonoDisplay {
     @Setter private GridDisplay display;
     private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
 
-    private GridControlSet patternControls;
-    private GridControlSet stepControls;
-    private GridControlSet keyboardControls;
-    private GridControlSet stepEditControls;
-    private GridControlSet valueControls;
-    private GridControlSet functionControls;
-
-
-    public MonoDisplay(
-            GridDisplay display,
-            GridControlSet patternControls,
-            GridControlSet stepControls,
-            GridControlSet keyboardControls,
-            GridControlSet stepEditControls,
-            GridControlSet valueControls,
-            GridControlSet functionControls
-            ) {
+    public MonoDisplay(GridDisplay display) {
         this.display = display;
-        this.patternControls = patternControls;
-        this.stepControls = stepControls;
-        this.keyboardControls = keyboardControls;
-        this.stepEditControls = stepEditControls;
-        this.valueControls = valueControls;
-        this.functionControls = functionControls;
     }
 
     public void redraw(MonoMemory memory) {
