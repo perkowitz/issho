@@ -264,10 +264,10 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
                         step.setGate(MonoUtil.Gate.PLAY);
                     }
                     break;
-//                case VELOCITY:
-//                    memory.setValueState(MonoUtil.ValueState.VELOCITY);
-//                    displayValue(step.getVelocity(), MAX_VELOCITY);
-//                    break;
+                case VELOCITY:
+                    memory.setValueState(MonoUtil.ValueState.VELOCITY);
+                    displayValue(step.getVelocity(), MAX_VELOCITY);
+                    break;
 //                case PLAY:
 //                    memory.setValueState(MonoUtil.ValueState.KEYBOARD_OCTAVE);
 //                    displayValue(memory.getKeyboardOctave() - MonoUtil.LOWEST_OCTAVE, MAX_OCTAVE);

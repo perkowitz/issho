@@ -19,7 +19,7 @@ public class MonoUtil {
 
     public enum StepEditState {
         // in button layout order
-        NOTE, GATE
+        NOTE, GATE, VELOCITY
 //        MUTE, NOTE, VELOCITY, LENGTH, GATE, PLAY
     }
 
