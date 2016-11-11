@@ -22,7 +22,11 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static net.perkowitz.issho.devices.launchpadpro.LppRhythmUtil.PATTERNS_MIN_ROW;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_LOAD_INDEX;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SAVE_INDEX;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.ValueState.STEP_OCTAVE;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
 
 /**
  * Created by optic on 10/24/16.
@@ -49,6 +53,11 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private MonoStep lastStep = null;
 
+    private MonoUtil.View currentView = SEQUENCE;
+
+    private Set<Integer> patternsPressed = Sets.newHashSet();
+    private int patternsReleasedCount = 0;
+
 
     /***** Constructor ****************************************/
 
@@ -69,8 +78,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         }
 
         if (nextStepIndex == 0) {
-            if (memory.getPatternChainNextIndex() != memory.getCurrentPatternIndex()) {
-                memory.selectNextPattern();
+            int currentPatternIndex = memory.getCurrentPatternIndex();
+            memory.selectNextPattern();
+            if (currentPatternIndex != memory.getCurrentPatternIndex()) {
                 monoDisplay.drawPatterns(memory);
                 monoDisplay.drawSteps(memory.currentPattern().getSteps());
             }
@@ -185,7 +195,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     public void redraw() {
         monoDisplay.redraw(memory);
-        monoDisplay.drawFunctions();
+        monoDisplay.drawFunctions(currentView);
     }
 
     public void setDisplay(GridDisplay display) {
@@ -218,12 +228,11 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
     /***** GridListener interface ****************************************/
 
     public void onPadPressed(GridPad pad, int velocity) {
-//        System.out.printf("MonoModule: onPadPressed %s, %d\n", pad, velocity);
         onControlPressed(new GridControl(pad, null), velocity);
     }
 
     public void onPadReleased(GridPad pad) {
-//        System.out.printf("MonoModule: onPadReleased %s\n", pad);
+        onControlReleased(new GridControl(pad, null));
     }
 
     public void onButtonPressed(GridButton button, int velocity) {
@@ -231,7 +240,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     public void onButtonReleased(GridButton button) {
-
+        onControlReleased(new GridControl(button, null));
     }
 
     private void onControlPressed(GridControl control, int velocity) {
@@ -240,11 +249,10 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
             // find the control's index and get the corresponding pattern
             GridControl selectedControl = MonoUtil.patternControls.get(control);
-            Integer index = selectedControl.getIndex();   // todo null check
-            memory.selectPatternChain(index);
-            MonoPattern pattern = memory.currentPattern();
-//            monoDisplay.drawPattern(memory, pattern);
-            monoDisplay.drawPatterns(memory);
+            Integer index = selectedControl.getIndex();
+            if (index != null) {
+                patternsPressed.add(index);
+            }
 
         } else if (MonoUtil.stepControls.contains(control)) {
 
@@ -366,24 +374,52 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             // find the control's index, get the current step
             Integer index = MonoUtil.functionControls.getIndex(control);
             if (index != null) {
-                MonoUtil.Function[] functions = MonoUtil.Function.values();
-                MonoUtil.Function function = functions[index];
-                switch (function) {
-                    case SAVE:
-                        save("monomodule-0.json");
-                        break;
-                    case LOAD:
-                        load("monomodule-0.json");
-                        monoDisplay.redraw(memory);
-                        break;
+                if (index == FUNCTION_SAVE_INDEX) {
+                    save("monomodule-0.json");
+                } else if (index == FUNCTION_LOAD_INDEX) {
+                    load("monomodule-0.json");
+                    monoDisplay.redraw(memory);
                 }
-                monoDisplay.drawFunctions();
+                monoDisplay.drawFunctions(currentView);
             }
 
         }
 
     }
 
+    private void onControlReleased(GridControl control) {
+
+        if (MonoUtil.patternControls.contains(control)) {
+
+            // releasing a pattern pad
+            // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
+            patternsReleasedCount++;
+            if (patternsReleasedCount >= patternsPressed.size()) {
+                GridControl selectedControl = MonoUtil.patternControls.get(control);
+                Integer index = selectedControl.getIndex();
+                patternsPressed.add(index); // just to make sure
+                if (patternsPressed.size() == 1) {
+                    memory.selectPatternChain(index, index);
+                } else {
+                    int min = 100;
+                    int max = -1;
+                    for (Integer pattern : patternsPressed) {
+                        if (pattern < min) {
+                            min = pattern;
+                        }
+                        if (pattern > max) {
+                            max = pattern;
+                        }
+                    }
+                    memory.selectPatternChain(min, max);
+                }
+                patternsPressed.clear();
+                patternsReleasedCount = 0;
+                monoDisplay.drawPatterns(memory);
+            }
+
+        }
+    }
 
     /***** Clockable implementation ****************************************/
 
@@ -397,13 +433,8 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         notesOff();
     }
 
-    public void tick() {
-        advance(false);
+    public void tick(boolean andReset) {
+        advance(andReset);
     }
-
-
-
-
-
 
 }

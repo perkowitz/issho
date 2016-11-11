@@ -584,7 +584,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     public void stop() {
     }
 
-    public void tick() {
+    public void tick(boolean andReset) {
 //        if (playing && memory.isSet(Switch.INTERNAL_CLOCK_ENABLED)) {
 //            boolean andReset = false;
 //            if (totalStepCount % Track.getStepCount() == 0) {
@@ -592,10 +592,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 //            }
 //            advance(andReset);
 //        }
-        boolean andReset = false;
-        if (totalStepCount % Track.getStepCount() == 0) {
-            andReset = true;
-        }
         advance(andReset);
     }
 

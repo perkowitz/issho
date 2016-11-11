@@ -146,7 +146,7 @@ public class HachiController implements GridListener, Clockable {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (clockRunning) {
-                    tick();
+                    tick(tickCount % 16 == 0);
                     tickCount++;
                 }
             }
@@ -229,9 +229,9 @@ public class HachiController implements GridListener, Clockable {
         }
     }
 
-    public void tick() {
+    public void tick(boolean andReset) {
         for (Clockable clockable : clockables) {
-            clockable.tick();
+            clockable.tick(andReset);
         }
     }
 

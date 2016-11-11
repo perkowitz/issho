@@ -31,6 +31,10 @@ public class MonoUtil {
         STEP_OCTAVE, VELOCITY, KEYBOARD_OCTAVE, NONE
     }
 
+    public enum View {
+        SEQUENCE, SETTINGS
+    }
+
     /***** locations of various controls on the grid ************************/
     public static int PATTERN_MIN_ROW = 0;
     public static int PATTERN_MAX_ROW = 1;
@@ -78,16 +82,21 @@ public class MonoUtil {
 
 
     /***** control sets for each function group *****************************/
+
+    // indices for functions
+    public static int FUNCTION_SAVE_INDEX = 4;
+    public static int FUNCTION_LOAD_INDEX = 5;
+    public static int FUNCTION_SEQUENCE_INDEX = 6;
+    public static int FUNCTION_SETTINGS_INDEX = 7;
+
     public static GridControlSet patternControls = GridControlSet.padRows(MonoUtil.PATTERN_MIN_ROW, MonoUtil.PATTERN_MAX_ROW);
     public static GridControlSet stepControls = GridControlSet.padRows(MonoUtil.STEP_MIN_ROW, MonoUtil.STEP_MAX_ROW);
     public static GridControlSet keyboardControls = new GridControlSet(MonoUtil.keyboardList);
     public static GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 8);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
-    public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, 0, 1);
-
+    public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_SETTINGS_INDEX);
 
     /***** color palettes **********************************************************/
-    // display color functions
     public static Integer COLOR_STEP_OFF = 0;
     public static Integer COLOR_STEP_PLAY = 1;
     public static Integer COLOR_STEP_TIE = 2;

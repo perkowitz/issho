@@ -131,8 +131,12 @@ public class DrawingModule extends BasicModule implements Clockable {
     public void stop() {
     }
 
-    public void tick() {
-        selectFrame((memory.getCurrentFrameIndex() + 1) % 8);
+    public void tick(boolean andReset) {
+        int frameIndex = (memory.getCurrentFrameIndex() + 1) % 8;
+        if (andReset) {
+            frameIndex = 0;
+        }
+        selectFrame(frameIndex);
     }
 
 

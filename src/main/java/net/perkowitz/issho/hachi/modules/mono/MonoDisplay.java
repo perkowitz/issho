@@ -46,8 +46,8 @@ public class MonoDisplay {
             color = palette.get(COLOR_PATTERN_PLAYING);
         } else if (index == memory.getPatternChainNextIndex()) {
             color = palette.get(COLOR_PATTERN_CHAINED);
-//        } else if (index >= memory.getPatternChainMin() && index <= memory.getPatternChainMax()) {
-//            color = palette.get(COLOR_PATTERN_CHAINED);
+        } else if (index >= memory.getPatternChainMin() && index <= memory.getPatternChainMax()) {
+            color = palette.get(COLOR_PATTERN_CHAINED);
         }
 
         control.draw(display, color);
@@ -145,8 +145,16 @@ public class MonoDisplay {
         }
     }
 
-    public void drawFunctions() {
-        functionControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
+    public void drawFunctions(View currentView) {
+        for (GridControl control : functionControls.getControls()) {
+            Color color = palette.get(COLOR_MODE_INACTIVE);
+            if (control.getIndex() == FUNCTION_SEQUENCE_INDEX && currentView == View.SEQUENCE) {
+                color = palette.get(COLOR_MODE_ACTIVE);
+            } else if (control.getIndex() == FUNCTION_SETTINGS_INDEX && currentView == View.SETTINGS) {
+                color = palette.get(COLOR_MODE_ACTIVE);
+            }
+            control.draw(display, color);
+        }
     }
 
 

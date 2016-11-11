@@ -68,13 +68,17 @@ public class MonoMemory {
 
     public void selectNextPattern() {
         currentPatternIndex = patternChainNextIndex;
-        // select next pattern
-        // if chain, increment next
+        patternChainNextIndex++;
+        if (patternChainNextIndex > patternChainMax) {
+            patternChainNextIndex = patternChainMin;
+        }
     }
 
     // TODO make this multiple
-    public void selectPatternChain(int index) {
-        patternChainNextIndex = index;
+    public void selectPatternChain(int minIndex, int maxIndex) {
+        patternChainNextIndex = minIndex;
+        patternChainMin = minIndex;
+        patternChainMax = maxIndex;
 
     }
 
