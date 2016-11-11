@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.StepEditState.NOTE;
-import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.StepEditState.VELOCITY;
 
 /**
  * Created by optic on 10/24/16.
@@ -18,6 +17,12 @@ public class MonoMemory {
     @Getter private int currentPatternIndex = 0;
     @Getter private int currentStepIndex = 0;
     @Getter @Setter private int keyboardOctave;
+
+    @Getter private int playingPatternIndex;// the currently playing pattern (which might not be in the chain, if a new one has been selected)
+    @Getter private int patternChainMin;    // the index of the first of the playing pattern chain
+    @Getter private int patternChainMax;    // the index of the last of the pattern chain
+    @Getter private int patternChainNextIndex;  // the index of the NEXT pattern to play
+
 
     @Getter @Setter MonoUtil.StepEditState stepEditState = NOTE;
     @Getter @Setter MonoUtil.ValueState valueState = MonoUtil.ValueState.VELOCITY;
@@ -60,5 +65,18 @@ public class MonoMemory {
         currentStepIndex = index;
         currentStep().setSelected(true);
     }
+
+    public void selectNextPattern() {
+        currentPatternIndex = patternChainNextIndex;
+        // select next pattern
+        // if chain, increment next
+    }
+
+    // TODO make this multiple
+    public void selectPatternChain(int index) {
+        patternChainNextIndex = index;
+
+    }
+
 
 }

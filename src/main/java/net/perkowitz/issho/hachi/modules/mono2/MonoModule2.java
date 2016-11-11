@@ -36,7 +36,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     private int midiChannel = 0;
     private MonoMemory memory = new MonoMemory();
-    private int currentStepIndex = 0;
+    private int nextStepIndex = 0;
     private MonoDisplay monoDisplay;
 
     private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
@@ -62,14 +62,26 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     /***** private implementation ****************************************/
 
-    private void advance() {
+    private void advance(boolean andReset) {
+
+        if (andReset) {
+            nextStepIndex = 0;
+        }
+
+        if (nextStepIndex == 0) {
+            if (memory.getPatternChainNextIndex() != memory.getCurrentPatternIndex()) {
+                memory.selectNextPattern();
+                monoDisplay.drawPatterns(memory);
+                monoDisplay.drawSteps(memory.currentPattern().getSteps());
+            }
+        }
 
         if (lastStep != null) {
             monoDisplay.drawStep(lastStep);
             lastStep = null;
         }
 
-        MonoStep step = memory.currentPattern().getStep(currentStepIndex);
+        MonoStep step = memory.currentPattern().getStep(nextStepIndex);
 //        monoDisplay.drawKeyboard(memory, keyboardList);
 
         if (!step.isEnabled() || step.getGate() == MonoUtil.Gate.REST) {
@@ -85,7 +97,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
         lastStep = step;
 
         // get new note
-        currentStepIndex = (currentStepIndex + 1) % MonoPattern.STEP_COUNT;
+        nextStepIndex = (nextStepIndex + 1) % MonoPattern.STEP_COUNT;
     }
 
     private void displayValue(int value, int maxValue) {
@@ -225,6 +237,14 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     private void onControlPressed(GridControl control, int velocity) {
 
         if (MonoUtil.patternControls.contains(control)) {
+
+            // find the control's index and get the corresponding pattern
+            GridControl selectedControl = MonoUtil.patternControls.get(control);
+            Integer index = selectedControl.getIndex();   // todo null check
+            memory.selectPatternChain(index);
+            MonoPattern pattern = memory.currentPattern();
+//            monoDisplay.drawPattern(memory, pattern);
+            monoDisplay.drawPatterns(memory);
 
         } else if (MonoUtil.stepControls.contains(control)) {
 
@@ -369,7 +389,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     public void start(boolean restart) {
         if (restart) {
-            currentStepIndex = 0;
+            nextStepIndex = 0;
         }
     }
 
@@ -378,7 +398,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
     }
 
     public void tick() {
-        advance();
+        advance(false);
     }
 
 

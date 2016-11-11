@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.Gate.PLAY;
+import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.Gate.REST;
 
 /**
  * Created by optic on 10/24/16.
@@ -12,7 +13,7 @@ public class MonoStep {
 
     private static int DEFAULT_NOTE = 60;
     private static int DEFAULT_VELOCITY = 100;
-    private static MonoUtil.Gate DEFAULT_GATE = PLAY;
+    private static MonoUtil.Gate DEFAULT_GATE = REST;
 
     @Getter @Setter private int index;
 

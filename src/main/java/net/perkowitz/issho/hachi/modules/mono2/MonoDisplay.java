@@ -2,6 +2,7 @@ package net.perkowitz.issho.hachi.modules.mono2;
 
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
+import net.perkowitz.issho.devices.GridColor;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
@@ -24,9 +25,33 @@ public class MonoDisplay {
     }
 
     public void redraw(MonoMemory memory) {
+        drawPatterns(memory);
         drawKeyboard(memory);
         drawSteps(memory.currentPattern().getSteps());
         drawStepEdits(memory.getStepEditState());
+    }
+
+    public void drawPatterns(MonoMemory memory) {
+        MonoPattern[] patterns = memory.currentSession().getPatterns();
+        for (int i = 0; i < patterns.length; i++) {
+            drawPattern(memory, patterns[i]);
+        }
+    }
+
+    public void drawPattern(MonoMemory memory, MonoPattern pattern) {
+
+        int index = pattern.getIndex();
+        GridControl control = patternControls.get(index);
+        Color color = palette.get(COLOR_PATTERN);
+        if (memory.getCurrentPatternIndex() == index) {
+            color = palette.get(COLOR_PATTERN_PLAYING);
+        } else if (index == memory.getPatternChainNextIndex()) {
+            color = palette.get(COLOR_PATTERN_CHAINED);
+//        } else if (index >= memory.getPatternChainMin() && index <= memory.getPatternChainMax()) {
+//            color = palette.get(COLOR_PATTERN_CHAINED);
+        }
+
+        control.draw(display, color);
     }
 
     public void drawKeyboard(MonoMemory memory) {

@@ -100,13 +100,19 @@ public class MonoUtil {
     public static Integer COLOR_MODE_ACTIVE = 9;
     public static Integer COLOR_VALUE_OFF = 10;
     public static Integer COLOR_VALUE_ON = 11;
+    public static Integer COLOR_PATTERN = 12;
+    public static Integer COLOR_PATTERN_SELECTED = 13;
+    public static Integer COLOR_PATTERN_PLAYING = 14;
+    public static Integer COLOR_PATTERN_CHAINED = 15;
+    public static Integer COLOR_PATTERN_SELECTED_PLAYING = 16;
 
     public static List<Color> PALETTE_FUCHSIA = Lists.newArrayList(
-            // 52-55 purple-pinks, 12-15 yellows
+            // 52-55 purple-pinks, 12-15 yellows, 40-43 blues
             Color.OFF, Color.fromIndex(53), Color.fromIndex(55), Color.OFF, Color.fromIndex(13),   // step
             Color.DARK_GRAY, Color.fromIndex(13), Color.WHITE,             // keyboard
             Color.DARK_GRAY, Color.fromIndex(55),             // gate
-            Color.OFF, Color.fromIndex(55)                    // value
+            Color.OFF, Color.fromIndex(55),                    // value
+            Color.fromIndex(43), Color.WHITE, Color.fromIndex(40), Color.DARK_GRAY, Color.WHITE     // pattern
     );
 
 
