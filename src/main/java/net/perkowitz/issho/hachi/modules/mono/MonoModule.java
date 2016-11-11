@@ -1,4 +1,4 @@
-package net.perkowitz.issho.hachi.modules.mono2;
+package net.perkowitz.issho.hachi.modules.mono;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
@@ -22,12 +22,12 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.ValueState.STEP_OCTAVE;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.ValueState.STEP_OCTAVE;
 
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoModule2 extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable {
+public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable {
 
     private static int MAX_VELOCITY = 127;
     private static int MAX_OCTAVE = 7;
@@ -52,7 +52,7 @@ public class MonoModule2 extends MidiModule implements Module, Clockable, GridLi
 
     /***** Constructor ****************************************/
 
-    public MonoModule2(Transmitter inputTransmitter, Receiver outputReceiver) {
+    public MonoModule(Transmitter inputTransmitter, Receiver outputReceiver) {
         super(inputTransmitter, outputReceiver);
         this.monoDisplay = new MonoDisplay(this.display);
         startTimer();

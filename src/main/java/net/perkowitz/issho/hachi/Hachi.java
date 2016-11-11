@@ -1,11 +1,9 @@
 package net.perkowitz.issho.hachi;
 
-import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.mono.MonoModule;
-import net.perkowitz.issho.hachi.modules.mono2.MonoModule2;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
@@ -18,8 +16,6 @@ import javax.sound.midi.Transmitter;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
-
-import static net.perkowitz.issho.devices.GridButton.Side.Top;
 
 /**
  * Created by optic on 9/19/16.
@@ -87,7 +83,7 @@ public class Hachi {
         modules[2] = new DrawingModule();
         modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_RED);
 //        modules[3] = new DrawingModule();
-        modules[4] = new MonoModule2(midiTransmitter, midiReceiver);
+        modules[4] = new MonoModule(midiTransmitter, midiReceiver);
 //        modules[4] = new KeyboardModule(midiTransmitter, midiReceiver, 10, 36);
 
         System.out.println("Creating modules...");

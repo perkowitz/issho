@@ -1,10 +1,9 @@
-package net.perkowitz.issho.hachi.modules.mono2;
+package net.perkowitz.issho.hachi.modules.mono;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.Gate.PLAY;
-import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.Gate.REST;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.REST;
 
 /**
  * Created by optic on 10/24/16.

@@ -1,9 +1,9 @@
-package net.perkowitz.issho.hachi.modules.mono2;
+package net.perkowitz.issho.hachi.modules.mono;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.StepEditState.NOTE;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepEditState.NOTE;
 
 /**
  * Created by optic on 10/24/16.

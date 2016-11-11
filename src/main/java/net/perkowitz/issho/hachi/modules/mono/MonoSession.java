@@ -1,4 +1,4 @@
-package net.perkowitz.issho.hachi.modules.mono2;
+package net.perkowitz.issho.hachi.modules.mono;
 
 import lombok.Getter;
 

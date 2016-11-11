@@ -1,15 +1,14 @@
-package net.perkowitz.issho.hachi.modules.mono2;
+package net.perkowitz.issho.hachi.modules.mono;
 
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridColor;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;
 
-import static net.perkowitz.issho.hachi.modules.mono2.MonoUtil.*;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.*;
 
 
 /**
