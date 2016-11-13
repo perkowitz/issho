@@ -75,7 +75,7 @@ public class HachiController implements GridListener, Clockable {
         System.out.printf("Displaying logo...\n");
         Graphics.setPads(display, Graphics.issho, Color.OFF);
         Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
-        selectModule(4);
+        selectModule(0);
 
         System.out.printf("Starting timer...\n");
         startTimer();
@@ -219,6 +219,7 @@ public class HachiController implements GridListener, Clockable {
 
     public void start(boolean restart) {
         for (Clockable clockable : clockables) {
+            tickCount = 0;
             clockable.start(restart);
         }
     }
@@ -226,6 +227,7 @@ public class HachiController implements GridListener, Clockable {
     public void stop() {
         for (Clockable clockable : clockables) {
             clockable.stop();
+            tickCount = 0;
         }
     }
 

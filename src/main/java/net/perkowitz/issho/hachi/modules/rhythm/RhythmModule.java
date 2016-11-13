@@ -577,6 +577,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
         if (restart) {
             totalStepCount = 0;
             totalMeasureCount = 0;
+            nextStepIndex = 0;
             memory.resetPatternChainIndex();
         }
     }

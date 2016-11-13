@@ -45,8 +45,6 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
     private int nextStepIndex = 0;
     private MonoDisplay monoDisplay;
 
-    private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
-
     private Set<Integer> onNotes = Sets.newHashSet();
 
     private static Timer timer = null;
@@ -66,9 +64,10 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     /***** Constructor ****************************************/
 
-    public MonoModule(Transmitter inputTransmitter, Receiver outputReceiver) {
+    public MonoModule(Transmitter inputTransmitter, Receiver outputReceiver, List<Color> palette) {
         super(inputTransmitter, outputReceiver);
-        this.monoDisplay = new MonoDisplay(this.display);
+        monoDisplay = new MonoDisplay(this.display);
+        monoDisplay.setPalette(palette);
         startTimer();
         load("monomodule-0.json");
     }
@@ -128,9 +127,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         for (int index = 0; index < 8; index++) {
             GridControl control = MonoUtil.valueControls.get(index);
             if (index <= valueAsEight) {
-                control.draw(display, palette.get(MonoUtil.COLOR_VALUE_ON));
+                control.draw(display, monoDisplay.getPalette().get(MonoUtil.COLOR_VALUE_ON));
             } else {
-                control.draw(display, palette.get(MonoUtil.COLOR_VALUE_OFF));
+                control.draw(display, monoDisplay.getPalette().get(MonoUtil.COLOR_VALUE_OFF));
             }
         }
     }
@@ -288,7 +287,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             monoDisplay.drawSteps(memory.currentPattern().getSteps());
 
             // highlight the step's note in the keyboard
-            MonoUtil.keyboardControls.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_KEY)); // or just redraw the current key?
+            MonoUtil.keyboardControls.draw(display, monoDisplay.getPalette().get(MonoUtil.COLOR_KEYBOARD_KEY)); // or just redraw the current key?
             int note = step.getOctaveNote();
             GridControl keyControl = MonoUtil.keyboardControls.get(note);
 //            keyControl.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_HIGHLIGHT));

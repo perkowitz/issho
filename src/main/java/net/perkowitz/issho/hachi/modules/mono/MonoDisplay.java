@@ -18,7 +18,7 @@ import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.*;
 public class MonoDisplay {
 
     @Setter private GridDisplay display;
-    private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
+    @Getter @Setter private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
     @Getter @Setter private boolean settingsMode = false;
     @Getter @Setter private int currentFileIndex = 0;
 

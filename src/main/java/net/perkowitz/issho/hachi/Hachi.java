@@ -4,6 +4,7 @@ import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.mono.MonoModule;
+import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
@@ -76,14 +77,15 @@ public class Hachi {
 //            gridDisplay = new Console();
         }
 
-        Module[] modules = new Module[5];
+        Module[] modules = new Module[6];
         modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);
         modules[1] = new PaletteModule(false);
 //        modules[2] = new ClockModule();
         modules[2] = new DrawingModule();
-        modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_RED);
+        modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_BLUE);
 //        modules[3] = new DrawingModule();
-        modules[4] = new MonoModule(midiTransmitter, midiReceiver);
+        modules[4] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_FUCHSIA);
+        modules[5] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_ORANGE);
 //        modules[4] = new KeyboardModule(midiTransmitter, midiReceiver, 10, 36);
 
         System.out.println("Creating modules...");

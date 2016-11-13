@@ -22,7 +22,7 @@ public class LppRhythmUtil {
     public static int SESSIONS_MAX_ROW = 1;
     public static int LOAD_ROW = 2;
     public static int SAVE_ROW = 3;
-    public static int SWITCHES_ROW = 7;
+    public static int SWITCHES_ROW = 5;
 
     // sequence module
     public static int PATTERNS_MIN_ROW = 0;

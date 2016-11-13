@@ -149,6 +149,18 @@ public class MonoUtil {
             Color.fromIndex(55), Color.WHITE                                                        // midi channel
     );
 
+    public static List<Color> PALETTE_ORANGE = Lists.newArrayList(
+            // 8-11 oranges, 36-39 blues
+            Color.OFF, Color.fromIndex(9), Color.fromIndex(11), Color.OFF, Color.fromIndex(16),    // step
+            Color.DARK_GRAY, Color.fromIndex(17), Color.WHITE,                                      // keyboard
+            Color.DARK_GRAY, Color.fromIndex(11),                                                   // gate
+            Color.OFF, Color.fromIndex(11),                                                         // value
+            Color.fromIndex(19), Color.WHITE, Color.fromIndex(16), Color.DARK_GRAY, Color.WHITE,    // pattern
+            Color.fromIndex(10), Color.WHITE, Color.DARK_GRAY,                                      // session
+            Color.DIM_GREEN, Color.DIM_RED, Color.WHITE,                                            // file
+            Color.fromIndex(10), Color.WHITE                                                        // midi channel
+    );
+
 
 
 
