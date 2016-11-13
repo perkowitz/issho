@@ -64,12 +64,13 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     /***** Constructor ****************************************/
 
-    public MonoModule(Transmitter inputTransmitter, Receiver outputReceiver, List<Color> palette) {
+    public MonoModule(Transmitter inputTransmitter, Receiver outputReceiver, List<Color> palette, String filePrefix) {
         super(inputTransmitter, outputReceiver);
         monoDisplay = new MonoDisplay(this.display);
         monoDisplay.setPalette(palette);
+        this.filePrefix = filePrefix;
         startTimer();
-        load("monomodule-0.json");
+        load(0);
     }
 
 
@@ -392,9 +393,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             Integer index = MonoUtil.functionControls.getIndex(control);
             if (index != null) {
                 if (index == FUNCTION_SAVE_INDEX) {
-                    save("monomodule-0.json");
+                    save(currentFileIndex);
                 } else if (index == FUNCTION_LOAD_INDEX) {
-                    load("monomodule-0.json");
+                    load(currentFileIndex);
                     monoDisplay.redraw(memory);
                 } else if (index == FUNCTION_SETTINGS_INDEX) {
                     monoDisplay.toggleSettings();

@@ -1,0 +1,37 @@
+{
+  "filePrefix": "project1/",
+  "devices": {
+    "controller": {
+      "name": "Launchpad/Standalone",
+      "type": "launchpadpro"
+    },
+    "midi": {
+      "name": "Launchpad Pro/Midi Port"
+    }
+  },
+  "modules": [
+    {
+      "class": "LogoModule"
+    },
+    {
+      "class": "PaletteModule"
+    },
+    {
+      "class": "DrawingModule",
+      "filePrefix": "drawing"
+    },
+    {
+      "class": "RhythmModule",
+      "filePrefix": "rhythm1"
+    },
+    {
+      "class": "MonoModule",
+      "filePrefix": "mono1"
+    },
+    {
+      "class": "MonoModule",
+      "filePrefix": "mono2",
+      "palette": "orange"
+    }
+  ]
+}

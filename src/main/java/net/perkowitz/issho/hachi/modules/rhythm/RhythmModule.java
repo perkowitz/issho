@@ -34,7 +34,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     private static final int TEMPO_MAX = 132;
     private static final int FILL_PERCENT_MIN = 9;
     private static final int FILL_PERCENT_MAX = 113;
-    private static final String FILENAME_PREFIX = "sequencer-";
     private static final String FILENAME_SUFFIX = ".json";
 
 
@@ -47,6 +46,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     private Map<RhythmInterface.Mode, Boolean> modeIsActiveMap = Maps.newHashMap();
     private Map<RhythmDisplay.DisplayButton, RhythmDisplay.ButtonState> buttonStateMap = Maps.newHashMap();
+
+    private String filePrefix = "sequencer";
 
     private Memory memory;
     private int totalStepCount = 0;
@@ -71,7 +72,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     /***** constructor *********************************************************************/
 
-    public RhythmModule(RhythmController controller, RhythmDisplay rhythmDisplay, Transmitter inputTransmitter, Receiver outputReceiver) {
+    public RhythmModule(RhythmController controller, RhythmDisplay rhythmDisplay, Transmitter inputTransmitter, Receiver outputReceiver, String filePrefix) {
 
         // set up controller and rhythmDisplay
         this.controller = controller;
@@ -86,7 +87,9 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
         // where to send the sequencer's midi output
         this.outputReceiver = outputReceiver;
 
-        load(FILENAME_PREFIX + currentFileIndex + FILENAME_SUFFIX);
+        this.filePrefix = filePrefix;
+
+        load(this.filePrefix + "-" + currentFileIndex + FILENAME_SUFFIX);
 
         for (Mode mode : Mode.values()) {
             modeIsActiveMap.put(mode, false);
@@ -129,13 +132,13 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     }
 
     public void loadData(int index) {
-        load(FILENAME_PREFIX + index + FILENAME_SUFFIX);
+        load(filePrefix + "-" + index + FILENAME_SUFFIX);
         currentFileIndex = index;
         rhythmDisplay.displayFiles(currentFileIndex);
     }
 
     public void saveData(int index) {
-        save(FILENAME_PREFIX + index + FILENAME_SUFFIX);
+        save(filePrefix + "-" + index + FILENAME_SUFFIX);
         currentFileIndex = index;
         rhythmDisplay.displayFiles(currentFileIndex);
     }
@@ -346,7 +349,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
                 break;
 
             case SAVE:
-                save(FILENAME_PREFIX + currentFileIndex + FILENAME_SUFFIX);
+                save(filePrefix + "-" + currentFileIndex + FILENAME_SUFFIX);
                 break;
 
             case HELP:
