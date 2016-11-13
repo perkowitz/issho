@@ -1,4 +1,4 @@
-package net.perkowitz.issho.hachi.models;
+package net.perkowitz.issho.hachi.modules.rhythm.models;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

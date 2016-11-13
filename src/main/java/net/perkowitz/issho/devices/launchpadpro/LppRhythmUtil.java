@@ -22,7 +22,7 @@ public class LppRhythmUtil {
     public static int SESSIONS_MAX_ROW = 1;
     public static int LOAD_ROW = 2;
     public static int SAVE_ROW = 3;
-    public static int SWITCHES_ROW = 7;
+    public static int SWITCHES_ROW = 5;
 
     // sequence module
     public static int PATTERNS_MIN_ROW = 0;
@@ -90,7 +90,7 @@ public class LppRhythmUtil {
              Color.DIM_BLUE, Color.WHITE, Color.DIM_GREEN, Color.DARK_GRAY, Color.BRIGHT_GREEN,                 // pattern
              Color.DARK_BLUE, Color.BRIGHT_GREEN, Color.DARK_GRAY,                                              // session
              Color.DARK_GRAY, Color.BRIGHT_GREEN,                                                               // file
-             Color.LIGHT_BLUE, Color.DARK_BLUE,                                                                 // mode
+             Color.LIGHT_BLUE, Color.DARK_BLUE,                                                                 // gate
              Color.OFF                                                                                          // value
     );
 
@@ -100,7 +100,7 @@ public class LppRhythmUtil {
              Color.DIM_RED, Color.WHITE, Color.DIM_YELLOW, Color.DARK_GRAY, Color.BRIGHT_YELLOW,                // pattern
              Color.DIM_RED, Color.BRIGHT_YELLOW, Color.DARK_GRAY,                                               // session
              Color.DARK_GRAY, Color.BRIGHT_YELLOW,                                                              // file
-             Color.BRIGHT_RED, Color.DARK_GRAY,                                                                 // mode
+             Color.BRIGHT_RED, Color.DARK_GRAY,                                                                 // gate
              Color.OFF                                                                                          // value
     );
 

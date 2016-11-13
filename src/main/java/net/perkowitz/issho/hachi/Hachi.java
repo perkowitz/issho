@@ -3,6 +3,8 @@ package net.perkowitz.issho.hachi;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.mono.MonoModule;
+import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
@@ -75,36 +77,25 @@ public class Hachi {
 //            gridDisplay = new Console();
         }
 
-        Module[] modules = new Module[4];
+        Module[] modules = new Module[6];
         modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);
         modules[1] = new PaletteModule(false);
 //        modules[2] = new ClockModule();
         modules[2] = new DrawingModule();
-        modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_RED);
+        modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_BLUE);
+//        modules[3] = new DrawingModule();
+        modules[4] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_FUCHSIA);
+        modules[5] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_ORANGE);
+//        modules[4] = new KeyboardModule(midiTransmitter, midiReceiver, 10, 36);
 
         System.out.println("Creating modules...");
         controller = new HachiController(modules, gridDisplay);
         launchpadPro.setListener(controller);
 
-//        // send each module a random pad press
-//        for (int index = 0; index < modules.length; index++) {
-//            System.out.printf("Selecting module %d: ", index);
-//            System.in.read();
-//            controller.onButtonPressed(Button.at(Top, index), 64);
-//
-//            int x = (int)(Math.random() * 8);
-//            int y = (int)(Math.random() * 8);
-//            int v = (int)(Math.random() * 127 + 1);
-//            Pad pad = Pad.at(x, y);
-//            System.out.printf("Pressing pad %s, v=%d: ", pad, v);
-//            System.in.read();
-//            controller.onPadPressed(pad, v);
-//
-//            System.out.println();
-//        }
-
+        System.out.printf("Running controller...\n");
         controller.run();
 
+        System.out.printf("Awaiting...\n");
         stop.await();
 
     }

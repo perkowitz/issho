@@ -65,16 +65,19 @@ public class HachiController implements GridListener, Clockable {
     }
 
     public void run() {
+        System.out.printf("Controller run...\n");
         display.initialize();
         redraw();
         Graphics.setPads(display, Graphics.issho, Color.WHITE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {}
+        System.out.printf("Displaying logo...\n");
         Graphics.setPads(display, Graphics.issho, Color.OFF);
         Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
         selectModule(0);
 
+        System.out.printf("Starting timer...\n");
         startTimer();
 
     }
@@ -103,6 +106,9 @@ public class HachiController implements GridListener, Clockable {
     }
 
     private void shutdown() {
+        for (Module module : modules) {
+            module.shutdown();
+        }
         display.initialize();
         System.exit(0);
     }
@@ -140,7 +146,7 @@ public class HachiController implements GridListener, Clockable {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (clockRunning) {
-                    tick();
+                    tick(tickCount % 16 == 0);
                     tickCount++;
                 }
             }
@@ -178,6 +184,9 @@ public class HachiController implements GridListener, Clockable {
                 start(true);
             } else {
                 stop();
+                for (Clockable clockable: clockables) {
+                    clockable.stop();
+                }
             }
             redraw();
 
@@ -210,6 +219,7 @@ public class HachiController implements GridListener, Clockable {
 
     public void start(boolean restart) {
         for (Clockable clockable : clockables) {
+            tickCount = 0;
             clockable.start(restart);
         }
     }
@@ -217,12 +227,13 @@ public class HachiController implements GridListener, Clockable {
     public void stop() {
         for (Clockable clockable : clockables) {
             clockable.stop();
+            tickCount = 0;
         }
     }
 
-    public void tick() {
+    public void tick(boolean andReset) {
         for (Clockable clockable : clockables) {
-            clockable.tick();
+            clockable.tick(andReset);
         }
     }
 

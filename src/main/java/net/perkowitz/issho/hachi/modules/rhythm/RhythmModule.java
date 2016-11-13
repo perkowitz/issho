@@ -6,7 +6,8 @@ import com.google.common.io.Files;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.hachi.Clockable;
-import net.perkowitz.issho.hachi.models.*;
+import net.perkowitz.issho.hachi.Sessionizeable;
+import net.perkowitz.issho.hachi.modules.rhythm.models.*;
 import net.perkowitz.issho.hachi.modules.Module;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -16,17 +17,15 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.FILL_PERCENT;
-import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.TEMPO;
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.VELOCITY;
 
 
 /**
  * Created by optic on 7/8/16.
  */
-public class RhythmModule implements Module, RhythmInterface, Clockable {
+public class RhythmModule implements Module, RhythmInterface, Clockable, Sessionizeable {
 
     public enum StepMode { MUTE, VELOCITY, JUMP, PLAY }
     private static final int VELOCITY_MIN = 0;
@@ -238,7 +237,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 //        System.out.printf("selectStep: %d, %s\n", index, stepMode);
         Step step = memory.selectedTrack().getStep(index);
         if (stepMode == StepMode.MUTE) {
-            // in mute mode, both mute/unmute and select that step
+            // in mute gate, both mute/unmute and select that step
             step.setOn(!step.isOn());
             memory.select(step);
             rhythmDisplay.displayStep(step);
@@ -282,7 +281,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 
     public void selectMode(Mode mode) {
 
-//        System.out.printf("selectMode: %s\n", mode);
+//        System.out.printf("selectMode: %s\n", gate);
         switch (mode) {
 
             case PATTERN_PLAY:
@@ -302,7 +301,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 
             case TRACK_EDIT:
                 if (trackSelectMode) {
-                    // if you press select mode a second time, it unselects the selected track (so no track is selected)
+                    // if you press select gate a second time, it unselects the selected track (so no track is selected)
                     memory.selectedTrack().setSelected(false);
                     rhythmDisplay.displayTrack(memory.selectedTrack());
 //                    rhythmDisplay.clearSteps();
@@ -399,10 +398,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 
     /***** Module implementation *********************************************************************/
 
-    public void open() {}
-
-    public void close() {}
-
     public GridListener getGridListener() {
         return controller;
     }
@@ -411,10 +406,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
         rhythmDisplay.setDisplay(display);
     }
 
-    public Memory getMemory() { return null; }
-    public void Save() {}
-    public void Load() {}
-
+    public void shutdown() {}
 
     /***** private implementation *********************************************************************/
 
@@ -585,6 +577,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
         if (restart) {
             totalStepCount = 0;
             totalMeasureCount = 0;
+            nextStepIndex = 0;
             memory.resetPatternChainIndex();
         }
     }
@@ -592,7 +585,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
     public void stop() {
     }
 
-    public void tick() {
+    public void tick(boolean andReset) {
 //        if (playing && memory.isSet(Switch.INTERNAL_CLOCK_ENABLED)) {
 //            boolean andReset = false;
 //            if (totalStepCount % Track.getStepCount() == 0) {
@@ -600,10 +593,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable {
 //            }
 //            advance(andReset);
 //        }
-        boolean andReset = false;
-        if (totalStepCount % Track.getStepCount() == 0) {
-            andReset = true;
-        }
         advance(andReset);
     }
 

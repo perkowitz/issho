@@ -3,7 +3,7 @@ package net.perkowitz.issho.devices.launchpadpro;
 
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.hachi.models.*;
+import net.perkowitz.issho.hachi.modules.rhythm.models.*;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
 
@@ -90,7 +90,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
                 display.setPad(GridPad.at(x, y), stepColor);
             }
         }
-        // step mode buttons
+        // step gate buttons
         display.setPad(modePadMap.get(RhythmInterface.Mode.STEP_MUTE), stepColor);
         display.setPad(modePadMap.get(RhythmInterface.Mode.STEP_VELOCITY), stepColor);
         display.setPad(modePadMap.get(RhythmInterface.Mode.STEP_JUMP), stepColor);

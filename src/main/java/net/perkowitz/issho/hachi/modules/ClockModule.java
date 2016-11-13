@@ -79,7 +79,7 @@ public class ClockModule extends BasicModule implements Clockable {
     public void stop() {
     }
 
-    public void tick() {
+    public void tick(boolean andReset) {
         stepCount++;
         drawClock();
     }
