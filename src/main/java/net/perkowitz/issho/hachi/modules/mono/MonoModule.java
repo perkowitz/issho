@@ -9,9 +9,11 @@ import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Chordable;
 import net.perkowitz.issho.hachi.Clockable;
+import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.MidiModule;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.hachi.modules.rhythm.models.Memory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -25,20 +27,20 @@ import java.util.TimerTask;
 import static net.perkowitz.issho.devices.launchpadpro.LppRhythmUtil.PATTERNS_MIN_ROW;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_LOAD_INDEX;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SAVE_INDEX;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SETTINGS_INDEX;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.ValueState.STEP_OCTAVE;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
 
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable {
+public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable {
 
     private static int MAX_VELOCITY = 127;
     private static int MAX_OCTAVE = 7;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private int midiChannel = 0;
     private MonoMemory memory = new MonoMemory();
     private int nextStepIndex = 0;
     private MonoDisplay monoDisplay;
@@ -57,6 +59,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private int patternsReleasedCount = 0;
+
+    private String filePrefix = "monomodule";
+    private int currentFileIndex = 0;
 
 
     /***** Constructor ****************************************/
@@ -78,6 +83,14 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         }
 
         if (nextStepIndex == 0) {
+
+            int currentSessionIndex = memory.getCurrentSessionIndex();
+            Integer nextSessionIndex = memory.getNextSessionIndex();
+            if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
+                memory.setCurrentSessionIndex(nextSessionIndex);
+                monoDisplay.drawSessions(memory);
+            }
+
             int currentPatternIndex = memory.getCurrentPatternIndex();
             memory.selectNextPattern();
             if (currentPatternIndex != memory.getCurrentPatternIndex()) {
@@ -98,7 +111,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             notesOff();
         } else if (step.isEnabled() && step.getGate() == MonoUtil.Gate.PLAY) {
             notesOff();
-            sendMidiNote(midiChannel, step.getNote(), step.getVelocity());
+            sendMidiNote(memory.getMidiChannel(), step.getNote(), step.getVelocity());
             onNotes.add(step.getNote());
         } else if (step.isEnabled() && step.getGate() == MonoUtil.Gate.TIE) {
             // do nothing
@@ -124,7 +137,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private void notesOff() {
         for (Integer note : onNotes) {
-            sendMidiNote(midiChannel, note, 0);
+            sendMidiNote(memory.getMidiChannel(), note, 0);
 
         }
         onNotes.clear();
@@ -245,6 +258,11 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private void onControlPressed(GridControl control, int velocity) {
 
+        if (monoDisplay.isSettingsMode()) {
+            onControlPressedSettings(control, velocity);
+            return;
+        }
+
         if (MonoUtil.patternControls.contains(control)) {
 
             // find the control's index and get the corresponding pattern
@@ -326,7 +344,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 //                    break;
 //                case PLAY:
 //                    int note = memory.getKeyboardOctave() * 12 + index;
-//                    sendMidiNote(midiChannel, note, velocity);
+//                    sendMidiNote(memory.getMidiChannel(), note, velocity);
 //                    break;
             }
 
@@ -379,12 +397,57 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                 } else if (index == FUNCTION_LOAD_INDEX) {
                     load("monomodule-0.json");
                     monoDisplay.redraw(memory);
+                } else if (index == FUNCTION_SETTINGS_INDEX) {
+                    monoDisplay.toggleSettings();
+                    monoDisplay.initialize();
+                    monoDisplay.redraw(memory);
                 }
                 monoDisplay.drawFunctions(currentView);
             }
 
         }
 
+    }
+
+    private void onControlPressedSettings(GridControl control, int velocity) {
+
+        if (MonoUtil.sessionControls.contains(control)) {
+            Integer index = MonoUtil.sessionControls.getIndex(control);
+            memory.setNextSessionIndex(index);
+            monoDisplay.drawSessions(memory);
+
+        } else if (MonoUtil.loadControls.contains(control)) {
+            Integer index = MonoUtil.loadControls.getIndex(control);
+            currentFileIndex = index;
+            monoDisplay.setCurrentFileIndex(currentFileIndex);
+            load(currentFileIndex);
+            monoDisplay.redraw(memory);
+
+        } else if (MonoUtil.saveControls.contains(control)) {
+            Integer index = MonoUtil.saveControls.getIndex(control);
+            currentFileIndex = index;
+            monoDisplay.setCurrentFileIndex(currentFileIndex);
+            save(currentFileIndex);
+            monoDisplay.redraw(memory);
+
+        } else if (MonoUtil.midiChannelControls.contains(control)) {
+            Integer index = MonoUtil.midiChannelControls.getIndex(control);
+            notesOff();
+            memory.setMidiChannel(index);
+            monoDisplay.drawMidiChannel(memory);
+
+        } else if (MonoUtil.functionControls.contains(control)) {
+            Integer index = MonoUtil.functionControls.getIndex(control);
+            if (index != null) {
+                if (index == FUNCTION_SETTINGS_INDEX) {
+                    monoDisplay.toggleSettings();
+                    monoDisplay.initialize();
+                    monoDisplay.redraw(memory);
+                }
+                monoDisplay.drawFunctions(currentView);
+            }
+
+        }
     }
 
     private void onControlReleased(GridControl control) {
@@ -421,6 +484,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         }
     }
 
+
     /***** Clockable implementation ****************************************/
 
     public void start(boolean restart) {
@@ -436,5 +500,50 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
     public void tick(boolean andReset) {
         advance(andReset);
     }
+
+
+    /***** Saveable implementation ****************************************/
+
+    public void setFilePrefix(String filePrefix) {
+        this.filePrefix = filePrefix;
+    }
+
+    public String getFilePrefix() {
+        return filePrefix;
+    }
+
+    public void save(int index) {
+        try {
+            String filename = filename(index);
+            File file = new File(filename);
+            if (file.exists()) {
+                // make a backup, but will overwrite any previous backups
+                Files.copy(file, new File(filename + ".backup"));
+            }
+            objectMapper.writeValue(file, memory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void load(int index) {
+        try {
+            String filename = filename(index);
+            File file = new File(filename);
+            if (file.exists()) {
+                memory = objectMapper.readValue(file, MonoMemory.class);
+            } else {
+                memory = new MonoMemory();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String filename(int index) {
+        return filePrefix + "-" + index + ".json";
+    }
+
+
 
 }

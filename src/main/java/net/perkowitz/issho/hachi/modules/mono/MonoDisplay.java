@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
+import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridDisplay;
@@ -18,19 +19,70 @@ public class MonoDisplay {
 
     @Setter private GridDisplay display;
     private List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
+    @Getter @Setter private boolean settingsMode = false;
+    @Getter @Setter private int currentFileIndex = 0;
 
     public MonoDisplay(GridDisplay display) {
         this.display = display;
     }
 
     public void redraw(MonoMemory memory) {
-        drawPatterns(memory);
-        drawKeyboard(memory);
-        drawSteps(memory.currentPattern().getSteps());
-        drawStepEdits(memory.getStepEditState());
+        if (settingsMode) {
+            drawSessions(memory);
+            drawFiles(memory);
+            drawMidiChannel(memory);
+        } else {
+            drawPatterns(memory);
+            drawKeyboard(memory);
+            drawSteps(memory.currentPattern().getSteps());
+            drawStepEdits(memory.getStepEditState());
+        }
+    }
+
+    public void drawFiles(MonoMemory memory) {
+        if (!settingsMode) return;
+        for (GridControl control : loadControls.getControls()) {
+            Color color = palette.get(COLOR_FILE_LOAD);
+            if (control.getIndex() == currentFileIndex) {
+                color = palette.get(COLOR_FILE_ACTIVE);
+            }
+            control.draw(display, color);
+        }
+        for (GridControl control : saveControls.getControls()) {
+            Color color = palette.get(COLOR_FILE_SAVE);
+            if (control.getIndex() == currentFileIndex) {
+                color = palette.get(COLOR_FILE_ACTIVE);
+            }
+            control.draw(display, color);
+        }
+    }
+
+    public void drawSessions(MonoMemory memory) {
+        if (!settingsMode) return;
+        for (GridControl control : sessionControls.getControls()) {
+            Color color = palette.get(COLOR_SESSION);
+            if (control.getIndex() == memory.getCurrentSessionIndex()) {
+                color = palette.get(COLOR_SESSION_ACTIVE);
+            } else if (control.getIndex() == memory.getNextSessionIndex()) {
+                color = palette.get(COLOR_SESSION_NEXT);
+            }
+            control.draw(display, color);
+        }
+    }
+
+    public void drawMidiChannel(MonoMemory memory) {
+        if (!settingsMode) return;
+        for (GridControl control : midiChannelControls.getControls()) {
+            Color color = palette.get(COLOR_MIDI_CHANNEL);
+            if (control.getIndex() == memory.getMidiChannel()) {
+                color = palette.get(COLOR_MIDI_CHANNEL_ACTIVE);
+            }
+            control.draw(display, color);
+        }
     }
 
     public void drawPatterns(MonoMemory memory) {
+        if (settingsMode) return;
         MonoPattern[] patterns = memory.currentSession().getPatterns();
         for (int i = 0; i < patterns.length; i++) {
             drawPattern(memory, patterns[i]);
@@ -39,6 +91,7 @@ public class MonoDisplay {
 
     public void drawPattern(MonoMemory memory, MonoPattern pattern) {
 
+        if (settingsMode) return;
         int index = pattern.getIndex();
         GridControl control = patternControls.get(index);
         Color color = palette.get(COLOR_PATTERN);
@@ -54,6 +107,7 @@ public class MonoDisplay {
     }
 
     public void drawKeyboard(MonoMemory memory) {
+        if (settingsMode) return;
         keyboardControls.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_KEY));
 //        MonoStep step = memory.currentStep();
 //        GridControl control = controls.get(step.getOctaveNote());
@@ -62,6 +116,7 @@ public class MonoDisplay {
 
 
     public void drawSteps(MonoStep[] steps) {
+        if (settingsMode) return;
         for (int index = 0; index < steps.length; index++) {
             drawStep(steps[index]);
         }
@@ -79,6 +134,8 @@ public class MonoDisplay {
     }
 
     public void drawStep(MonoStep step, boolean highlight) {
+
+        if (settingsMode) return;
 
         // get step location
         int x = step.getIndex() % 8;
@@ -121,6 +178,8 @@ public class MonoDisplay {
 
     public void drawStepEdits(MonoUtil.StepEditState currentState) {
 
+        if (settingsMode) return;
+
         // some of the step edit controls are step edit mode buttons
         MonoUtil.StepEditState[] states = MonoUtil.StepEditState.values();
         for (int i = 0; i < states.length; i++) {
@@ -148,15 +207,20 @@ public class MonoDisplay {
     public void drawFunctions(View currentView) {
         for (GridControl control : functionControls.getControls()) {
             Color color = palette.get(COLOR_MODE_INACTIVE);
-            if (control.getIndex() == FUNCTION_SEQUENCE_INDEX && currentView == View.SEQUENCE) {
-                color = palette.get(COLOR_MODE_ACTIVE);
-            } else if (control.getIndex() == FUNCTION_SETTINGS_INDEX && currentView == View.SETTINGS) {
+            if (control.getIndex() == FUNCTION_SETTINGS_INDEX && settingsMode) {
                 color = palette.get(COLOR_MODE_ACTIVE);
             }
             control.draw(display, color);
         }
     }
 
+    public boolean toggleSettings() {
+        settingsMode = !settingsMode;
+        return settingsMode;
+    }
 
+    public void initialize() {
+        display.initialize();
+    }
 
 }

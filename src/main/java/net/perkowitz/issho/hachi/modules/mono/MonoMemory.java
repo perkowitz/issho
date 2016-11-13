@@ -13,7 +13,7 @@ public class MonoMemory {
     private static int SESSION_COUNT = 16;
 
     @Getter private MonoSession[] sessions = new MonoSession[SESSION_COUNT];
-    @Getter private int currentSessionIndex = 0;
+    @Getter @Setter private int currentSessionIndex = 0;
     @Getter private int currentPatternIndex = 0;
     @Getter private int currentStepIndex = 0;
     @Getter @Setter private int keyboardOctave;
@@ -23,6 +23,9 @@ public class MonoMemory {
     @Getter private int patternChainMax;    // the index of the last of the pattern chain
     @Getter private int patternChainNextIndex;  // the index of the NEXT pattern to play
 
+    @Getter @Setter private Integer nextSessionIndex = null;
+
+    @Getter @Setter private int midiChannel = 0;
 
     @Getter @Setter MonoUtil.StepEditState stepEditState = NOTE;
     @Getter @Setter MonoUtil.ValueState valueState = MonoUtil.ValueState.VELOCITY;

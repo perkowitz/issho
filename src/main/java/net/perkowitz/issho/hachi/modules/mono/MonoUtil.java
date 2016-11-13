@@ -43,6 +43,14 @@ public class MonoUtil {
     public static int STEP_MIN_ROW = 6;
     public static int STEP_MAX_ROW = 7;
 
+    // settings
+    public static int SESSION_MIN_ROW = 0;
+    public static int SESSION_MAX_ROW = 1;
+    public static int FILE_LOAD_ROW = 2;
+    public static int FILE_SAVE_ROW = 3;
+    public static int MIDI_CHANNEL_MIN_ROW = 6;
+    public static int MIDI_CHANNEL_MAX_ROW = 7;
+
     public static int LOWEST_OCTAVE = 1;
 
     public static GridControl SAVE_CONTROL = new GridControl(GridButton.at(GridButton.Side.Left, 7), 0);
@@ -84,9 +92,8 @@ public class MonoUtil {
     /***** control sets for each function group *****************************/
 
     // indices for functions
-    public static int FUNCTION_SAVE_INDEX = 4;
-    public static int FUNCTION_LOAD_INDEX = 5;
-    public static int FUNCTION_SEQUENCE_INDEX = 6;
+    public static int FUNCTION_SAVE_INDEX = 5;
+    public static int FUNCTION_LOAD_INDEX = 6;
     public static int FUNCTION_SETTINGS_INDEX = 7;
 
     public static GridControlSet patternControls = GridControlSet.padRows(MonoUtil.PATTERN_MIN_ROW, MonoUtil.PATTERN_MAX_ROW);
@@ -95,6 +102,13 @@ public class MonoUtil {
     public static GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 8);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_SETTINGS_INDEX);
+
+    // settings
+    public static GridControlSet sessionControls = GridControlSet.padRows(MonoUtil.SESSION_MIN_ROW, MonoUtil.SESSION_MAX_ROW);
+    public static GridControlSet loadControls = GridControlSet.padRows(MonoUtil.FILE_LOAD_ROW, MonoUtil.FILE_LOAD_ROW);
+    public static GridControlSet saveControls = GridControlSet.padRows(MonoUtil.FILE_SAVE_ROW, MonoUtil.FILE_SAVE_ROW);
+    public static GridControlSet midiChannelControls = GridControlSet.padRows(MonoUtil.MIDI_CHANNEL_MIN_ROW, MonoUtil.MIDI_CHANNEL_MAX_ROW);
+
 
     /***** color palettes **********************************************************/
     public static Integer COLOR_STEP_OFF = 0;
@@ -114,14 +128,25 @@ public class MonoUtil {
     public static Integer COLOR_PATTERN_PLAYING = 14;
     public static Integer COLOR_PATTERN_CHAINED = 15;
     public static Integer COLOR_PATTERN_SELECTED_PLAYING = 16;
+    public static Integer COLOR_SESSION = 17;
+    public static Integer COLOR_SESSION_ACTIVE = 18;
+    public static Integer COLOR_SESSION_NEXT = 19;
+    public static Integer COLOR_FILE_LOAD = 20;
+    public static Integer COLOR_FILE_SAVE = 21;
+    public static Integer COLOR_FILE_ACTIVE = 22;
+    public static Integer COLOR_MIDI_CHANNEL = 23;
+    public static Integer COLOR_MIDI_CHANNEL_ACTIVE = 24;
 
     public static List<Color> PALETTE_FUCHSIA = Lists.newArrayList(
             // 52-55 purple-pinks, 12-15 yellows, 40-43 blues
-            Color.OFF, Color.fromIndex(53), Color.fromIndex(55), Color.OFF, Color.fromIndex(13),   // step
-            Color.DARK_GRAY, Color.fromIndex(13), Color.WHITE,             // keyboard
-            Color.DARK_GRAY, Color.fromIndex(55),             // gate
-            Color.OFF, Color.fromIndex(55),                    // value
-            Color.fromIndex(43), Color.WHITE, Color.fromIndex(40), Color.DARK_GRAY, Color.WHITE     // pattern
+            Color.OFF, Color.fromIndex(53), Color.fromIndex(55), Color.OFF, Color.fromIndex(13),    // step
+            Color.DARK_GRAY, Color.fromIndex(13), Color.WHITE,                                      // keyboard
+            Color.DARK_GRAY, Color.fromIndex(55),                                                   // gate
+            Color.OFF, Color.fromIndex(55),                                                         // value
+            Color.fromIndex(43), Color.WHITE, Color.fromIndex(40), Color.DARK_GRAY, Color.WHITE,    // pattern
+            Color.fromIndex(55), Color.WHITE, Color.DARK_GRAY,                                      // session
+            Color.DIM_GREEN, Color.DIM_RED, Color.WHITE,                                            // file
+            Color.fromIndex(55), Color.WHITE                                                        // midi channel
     );
 
 
