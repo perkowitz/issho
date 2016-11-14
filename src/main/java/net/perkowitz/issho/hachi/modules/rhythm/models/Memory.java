@@ -36,6 +36,7 @@ public class Memory {
 
     @Getter @Setter private boolean specialSelected = false;
     @Getter @Setter private boolean copyMutesToNew = true;
+    @Getter @Setter private int midiChannel = 9;
 
     @Getter @Setter private Map<RhythmInterface.Switch, Boolean> settingsSwitches = Maps.newHashMap();
     @Getter @Setter private Map<RhythmInterface.Switch, Integer> settingsValues = Maps.newHashMap();

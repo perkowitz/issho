@@ -14,15 +14,17 @@
       "class": "LogoModule"
     },
     {
-      "class": "PaletteModule"
-    },
-    {
       "class": "DrawingModule",
       "filePrefix": "drawing"
     },
     {
       "class": "RhythmModule",
       "filePrefix": "rhythm1"
+    },
+    {
+      "class": "RhythmModule",
+      "filePrefix": "rhythm2",
+      "palette": "red"
     },
     {
       "class": "MonoModule",

@@ -23,6 +23,8 @@ public class LppRhythmUtil {
     public static int LOAD_ROW = 2;
     public static int SAVE_ROW = 3;
     public static int SWITCHES_ROW = 5;
+    public static int MIDI_CHANNEL_MIN_ROW = 6;
+    public static int MIDI_CHANNEL_MAX_ROW = 7;
 
     // sequence module
     public static int PATTERNS_MIN_ROW = 0;

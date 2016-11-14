@@ -49,6 +49,7 @@ public class DrawingModule extends BasicModule implements Clockable {
     private Memory memory;
     private ObjectMapper objectMapper = new ObjectMapper();
     private String filePrefix = "drawing";
+    private boolean muted = false;
 
 
     /***** constructor ****************************************/
@@ -92,6 +93,11 @@ public class DrawingModule extends BasicModule implements Clockable {
 
     }
 
+    public void mute(boolean muted) {
+        this.muted = muted;
+    }
+
+
 
     /***** GridListener interface ****************************************/
 
@@ -112,7 +118,7 @@ public class DrawingModule extends BasicModule implements Clockable {
         } else if (button.getSide() == FRAME_SIDE) {
             selectFrame(button.getIndex());
         } else if (button.equals(saveButton)) {
-            save(filePrefix + "0" + FILENAME_SUFFIX);
+            save(filePrefix + "-" + "0" + FILENAME_SUFFIX);
         } else if (button.equals(currentColorButton)) {
 
         }

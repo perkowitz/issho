@@ -17,6 +17,7 @@ public class MidiModule extends BasicModule implements Receiver {
 
     protected Transmitter inputTransmitter;
     protected Receiver outputReceiver;
+    protected boolean muted;
 
 
     public MidiModule(Transmitter inputTransmitter, Receiver outputReceiver) {
@@ -39,8 +40,15 @@ public class MidiModule extends BasicModule implements Receiver {
 
     }
 
+    public void mute(boolean muted) {
+        this.muted = muted;
+    }
+
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
+
+        if (muted) return;
+
         try {
             ShortMessage noteMessage = new ShortMessage();
             noteMessage.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
@@ -57,6 +65,8 @@ public class MidiModule extends BasicModule implements Receiver {
 //            System.out.printf("%d ", b);
 //        }
 //        System.out.printf("\n");
+
+        if (muted) return;
 
         if (message instanceof ShortMessage) {
             ShortMessage shortMessage = (ShortMessage) message;

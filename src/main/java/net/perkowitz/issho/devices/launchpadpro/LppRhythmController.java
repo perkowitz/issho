@@ -106,6 +106,10 @@ public class LppRhythmController implements GridListener, RhythmController {
                         sequencer.selectSwitch(RhythmInterface.Switch.TRIGGER_ENABLED);
                     }
 
+                } else if (pad.getY() >= MIDI_CHANNEL_MIN_ROW && pad.getY() <= MIDI_CHANNEL_MAX_ROW) {
+                    // pressing a session pad
+                    int index = pad.getX() + (pad.getY() - MIDI_CHANNEL_MIN_ROW) * 8;
+                    sequencer.setMidiChannel(index);
                 }
 
             }

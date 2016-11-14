@@ -48,6 +48,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     private Map<RhythmDisplay.DisplayButton, RhythmDisplay.ButtonState> buttonStateMap = Maps.newHashMap();
 
     private String filePrefix = "sequencer";
+    private boolean muted = false;
 
     private Memory memory;
     private int totalStepCount = 0;
@@ -141,6 +142,11 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
         save(filePrefix + "-" + index + FILENAME_SUFFIX);
         currentFileIndex = index;
         rhythmDisplay.displayFiles(currentFileIndex);
+    }
+
+    public void setMidiChannel(int midiChannel) {
+        memory.setMidiChannel(midiChannel);
+        rhythmDisplay.displayMidiChannel(midiChannel);
     }
 
     public void setSync(SyncMode syncMode) {
@@ -255,7 +261,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
             rhythmDisplay.displayValue(step.getVelocity(), VELOCITY_MIN, VELOCITY_MAX, VELOCITY);
         } else if (stepMode == StepMode.PLAY) {
             Track track = memory.selectedPattern().getTrack(index);
-            sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), 100);
+//            sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), 100);     // TODO per-track midi channel???
+            sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), 100);
         }
     }
 
@@ -411,6 +418,12 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     public void shutdown() {}
 
+    public void mute(boolean muted) {
+        this.muted = muted;
+    }
+
+
+
     /***** private implementation *********************************************************************/
 
     public void toggleStartStop() {
@@ -479,7 +492,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
             Step step = track.getStep(nextStepIndex);
             if (track.isEnabled()) {
                 if (step.isOn()) {
-                    sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
+//                    sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), step.getVelocity());  // TODO per-track midi channel???
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
                 }
             }
         }
