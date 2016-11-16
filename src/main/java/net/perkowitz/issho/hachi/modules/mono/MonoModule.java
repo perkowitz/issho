@@ -13,7 +13,6 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.MidiModule;
 import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.hachi.modules.rhythm.models.Memory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -24,10 +23,10 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static net.perkowitz.issho.devices.launchpadpro.LppRhythmUtil.PATTERNS_MIN_ROW;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_LOAD_INDEX;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SAVE_INDEX;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SETTINGS_INDEX;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.PLAY;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.ValueState.STEP_OCTAVE;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
 
@@ -109,7 +108,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
         if (!step.isEnabled() || step.getGate() == MonoUtil.Gate.REST) {
             notesOff();
-        } else if (step.isEnabled() && step.getGate() == MonoUtil.Gate.PLAY) {
+        } else if (step.isEnabled() && step.getGate() == PLAY) {
             notesOff();
             sendMidiNote(memory.getMidiChannel(), step.getNote(), step.getVelocity());
             onNotes.add(step.getNote());
@@ -302,12 +301,12 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                 case GATE:
                     memory.setValueState(MonoUtil.ValueState.NONE);
                     displayValue(0, -1);
-                    if (step.getGate() == MonoUtil.Gate.PLAY) {
+                    if (step.getGate() == PLAY) {
                         step.setGate(MonoUtil.Gate.TIE);
                     } else if (step.getGate() == MonoUtil.Gate.TIE) {
                         step.setGate(MonoUtil.Gate.REST);
                     } else if (step.getGate() == MonoUtil.Gate.REST) {
-                        step.setGate(MonoUtil.Gate.PLAY);
+                        step.setGate(PLAY);
                     }
                     break;
                 case VELOCITY:
@@ -336,12 +335,11 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
             switch (memory.getStepEditState()) {
                 case NOTE:
-//                case MUTE:
-//                case VELOCITY:
-//                    step.setOctaveNote(index);
-//                    selectedControl.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
-//                    // todo redraw the old key
-//                    break;
+                case VELOCITY:
+                    step.setOctaveNote(index);
+                    selectedControl.draw(display, monoDisplay.getPalette().get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+                    // todo redraw the old key
+                    break;
 //                case PLAY:
 //                    int note = memory.getKeyboardOctave() * 12 + index;
 //                    sendMidiNote(memory.getMidiChannel(), note, velocity);
