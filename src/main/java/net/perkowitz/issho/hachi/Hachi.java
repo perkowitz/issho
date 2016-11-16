@@ -106,6 +106,9 @@ public class Hachi {
         controller = new HachiController(modules, gridDisplay);
         launchpadPro.setListener(controller);
 
+        // make the HachiController receive external midi
+        midiInput.getTransmitter().setReceiver(controller);
+
         System.out.printf("Running controller...\n");
         controller.run();
 
