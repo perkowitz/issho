@@ -219,6 +219,11 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         notesOff();
     }
 
+    public void mute(boolean muted) {
+        this.muted = muted;
+        notesOff();
+    }
+
     /***** Chordable implementation ***********************************/
 
     public void setChordNotes(List<Integer> notes) {
@@ -229,11 +234,15 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
     /***** Sessionizeable implementation *************************************/
 
     public void selectSession(int index) {
-
+        memory.setNextSessionIndex(index);
+        monoDisplay.drawSessions(memory);
     }
 
     public void selectPatterns(int firstIndex, int lastIndex) {
-
+        memory.selectPatternChain(firstIndex, lastIndex);
+        patternsPressed.clear();
+        patternsReleasedCount = 0;
+        monoDisplay.drawPatterns(memory);
     }
 
 
@@ -411,8 +420,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
         if (MonoUtil.sessionControls.contains(control)) {
             Integer index = MonoUtil.sessionControls.getIndex(control);
-            memory.setNextSessionIndex(index);
-            monoDisplay.drawSessions(memory);
+            selectSession(index);
 
         } else if (MonoUtil.loadControls.contains(control)) {
             Integer index = MonoUtil.loadControls.getIndex(control);
@@ -459,11 +467,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                 GridControl selectedControl = MonoUtil.patternControls.get(control);
                 Integer index = selectedControl.getIndex();
                 patternsPressed.add(index); // just to make sure
-                if (patternsPressed.size() == 1) {
-                    memory.selectPatternChain(index, index);
-                } else {
-                    int min = 100;
-                    int max = -1;
+                int min = index;
+                int max = index;
+                if (patternsPressed.size() > 1) {
                     for (Integer pattern : patternsPressed) {
                         if (pattern < min) {
                             min = pattern;
@@ -474,9 +480,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                     }
                     memory.selectPatternChain(min, max);
                 }
-                patternsPressed.clear();
-                patternsReleasedCount = 0;
-                monoDisplay.drawPatterns(memory);
+                selectPatterns(min, max);
             }
 
         }

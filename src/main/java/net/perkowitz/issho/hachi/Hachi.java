@@ -47,7 +47,6 @@ public class Hachi {
     private static HachiController controller;
     private static CountDownLatch stop = new CountDownLatch(1);
 
-
     /**
      * 1. get the midi devices
      * 2. open them and create GridListeners attached to them
@@ -177,6 +176,8 @@ public class Hachi {
 
     private static Module[] createModules(LaunchpadPro lpp) {
 
+        ShihaiModule shihaiModule = null;
+
         List<Module> moduleList = Lists.newArrayList();
         for (Map<Object,Object> moduleSettings : (List<Map<Object,Object>>) settings.get("modules")) {
 
@@ -203,6 +204,10 @@ public class Hachi {
                 }
                 module = new MonoModule(midiTransmitter, midiReceiver, palette, filePrefix);
 
+            } else if (className.equals("ShihaiModule")) {
+                shihaiModule = new ShihaiModule();
+                module = shihaiModule;
+
             } else if (className.equals("DrawingModule")) {
                 module = new DrawingModule(filePrefix);
 
@@ -222,7 +227,12 @@ public class Hachi {
 
         }
 
-        return moduleList.toArray(new Module[0]);
+        Module[] modules = moduleList.toArray(new Module[0]);
+        if (shihaiModule != null) {
+            shihaiModule.setModules(modules);
+        }
+
+        return modules;
     }
 
     private static Module[] defaultModules(LaunchpadPro lpp) {

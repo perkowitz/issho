@@ -419,7 +419,9 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     public void shutdown() {}
 
     public void mute(boolean muted) {
+
         this.muted = muted;
+
     }
 
 
@@ -574,7 +576,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
      */
     private void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
-        // TODO how do we send note off?
+
+        if (muted && velocity > 0) return;
 
         try {
             ShortMessage noteMessage = new ShortMessage();

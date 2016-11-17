@@ -47,7 +47,7 @@ public class MidiModule extends BasicModule implements Receiver {
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
 
-        if (muted) return;
+        if (muted && velocity > 0) return;
 
         try {
             ShortMessage noteMessage = new ShortMessage();

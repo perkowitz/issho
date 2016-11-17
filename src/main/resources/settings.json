@@ -11,7 +11,7 @@
   },
   "modules": [
     {
-      "class": "LogoModule"
+      "class": "ShihaiModule"
     },
     {
       "class": "DrawingModule",
@@ -34,6 +34,9 @@
       "class": "MonoModule",
       "filePrefix": "mono2",
       "palette": "orange"
+    },
+    {
+      "class": "xPaletteModule"
     }
   ]
 }
