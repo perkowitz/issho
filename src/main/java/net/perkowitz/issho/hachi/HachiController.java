@@ -51,6 +51,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private static CountDownLatch stop = new CountDownLatch(1);
     private static Timer timer = null;
     private boolean clockRunning = false;
+    private boolean midiClockRunning = false;
     private int tickCount = 0;
 
     private int tempo = 120;
@@ -224,6 +225,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {
+        } else if (button.equals(EXIT_BUTTON)) {
         } else {
             // everything else passed through to active module
             if (activeListener != null) {
@@ -238,6 +240,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
     public void start(boolean restart) {
         for (Clockable clockable : clockables) {
             tickCount = 0;
+            midiClockRunning = true;
             clockable.start(restart);
         }
     }
@@ -245,13 +248,16 @@ public class HachiController implements GridListener, Clockable, Receiver {
     public void stop() {
         for (Clockable clockable : clockables) {
             clockable.stop();
+            midiClockRunning = false;
             tickCount = 0;
         }
     }
 
     public void tick(boolean andReset) {
-        for (Clockable clockable : clockables) {
-            clockable.tick(andReset);
+        if (midiClockRunning) {
+            for (Clockable clockable : clockables) {
+                clockable.tick(andReset);
+            }
         }
     }
 
@@ -276,12 +282,12 @@ public class HachiController implements GridListener, Clockable, Receiver {
             if (command == MIDI_REALTIME_COMMAND) {
                 switch (status) {
                     case START:
-                        System.out.println("START");
+//                        System.out.println("START");
                         midiClockCount = 0;
                         this.start(true);
                         break;
                     case STOP:
-                        System.out.println("STOP");
+//                        System.out.println("STOP");
                         midiClockCount = 0;
                         this.stop();
                         break;
