@@ -44,6 +44,9 @@ public class Hachi {
     private static Transmitter midiTransmitter;
     private static Receiver midiReceiver;
 
+    private static MidiDevice knobInput;
+    private static MidiDevice knobOutput;
+
     private static HachiController controller;
     private static CountDownLatch stop = new CountDownLatch(1);
 
@@ -93,6 +96,8 @@ public class Hachi {
             System.exit(1);
 //            gridDisplay = new Console();
         }
+
+        createKnobby();
 
         Module[] modules;
         if (settings.get("modules") != null) {
@@ -249,6 +254,29 @@ public class Hachi {
 //        modules[4] = new KeyboardModule(midiTransmitter, midiReceiver, 10, 36);
 
         return modules;
+    }
+
+    private static void createKnobby() {
+
+        // find the knob device
+        System.out.println("Finding knob device..");
+        String[] knobNames = new String[] { "nanokontrol" };
+        knobInput = MidiUtil.findMidiDevice(knobNames, false, true);
+        knobOutput = MidiUtil.findMidiDevice(knobNames, true, false);
+        if (knobInput == null || knobOutput == null) {
+            return;
+        }
+
+        try {
+            knobInput.open();
+            knobOutput.open();
+            Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
     }
 
 
