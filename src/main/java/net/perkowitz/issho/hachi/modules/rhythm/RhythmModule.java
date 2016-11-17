@@ -34,7 +34,6 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     private static final int TEMPO_MAX = 132;
     private static final int FILL_PERCENT_MIN = 9;
     private static final int FILL_PERCENT_MAX = 113;
-    private static final String FILENAME_PREFIX = "sequencer-";
     private static final String FILENAME_SUFFIX = ".json";
 
 
@@ -47,6 +46,9 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     private Map<RhythmInterface.Mode, Boolean> modeIsActiveMap = Maps.newHashMap();
     private Map<RhythmDisplay.DisplayButton, RhythmDisplay.ButtonState> buttonStateMap = Maps.newHashMap();
+
+    private String filePrefix = "sequencer";
+    private boolean muted = false;
 
     private Memory memory;
     private int totalStepCount = 0;
@@ -71,7 +73,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     /***** constructor *********************************************************************/
 
-    public RhythmModule(RhythmController controller, RhythmDisplay rhythmDisplay, Transmitter inputTransmitter, Receiver outputReceiver) {
+    public RhythmModule(RhythmController controller, RhythmDisplay rhythmDisplay, Transmitter inputTransmitter, Receiver outputReceiver, String filePrefix) {
 
         // set up controller and rhythmDisplay
         this.controller = controller;
@@ -86,7 +88,9 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
         // where to send the sequencer's midi output
         this.outputReceiver = outputReceiver;
 
-        load(FILENAME_PREFIX + currentFileIndex + FILENAME_SUFFIX);
+        this.filePrefix = filePrefix;
+
+        load(this.filePrefix + "-" + currentFileIndex + FILENAME_SUFFIX);
 
         for (Mode mode : Mode.values()) {
             modeIsActiveMap.put(mode, false);
@@ -129,15 +133,20 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     }
 
     public void loadData(int index) {
-        load(FILENAME_PREFIX + index + FILENAME_SUFFIX);
+        load(filePrefix + "-" + index + FILENAME_SUFFIX);
         currentFileIndex = index;
         rhythmDisplay.displayFiles(currentFileIndex);
     }
 
     public void saveData(int index) {
-        save(FILENAME_PREFIX + index + FILENAME_SUFFIX);
+        save(filePrefix + "-" + index + FILENAME_SUFFIX);
         currentFileIndex = index;
         rhythmDisplay.displayFiles(currentFileIndex);
+    }
+
+    public void setMidiChannel(int midiChannel) {
+        memory.setMidiChannel(midiChannel);
+        rhythmDisplay.displayMidiChannel(midiChannel);
     }
 
     public void setSync(SyncMode syncMode) {
@@ -252,7 +261,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
             rhythmDisplay.displayValue(step.getVelocity(), VELOCITY_MIN, VELOCITY_MAX, VELOCITY);
         } else if (stepMode == StepMode.PLAY) {
             Track track = memory.selectedPattern().getTrack(index);
-            sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), 100);
+//            sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), 100);     // TODO per-track midi channel???
+            sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), 100);
         }
     }
 
@@ -346,7 +356,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
                 break;
 
             case SAVE:
-                save(FILENAME_PREFIX + currentFileIndex + FILENAME_SUFFIX);
+                save(filePrefix + "-" + currentFileIndex + FILENAME_SUFFIX);
                 break;
 
             case HELP:
@@ -407,6 +417,14 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     }
 
     public void shutdown() {}
+
+    public void mute(boolean muted) {
+
+        this.muted = muted;
+
+    }
+
+
 
     /***** private implementation *********************************************************************/
 
@@ -476,7 +494,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
             Step step = track.getStep(nextStepIndex);
             if (track.isEnabled()) {
                 if (step.isOn()) {
-                    sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
+//                    sendMidiNote(track.getMidiChannel(), track.getNoteNumber(), step.getVelocity());  // TODO per-track midi channel???
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
                 }
             }
         }
@@ -557,7 +576,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
      */
     private void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
-        // TODO how do we send note off?
+
+        if (muted && velocity > 0) return;
 
         try {
             ShortMessage noteMessage = new ShortMessage();

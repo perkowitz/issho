@@ -13,7 +13,6 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.MidiModule;
 import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.hachi.modules.rhythm.models.Memory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -24,10 +23,10 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static net.perkowitz.issho.devices.launchpadpro.LppRhythmUtil.PATTERNS_MIN_ROW;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_LOAD_INDEX;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SAVE_INDEX;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SETTINGS_INDEX;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.PLAY;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.ValueState.STEP_OCTAVE;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
 
@@ -64,12 +63,13 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     /***** Constructor ****************************************/
 
-    public MonoModule(Transmitter inputTransmitter, Receiver outputReceiver, List<Color> palette) {
+    public MonoModule(Transmitter inputTransmitter, Receiver outputReceiver, List<Color> palette, String filePrefix) {
         super(inputTransmitter, outputReceiver);
         monoDisplay = new MonoDisplay(this.display);
         monoDisplay.setPalette(palette);
+        this.filePrefix = filePrefix;
         startTimer();
-        load("monomodule-0.json");
+        load(0);
     }
 
 
@@ -108,7 +108,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
         if (!step.isEnabled() || step.getGate() == MonoUtil.Gate.REST) {
             notesOff();
-        } else if (step.isEnabled() && step.getGate() == MonoUtil.Gate.PLAY) {
+        } else if (step.isEnabled() && step.getGate() == PLAY) {
             notesOff();
             sendMidiNote(memory.getMidiChannel(), step.getNote(), step.getVelocity());
             onNotes.add(step.getNote());
@@ -219,6 +219,11 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         notesOff();
     }
 
+    public void mute(boolean muted) {
+        this.muted = muted;
+        notesOff();
+    }
+
     /***** Chordable implementation ***********************************/
 
     public void setChordNotes(List<Integer> notes) {
@@ -229,11 +234,15 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
     /***** Sessionizeable implementation *************************************/
 
     public void selectSession(int index) {
-
+        memory.setNextSessionIndex(index);
+        monoDisplay.drawSessions(memory);
     }
 
     public void selectPatterns(int firstIndex, int lastIndex) {
-
+        memory.selectPatternChain(firstIndex, lastIndex);
+        patternsPressed.clear();
+        patternsReleasedCount = 0;
+        monoDisplay.drawPatterns(memory);
     }
 
 
@@ -301,12 +310,12 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                 case GATE:
                     memory.setValueState(MonoUtil.ValueState.NONE);
                     displayValue(0, -1);
-                    if (step.getGate() == MonoUtil.Gate.PLAY) {
+                    if (step.getGate() == PLAY) {
                         step.setGate(MonoUtil.Gate.TIE);
                     } else if (step.getGate() == MonoUtil.Gate.TIE) {
                         step.setGate(MonoUtil.Gate.REST);
                     } else if (step.getGate() == MonoUtil.Gate.REST) {
-                        step.setGate(MonoUtil.Gate.PLAY);
+                        step.setGate(PLAY);
                     }
                     break;
                 case VELOCITY:
@@ -335,12 +344,11 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
             switch (memory.getStepEditState()) {
                 case NOTE:
-//                case MUTE:
-//                case VELOCITY:
-//                    step.setOctaveNote(index);
-//                    selectedControl.draw(display, palette.get(MonoUtil.COLOR_KEYBOARD_SELECTED));
-//                    // todo redraw the old key
-//                    break;
+                case VELOCITY:
+                    step.setOctaveNote(index);
+                    selectedControl.draw(display, monoDisplay.getPalette().get(MonoUtil.COLOR_KEYBOARD_SELECTED));
+                    // todo redraw the old key
+                    break;
 //                case PLAY:
 //                    int note = memory.getKeyboardOctave() * 12 + index;
 //                    sendMidiNote(memory.getMidiChannel(), note, velocity);
@@ -392,9 +400,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             Integer index = MonoUtil.functionControls.getIndex(control);
             if (index != null) {
                 if (index == FUNCTION_SAVE_INDEX) {
-                    save("monomodule-0.json");
+                    save(currentFileIndex);
                 } else if (index == FUNCTION_LOAD_INDEX) {
-                    load("monomodule-0.json");
+                    load(currentFileIndex);
                     monoDisplay.redraw(memory);
                 } else if (index == FUNCTION_SETTINGS_INDEX) {
                     monoDisplay.toggleSettings();
@@ -412,8 +420,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
         if (MonoUtil.sessionControls.contains(control)) {
             Integer index = MonoUtil.sessionControls.getIndex(control);
-            memory.setNextSessionIndex(index);
-            monoDisplay.drawSessions(memory);
+            selectSession(index);
 
         } else if (MonoUtil.loadControls.contains(control)) {
             Integer index = MonoUtil.loadControls.getIndex(control);
@@ -460,11 +467,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                 GridControl selectedControl = MonoUtil.patternControls.get(control);
                 Integer index = selectedControl.getIndex();
                 patternsPressed.add(index); // just to make sure
-                if (patternsPressed.size() == 1) {
-                    memory.selectPatternChain(index, index);
-                } else {
-                    int min = 100;
-                    int max = -1;
+                int min = index;
+                int max = index;
+                if (patternsPressed.size() > 1) {
                     for (Integer pattern : patternsPressed) {
                         if (pattern < min) {
                             min = pattern;
@@ -475,9 +480,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                     }
                     memory.selectPatternChain(min, max);
                 }
-                patternsPressed.clear();
-                patternsReleasedCount = 0;
-                monoDisplay.drawPatterns(memory);
+                selectPatterns(min, max);
             }
 
         }

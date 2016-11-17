@@ -43,6 +43,8 @@ public interface RhythmDisplay {
     public void displayModes(Map<RhythmInterface.Mode, Boolean> modeIsActiveMap);
     public void displayModeChoice(RhythmInterface.Mode mode, RhythmInterface.Mode[] modeChoices);
 
+    public void displayMidiChannel(int midiChannel);
+
     public void clearValue();
     public void displayValue(int value, int minValue, int maxValue, RhythmInterface.ValueMode valueMode);
 

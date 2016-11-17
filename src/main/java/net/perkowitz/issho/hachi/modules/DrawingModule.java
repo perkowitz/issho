@@ -31,7 +31,6 @@ public class DrawingModule extends BasicModule implements Clockable {
     private static int GRID_X_SIZE = 8;
     private static int GRID_Y_SIZE = 8;
 
-    private static final String FILENAME_PREFIX = "drawing-";
     private static final String FILENAME_SUFFIX = ".json";
 
     // button & color assignments
@@ -49,14 +48,17 @@ public class DrawingModule extends BasicModule implements Clockable {
 
     private Memory memory;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private String filePrefix = "drawing";
+    private boolean muted = false;
 
 
     /***** constructor ****************************************/
 
-    public DrawingModule() {
+    public DrawingModule(String filePrefix) {
 
 //        memory = new Memory();
-        load(FILENAME_PREFIX + "0" + FILENAME_SUFFIX);
+        this.filePrefix = filePrefix;
+        load(this.filePrefix + "-0" + FILENAME_SUFFIX);
 
     }
 
@@ -91,6 +93,11 @@ public class DrawingModule extends BasicModule implements Clockable {
 
     }
 
+    public void mute(boolean muted) {
+        this.muted = muted;
+    }
+
+
 
     /***** GridListener interface ****************************************/
 
@@ -111,7 +118,7 @@ public class DrawingModule extends BasicModule implements Clockable {
         } else if (button.getSide() == FRAME_SIDE) {
             selectFrame(button.getIndex());
         } else if (button.equals(saveButton)) {
-            save(FILENAME_PREFIX + "0" + FILENAME_SUFFIX);
+            save(filePrefix + "-" + "0" + FILENAME_SUFFIX);
         } else if (button.equals(currentColorButton)) {
 
         }

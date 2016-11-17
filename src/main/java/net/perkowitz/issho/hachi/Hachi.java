@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi;
 
+import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
@@ -10,11 +11,14 @@ import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
 import net.perkowitz.issho.util.MidiUtil;
 import net.perkowitz.issho.util.PropertiesUtil;
+import net.perkowitz.issho.util.SettingsUtil;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
@@ -28,6 +32,7 @@ public class Hachi {
     private static String MIDI_NAME_PROPERTY = "midi.name";
 
     private static Properties properties;
+    private static Map settings;
 
     private static MidiDevice controllerInput;
     private static MidiDevice controllerOutput;
@@ -41,7 +46,6 @@ public class Hachi {
 
     private static HachiController controller;
     private static CountDownLatch stop = new CountDownLatch(1);
-
 
     /**
      * 1. get the midi devices
@@ -69,6 +73,19 @@ public class Hachi {
             properties = PropertiesUtil.getProperties(propertyFile);
         }
 
+        String settingsFile = null;
+        if (args.length > 1) {
+            settingsFile = args[1];
+        }
+        if (settingsFile == null) {
+            System.out.println("Getting app settings..");
+            settings = SettingsUtil.getSettings("settings.json");
+        } else {
+            System.out.printf("Getting app settings from %s..\n", propertyFile);
+            settings = SettingsUtil.getSettings(settingsFile);
+        }
+
+
         LaunchpadPro launchpadPro = findDevice();
         GridDisplay gridDisplay = launchpadPro;
         if (launchpadPro == null) {
@@ -77,20 +94,19 @@ public class Hachi {
 //            gridDisplay = new Console();
         }
 
-        Module[] modules = new Module[6];
-        modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);
-        modules[1] = new PaletteModule(false);
-//        modules[2] = new ClockModule();
-        modules[2] = new DrawingModule();
-        modules[3] = rhythm(launchpadPro, LppRhythmUtil.PALETTE_BLUE);
-//        modules[3] = new DrawingModule();
-        modules[4] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_FUCHSIA);
-        modules[5] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_ORANGE);
-//        modules[4] = new KeyboardModule(midiTransmitter, midiReceiver, 10, 36);
+        Module[] modules;
+        if (settings.get("modules") != null) {
+            modules = createModules(launchpadPro);
+        } else {
+            modules = defaultModules(launchpadPro);
+        }
 
         System.out.println("Creating modules...");
         controller = new HachiController(modules, gridDisplay);
         launchpadPro.setListener(controller);
+
+        // make the HachiController receive external midi
+        midiInput.getTransmitter().setReceiver(controller);
 
         System.out.printf("Running controller...\n");
         controller.run();
@@ -101,11 +117,11 @@ public class Hachi {
     }
 
 
-    private static Module rhythm(LaunchpadPro launchpadPro, List<Color> palette) {
+    private static Module rhythm(LaunchpadPro launchpadPro, List<Color> palette, String filePrefix) {
 
         RhythmController rhythmController = new LppRhythmController();
         RhythmDisplay rhythmDisplay = new LppRhythmDisplay(launchpadPro, palette);
-        Module rhythm = new RhythmModule(rhythmController, rhythmDisplay, midiTransmitter, midiReceiver);
+        Module rhythm = new RhythmModule(rhythmController, rhythmDisplay, midiTransmitter, midiReceiver, filePrefix);
 
         return rhythm;
     }
@@ -158,5 +174,81 @@ public class Hachi {
         return null;
     }
 
+    private static Module[] createModules(LaunchpadPro lpp) {
+
+        ShihaiModule shihaiModule = null;
+
+        List<Module> moduleList = Lists.newArrayList();
+        for (Map<Object,Object> moduleSettings : (List<Map<Object,Object>>) settings.get("modules")) {
+
+            String className = (String)moduleSettings.get("class");
+            String paletteName = (String)moduleSettings.get("palette");
+            String filePrefix = (String)moduleSettings.get("filePrefix");
+            if (filePrefix == null) {
+                filePrefix = className.toLowerCase() + (moduleList.size() + 1);
+            }
+
+            // instantiate module
+            Module module = null;
+            if (className.equals("RhythmModule")) {
+                List<Color> palette = LppRhythmUtil.PALETTE_BLUE;
+                if (paletteName != null && paletteName.toUpperCase().equals("RED")) {
+                    palette = LppRhythmUtil.PALETTE_RED;
+                }
+                module = rhythm(lpp, palette, filePrefix);
+
+            } else if (className.equals("MonoModule")) {
+                List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
+                if (paletteName != null && paletteName.toUpperCase().equals("ORANGE")) {
+                    palette = MonoUtil.PALETTE_ORANGE;
+                }
+                module = new MonoModule(midiTransmitter, midiReceiver, palette, filePrefix);
+
+            } else if (className.equals("ShihaiModule")) {
+                shihaiModule = new ShihaiModule();
+                module = shihaiModule;
+
+            } else if (className.equals("DrawingModule")) {
+                module = new DrawingModule(filePrefix);
+
+            } else if (className.equals("LogoModule")) {
+                Color color = Color.BRIGHT_ORANGE;
+                module = new LogoModule(Graphics.hachi, color);
+
+            } else if (className.equals("PaletteModule")) {
+                module = new PaletteModule(false);
+
+            }
+
+            // if module was created, add it
+            if (module != null) {
+                moduleList.add(module);
+            }
+
+        }
+
+        Module[] modules = moduleList.toArray(new Module[0]);
+        if (shihaiModule != null) {
+            shihaiModule.setModules(modules);
+        }
+
+        return modules;
+    }
+
+    private static Module[] defaultModules(LaunchpadPro lpp) {
+
+        Module[] modules = new Module[6];
+        modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);
+        modules[1] = new PaletteModule(false);
+//        modules[2] = new ClockModule();
+        modules[2] = new DrawingModule("drawing");
+        modules[3] = rhythm(lpp, LppRhythmUtil.PALETTE_BLUE, "rhythm");
+//        modules[3] = new DrawingModule();
+        modules[4] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_FUCHSIA, "mono1");
+        modules[5] = new MonoModule(midiTransmitter, midiReceiver, MonoUtil.PALETTE_ORANGE, "mono2");
+//        modules[4] = new KeyboardModule(midiTransmitter, midiReceiver, 10, 36);
+
+        return modules;
+    }
 
 }

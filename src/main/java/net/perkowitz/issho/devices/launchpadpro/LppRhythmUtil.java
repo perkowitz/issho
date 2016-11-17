@@ -23,6 +23,8 @@ public class LppRhythmUtil {
     public static int LOAD_ROW = 2;
     public static int SAVE_ROW = 3;
     public static int SWITCHES_ROW = 5;
+    public static int MIDI_CHANNEL_MIN_ROW = 6;
+    public static int MIDI_CHANNEL_MAX_ROW = 7;
 
     // sequence module
     public static int PATTERNS_MIN_ROW = 0;
@@ -38,7 +40,7 @@ public class LppRhythmUtil {
     public static Map<RhythmInterface.Mode, GridButton> modeButtonMap = Maps.newHashMap();
     public static Map<RhythmInterface.Mode, GridPad> modePadMap = Maps.newHashMap();
     static {
-        modeButtonMap.put(RhythmInterface.Mode.PATTERN_EDIT, GridButton.at(GridButton.Side.Left, 0));
+        modeButtonMap.put(RhythmInterface.Mode.PATTERN_EDIT, GridButton.at(GridButton.Side.Left, 2));
 //        modeButtonMap.put(RhythmInterface.Mode.TEMPO, GridButton.at(GridButton.Side.Left, 2));
 //        modeButtonMap.put(RhythmInterface.Mode.PLAY, GridButton.at(GridButton.Side.Left, 3));
         modeButtonMap.put(RhythmInterface.Mode.SAVE, GridButton.at(GridButton.Side.Left, 4));

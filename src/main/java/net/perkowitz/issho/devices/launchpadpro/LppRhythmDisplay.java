@@ -116,6 +116,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
                 }
 
                 displaySwitches(memory.getSettingsSwitches());
+                displayMidiChannel(memory.getMidiChannel());
 
                 break;
         }
@@ -151,6 +152,21 @@ public class LppRhythmDisplay implements RhythmDisplay {
             }
         }
 
+    }
+
+    public void displayMidiChannel(int midiChannel) {
+
+        if (currentModule != RhythmInterface.Module.SETTINGS) { return; }
+
+        for (int channel = 0; channel < 16; channel++) {
+            int x = channel % 8;
+            int y = MIDI_CHANNEL_MIN_ROW + channel / 8;
+            Color color = palette.get(LppRhythmUtil.COLOR_FILE);
+            if (channel == midiChannel) {
+                color = palette.get(LppRhythmUtil.COLOR_FILE_SELECTED);
+            }
+            display.setPad(GridPad.at(x, y), color);
+        }
     }
 
     public void displayPattern(Pattern pattern) {
