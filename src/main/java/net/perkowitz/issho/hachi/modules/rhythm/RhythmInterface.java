@@ -57,6 +57,8 @@ public interface RhythmInterface {
     public void selectMode(Mode mode);
     public void selectSwitch(Switch switchx);
 
+    public void setMidiChannel(int midiChannel);
+
     public void trigger(boolean isReset);
     public void clockTick();
     public void clockStart();

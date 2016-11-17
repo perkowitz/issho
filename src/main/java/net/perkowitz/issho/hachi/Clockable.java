@@ -7,6 +7,6 @@ public interface Clockable {
 
     public void start(boolean restart);
     public void stop();
-    public void tick();
+    public void tick(boolean andReset);
 
 }

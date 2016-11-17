@@ -1,4 +1,4 @@
-package net.perkowitz.issho.hachi.models;
+package net.perkowitz.issho.hachi.modules.rhythm.models;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -19,7 +19,7 @@ import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.Switch.TR
  */
 public class Memory {
 
-    @Getter @Setter private static int sessionCount = 8;
+    @Getter @Setter private static int sessionCount = 16;
     @Getter private Session[] sessions;
 
     @Getter private int selectedSessionIndex;
@@ -36,6 +36,7 @@ public class Memory {
 
     @Getter @Setter private boolean specialSelected = false;
     @Getter @Setter private boolean copyMutesToNew = true;
+    @Getter @Setter private int midiChannel = 9;
 
     @Getter @Setter private Map<RhythmInterface.Switch, Boolean> settingsSwitches = Maps.newHashMap();
     @Getter @Setter private Map<RhythmInterface.Switch, Integer> settingsValues = Maps.newHashMap();

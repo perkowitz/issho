@@ -5,18 +5,36 @@ import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
 
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
+import static javax.sound.midi.ShortMessage.*;
 import static net.perkowitz.issho.hachi.HachiUtil.EXIT_BUTTON;
 import static net.perkowitz.issho.hachi.HachiUtil.PLAY_BUTTON;
 
 /**
  * Created by optic on 9/12/16.
  */
-public class HachiController implements GridListener, Clockable {
+public class HachiController implements GridListener, Clockable, Receiver {
+
+    private static int STEP_MIN = 0;
+    private static int STEP_MAX = 110;
+    private static int RESET_MIN = 111;
+    private static int RESET_MAX = 127;
+    private static int MIDI_REALTIME_COMMAND = 0xF0;
+
+    private static GridColor COLOR_SELECTED = Color.WHITE;//Color.BRIGHT_ORANGE;
+    private static GridColor COLOR_UNSELECTED = Color.DIM_ORANGE;// Color.DARK_GRAY;
+
+    private int triggerChannel = 9;//15;
+    private int stepNote = 65;//36;
+    private int midiClockDivider = 6;
+    private int midiClockCount = 0;
 
     private Module[] modules = null;
     private Module activeModule;
@@ -27,12 +45,10 @@ public class HachiController implements GridListener, Clockable {
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
 
-    private GridColor selectedColor = Color.BRIGHT_ORANGE;
-    private GridColor unselectedColor = Color.DARK_GRAY;
-
     private static CountDownLatch stop = new CountDownLatch(1);
     private static Timer timer = null;
     private boolean clockRunning = false;
+    private boolean midiClockRunning = false;
     private int tickCount = 0;
 
     private int tempo = 120;
@@ -65,16 +81,19 @@ public class HachiController implements GridListener, Clockable {
     }
 
     public void run() {
+        System.out.printf("Controller run...\n");
         display.initialize();
         redraw();
         Graphics.setPads(display, Graphics.issho, Color.WHITE);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {}
+        System.out.printf("Displaying logo...\n");
         Graphics.setPads(display, Graphics.issho, Color.OFF);
         Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
         selectModule(0);
 
+        System.out.printf("Starting timer...\n");
         startTimer();
 
     }
@@ -103,6 +122,9 @@ public class HachiController implements GridListener, Clockable {
     }
 
     private void shutdown() {
+        for (Module module : modules) {
+            module.shutdown();
+        }
         display.initialize();
         System.exit(0);
     }
@@ -113,19 +135,19 @@ public class HachiController implements GridListener, Clockable {
         for (int index = 0; index < modules.length; index++) {
             GridButton button = GridButton.at(HachiUtil.MODULE_BUTTON_SIDE, index);
             if (modules[index] == activeModule) {
-                display.setButton(button, selectedColor);
+                display.setButton(button, COLOR_SELECTED);
             } else {
-                display.setButton(button, unselectedColor);
+                display.setButton(button, COLOR_UNSELECTED);
             }
         }
 
         if (clockRunning) {
-            display.setButton(PLAY_BUTTON, selectedColor);
+            display.setButton(PLAY_BUTTON, COLOR_SELECTED);
         } else {
-            display.setButton(PLAY_BUTTON, unselectedColor);
+            display.setButton(PLAY_BUTTON, COLOR_UNSELECTED);
         }
 
-        display.setButton(EXIT_BUTTON, unselectedColor);
+        display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
 
     }
 
@@ -140,7 +162,7 @@ public class HachiController implements GridListener, Clockable {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (clockRunning) {
-                    tick();
+                    tick(tickCount % 16 == 0);
                     tickCount++;
                 }
             }
@@ -152,21 +174,21 @@ public class HachiController implements GridListener, Clockable {
     /***** GridListener implementation ***************/
 
     public void onPadPressed(GridPad pad, int velocity) {
-        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
+//        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
         if (activeListener != null) {
             activeListener.onPadPressed(pad, velocity);
         }
     }
 
     public void onPadReleased(GridPad pad) {
-        System.out.printf("Hachi padRelease: %s\n", pad);
+//        System.out.printf("Hachi padRelease: %s\n", pad);
         if (activeListener != null) {
             activeListener.onPadReleased(pad);
         }
     }
 
     public void onButtonPressed(GridButton button, int velocity) {
-        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
+//        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE && button.getIndex() < modules.length) {
             // top row used for module switching
             int index = button.getIndex();
@@ -178,6 +200,9 @@ public class HachiController implements GridListener, Clockable {
                 start(true);
             } else {
                 stop();
+                for (Clockable clockable: clockables) {
+                    clockable.stop();
+                }
             }
             redraw();
 
@@ -193,10 +218,11 @@ public class HachiController implements GridListener, Clockable {
     }
 
     public void onButtonReleased(GridButton button) {
-        System.out.printf("Hachi buttonReleased: %s\n", button);
+//        System.out.printf("Hachi buttonReleased: %s\n", button);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {
+        } else if (button.equals(EXIT_BUTTON)) {
         } else {
             // everything else passed through to active module
             if (activeListener != null) {
@@ -210,6 +236,8 @@ public class HachiController implements GridListener, Clockable {
 
     public void start(boolean restart) {
         for (Clockable clockable : clockables) {
+            tickCount = 0;
+            midiClockRunning = true;
             clockable.start(restart);
         }
     }
@@ -217,13 +245,90 @@ public class HachiController implements GridListener, Clockable {
     public void stop() {
         for (Clockable clockable : clockables) {
             clockable.stop();
+            midiClockRunning = false;
+            tickCount = 0;
         }
     }
 
-    public void tick() {
-        for (Clockable clockable : clockables) {
-            clockable.tick();
+    public void tick(boolean andReset) {
+        if (midiClockRunning) {
+            for (Clockable clockable : clockables) {
+                clockable.tick(andReset);
+            }
         }
     }
+
+
+    /***** Receiver implementation ***************/
+
+    public void close() {
+    }
+
+    public void send(MidiMessage message, long timeStamp) {
+//        System.out.printf("MSG (%d, %d): ", message.getLength(), message.getStatus());
+//        for (byte b : message.getMessage()) {
+//            System.out.printf("%d ", b);
+//        }
+//        System.out.printf("\n");
+
+        if (message instanceof ShortMessage) {
+            ShortMessage shortMessage = (ShortMessage) message;
+            int command = shortMessage.getCommand();
+            int status = shortMessage.getStatus();
+
+            if (command == MIDI_REALTIME_COMMAND) {
+                switch (status) {
+                    case START:
+//                        System.out.println("START");
+                        midiClockCount = 0;
+                        this.start(true);
+                        break;
+                    case STOP:
+//                        System.out.println("STOP");
+                        midiClockCount = 0;
+                        this.stop();
+                        break;
+                    case TIMING_CLOCK:
+//                        System.out.println("TICK");
+                        if (midiClockCount % midiClockDivider == 0) {
+                            boolean andReset = (tickCount % 16 == 0);
+                            this.tick(andReset);
+                            tickCount++;
+                        }
+                        midiClockCount++;
+                        break;
+                    default:
+//                        System.out.printf("REALTIME: %d\n", status);
+                        break;
+                }
+
+
+            } else {
+                switch (command) {
+//                    case NOTE_ON:
+////                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+//                        if (shortMessage.getChannel() == triggerChannel && shortMessage.getData1() == stepNote &&
+//                                shortMessage.getData2() >= STEP_MIN && shortMessage.getData2() <= STEP_MAX) {
+//                            sequencer.trigger(false);
+//                        } else if (shortMessage.getChannel() == triggerChannel && shortMessage.getData1() == stepNote &&
+//                                shortMessage.getData2() >= RESET_MIN && shortMessage.getData2() <= RESET_MAX) {
+//                            sequencer.trigger(true);
+//                        }
+//                        break;
+//                    case NOTE_OFF:
+////                        System.out.println("NOTE OFF");
+//                        break;
+//                    case CONTROL_CHANGE:
+////                        System.out.println("MIDI CC");
+//                        break;
+//                    default:
+////                        System.out.printf("MSG: %d\n", command);
+                }
+            }
+        }
+
+    }
+
+
 
 }
