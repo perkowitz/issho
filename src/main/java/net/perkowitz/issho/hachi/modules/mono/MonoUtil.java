@@ -2,6 +2,8 @@ package net.perkowitz.issho.hachi.modules.mono;
 
 import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.GridButton;
+import net.perkowitz.issho.devices.GridControl;
+import net.perkowitz.issho.devices.GridControlSet;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 

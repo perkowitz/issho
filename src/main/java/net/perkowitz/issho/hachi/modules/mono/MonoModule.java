@@ -2,10 +2,7 @@ package net.perkowitz.issho.hachi.modules.mono;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridListener;
-import net.perkowitz.issho.devices.GridPad;
+import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Chordable;
 import net.perkowitz.issho.hachi.Clockable;

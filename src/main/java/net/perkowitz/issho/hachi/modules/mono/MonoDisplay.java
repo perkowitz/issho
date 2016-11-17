@@ -3,6 +3,7 @@ package net.perkowitz.issho.hachi.modules.mono;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
+import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;

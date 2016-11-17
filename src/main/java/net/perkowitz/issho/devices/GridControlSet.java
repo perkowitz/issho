@@ -1,12 +1,9 @@
-package net.perkowitz.issho.hachi.modules.mono;
+package net.perkowitz.issho.devices;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;

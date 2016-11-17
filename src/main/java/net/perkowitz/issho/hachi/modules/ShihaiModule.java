@@ -8,8 +8,8 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Graphics;
 import net.perkowitz.issho.hachi.Sessionizeable;
-import net.perkowitz.issho.hachi.modules.mono.GridControl;
-import net.perkowitz.issho.hachi.modules.mono.GridControlSet;
+import net.perkowitz.issho.devices.GridControl;
+import net.perkowitz.issho.devices.GridControlSet;
 
 import java.util.Set;
 
