@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -15,8 +14,6 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 import static javax.sound.midi.ShortMessage.*;
-import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
-import static javax.sound.midi.ShortMessage.NOTE_OFF;
 import static net.perkowitz.issho.hachi.HachiUtil.EXIT_BUTTON;
 import static net.perkowitz.issho.hachi.HachiUtil.PLAY_BUTTON;
 
@@ -31,6 +28,9 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private static int RESET_MAX = 127;
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
+    private static GridColor COLOR_SELECTED = Color.WHITE;//Color.BRIGHT_ORANGE;
+    private static GridColor COLOR_UNSELECTED = Color.DIM_ORANGE;// Color.DARK_GRAY;
+
     private int triggerChannel = 9;//15;
     private int stepNote = 65;//36;
     private int midiClockDivider = 6;
@@ -44,9 +44,6 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private ModuleDisplay[] displays;
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
-
-    private GridColor selectedColor = Color.BRIGHT_ORANGE;
-    private GridColor unselectedColor = Color.DARK_GRAY;
 
     private static CountDownLatch stop = new CountDownLatch(1);
     private static Timer timer = null;
@@ -138,19 +135,19 @@ public class HachiController implements GridListener, Clockable, Receiver {
         for (int index = 0; index < modules.length; index++) {
             GridButton button = GridButton.at(HachiUtil.MODULE_BUTTON_SIDE, index);
             if (modules[index] == activeModule) {
-                display.setButton(button, selectedColor);
+                display.setButton(button, COLOR_SELECTED);
             } else {
-                display.setButton(button, unselectedColor);
+                display.setButton(button, COLOR_UNSELECTED);
             }
         }
 
         if (clockRunning) {
-            display.setButton(PLAY_BUTTON, selectedColor);
+            display.setButton(PLAY_BUTTON, COLOR_SELECTED);
         } else {
-            display.setButton(PLAY_BUTTON, unselectedColor);
+            display.setButton(PLAY_BUTTON, COLOR_UNSELECTED);
         }
 
-        display.setButton(EXIT_BUTTON, unselectedColor);
+        display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
 
     }
 
