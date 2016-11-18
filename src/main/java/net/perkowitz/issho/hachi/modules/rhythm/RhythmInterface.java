@@ -1,12 +1,14 @@
 package net.perkowitz.issho.hachi.modules.rhythm;
 
 
+import net.perkowitz.issho.hachi.modules.Muteable;
+
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.Mode.*;
 
 /**
  * Created by mperkowi on 7/15/16.
  */
-public interface RhythmInterface {
+public interface RhythmInterface extends Muteable {
 
     public enum Module {
         SEQUENCE, SETTINGS
@@ -15,7 +17,7 @@ public interface RhythmInterface {
     public enum Mode {
         PLAY, EXIT, TEMPO, NO_VALUE,
         SAVE, LOAD, HELP,
-        SEQUENCE, SETTINGS,
+        SEQUENCE, SETTINGS, MUTE,
         COPY, CLEAR,
         PATTERN_PLAY, PATTERN_EDIT,
         TRACK_MUTE, TRACK_EDIT,

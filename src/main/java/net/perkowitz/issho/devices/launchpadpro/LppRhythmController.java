@@ -185,6 +185,9 @@ public class LppRhythmController implements GridListener, RhythmController {
             currentModule = RhythmInterface.Module.SETTINGS;
             sequencer.selectModule(RhythmInterface.Module.SETTINGS);
 
+        } else if (button.equals(modeButtonMap.get(RhythmInterface.Mode.MUTE))) {
+            sequencer.mute(!sequencer.isMuted());
+
         } else if (button.getSide() == GridButton.Side.Right) {
             // pressing one of the value buttons
             int index = 7 - button.getIndex();

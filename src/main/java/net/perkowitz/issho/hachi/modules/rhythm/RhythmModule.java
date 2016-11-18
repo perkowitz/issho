@@ -20,6 +20,7 @@ import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.*;
 
+import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.Mode.MUTE;
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.FILL_PERCENT;
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.VELOCITY;
 
@@ -110,6 +111,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
 
     public void redraw() {
+        modeIsActiveMap.put(MUTE, muted);
         rhythmDisplay.displayAll(memory, modeIsActiveMap);
     }
 
@@ -426,6 +428,8 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     public void mute(boolean muted) {
         this.muted = muted;
+        modeIsActiveMap.put(MUTE, this.muted);
+        rhythmDisplay.displayModes(modeIsActiveMap);
     }
 
     public boolean isMuted() {
