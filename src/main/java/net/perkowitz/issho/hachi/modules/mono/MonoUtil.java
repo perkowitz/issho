@@ -95,15 +95,16 @@ public class MonoUtil {
 
     // indices for functions
     public static int FUNCTION_SAVE_INDEX = 5;
-    public static int FUNCTION_LOAD_INDEX = 6;
-    public static int FUNCTION_SETTINGS_INDEX = 7;
+//    public static int FUNCTION_LOAD_INDEX = 6;
+    public static int FUNCTION_SETTINGS_INDEX = 6;
+    public static int FUNCTION_MUTE_INDEX = 7;
 
     public static GridControlSet patternControls = GridControlSet.padRows(MonoUtil.PATTERN_MIN_ROW, MonoUtil.PATTERN_MAX_ROW);
     public static GridControlSet stepControls = GridControlSet.padRows(MonoUtil.STEP_MIN_ROW, MonoUtil.STEP_MAX_ROW);
     public static GridControlSet keyboardControls = new GridControlSet(MonoUtil.keyboardList);
     public static GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 8);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
-    public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_SETTINGS_INDEX);
+    public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(MonoUtil.SESSION_MIN_ROW, MonoUtil.SESSION_MAX_ROW);

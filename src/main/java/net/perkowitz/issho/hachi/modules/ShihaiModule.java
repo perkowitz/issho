@@ -20,7 +20,7 @@ public class ShihaiModule extends BasicModule implements Clockable {
 
     private static Color COLOR_LOGO = Color.BRIGHT_RED;
     private static Color COLOR_MUTED = Color.DARK_GRAY;
-    private static Color COLOR_UNMUTED = Color.BRIGHT_RED;
+    private static Color COLOR_UNMUTED = Color.WHITE;
     private static Color COLOR_SESSION = Color.DIM_GREEN;
     private static Color COLOR_SESSION_HIGHLIGHT = Color.LIGHT_GRAY;
     private static Color COLOR_PATTERN = Color.DIM_BLUE;
@@ -37,7 +37,6 @@ public class ShihaiModule extends BasicModule implements Clockable {
     private static GridControlSet tickControls = GridControlSet.padRows(6, 7);
 
     @Setter private Module[] modules;
-    private boolean[] muted = new boolean[8];
 
     private boolean playing = false;
     private int tickCount = 0;
@@ -52,9 +51,6 @@ public class ShihaiModule extends BasicModule implements Clockable {
     /***** constructor ****************************************/
 
     public ShihaiModule() {
-        for (int index = 0; index < 8; index++) {
-            muted[index] = false;
-        }
     }
 
 
@@ -74,11 +70,11 @@ public class ShihaiModule extends BasicModule implements Clockable {
                 Module module = modules[control.getIndex()];
 
                 Color color = Color.OFF;
-                if (module != null && module != this) {
-                    color = COLOR_MUTED;
-                }
-                if (muted[control.getIndex()]) {
+                if (module instanceof Muteable) {
                     color = COLOR_UNMUTED;
+                    if (((Muteable)module).isMuted()) {
+                        color = COLOR_MUTED;
+                    }
                 }
                 control.draw(display, color);
             }
@@ -130,9 +126,9 @@ public class ShihaiModule extends BasicModule implements Clockable {
 
         if (muteControls.contains(control)) {
             int index = muteControls.getIndex(control);
-            if (modules[index] != null) {
-                muted[index] = !muted[index];
-                modules[index].mute(muted[index]);
+            if (modules[index] != null && modules[index] instanceof Muteable) {
+                boolean muted = ((Muteable)modules[index]).isMuted();
+                ((Muteable)modules[index]).mute(!muted);
                 redraw();
             }
 

@@ -10,6 +10,7 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.MidiModule;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.hachi.modules.Muteable;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -20,9 +21,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_LOAD_INDEX;
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SAVE_INDEX;
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SETTINGS_INDEX;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.*;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.PLAY;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.ValueState.STEP_OCTAVE;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
@@ -30,7 +29,7 @@ import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable {
+public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable, Muteable {
 
     private static int MAX_VELOCITY = 127;
     private static int MAX_OCTAVE = 7;
@@ -204,7 +203,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     public void redraw() {
         monoDisplay.redraw(memory);
-        monoDisplay.drawFunctions(currentView);
+        monoDisplay.drawFunctions(isMuted);
     }
 
     public void setDisplay(GridDisplay display) {
@@ -216,9 +215,16 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         notesOff();
     }
 
+
+    /***** Muteable implementation ***********************************/
+
     public void mute(boolean muted) {
-        this.muted = muted;
+        this.isMuted = muted;
         notesOff();
+    }
+
+    public boolean isMuted() {
+        return isMuted;
     }
 
     /***** Chordable implementation ***********************************/
@@ -398,15 +404,18 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             if (index != null) {
                 if (index == FUNCTION_SAVE_INDEX) {
                     save(currentFileIndex);
-                } else if (index == FUNCTION_LOAD_INDEX) {
-                    load(currentFileIndex);
+//                } else if (index == FUNCTION_LOAD_INDEX) {
+//                    load(currentFileIndex);
+//                    monoDisplay.redraw(memory);
+                } else if (index == FUNCTION_MUTE_INDEX) {
+                    this.isMuted = !isMuted;
                     monoDisplay.redraw(memory);
                 } else if (index == FUNCTION_SETTINGS_INDEX) {
                     monoDisplay.toggleSettings();
                     monoDisplay.initialize();
                     monoDisplay.redraw(memory);
                 }
-                monoDisplay.drawFunctions(currentView);
+                monoDisplay.drawFunctions(isMuted);
             }
 
         }
@@ -447,7 +456,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                     monoDisplay.initialize();
                     monoDisplay.redraw(memory);
                 }
-                monoDisplay.drawFunctions(currentView);
+                monoDisplay.drawFunctions(isMuted);
             }
 
         }

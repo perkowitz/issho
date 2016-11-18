@@ -205,10 +205,12 @@ public class MonoDisplay {
         }
     }
 
-    public void drawFunctions(View currentView) {
+    public void drawFunctions(boolean isMuted) {
         for (GridControl control : functionControls.getControls()) {
             Color color = palette.get(COLOR_MODE_INACTIVE);
             if (control.getIndex() == FUNCTION_SETTINGS_INDEX && settingsMode) {
+                color = palette.get(COLOR_MODE_ACTIVE);
+            } else if (control.getIndex() == FUNCTION_MUTE_INDEX && isMuted) {
                 color = palette.get(COLOR_MODE_ACTIVE);
             }
             control.draw(display, color);

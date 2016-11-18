@@ -12,6 +12,5 @@ public interface Module {
     public GridListener getGridListener();
     public void redraw();
     public void shutdown();
-    public void mute(boolean mute);
 
 }

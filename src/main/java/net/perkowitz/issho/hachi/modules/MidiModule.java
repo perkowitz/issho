@@ -1,7 +1,5 @@
 package net.perkowitz.issho.hachi.modules;
 
-import net.perkowitz.issho.hachi.modules.mono.MonoDisplay;
-
 import javax.sound.midi.*;
 
 import static javax.sound.midi.ShortMessage.*;
@@ -17,7 +15,7 @@ public class MidiModule extends BasicModule implements Receiver {
 
     protected Transmitter inputTransmitter;
     protected Receiver outputReceiver;
-    protected boolean muted;
+    protected boolean isMuted;
 
 
     public MidiModule(Transmitter inputTransmitter, Receiver outputReceiver) {
@@ -41,13 +39,13 @@ public class MidiModule extends BasicModule implements Receiver {
     }
 
     public void mute(boolean muted) {
-        this.muted = muted;
+        this.isMuted = muted;
     }
 
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
 
-        if (muted && velocity > 0) return;
+        if (isMuted && velocity > 0) return;
 
         try {
             ShortMessage noteMessage = new ShortMessage();
@@ -66,7 +64,7 @@ public class MidiModule extends BasicModule implements Receiver {
 //        }
 //        System.out.printf("\n");
 
-        if (muted) return;
+        if (isMuted) return;
 
         if (message instanceof ShortMessage) {
             ShortMessage shortMessage = (ShortMessage) message;
