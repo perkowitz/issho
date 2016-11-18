@@ -1,4 +1,4 @@
-package net.perkowitz.issho.hachi.modules;
+package net.perkowitz.issho.hachi;
 
 import javax.sound.midi.*;
 
@@ -7,45 +7,25 @@ import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
 
 /**
- * Created by optic on 10/24/16.
+ * Created by optic on 11/16/16.
  */
-public class MidiModule extends BasicModule implements Receiver {
+public class Knobby implements Receiver {
 
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
-    protected Transmitter inputTransmitter;
-    protected Receiver outputReceiver;
-    protected boolean isMuted;
+    private Transmitter inputTransmitter;
+    private Receiver outputReceiver;
 
 
-    public MidiModule(Transmitter inputTransmitter, Receiver outputReceiver) {
-        // connect the provided midi input to the sequencer's clock receiver
+    public Knobby(Transmitter inputTransmitter, Receiver outputReceiver) {
         this.inputTransmitter = inputTransmitter;
         this.inputTransmitter.setReceiver(this);
-
-        // where to send the sequencer's midi output
         this.outputReceiver = outputReceiver;
     }
 
 
-
-    /************************************************************************
-     * midi output implementation
-     *
-     */
-
-    public void close() {
-
-    }
-
-    public void mute(boolean muted) {
-        this.isMuted = muted;
-    }
-
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
-
-        if (isMuted && velocity > 0) return;
 
         try {
             ShortMessage noteMessage = new ShortMessage();
@@ -57,14 +37,10 @@ public class MidiModule extends BasicModule implements Receiver {
         }
     }
 
-    public void send(MidiMessage message, long timeStamp) {
-//        System.out.printf("MSG (%d, %d): ", message.getLength(), message.getStatus());
-//        for (byte b : message.getMessage()) {
-//            System.out.printf("%d ", b);
-//        }
-//        System.out.printf("\n");
 
-        if (isMuted) return;
+    /***** midi receiver implementation **************************************************************/
+
+    public void send(MidiMessage message, long timeStamp) {
 
         if (message instanceof ShortMessage) {
             ShortMessage shortMessage = (ShortMessage) message;
@@ -91,19 +67,24 @@ public class MidiModule extends BasicModule implements Receiver {
             } else {
                 switch (command) {
                     case NOTE_ON:
+//                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         break;
                     case NOTE_OFF:
-//                        System.out.println("NOTE OFF");
+//                        System.out.printf("NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         break;
                     case CONTROL_CHANGE:
-//                        System.out.println("MIDI CC");
+//                        System.out.printf("MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+                        outputReceiver.send(message, timeStamp);
                         break;
                     default:
-//                        System.out.printf("MSG: %d\n", command);
                 }
             }
         }
+    }
+
+    public void close() {
 
     }
+
 
 }

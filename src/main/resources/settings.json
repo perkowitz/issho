@@ -24,7 +24,8 @@
     {
       "class": "RhythmModule",
       "filePrefix": "rhythm2",
-      "palette": "red"
+      "palette": "red",
+      "midiNoteOffset": 24
     },
     {
       "class": "MonoModule",
@@ -36,7 +37,7 @@
       "palette": "orange"
     },
     {
-      "class": "xPaletteModule"
+      "class": "PaletteModule"
     }
   ]
 }

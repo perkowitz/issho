@@ -1,10 +1,6 @@
-package net.perkowitz.issho.hachi.modules.mono;
+package net.perkowitz.issho.devices;
 
 import lombok.Getter;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridColor;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridPad;
 
 /**
  * Created by optic on 10/27/16.

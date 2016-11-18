@@ -1,11 +1,9 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridListener;
-import net.perkowitz.issho.devices.GridPad;
+import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Chordable;
 import net.perkowitz.issho.hachi.Clockable;
@@ -13,6 +11,7 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.MidiModule;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.hachi.modules.Muteable;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -23,9 +22,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_LOAD_INDEX;
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SAVE_INDEX;
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.FUNCTION_SETTINGS_INDEX;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.*;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.PLAY;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.ValueState.STEP_OCTAVE;
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
@@ -33,7 +30,7 @@ import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable {
+public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable, Muteable {
 
     private static int MAX_VELOCITY = 127;
     private static int MAX_OCTAVE = 7;
@@ -56,6 +53,8 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private int patternsReleasedCount = 0;
+    private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
+    private boolean patternEditing = false;
 
     private String filePrefix = "monomodule";
     private int currentFileIndex = 0;
@@ -207,7 +206,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     public void redraw() {
         monoDisplay.redraw(memory);
-        monoDisplay.drawFunctions(currentView);
+        monoDisplay.drawFunctions(isMuted);
     }
 
     public void setDisplay(GridDisplay display) {
@@ -219,9 +218,16 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         notesOff();
     }
 
+
+    /***** Muteable implementation ***********************************/
+
     public void mute(boolean muted) {
-        this.muted = muted;
+        this.isMuted = muted;
         notesOff();
+    }
+
+    public boolean isMuted() {
+        return isMuted;
     }
 
     /***** Chordable implementation ***********************************/
@@ -277,8 +283,22 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             GridControl selectedControl = MonoUtil.patternControls.get(control);
             Integer index = selectedControl.getIndex();
             if (index != null) {
-                patternsPressed.add(index);
+                if (patternEditing) {
+                    patternEditIndexBuffer.add(index);
+                } else {
+                    patternsPressed.add(index);
+                }
             }
+
+        } else if (patternCopyControl.equals(control)) {
+            patternEditIndexBuffer.clear();
+            patternEditing = true;
+            monoDisplay.drawPatternEditControls(true, false);
+
+        } else if (patternClearControl.equals(control)) {
+            patternEditIndexBuffer.clear();
+            patternEditing = true;
+            monoDisplay.drawPatternEditControls(false, true);
 
         } else if (MonoUtil.stepControls.contains(control)) {
 
@@ -401,15 +421,18 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             if (index != null) {
                 if (index == FUNCTION_SAVE_INDEX) {
                     save(currentFileIndex);
-                } else if (index == FUNCTION_LOAD_INDEX) {
-                    load(currentFileIndex);
+//                } else if (index == FUNCTION_LOAD_INDEX) {
+//                    load(currentFileIndex);
+//                    monoDisplay.redraw(memory);
+                } else if (index == FUNCTION_MUTE_INDEX) {
+                    this.isMuted = !isMuted;
                     monoDisplay.redraw(memory);
                 } else if (index == FUNCTION_SETTINGS_INDEX) {
                     monoDisplay.toggleSettings();
                     monoDisplay.initialize();
                     monoDisplay.redraw(memory);
                 }
-                monoDisplay.drawFunctions(currentView);
+                monoDisplay.drawFunctions(isMuted);
             }
 
         }
@@ -450,7 +473,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
                     monoDisplay.initialize();
                     monoDisplay.redraw(memory);
                 }
-                monoDisplay.drawFunctions(currentView);
+                monoDisplay.drawFunctions(isMuted);
             }
 
         }
@@ -460,28 +483,52 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
         if (MonoUtil.patternControls.contains(control)) {
 
-            // releasing a pattern pad
-            // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
-            patternsReleasedCount++;
-            if (patternsReleasedCount >= patternsPressed.size()) {
-                GridControl selectedControl = MonoUtil.patternControls.get(control);
-                Integer index = selectedControl.getIndex();
-                patternsPressed.add(index); // just to make sure
-                int min = index;
-                int max = index;
-                if (patternsPressed.size() > 1) {
-                    for (Integer pattern : patternsPressed) {
-                        if (pattern < min) {
-                            min = pattern;
+            if (!patternEditing) {
+                // releasing a pattern pad
+                // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
+                patternsReleasedCount++;
+                if (patternsReleasedCount >= patternsPressed.size()) {
+                    GridControl selectedControl = MonoUtil.patternControls.get(control);
+                    Integer index = selectedControl.getIndex();
+                    patternsPressed.add(index); // just to make sure
+                    int min = index;
+                    int max = index;
+                    if (patternsPressed.size() > 1) {
+                        for (Integer pattern : patternsPressed) {
+                            if (pattern < min) {
+                                min = pattern;
+                            }
+                            if (pattern > max) {
+                                max = pattern;
+                            }
                         }
-                        if (pattern > max) {
-                            max = pattern;
-                        }
+                        memory.selectPatternChain(min, max);
                     }
-                    memory.selectPatternChain(min, max);
+                    selectPatterns(min, max);
                 }
-                selectPatterns(min, max);
             }
+
+        } else if (patternCopyControl.equals(control)) {
+            if (patternEditIndexBuffer.size() >= 2) {
+                Integer fromIndex = patternEditIndexBuffer.get(0);
+                Integer toIndex = patternEditIndexBuffer.get(1);
+                if (fromIndex != null && toIndex != null) {
+                    memory.currentSession().getPatterns()[toIndex] = MonoPattern.copy(memory.currentSession().getPattern(fromIndex), toIndex);;
+                }
+            }
+            patternEditIndexBuffer.clear();
+            patternEditing = false;
+            monoDisplay.drawPatternEditControls(false, false);
+
+        } else if (patternClearControl.equals(control)) {
+            if (patternEditIndexBuffer.size() >= 0) {
+                for (Integer index : patternEditIndexBuffer) {
+                    memory.currentSession().getPatterns()[index] = new MonoPattern(index);
+                }
+            }
+            patternEditIndexBuffer.clear();
+            patternEditing = false;
+            monoDisplay.drawPatternEditControls(false, false);
 
         }
     }

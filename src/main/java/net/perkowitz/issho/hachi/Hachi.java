@@ -44,6 +44,9 @@ public class Hachi {
     private static Transmitter midiTransmitter;
     private static Receiver midiReceiver;
 
+    private static MidiDevice knobInput;
+    private static MidiDevice knobOutput;
+
     private static HachiController controller;
     private static CountDownLatch stop = new CountDownLatch(1);
 
@@ -94,6 +97,8 @@ public class Hachi {
 //            gridDisplay = new Console();
         }
 
+        createKnobby();
+
         Module[] modules;
         if (settings.get("modules") != null) {
             modules = createModules(launchpadPro);
@@ -117,11 +122,11 @@ public class Hachi {
     }
 
 
-    private static Module rhythm(LaunchpadPro launchpadPro, List<Color> palette, String filePrefix) {
+    private static RhythmModule rhythm(LaunchpadPro launchpadPro, List<Color> palette, String filePrefix) {
 
         RhythmController rhythmController = new LppRhythmController();
         RhythmDisplay rhythmDisplay = new LppRhythmDisplay(launchpadPro, palette);
-        Module rhythm = new RhythmModule(rhythmController, rhythmDisplay, midiTransmitter, midiReceiver, filePrefix);
+        RhythmModule rhythm = new RhythmModule(rhythmController, rhythmDisplay, midiTransmitter, midiReceiver, filePrefix);
 
         return rhythm;
     }
@@ -195,7 +200,14 @@ public class Hachi {
                 if (paletteName != null && paletteName.toUpperCase().equals("RED")) {
                     palette = LppRhythmUtil.PALETTE_RED;
                 }
-                module = rhythm(lpp, palette, filePrefix);
+                RhythmModule rhythmModule = rhythm(lpp, palette, filePrefix);
+                if (moduleSettings.get("midiNoteOffset") != null) {
+                    Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
+                    if (offset != null) {
+                        rhythmModule.setMidiNoteOffset(offset);
+                    }
+                }
+                module = rhythmModule;
 
             } else if (className.equals("MonoModule")) {
                 List<Color> palette = MonoUtil.PALETTE_FUCHSIA;
@@ -250,5 +262,29 @@ public class Hachi {
 
         return modules;
     }
+
+    private static void createKnobby() {
+
+        // find the knob device
+        System.out.println("Finding knob device..");
+        String[] knobNames = new String[] { "nanokontrol" };
+        knobInput = MidiUtil.findMidiDevice(knobNames, false, true);
+        knobOutput = MidiUtil.findMidiDevice(knobNames, true, false);
+        if (knobInput == null || knobOutput == null) {
+            return;
+        }
+
+        try {
+            knobInput.open();
+            knobOutput.open();
+            Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+
+    }
+
 
 }

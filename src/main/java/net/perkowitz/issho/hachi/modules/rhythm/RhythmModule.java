@@ -3,10 +3,12 @@ package net.perkowitz.issho.hachi.modules.rhythm;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import lombok.Setter;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Sessionizeable;
+import net.perkowitz.issho.hachi.modules.Muteable;
 import net.perkowitz.issho.hachi.modules.rhythm.models.*;
 import net.perkowitz.issho.hachi.modules.Module;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -18,6 +20,7 @@ import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.*;
 
+import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.Mode.MUTE;
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.FILL_PERCENT;
 import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode.VELOCITY;
 
@@ -25,7 +28,7 @@ import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.ValueMode
 /**
  * Created by optic on 7/8/16.
  */
-public class RhythmModule implements Module, RhythmInterface, Clockable, Sessionizeable {
+public class RhythmModule implements Module, RhythmInterface, Clockable, Sessionizeable, Muteable {
 
     public enum StepMode { MUTE, VELOCITY, JUMP, PLAY }
     private static final int VELOCITY_MIN = 0;
@@ -49,6 +52,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     private String filePrefix = "sequencer";
     private boolean muted = false;
+    @Setter private int midiNoteOffset = 0;
 
     private Memory memory;
     private int totalStepCount = 0;
@@ -107,6 +111,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
 
     public void redraw() {
+        modeIsActiveMap.put(MUTE, muted);
         rhythmDisplay.displayAll(memory, modeIsActiveMap);
     }
 
@@ -418,12 +423,18 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     public void shutdown() {}
 
+
+    /***** Module implementation *********************************************************************/
+
     public void mute(boolean muted) {
-
         this.muted = muted;
-
+        modeIsActiveMap.put(MUTE, this.muted);
+        rhythmDisplay.displayModes(modeIsActiveMap);
     }
 
+    public boolean isMuted() {
+        return muted;
+    }
 
 
     /***** private implementation *********************************************************************/
@@ -580,8 +591,9 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
         if (muted && velocity > 0) return;
 
         try {
+            int offsetNoteNumber = midiNoteOffset + noteNumber;
             ShortMessage noteMessage = new ShortMessage();
-            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
+            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, offsetNoteNumber, velocity);
             outputReceiver.send(noteMessage, -1);
 
         } catch (InvalidMidiDataException e) {
