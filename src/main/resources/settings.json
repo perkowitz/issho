@@ -37,7 +37,7 @@
       "palette": "orange"
     },
     {
-      "class": "PaletteModule"
+      "class": "xPaletteModule"
     }
   ]
 }
