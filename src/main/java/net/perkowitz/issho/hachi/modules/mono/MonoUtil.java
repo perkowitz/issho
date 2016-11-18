@@ -105,6 +105,9 @@ public class MonoUtil {
     public static GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 8);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
+    public static GridControl patternCopyControl = new GridControl(GridPad.at(0,2), 0);
+    public static GridControl patternClearControl = new GridControl(GridPad.at(1,2), 0);
+//    public static GridControlSet patternEditControls = GridControlSet.padRows(2, 2, 0, 1);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(MonoUtil.SESSION_MIN_ROW, MonoUtil.SESSION_MAX_ROW);
@@ -139,6 +142,8 @@ public class MonoUtil {
     public static Integer COLOR_FILE_ACTIVE = 22;
     public static Integer COLOR_MIDI_CHANNEL = 23;
     public static Integer COLOR_MIDI_CHANNEL_ACTIVE = 24;
+    public static Integer COLOR_PATTERN_EDIT = 25;
+    public static Integer COLOR_PATTERN_EDIT_SELECTED = 26;
 
     public static List<Color> PALETTE_FUCHSIA = Lists.newArrayList(
             // 52-55 purple-pinks, 12-15 yellows, 40-43 blues
@@ -149,7 +154,8 @@ public class MonoUtil {
             Color.fromIndex(43), Color.WHITE, Color.fromIndex(40), Color.DARK_GRAY, Color.WHITE,    // pattern
             Color.fromIndex(55), Color.WHITE, Color.DARK_GRAY,                                      // session
             Color.DIM_GREEN, Color.DIM_RED, Color.WHITE,                                            // file
-            Color.fromIndex(55), Color.WHITE                                                        // midi channel
+            Color.fromIndex(55), Color.WHITE,                                                       // midi channel
+            Color.DARK_GRAY, Color.WHITE                                                            // pattern edit
     );
 
     public static List<Color> PALETTE_ORANGE = Lists.newArrayList(
@@ -161,7 +167,8 @@ public class MonoUtil {
             Color.fromIndex(19), Color.WHITE, Color.fromIndex(16), Color.DARK_GRAY, Color.WHITE,    // pattern
             Color.fromIndex(10), Color.WHITE, Color.DARK_GRAY,                                      // session
             Color.DIM_GREEN, Color.DIM_RED, Color.WHITE,                                            // file
-            Color.fromIndex(10), Color.WHITE                                                        // midi channel
+            Color.fromIndex(10), Color.WHITE,                                                       // midi channel
+            Color.DARK_GRAY, Color.WHITE                                                            // pattern edit
     );
 
 

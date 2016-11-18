@@ -40,4 +40,15 @@ public class MonoPattern {
         steps = shiftedSteps;
     }
 
+
+    /***** static methods **************************/
+
+    public static MonoPattern copy(MonoPattern pattern, int newIndex) {
+        MonoPattern newPattern = new MonoPattern(newIndex);
+        for (int i = 0; i < STEP_COUNT; i++) {
+            newPattern.steps[i] = MonoStep.copy(pattern.steps[i]);
+        }
+        return newPattern;
+    }
+
 }

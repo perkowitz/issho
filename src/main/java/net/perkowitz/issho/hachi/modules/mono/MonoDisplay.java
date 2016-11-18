@@ -34,6 +34,7 @@ public class MonoDisplay {
             drawMidiChannel(memory);
         } else {
             drawPatterns(memory);
+            drawPatternEditControls(false, false);
             drawKeyboard(memory);
             drawSteps(memory.currentPattern().getSteps());
             drawStepEdits(memory.getStepEditState());
@@ -87,6 +88,21 @@ public class MonoDisplay {
         MonoPattern[] patterns = memory.currentSession().getPatterns();
         for (int i = 0; i < patterns.length; i++) {
             drawPattern(memory, patterns[i]);
+        }
+
+
+    }
+
+    public void drawPatternEditControls(boolean copyActive, boolean clearActive) {
+        if (copyActive) {
+            patternCopyControl.draw(display, palette.get(COLOR_PATTERN_EDIT_SELECTED));
+        } else {
+            patternCopyControl.draw(display, palette.get(COLOR_PATTERN_EDIT));
+        }
+        if (clearActive) {
+            patternClearControl.draw(display, palette.get(COLOR_PATTERN_EDIT_SELECTED));
+        } else {
+            patternClearControl.draw(display, palette.get(COLOR_PATTERN_EDIT));
         }
     }
 

@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import net.perkowitz.issho.devices.*;
@@ -52,6 +53,8 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private int patternsReleasedCount = 0;
+    private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
+    private boolean patternEditing = false;
 
     private String filePrefix = "monomodule";
     private int currentFileIndex = 0;
@@ -280,8 +283,22 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             GridControl selectedControl = MonoUtil.patternControls.get(control);
             Integer index = selectedControl.getIndex();
             if (index != null) {
-                patternsPressed.add(index);
+                if (patternEditing) {
+                    patternEditIndexBuffer.add(index);
+                } else {
+                    patternsPressed.add(index);
+                }
             }
+
+        } else if (patternCopyControl.equals(control)) {
+            patternEditIndexBuffer.clear();
+            patternEditing = true;
+            monoDisplay.drawPatternEditControls(true, false);
+
+        } else if (patternClearControl.equals(control)) {
+            patternEditIndexBuffer.clear();
+            patternEditing = true;
+            monoDisplay.drawPatternEditControls(false, true);
 
         } else if (MonoUtil.stepControls.contains(control)) {
 
@@ -466,28 +483,52 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
         if (MonoUtil.patternControls.contains(control)) {
 
-            // releasing a pattern pad
-            // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
-            patternsReleasedCount++;
-            if (patternsReleasedCount >= patternsPressed.size()) {
-                GridControl selectedControl = MonoUtil.patternControls.get(control);
-                Integer index = selectedControl.getIndex();
-                patternsPressed.add(index); // just to make sure
-                int min = index;
-                int max = index;
-                if (patternsPressed.size() > 1) {
-                    for (Integer pattern : patternsPressed) {
-                        if (pattern < min) {
-                            min = pattern;
+            if (!patternEditing) {
+                // releasing a pattern pad
+                // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
+                patternsReleasedCount++;
+                if (patternsReleasedCount >= patternsPressed.size()) {
+                    GridControl selectedControl = MonoUtil.patternControls.get(control);
+                    Integer index = selectedControl.getIndex();
+                    patternsPressed.add(index); // just to make sure
+                    int min = index;
+                    int max = index;
+                    if (patternsPressed.size() > 1) {
+                        for (Integer pattern : patternsPressed) {
+                            if (pattern < min) {
+                                min = pattern;
+                            }
+                            if (pattern > max) {
+                                max = pattern;
+                            }
                         }
-                        if (pattern > max) {
-                            max = pattern;
-                        }
+                        memory.selectPatternChain(min, max);
                     }
-                    memory.selectPatternChain(min, max);
+                    selectPatterns(min, max);
                 }
-                selectPatterns(min, max);
             }
+
+        } else if (patternCopyControl.equals(control)) {
+            if (patternEditIndexBuffer.size() >= 2) {
+                Integer fromIndex = patternEditIndexBuffer.get(0);
+                Integer toIndex = patternEditIndexBuffer.get(1);
+                if (fromIndex != null && toIndex != null) {
+                    memory.currentSession().getPatterns()[toIndex] = MonoPattern.copy(memory.currentSession().getPattern(fromIndex), toIndex);;
+                }
+            }
+            patternEditIndexBuffer.clear();
+            patternEditing = false;
+            monoDisplay.drawPatternEditControls(false, false);
+
+        } else if (patternClearControl.equals(control)) {
+            if (patternEditIndexBuffer.size() >= 0) {
+                for (Integer index : patternEditIndexBuffer) {
+                    memory.currentSession().getPatterns()[index] = new MonoPattern(index);
+                }
+            }
+            patternEditIndexBuffer.clear();
+            patternEditing = false;
+            monoDisplay.drawPatternEditControls(false, false);
 
         }
     }
