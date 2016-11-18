@@ -3,6 +3,7 @@ package net.perkowitz.issho.hachi.modules.rhythm;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import lombok.Setter;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.hachi.Clockable;
@@ -49,6 +50,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     private String filePrefix = "sequencer";
     private boolean muted = false;
+    @Setter private int midiNoteOffset = 0;
 
     private Memory memory;
     private int totalStepCount = 0;
@@ -580,8 +582,9 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
         if (muted && velocity > 0) return;
 
         try {
+            int offsetNoteNumber = midiNoteOffset + noteNumber;
             ShortMessage noteMessage = new ShortMessage();
-            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
+            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, offsetNoteNumber, velocity);
             outputReceiver.send(noteMessage, -1);
 
         } catch (InvalidMidiDataException e) {

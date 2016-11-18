@@ -122,11 +122,11 @@ public class Hachi {
     }
 
 
-    private static Module rhythm(LaunchpadPro launchpadPro, List<Color> palette, String filePrefix) {
+    private static RhythmModule rhythm(LaunchpadPro launchpadPro, List<Color> palette, String filePrefix) {
 
         RhythmController rhythmController = new LppRhythmController();
         RhythmDisplay rhythmDisplay = new LppRhythmDisplay(launchpadPro, palette);
-        Module rhythm = new RhythmModule(rhythmController, rhythmDisplay, midiTransmitter, midiReceiver, filePrefix);
+        RhythmModule rhythm = new RhythmModule(rhythmController, rhythmDisplay, midiTransmitter, midiReceiver, filePrefix);
 
         return rhythm;
     }
@@ -200,7 +200,14 @@ public class Hachi {
                 if (paletteName != null && paletteName.toUpperCase().equals("RED")) {
                     palette = LppRhythmUtil.PALETTE_RED;
                 }
-                module = rhythm(lpp, palette, filePrefix);
+                RhythmModule rhythmModule = rhythm(lpp, palette, filePrefix);
+                if (moduleSettings.get("midiNoteOffset") != null) {
+                    Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
+                    if (offset != null) {
+                        rhythmModule.setMidiNoteOffset(offset);
+                    }
+                }
+                module = rhythmModule;
 
             } else if (className.equals("MonoModule")) {
                 List<Color> palette = MonoUtil.PALETTE_FUCHSIA;

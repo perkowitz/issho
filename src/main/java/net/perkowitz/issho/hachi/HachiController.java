@@ -28,8 +28,8 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private static int RESET_MAX = 127;
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
-    private static GridColor COLOR_SELECTED = Color.WHITE;//Color.BRIGHT_ORANGE;
-    private static GridColor COLOR_UNSELECTED = Color.DIM_ORANGE;// Color.DARK_GRAY;
+    private static GridColor COLOR_SELECTED = Color.LIGHT_GRAY; //Color.WHITE;//Color.BRIGHT_ORANGE;
+    private static GridColor COLOR_UNSELECTED = Color.DIM_RED; //Color.DIM_ORANGE;// Color.DARK_GRAY;
 
     private int triggerChannel = 9;//15;
     private int stepNote = 65;//36;

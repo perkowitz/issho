@@ -18,17 +18,17 @@ import java.util.Set;
  */
 public class ShihaiModule extends BasicModule implements Clockable {
 
-    private static Color COLOR_LOGO = Color.BRIGHT_ORANGE;
+    private static Color COLOR_LOGO = Color.BRIGHT_RED;
     private static Color COLOR_MUTED = Color.DARK_GRAY;
-    private static Color COLOR_UNMUTED = Color.BRIGHT_ORANGE;
-    private static Color COLOR_SESSION = Color.DARK_GRAY;
-    private static Color COLOR_SESSION_HIGHLIGHT = Color.BRIGHT_ORANGE;
-    private static Color COLOR_PATTERN = Color.DIM_ORANGE;
-    private static Color COLOR_PATTERN_HIGHLIGHT = Color.WHITE;
-    private static Color COLOR_MEASURE = Color.DARK_GRAY;
-    private static Color COLOR_MEASURE_HIGHLIGHT = Color.BRIGHT_ORANGE;
-    private static Color COLOR_TICK = Color.DIM_ORANGE;
-    private static Color COLOR_TICK_HIGHLIGHT = Color.WHITE;
+    private static Color COLOR_UNMUTED = Color.BRIGHT_RED;
+    private static Color COLOR_SESSION = Color.DIM_GREEN;
+    private static Color COLOR_SESSION_HIGHLIGHT = Color.LIGHT_GRAY;
+    private static Color COLOR_PATTERN = Color.DIM_BLUE;
+    private static Color COLOR_PATTERN_HIGHLIGHT = Color.LIGHT_GRAY;
+    private static Color COLOR_MEASURE = Color.DIM_RED;
+    private static Color COLOR_MEASURE_HIGHLIGHT = Color.LIGHT_GRAY;
+    private static Color COLOR_TICK = Color.fromIndex(10);
+    private static Color COLOR_TICK_HIGHLIGHT = Color.LIGHT_GRAY;
 
     private static GridControlSet muteControls = GridControlSet.buttonSide(GridButton.Side.Bottom);
     private static GridControlSet sessionControls = GridControlSet.padRows(0, 1);
