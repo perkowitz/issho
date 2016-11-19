@@ -32,8 +32,8 @@ public class DrawingModule extends BasicModule implements Clockable {
 
     // memory sizes
     private static int FRAMES_PER_PATTERN = 64;
-    private static int PATTERNS_PER_SESSION = 8;
-    private static int SESSIONS_PER_MEMORY = 8;
+    private static int PATTERNS_PER_SESSION = 1;
+    private static int SESSIONS_PER_MEMORY = 1;
     private static int GRID_X_SIZE = 8;
     private static int GRID_Y_SIZE = 8;
 
@@ -342,12 +342,12 @@ public class DrawingModule extends BasicModule implements Clockable {
         }
 
         public Session get(int index) {
-            return sessions.get(index);
+            return sessions.get(index % SESSIONS_PER_MEMORY);
         }
 
         @JsonIgnore
         public Session currentSession() {
-            return sessions.get(currentSessionIndex);
+            return sessions.get(currentSessionIndex % SESSIONS_PER_MEMORY);
         }
 
         @JsonIgnore
