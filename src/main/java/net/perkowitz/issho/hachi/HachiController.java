@@ -23,7 +23,7 @@ import static net.perkowitz.issho.hachi.HachiUtil.PLAY_BUTTON;
  */
 public class HachiController implements GridListener, Clockable, Receiver {
 
-    private static boolean DEBUG_MODE = true;
+    private static boolean DEBUG_MODE = false;
 
     private static int STEP_MIN = 0;
     private static int STEP_MAX = 110;

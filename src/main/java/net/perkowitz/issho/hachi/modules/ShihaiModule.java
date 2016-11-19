@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi.modules;
 
 import com.google.common.collect.Sets;
+import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridPad;
@@ -42,7 +43,7 @@ public class ShihaiModule extends BasicModule implements Clockable {
     private static GridControlSet tickControls = GridControlSet.padRows(6, 7);
     private static GridControlSet tempoControls = GridControlSet.buttonSide(GridButton.Side.Right);
 
-    @Setter private Module[] modules;
+    @Getter @Setter private Module[] modules;
     HachiController hachiController = null;
 
     private boolean playing = false;
@@ -70,6 +71,10 @@ public class ShihaiModule extends BasicModule implements Clockable {
     }
 
     /***** Module interface ****************************************/
+
+    public void setModules(Module[] modules) {
+        this.modules = modules;
+    }
 
     @Override
     public void redraw() {
