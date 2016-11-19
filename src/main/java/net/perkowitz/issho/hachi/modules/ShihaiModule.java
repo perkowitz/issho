@@ -1,12 +1,14 @@
 package net.perkowitz.issho.hachi.modules;
 
 import com.google.common.collect.Sets;
+import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Graphics;
+import net.perkowitz.issho.hachi.HachiController;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
@@ -17,6 +19,8 @@ import java.util.Set;
  * Created by optic on 9/12/16.
  */
 public class ShihaiModule extends BasicModule implements Clockable {
+
+    private static int[] tempos = new int[] { 128, 124, 120, 116, 112, 108, 100, 92 };
 
     private static Color COLOR_LOGO = Color.BRIGHT_RED;
     private static Color COLOR_MUTED = Color.DARK_GRAY;
@@ -29,14 +33,18 @@ public class ShihaiModule extends BasicModule implements Clockable {
     private static Color COLOR_MEASURE_HIGHLIGHT = Color.LIGHT_GRAY;
     private static Color COLOR_TICK = Color.fromIndex(10);
     private static Color COLOR_TICK_HIGHLIGHT = Color.LIGHT_GRAY;
+    private static Color COLOR_TEMPO = Color.DIM_RED;
+    private static Color COLOR_TEMPO_HIGHLIGHT = Color.BRIGHT_RED;
 
     private static GridControlSet muteControls = GridControlSet.buttonSide(GridButton.Side.Bottom);
     private static GridControlSet sessionControls = GridControlSet.padRows(0, 1);
     private static GridControlSet patternControls = GridControlSet.padRows(2, 3);
     private static GridControlSet measureControls = GridControlSet.padRow(5);
     private static GridControlSet tickControls = GridControlSet.padRows(6, 7);
+    private static GridControlSet tempoControls = GridControlSet.buttonSide(GridButton.Side.Right);
 
-    @Setter private Module[] modules;
+    @Getter @Setter private Module[] modules;
+    HachiController hachiController = null;
 
     private boolean playing = false;
     private int tickCount = 0;
@@ -46,6 +54,7 @@ public class ShihaiModule extends BasicModule implements Clockable {
     private int maxPatternIndex = 0;
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private int patternsReleasedCount = 0;
+    private int tempoIndex = 2;
 
 
     /***** constructor ****************************************/
@@ -54,7 +63,18 @@ public class ShihaiModule extends BasicModule implements Clockable {
     }
 
 
+    public int tempo() {
+        if (tempoIndex < tempos.length && tempoIndex >= 0) {
+            return tempos[tempoIndex];
+        }
+        return 120;
+    }
+
     /***** Module interface ****************************************/
+
+    public void setModules(Module[] modules) {
+        this.modules = modules;
+    }
 
     @Override
     public void redraw() {
@@ -92,6 +112,14 @@ public class ShihaiModule extends BasicModule implements Clockable {
             Color color = COLOR_PATTERN;
             if (control.getIndex() >= minPatternIndex && control.getIndex() <= maxPatternIndex) {
                 color = COLOR_PATTERN_HIGHLIGHT;
+            }
+            control.draw(display, color);
+        }
+
+        for (GridControl control : tempoControls.getControls()) {
+            Color color = COLOR_TEMPO;
+            if (control.getIndex() == tempoIndex) {
+                color = COLOR_TEMPO_HIGHLIGHT;
             }
             control.draw(display, color);
         }
@@ -146,6 +174,13 @@ public class ShihaiModule extends BasicModule implements Clockable {
             Integer index = patternControls.getIndex(control);
             if (index != null) {
                 patternsPressed.add(index);
+            }
+
+        } else if (tempoControls.contains(control)) {
+            Integer index = tempoControls.getIndex(control);
+            if (index != null) {
+                tempoIndex = index;
+                redraw();
             }
 
         }

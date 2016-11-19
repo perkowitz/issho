@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.hachi.modules.ShihaiModule;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -21,6 +22,8 @@ import static net.perkowitz.issho.hachi.HachiUtil.PLAY_BUTTON;
  * Created by optic on 9/12/16.
  */
 public class HachiController implements GridListener, Clockable, Receiver {
+
+    private static boolean DEBUG_MODE = false;
 
     private static int STEP_MIN = 0;
     private static int STEP_MAX = 110;
@@ -44,6 +47,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private ModuleDisplay[] displays;
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
+    private ShihaiModule shihaiModule = null;
 
     private static CountDownLatch stop = new CountDownLatch(1);
     private static Timer timer = null;
@@ -76,6 +80,9 @@ public class HachiController implements GridListener, Clockable, Receiver {
                 triggerables.add((Triggerable) modules[i]);
             }
 
+            if (shihaiModule == null && modules[i] instanceof ShihaiModule) {
+                shihaiModule = (ShihaiModule)modules[i];
+            }
         }
 
     }
@@ -147,7 +154,9 @@ public class HachiController implements GridListener, Clockable, Receiver {
             display.setButton(PLAY_BUTTON, COLOR_UNSELECTED);
         }
 
-        display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
+        if (DEBUG_MODE) {
+            display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
+        }
 
     }
 
@@ -165,6 +174,15 @@ public class HachiController implements GridListener, Clockable, Receiver {
                     tick(tickCount % 16 == 0);
                     tickCount++;
                 }
+
+                if (shihaiModule != null && shihaiModule.tempo() != tempo) {
+                    tempo = shihaiModule.tempo();
+                    tempoIntervalInMillis = 125 * 120 / tempo;
+                    timer.cancel();
+                    timer = null;
+                    startTimer();
+                }
+
             }
         }, tempoIntervalInMillis, tempoIntervalInMillis);
     }
@@ -206,7 +224,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
             }
             redraw();
 
-        } else if (button.equals(EXIT_BUTTON)) {
+        } else if (button.equals(EXIT_BUTTON) && DEBUG_MODE) {
             shutdown();
 
         } else {

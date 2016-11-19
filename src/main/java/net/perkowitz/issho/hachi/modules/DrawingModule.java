@@ -18,30 +18,39 @@ import java.io.File;
 import java.util.List;
 
 import static net.perkowitz.issho.devices.GridButton.Side.*;
+import static net.perkowitz.issho.hachi.modules.DrawingModule.Mode.EDIT;
+import static net.perkowitz.issho.hachi.modules.DrawingModule.Mode.PLAY;
 
 /**
  * Created by optic on 9/12/16.
  */
 public class DrawingModule extends BasicModule implements Clockable {
 
+    public enum Mode {
+        PLAY, EDIT
+    }
+
     // memory sizes
-    private static int FRAMES_PER_PATTERN = 8;
-    private static int PATTERNS_PER_SESSION = 8;
-    private static int SESSIONS_PER_MEMORY = 8;
+    private static int FRAMES_PER_PATTERN = 64;
+    private static int PATTERNS_PER_SESSION = 1;
+    private static int SESSIONS_PER_MEMORY = 1;
     private static int GRID_X_SIZE = 8;
     private static int GRID_Y_SIZE = 8;
 
     private static final String FILENAME_SUFFIX = ".json";
 
-    // button & color assignments
+    // buttons
     private static GridButton.Side PALETTE_SIDE = Bottom;
     private static GridButton.Side FRAME_SIDE = Right;
-    private static GridColor OFF_COLOR = Color.DARK_GRAY;
-    private static GridColor ON_COLOR = Color.BRIGHT_BLUE;
-    private static GridButton currentColorButton = GridButton.at(Left, 7);
+    private static GridButton playModeButton = GridButton.at(Left, 4);
+    private static GridButton editModeButton = GridButton.at(Left, 5);
     private static GridButton saveButton = GridButton.at(Left, 6);
+    private static GridButton currentColorButton = GridButton.at(Left, 7);
 
-    // drawing colors
+    // colors
+    private static GridColor COLOR_OFF = Color.OFF;
+    private static GridColor COLOR_INACTIVE = Color.DIM_RED;
+    private static GridColor COLOR_ACTIVE = Color.BRIGHT_RED;
     private GridColor[] palette = { Color.OFF, Color.WHITE, Color.DARK_GRAY,
             Color.BRIGHT_BLUE, Color.BRIGHT_GREEN, Color.BRIGHT_ORANGE, Color.BRIGHT_RED, Color.BRIGHT_YELLOW};
     private GridColor currentColor = palette[1];
@@ -49,7 +58,10 @@ public class DrawingModule extends BasicModule implements Clockable {
     private Memory memory;
     private ObjectMapper objectMapper = new ObjectMapper();
     private String filePrefix = "drawing";
-    private boolean muted = false;
+    private Mode currentMode = PLAY;
+    private int loopStart = 0;
+    private int loopLength = 8;
+    private int tickCount = 0;
 
 
     /***** constructor ****************************************/
@@ -77,26 +89,43 @@ public class DrawingModule extends BasicModule implements Clockable {
             }
         }
 
-        for (int c = 0; c < 8; c++) {
-            display.setButton(GridButton.at(PALETTE_SIDE, c), palette[c]);
+        display.setButton(saveButton, COLOR_INACTIVE);
 
-            if (currentFrameIndex == c) {
-                display.setButton(GridButton.at(FRAME_SIDE, c), ON_COLOR);
-            } else {
-                display.setButton(GridButton.at(FRAME_SIDE, c), OFF_COLOR);
+        if (currentMode == EDIT) {
+            for (int c = 0; c < 8; c++) {
+                display.setButton(GridButton.at(PALETTE_SIDE, c), palette[c]);
+
+                if (currentFrameIndex == loopStart + c) {
+                    display.setButton(GridButton.at(FRAME_SIDE, c), COLOR_ACTIVE);
+                } else {
+                    display.setButton(GridButton.at(FRAME_SIDE, c), COLOR_INACTIVE);
+                }
             }
 
+            display.setButton(currentColorButton, currentColor);
+            display.setButton(playModeButton, COLOR_INACTIVE);
+            display.setButton(editModeButton, COLOR_ACTIVE);
+
+        } else if (currentMode == PLAY) {
+            for (int index = 0; index < 8; index++) {
+                if (index == loopStart / 8) {
+                    display.setButton(GridButton.at(FRAME_SIDE, index), COLOR_INACTIVE);
+                } else {
+                    display.setButton(GridButton.at(FRAME_SIDE, index), COLOR_OFF);
+                }
+                if (index + 1 == loopLength / 8) {
+                    display.setButton(GridButton.at(PALETTE_SIDE, index), COLOR_INACTIVE);
+                } else {
+                    display.setButton(GridButton.at(PALETTE_SIDE, index), COLOR_OFF);
+                }
+
+            }
+            display.setButton(playModeButton, COLOR_ACTIVE);
+            display.setButton(editModeButton, COLOR_INACTIVE);
+            display.setButton(currentColorButton, COLOR_OFF);
         }
 
-        display.setButton(currentColorButton, currentColor);
-        display.setButton(saveButton, OFF_COLOR);
-
     }
-
-    public void mute(boolean muted) {
-        this.muted = muted;
-    }
-
 
 
     /***** GridListener interface ****************************************/
@@ -112,15 +141,32 @@ public class DrawingModule extends BasicModule implements Clockable {
 
     public void onButtonPressed(GridButton button, int velocity) {
 
-        if (button.getSide() == PALETTE_SIDE) {
-            selectColor(palette[button.getIndex()]);
-            currentColor = palette[button.getIndex()];
-        } else if (button.getSide() == FRAME_SIDE) {
-            selectFrame(button.getIndex());
-        } else if (button.equals(saveButton)) {
+        if (button.equals(saveButton)) {
             save(filePrefix + "-" + "0" + FILENAME_SUFFIX);
         } else if (button.equals(currentColorButton)) {
 
+        } else if (button.equals(editModeButton)) {
+            currentMode = EDIT;
+            redraw();
+        } else if (button.equals(playModeButton)) {
+            currentMode = PLAY;
+            redraw();
+        } else if (currentMode == EDIT) {
+            if (button.getSide() == PALETTE_SIDE) {
+                selectColor(palette[button.getIndex()]);
+                currentColor = palette[button.getIndex()];
+            } else if (button.getSide() == FRAME_SIDE) {
+                selectFrame(loopStart + button.getIndex());
+            }
+        } else if (currentMode == PLAY) {
+            if (button.getSide() == PALETTE_SIDE) {
+                loopLength = (button.getIndex() + 1) * 8;
+                redraw();
+            } else if (button.getSide() == FRAME_SIDE) {
+                loopStart = button.getIndex() * 8;
+                loopLength = 8;
+                redraw();
+            }
         }
 
     }
@@ -133,17 +179,21 @@ public class DrawingModule extends BasicModule implements Clockable {
     /***** Clockable implementation ****************************************/
 
     public void start(boolean restart) {
+        tickCount = 0;
     }
 
     public void stop() {
+        tickCount = 0;
     }
 
     public void tick(boolean andReset) {
-        int frameIndex = (memory.getCurrentFrameIndex() + 1) % 8;
+        int frameIndex = (loopStart + (tickCount % loopLength)) % FRAMES_PER_PATTERN;
         if (andReset) {
-            frameIndex = 0;
+            frameIndex = loopStart;
         }
+//        System.out.printf("Tick: reset=%s, tickCount=%d, frameIndex=%d\n", andReset, tickCount, frameIndex);
         selectFrame(frameIndex);
+        tickCount++;
     }
 
 
@@ -213,10 +263,6 @@ public class DrawingModule extends BasicModule implements Clockable {
 
         private GridColor get(int x, int y) {
             return pixels[x][y];
-        }
-
-        private void set(int x, int y, Color color) {
-            pixels[x][y] = color;
         }
 
         private void set(GridPad pad, Color color) {
@@ -296,12 +342,12 @@ public class DrawingModule extends BasicModule implements Clockable {
         }
 
         public Session get(int index) {
-            return sessions.get(index);
+            return sessions.get(index % SESSIONS_PER_MEMORY);
         }
 
         @JsonIgnore
         public Session currentSession() {
-            return sessions.get(currentSessionIndex);
+            return sessions.get(currentSessionIndex % SESSIONS_PER_MEMORY);
         }
 
         @JsonIgnore
