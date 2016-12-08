@@ -272,7 +272,7 @@ public class LppRhythmDisplay implements RhythmDisplay {
         if (currentModule != RhythmInterface.Module.SEQUENCE) { return; }
 
         for (int index = 0; index < Track.getStepCount(); index++) {
-//            Step step = new Step(index);
+//            Stage step = new Stage(index);
 //            displayStep(step);
             int x = getX(index);
             int y = STEPS_MIN_ROW + getY(index);
