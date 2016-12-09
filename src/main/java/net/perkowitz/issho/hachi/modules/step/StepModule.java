@@ -12,6 +12,7 @@ import net.perkowitz.issho.hachi.modules.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.List;
@@ -43,6 +44,7 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
     private List<Step> currentSteps = null;
     private Stage.Marker currentMarker = Note;
     private List<Integer> stagesToRedraw = Lists.newArrayList();
+    private boolean randomOrder = false;
 
 
     /***** Constructor ****************************************/
@@ -54,6 +56,8 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
         load(0);
         currentSteps = currentStage().getSteps();
         this.settingsModule = new SettingsSubmodule();
+        currentMarker = Note;
+        stepDisplay.setCurrentMarker(currentMarker);
     }
 
 
@@ -84,7 +88,22 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
 
     private void playStep(Step step) {
 
-        List<Integer> noteIndices = currentStage().findMarker(Stage.Marker.Note);
+        List<Integer> noteIndices = Lists.newArrayList();
+        switch (step.getMode()) {
+            case Play:
+            case Slide:
+                noteIndices = currentStage().findMarker(Stage.Marker.Note);
+                break;
+            case Tie:
+                noteIndices = currentStage().findMarker(Stage.Marker.Tie);
+                if (noteIndices.size() == 0) {
+                    noteIndices = currentStage().findMarker(Stage.Marker.Note);
+                }
+                break;
+            case Rest:
+                break;
+        }
+
         for (Integer index : noteIndices) {
             stepDisplay.drawActiveNote(GridPad.at(currentStageIndex, 7 - index));
         }
@@ -116,7 +135,11 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
         while (currentStageStepIndex >= currentSteps.size()) {
             // todo this could loop forever if all stages are SKIP
 //            stagesToRedraw.add(currentStageIndex);
-            currentStageIndex++;
+            if (randomOrder) {
+                currentStageIndex = (int)(Math.random() * StepPattern.STAGE_COUNT);
+            } else {
+                currentStageIndex++;
+            }
             currentStageIndex = currentStageIndex % StepPattern.STAGE_COUNT;
             currentSteps = currentStage().getSteps();
             currentStageStepIndex = 0;
@@ -217,11 +240,45 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
             stepDisplay.setMuted(isMuted);
             stepDisplay.drawControls();
 
+        } else if (control.equals(StepUtil.saveControl)) {
+            save(currentFileIndex);
+            stepDisplay.drawControl(StepUtil.saveControl, true);
+
+        } else if (control.equals(StepUtil.panicControl)) {
+            sendMidiCC(memory.getMidiChannel(), MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
+            stepDisplay.drawControl(StepUtil.panicControl, true);
+
         } else if (settingsView) {
                onControlPressedSettings(control, velocity);
 
         } else if (markerControls.contains(control)) {
-            currentMarker = markerPaletteMap.get(control);
+            Stage.Marker newMarker = markerPaletteMap.get(control);
+            if (currentMarker == newMarker) {
+                if (currentMarker == OctaveUp) {
+                    newMarker = OctaveDown;
+                } else if (currentMarker == OctaveDown) {
+                    newMarker = OctaveUp;
+                } else if (currentMarker == Sharp) {
+                    newMarker = Flat;
+                } else if (currentMarker == Flat) {
+                    newMarker = Sharp;
+                } else if (currentMarker == VolumeUp) {
+                    newMarker = VolumeDown;
+                } else if (currentMarker == VolumeDown) {
+                    newMarker = VolumeUp;
+                } else if (currentMarker == Repeat) {
+                    newMarker = Skip;
+                } else if (currentMarker == Skip) {
+                    newMarker = Repeat;
+                } else if (currentMarker == Longer) {
+                    newMarker = Tie;
+                } else if (currentMarker == Tie) {
+                    newMarker = Longer;
+                }
+            }
+            currentMarker = newMarker;
+            stepDisplay.setCurrentMarker(currentMarker);
+            stepDisplay.drawRightControls();
 
         } else if (control.getPad() != null) {
             GridPad pad = control.getPad();
@@ -234,6 +291,21 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
                 stage.putMarker(index, currentMarker);
                 control.draw(display, StepUtil.MARKER_COLORS.get(currentMarker));
             }
+
+        } else if (control.equals(StepUtil.randomOrderControl)) {
+            randomOrder = !randomOrder;
+            stepDisplay.setRandomOrder(randomOrder);
+            stepDisplay.drawRightControls();
+
+        } else if (control.equals(StepUtil.shiftLeftControl)) {
+            memory.currentPattern().shift(-1);
+            redraw();
+            stepDisplay.drawControl(StepUtil.shiftLeftControl, true);
+
+        } else if (control.equals(StepUtil.shiftRightControl)) {
+            memory.currentPattern().shift(1);
+            redraw();
+            stepDisplay.drawControl(StepUtil.shiftRightControl, true);
 
         }
 
@@ -260,18 +332,28 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     private void onControlReleased(GridControl control) {
-
-
+        if (control.equals(StepUtil.saveControl)) {
+            stepDisplay.drawControl(StepUtil.saveControl, false);
+        } else if (control.equals(StepUtil.shiftLeftControl)) {
+            stepDisplay.drawControl(StepUtil.shiftLeftControl, false);
+        } else if (control.equals(StepUtil.shiftRightControl)) {
+            stepDisplay.drawControl(StepUtil.shiftRightControl, false);
+        } else if (control.equals(StepUtil.panicControl)) {
+            stepDisplay.drawControl(StepUtil.panicControl, false);
+        }
     }
-
 
     /***** Clockable implementation ****************************************/
 
     public void start(boolean restart) {
+        currentStageIndex = 0;
+        currentStageStepIndex = 0;
     }
 
     public void stop() {
         notesOff();
+        currentStageIndex = 0;
+        currentStageStepIndex = 0;
     }
 
     public void tick(boolean andReset) {

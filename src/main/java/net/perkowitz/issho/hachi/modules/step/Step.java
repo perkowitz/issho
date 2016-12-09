@@ -58,8 +58,9 @@ public class Step {
         int octave = DEFAULT_OCTAVE;
         int sharps = 0;
         boolean slide = false;
-        int ties = 0;
+        int longer = 0;
         int repeats = 1; // we always start with 1
+        int ties = 0;
 
         for (int i = 0; i < markers.length; i++) {
             switch (markers[i]) {
@@ -70,14 +71,17 @@ public class Step {
                 case Sharp:
                     sharps++;
                     break;
+                case Flat:
+                    sharps--;
+                    break;
                 case OctaveUp:
                     octave = Math.min(Math.max(octave + 1, 0), 9);
                     break;
                 case OctaveDown:
                     octave = Math.min(Math.max(octave - 1, 0), 9);
                     break;
-                case Tie:
-                    ties++;
+                case Longer:
+                    longer++;
                     break;
                 case Repeat:
                     repeats++;
@@ -91,19 +95,24 @@ public class Step {
                 case Slide:
                     slide = true;
                     break;
+                case Tie:
+                    ties++;
+                    break;
                 case Skip:
                     return steps;
             }
         }
 
         int note = octave * 12 + baseNote + sharps;
-        if (mode == Play && slide) {
+        if (ties > 0) {
+            mode = Tie;
+        } else if (mode == Play && slide) {
             mode = Slide;
         }
 
         for (int r = 0; r < repeats; r ++) {
             steps.add(new Step(mode, note, velocity));
-            for (int t = 0; t < ties; t ++) {
+            for (int t = 0; t < longer; t ++) {
                 steps.add(new Step(Tie, note, velocity));
             }
         }

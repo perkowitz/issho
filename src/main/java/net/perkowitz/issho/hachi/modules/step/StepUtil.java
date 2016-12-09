@@ -10,6 +10,7 @@ import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import java.util.Map;
 
 import static net.perkowitz.issho.devices.GridButton.Side.Left;
+import static net.perkowitz.issho.devices.GridButton.Side.Right;
 
 /**
  * Created by optic on 10/24/16.
@@ -37,14 +38,23 @@ public class StepUtil {
         markerPaletteMap.put(new GridControl(GridButton.at(GridButton.Side.Bottom, 2), 2), Stage.Marker.Sharp);
         markerPaletteMap.put(new GridControl(GridButton.at(GridButton.Side.Bottom, 3), 3), Stage.Marker.OctaveUp);
         markerPaletteMap.put(new GridControl(GridButton.at(GridButton.Side.Bottom, 4), 4), Stage.Marker.VolumeUp);
-        markerPaletteMap.put(new GridControl(GridButton.at(GridButton.Side.Bottom, 5), 5), Stage.Marker.Tie);
+        markerPaletteMap.put(new GridControl(GridButton.at(GridButton.Side.Bottom, 5), 5), Stage.Marker.Longer);
         markerPaletteMap.put(new GridControl(GridButton.at(GridButton.Side.Bottom, 6), 6), Stage.Marker.Repeat);
         markerPaletteMap.put(new GridControl(GridButton.at(GridButton.Side.Bottom, 7), 7), Stage.Marker.Slide);
         markerControls = new GridControlSet(markerPaletteMap.keySet());
     }
 
+    // left controls
     public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
     public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
+    public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
+    public static GridControl panicControl = new GridControl(GridButton.at(Left, 4), null);
+
+    // right controls
+    public static GridControl shiftLeftControl = new GridControl(GridButton.at(Right, 0), null);
+    public static GridControl shiftRightControl = new GridControl(GridButton.at(Right, 1), null);
+    public static GridControl randomOrderControl = new GridControl(GridButton.at(Right, 2), null);
+    public static GridControl currentMarkerDisplayControl = new GridControl(GridButton.at(Right, 7), null);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(MonoUtil.SESSION_MIN_ROW, MonoUtil.SESSION_MAX_ROW);
@@ -88,15 +98,15 @@ public class StepUtil {
         MARKER_COLORS.put(Stage.Marker.Note, Color.BRIGHT_BLUE);
         MARKER_COLORS.put(Stage.Marker.Sharp, Color.BRIGHT_BLUE_GREEN);
         MARKER_COLORS.put(Stage.Marker.Flat, Color.DIM_BLUE_GREEN);
-        MARKER_COLORS.put(Stage.Marker.OctaveUp, Color.BRIGHT_YELLOW);
-        MARKER_COLORS.put(Stage.Marker.OctaveDown, Color.DIM_YELLOW);
+        MARKER_COLORS.put(Stage.Marker.OctaveUp, Color.BRIGHT_ORANGE);
+        MARKER_COLORS.put(Stage.Marker.OctaveDown, Color.DIM_ORANGE);
         MARKER_COLORS.put(Stage.Marker.VolumeUp, Color.BRIGHT_GREEN);
         MARKER_COLORS.put(Stage.Marker.VolumeDown, Color.DIM_GREEN);
-        MARKER_COLORS.put(Stage.Marker.Tie, Color.DARK_BLUE);
+        MARKER_COLORS.put(Stage.Marker.Longer, Color.DARK_BLUE);
         MARKER_COLORS.put(Stage.Marker.Repeat, Color.BRIGHT_PINK);
         MARKER_COLORS.put(Stage.Marker.Skip, Color.BRIGHT_RED);
         MARKER_COLORS.put(Stage.Marker.Slide, Color.DARK_GRAY);
-        MARKER_COLORS.put(Stage.Marker.Reset, Color.BRIGHT_PURPLE);
+        MARKER_COLORS.put(Stage.Marker.Tie, Color.fromIndex(55));
     }
 
     public static Color ACTIVE_NOTE_COLOR = Color.WHITE;

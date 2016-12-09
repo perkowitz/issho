@@ -8,6 +8,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.Map;
 
+import static net.perkowitz.issho.hachi.modules.step.Stage.Marker.None;
 import static net.perkowitz.issho.hachi.modules.step.StepUtil.*;
 
 
@@ -23,6 +24,8 @@ public class StepDisplay {
 
     @Setter private boolean settingsView = false;
     @Setter private boolean isMuted = false;
+    @Setter private boolean randomOrder = false;
+    @Setter private Stage.Marker currentMarker = None;
 
 
     public StepDisplay(GridDisplay display) {
@@ -34,6 +37,7 @@ public class StepDisplay {
         drawMarkers();
         drawStages(memory);
         drawControls();
+        drawRightControls();
     }
 
 
@@ -78,6 +82,15 @@ public class StepDisplay {
     public void drawControls() {
         drawControl(StepUtil.muteControl, isMuted);
         drawControl(StepUtil.settingsControl, settingsView);
+        drawControl(StepUtil.saveControl, false);
+        drawControl(StepUtil.panicControl, false);
+    }
+
+    public void drawRightControls() {
+        drawControl(StepUtil.shiftLeftControl, false);
+        drawControl(StepUtil.shiftRightControl, false);
+        drawControl(StepUtil.randomOrderControl, randomOrder);
+        StepUtil.currentMarkerDisplayControl.draw(display, markerPalette.get(currentMarker));
     }
 
     public void drawControl(GridControl control, boolean isOn) {

@@ -37,6 +37,10 @@
       "palette": "orange"
     },
     {
+      "class": "StepModule",
+      "filePrefix": "step0"
+    },
+    {
       "class": "PaletteModule"
     }
   ]

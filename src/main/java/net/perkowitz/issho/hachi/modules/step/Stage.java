@@ -14,7 +14,7 @@ import static net.perkowitz.issho.hachi.modules.step.Stage.Marker.None;
 public class Stage {
 
     public enum Marker {
-        None, Note, Sharp, Flat, OctaveUp, OctaveDown, VolumeUp, VolumeDown, Tie, Repeat, Skip, Slide, Reset
+        None, Note, Sharp, Flat, OctaveUp, OctaveDown, VolumeUp, VolumeDown, Longer, Repeat, Skip, Slide, Tie
     }
 
     public static int MAX_MARKERS = 8;
