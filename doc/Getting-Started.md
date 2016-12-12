@@ -1,8 +1,8 @@
 # Overview
 
-These are instructions for setting up Hachi on a portable, headless Raspberry Pi. The same instructions
-will also work for a Mac or other Unix machine; just skip the steps about booting the Pi directly
-into Hachi. Hachi should also run on Windows, but it's untested.
+These are instructions for setting up Issho on a portable, headless Raspberry Pi. The same 
+instructions will also work for a Mac or other Unix machine; just skip the steps about 
+booting the Pi directly into Hachi. Hachi should also run on Windows, but it's untested.
 
 For these instructions, I'll assume basic familiarity with Unix and the ability to find and 
 install standard tools.
