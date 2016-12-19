@@ -25,6 +25,7 @@ public class StepDisplay {
     @Setter private boolean settingsView = false;
     @Setter private boolean isMuted = false;
     @Setter private boolean randomOrder = false;
+    @Setter private boolean displayAltControls = false;
     @Setter private Stage.Marker currentMarker = None;
 
 
@@ -36,8 +37,8 @@ public class StepDisplay {
     public void redraw(StepMemory memory) {
         drawMarkers();
         drawStages(memory);
-        drawControls();
-        drawRightControls();
+        drawLeftControls();
+        drawPatterns(memory);
     }
 
 
@@ -56,8 +57,15 @@ public class StepDisplay {
 
     public void drawMarkers() {
         if (settingsView) return;
-        for (GridControl control : markerPaletteMap.keySet()) {
-            control.draw(display, markerPalette.get(markerPaletteMap.get(control)));
+        if (!displayAltControls) {
+            for (GridControl control : markerPaletteMap.keySet()) {
+                control.draw(display, markerPalette.get(markerPaletteMap.get(control)));
+            }
+        } else {
+            markerControls.draw(display, Color.OFF);
+            drawControl(StepUtil.shiftLeftControl, false);
+            drawControl(StepUtil.shiftRightControl, false);
+            drawControl(StepUtil.randomOrderControl, randomOrder);
         }
     }
 
@@ -79,18 +87,20 @@ public class StepDisplay {
         }
     }
 
-    public void drawControls() {
+    public void drawLeftControls() {
         drawControl(StepUtil.muteControl, isMuted);
         drawControl(StepUtil.settingsControl, settingsView);
         drawControl(StepUtil.saveControl, false);
-        drawControl(StepUtil.panicControl, false);
+//        drawControl(StepUtil.panicControl, false);
+        StepUtil.currentMarkerDisplayControl.draw(display, markerPalette.get(currentMarker));
+        drawControl(StepUtil.altControlsControl, displayAltControls);
+        drawControl(StepUtil.savePatternControl, false);
     }
 
-    public void drawRightControls() {
-        drawControl(StepUtil.shiftLeftControl, false);
-        drawControl(StepUtil.shiftRightControl, false);
-        drawControl(StepUtil.randomOrderControl, randomOrder);
-        StepUtil.currentMarkerDisplayControl.draw(display, markerPalette.get(currentMarker));
+    public void drawPatterns(StepMemory memory) {
+        patternControls.draw(display, Color.OFF);
+        int index = memory.getCurrentPatternIndex() % patternControls.size();
+        patternControls.get(index).draw(display, palette.get(COLOR_ON));
     }
 
     public void drawControl(GridControl control, boolean isOn) {

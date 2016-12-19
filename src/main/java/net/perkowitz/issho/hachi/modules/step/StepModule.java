@@ -12,7 +12,6 @@ import net.perkowitz.issho.hachi.modules.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.List;
@@ -45,6 +44,8 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
     private Stage.Marker currentMarker = Note;
     private List<Integer> stagesToRedraw = Lists.newArrayList();
     private boolean randomOrder = false;
+    private boolean displayAltControls = false;
+    private boolean savingPattern = false;
 
 
     /***** Constructor ****************************************/
@@ -165,7 +166,7 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
         stepDisplay.initialize();
         if (settingsView) {
             settingsModule.redraw();
-            stepDisplay.drawControls();
+            stepDisplay.drawLeftControls();
         } else {
             stepDisplay.redraw(memory);
         }
@@ -238,20 +239,30 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
         } else if (control.equals(StepUtil.muteControl)) {
             isMuted = !isMuted;
             stepDisplay.setMuted(isMuted);
-            stepDisplay.drawControls();
+            stepDisplay.drawLeftControls();
 
         } else if (control.equals(StepUtil.saveControl)) {
             save(currentFileIndex);
             stepDisplay.drawControl(StepUtil.saveControl, true);
 
-        } else if (control.equals(StepUtil.panicControl)) {
-            sendMidiCC(memory.getMidiChannel(), MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
-            stepDisplay.drawControl(StepUtil.panicControl, true);
+        } else if (control.equals(StepUtil.savePatternControl)) {
+            savingPattern = true;
+            stepDisplay.drawControl(StepUtil.savePatternControl, true);
+
+//        } else if (control.equals(StepUtil.panicControl)) {
+//            sendMidiCC(memory.getMidiChannel(), MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
+//            stepDisplay.drawControl(StepUtil.panicControl, true);
+
+        } else if (control.equals(StepUtil.altControlsControl)) {
+            displayAltControls = !displayAltControls;
+            stepDisplay.setDisplayAltControls(displayAltControls);
+            stepDisplay.drawControl(StepUtil.altControlsControl, displayAltControls);
+            stepDisplay.drawMarkers();
 
         } else if (settingsView) {
                onControlPressedSettings(control, velocity);
 
-        } else if (markerControls.contains(control)) {
+        } else if (markerControls.contains(control) && !displayAltControls) {
             Stage.Marker newMarker = markerPaletteMap.get(control);
             if (currentMarker == newMarker) {
                 if (currentMarker == OctaveUp) {
@@ -278,7 +289,19 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
             }
             currentMarker = newMarker;
             stepDisplay.setCurrentMarker(currentMarker);
-            stepDisplay.drawRightControls();
+            stepDisplay.drawLeftControls();
+
+        } else if (patternControls.contains(control)) {
+            int patternIndex = patternControls.getIndex(control);
+            if (!savingPattern) {
+                memory.setCurrentPatternIndex(patternIndex);
+                stepDisplay.drawPatterns(memory);
+                stepDisplay.drawStages(memory);
+            } else {
+                StepPattern pattern = StepPattern.copy(memory.currentPattern(), patternIndex);
+                memory.currentSession().setPattern(patternIndex, pattern);
+                stepDisplay.drawControl(patternControls.get(patternIndex), true);
+            }
 
         } else if (control.getPad() != null) {
             GridPad pad = control.getPad();
@@ -292,10 +315,11 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
                 control.draw(display, StepUtil.MARKER_COLORS.get(currentMarker));
             }
 
+        // we only get to these if a marker is pressed and we're on alt controls
         } else if (control.equals(StepUtil.randomOrderControl)) {
             randomOrder = !randomOrder;
             stepDisplay.setRandomOrder(randomOrder);
-            stepDisplay.drawRightControls();
+            stepDisplay.drawMarkers();
 
         } else if (control.equals(StepUtil.shiftLeftControl)) {
             memory.currentPattern().shift(-1);
@@ -334,12 +358,17 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
     private void onControlReleased(GridControl control) {
         if (control.equals(StepUtil.saveControl)) {
             stepDisplay.drawControl(StepUtil.saveControl, false);
-        } else if (control.equals(StepUtil.shiftLeftControl)) {
+        } else if (control.equals(StepUtil.shiftLeftControl) && displayAltControls) {
             stepDisplay.drawControl(StepUtil.shiftLeftControl, false);
-        } else if (control.equals(StepUtil.shiftRightControl)) {
+        } else if (control.equals(StepUtil.shiftRightControl)  && displayAltControls) {
             stepDisplay.drawControl(StepUtil.shiftRightControl, false);
-        } else if (control.equals(StepUtil.panicControl)) {
-            stepDisplay.drawControl(StepUtil.panicControl, false);
+        } else if (control.equals(StepUtil.savePatternControl)) {
+            savingPattern = false;
+            stepDisplay.drawControl(StepUtil.savePatternControl, false);
+//        } else if (control.equals(StepUtil.panicControl)) {
+//            stepDisplay.drawControl(StepUtil.panicControl, false);
+        } else if (patternControls.contains(control)) {
+            stepDisplay.drawPatterns(memory);
         }
     }
 
@@ -352,6 +381,7 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
 
     public void stop() {
         notesOff();
+        sendAllNotesOff(memory.getMidiChannel());
         currentStageIndex = 0;
         currentStageStepIndex = 0;
     }

@@ -43,6 +43,10 @@ public class MidiModule extends BasicModule implements Receiver {
         this.isMuted = muted;
     }
 
+    protected void sendAllNotesOff(int channel) {
+        sendMidiCC(channel, MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
+    }
+
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 //        System.out.printf("Note: ch=%d, note=%d, vel=%d\n", channel, noteNumber, velocity);
 

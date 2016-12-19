@@ -206,6 +206,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
             }
             redraw();
 
+
         } else if (button.equals(EXIT_BUTTON)) {
             shutdown();
 
