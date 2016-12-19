@@ -198,6 +198,9 @@ public class HachiController implements GridListener, Clockable, Receiver {
             clockRunning = !clockRunning;
             if (clockRunning) {
                 start(true);
+                for (Clockable clockable: clockables) {
+                    clockable.start(true);
+                }
             } else {
                 stop();
                 for (Clockable clockable: clockables) {

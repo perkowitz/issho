@@ -122,10 +122,13 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
                 break;
             case Slide:
                 sendMidiNote(memory.getMidiChannel(), step.getNote(), step.getVelocity());
-                if (!onNotes.contains(step.getNote())) {
-                    notesOff();
-                    onNotes.add(step.getNote());
-                }
+//                if (!onNotes.contains(step.getNote())) {
+//                    notesOff();
+//                }
+                // NOTE: the Sub 37 requires you to send a note off for every note on, even if you send 2 note ons for the same note
+                // not sure if other synths do this; if others do not, should remove this notesOff() and uncomment above if()
+                notesOff();
+                onNotes.add(step.getNote());
                 break;
         }
     }
@@ -375,6 +378,8 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
     /***** Clockable implementation ****************************************/
 
     public void start(boolean restart) {
+        notesOff();
+        sendAllNotesOff(memory.getMidiChannel());
         currentStageIndex = 0;
         currentStageStepIndex = 0;
     }
