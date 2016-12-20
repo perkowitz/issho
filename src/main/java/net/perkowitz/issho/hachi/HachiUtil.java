@@ -1,6 +1,8 @@
 package net.perkowitz.issho.hachi;
 
 import net.perkowitz.issho.devices.GridButton;
+import net.perkowitz.issho.devices.GridColor;
+import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import static net.perkowitz.issho.devices.GridButton.Side.Top;
 
@@ -15,5 +17,8 @@ public class HachiUtil {
 //    public static final GridButton EXIT_BUTTON = GridButton.at(GridButton.Side.Top, 6);
     public static final GridButton PLAY_BUTTON = GridButton.at(GridButton.Side.Left, 0);
     public static final GridButton EXIT_BUTTON = GridButton.at(GridButton.Side.Left, 1);
+
+    public static Color COLOR_SELECTED = Color.WHITE; //Color.WHITE;//Color.BRIGHT_ORANGE;
+    public static Color COLOR_UNSELECTED = Color.DIM_RED; //Color.DIM_ORANGE;// Color.DARK_GRAY;
 
 }

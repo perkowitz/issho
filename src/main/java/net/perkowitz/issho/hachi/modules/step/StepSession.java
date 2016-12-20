@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 public class StepSession {
 
-    private static int PATTERN_COUNT = 8;
+    public static int PATTERN_COUNT = 8;
 
     @Getter private int index;
     @Getter private StepPattern[] patterns = new StepPattern[PATTERN_COUNT];
