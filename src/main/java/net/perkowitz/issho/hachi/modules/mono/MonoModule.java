@@ -67,7 +67,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
         monoDisplay = new MonoDisplay(this.display);
         monoDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
-        startTimer();
+//        startTimer();
         load(0);
     }
 
