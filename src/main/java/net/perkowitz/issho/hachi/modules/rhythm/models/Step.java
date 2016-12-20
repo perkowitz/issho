@@ -14,7 +14,7 @@ public class Step {
     @Getter @Setter private boolean on = false;
     @Getter @Setter private int velocity = 100;
 
-    // only used for deserializing JSON; Step should always be created with an index
+    // only used for deserializing JSON; Stage should always be created with an index
     public Step() {}
 
     public Step(int index) {
@@ -23,7 +23,7 @@ public class Step {
 
     @Override
     public String toString() {
-        return "Step:" + getIndex();
+        return "Stage:" + getIndex();
     }
 
 }

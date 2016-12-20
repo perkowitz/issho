@@ -24,9 +24,15 @@ public class Color implements GridColor {
     public static Color BRIGHT_BLUE = Color.fromIndex(41);
     public static Color DIM_BLUE = Color.fromIndex(43);
     public static Color DARK_BLUE = Color.fromIndex(47);
+    public static Color BRIGHT_BLUE_GREEN = Color.fromIndex(33);
+    public static Color DIM_BLUE_GREEN = Color.fromIndex(35);
+    public static Color DIM_BLUEGRAY = Color.fromIndex(103);
     public static Color BRIGHT_YELLOW = Color.fromIndex(13);
     public static Color DIM_YELLOW = Color.fromIndex(15);
-    public static Color DIM_BLUEGRAY = Color.fromIndex(103);
+    public static Color BRIGHT_PINK = Color.fromIndex(57);
+    public static Color DIM_PINK = Color.fromIndex(59);
+    public static Color BRIGHT_PURPLE = Color.fromIndex(49);
+    public static Color DIM_PURPLE = Color.fromIndex(51);
 
 
     public static int[] grays = new int[] { 1, 2, 3, 70, 71};

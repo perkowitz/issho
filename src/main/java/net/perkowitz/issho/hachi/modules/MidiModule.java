@@ -11,6 +11,7 @@ import static javax.sound.midi.ShortMessage.NOTE_OFF;
  */
 public class MidiModule extends BasicModule implements Receiver {
 
+    public static int MIDI_ALL_NOTES_OFF_CC = 123;
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
     protected Transmitter inputTransmitter;
@@ -42,8 +43,12 @@ public class MidiModule extends BasicModule implements Receiver {
         this.isMuted = muted;
     }
 
+    protected void sendAllNotesOff(int channel) {
+        sendMidiCC(channel, MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
+    }
+
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
-//        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
+//        System.out.printf("Note: ch=%d, note=%d, vel=%d\n", channel, noteNumber, velocity);
 
         if (isMuted && velocity > 0) return;
 
@@ -51,6 +56,21 @@ public class MidiModule extends BasicModule implements Receiver {
             ShortMessage noteMessage = new ShortMessage();
             noteMessage.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
             outputReceiver.send(noteMessage, -1);
+
+        } catch (InvalidMidiDataException e) {
+            System.err.println(e);
+        }
+    }
+
+    protected void sendMidiCC(int channel, int ccNumber, int value) {
+//        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
+
+        if (isMuted && value > 0) return;
+
+        try {
+            ShortMessage message = new ShortMessage();
+            message.setMessage(ShortMessage.CONTROL_CHANGE, channel, ccNumber, value);
+            outputReceiver.send(message, -1);
 
         } catch (InvalidMidiDataException e) {
             System.err.println(e);

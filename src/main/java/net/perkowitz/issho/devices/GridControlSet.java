@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +25,8 @@ public class GridControlSet {
 
     /***** constructors ****************************************/
 
-    public GridControlSet(List<GridControl> controls) {
-        this.controls = controls;
+    public GridControlSet(Collection<GridControl> controls) {
+        this.controls = new ArrayList<GridControl>(controls);
         computeControlMaps();
     }
 
@@ -87,6 +89,10 @@ public class GridControlSet {
 
     }
 
+    public int size() {
+        return controls.size();
+    }
+
 
     /***** private methods ****************************************/
 
@@ -129,7 +135,7 @@ public class GridControlSet {
         return buttonSide(side, 0, 7, true);
     }
 
-    public static GridControlSet padRows(int startY, int endY, int startX, int endX) {
+    public static GridControlSet pads(int startY, int endY, int startX, int endX) {
         List<GridControl> controls = Lists.newArrayList();
         int index = 0;
         for (int y = startY; y <= endY; y++) {
@@ -142,11 +148,17 @@ public class GridControlSet {
     }
 
     public static GridControlSet padRows(int startY, int endY) {
-        return padRows(startY, endY, 0, 7);
+        return pads(startY, endY, 0, 7);
     }
 
     public static GridControlSet padRow(int row) {
         return padRows(row, row);
+    }
+
+    public static GridControlSet padColumns(int startX, int endX) { return pads(0, 7, startX, endX); }
+
+    public static GridControlSet padColumn(int column) {
+        return padColumns(column, column);
     }
 
 

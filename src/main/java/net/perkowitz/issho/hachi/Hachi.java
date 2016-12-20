@@ -9,6 +9,7 @@ import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
+import net.perkowitz.issho.hachi.modules.step.StepModule;
 import net.perkowitz.issho.util.MidiUtil;
 import net.perkowitz.issho.util.PropertiesUtil;
 import net.perkowitz.issho.util.SettingsUtil;
@@ -63,11 +64,11 @@ public class Hachi {
      */
     public static void main(String args[]) throws Exception {
 
+        // properties
         String propertyFile = null;
         if (args.length > 0) {
             propertyFile = args[0];
         }
-        // load settings
         if (propertyFile == null) {
             System.out.println("Getting app settings..");
             properties = PropertiesUtil.getProperties("hachi.properties");
@@ -76,6 +77,7 @@ public class Hachi {
             properties = PropertiesUtil.getProperties(propertyFile);
         }
 
+        // settings
         String settingsFile = null;
         if (args.length > 1) {
             settingsFile = args[1];
@@ -215,6 +217,9 @@ public class Hachi {
                     palette = MonoUtil.PALETTE_ORANGE;
                 }
                 module = new MonoModule(midiTransmitter, midiReceiver, palette, filePrefix);
+
+            } else if (className.equals("StepModule")) {
+                module = new StepModule(midiTransmitter, midiReceiver, filePrefix);
 
             } else if (className.equals("ShihaiModule")) {
                 shihaiModule = new ShihaiModule();

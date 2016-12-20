@@ -107,7 +107,7 @@ public class MonoUtil {
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
     public static GridControl patternCopyControl = new GridControl(GridPad.at(0,2), 0);
     public static GridControl patternClearControl = new GridControl(GridPad.at(1,2), 0);
-//    public static GridControlSet patternEditControls = GridControlSet.padRows(2, 2, 0, 1);
+//    public static GridControlSet patternEditControls = GridControlSet.pads(2, 2, 0, 1);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(MonoUtil.SESSION_MIN_ROW, MonoUtil.SESSION_MAX_ROW);
