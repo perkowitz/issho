@@ -13,4 +13,9 @@ of [this simpler sequencer](https://github.com/perkowitz/sequence)
 that I wrote for the original Launchpad. 
 That basic sequencer runs as one module in Hachi.
 
+# Documentation
+
+- [Getting Started](doc/Getting-Started.md): how to set up your computer and MIDI devices to run Issho applications.
+- [Hachi](doc/hachi/Hachi.md): how to use Hachi, and how to configure and use various modules.
+- [Hachi Development](doc/hachi/Development.md): 
 
