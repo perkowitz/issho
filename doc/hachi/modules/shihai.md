@@ -60,6 +60,10 @@ individual modules.
 
 Press this button to force every midi module to send "all notes off" on its channel.
 
+### Settings
+
+Toggle between the main view and the settings view.
+
 ## Settings View
 
 <img width="600px" src="shihai-settings.png"/>
