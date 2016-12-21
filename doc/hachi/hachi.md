@@ -107,11 +107,11 @@ the corresponding module. A selected module will take over the rest of the Launc
 the 8x8 grid, and the left, right, and bottom buttons. Each module will "redraw" the controls when
 selected. All modules will continue to run even when not selected, but only the selected module can be
 directly controlled (though, of course, it's possible to create a module that can control other
-modules; see [Shihai](Shihai-Module.md)).
+modules; see [Shihai](modules/shihai.md)).
 
 # Clock
 
 Hachi includes a simple built-in clock for running clockable modules. The clock is started and stopped
 by tapping the topmost button on the left side (which is also reserved for Hachi). The clock runs at a rate
 of 120 beats per minute, delivering a tick to the modules for every 16th note (i.e. every 125 milliseconds).
-The tempo cannot be changed from Hachi directly, but a [Shihai](Shihai-Module.md) can vary the clock speed. 
+The tempo cannot be changed from Hachi directly, but a [Shihai](modules/shihai.md) can vary the clock speed. 
