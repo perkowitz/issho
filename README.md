@@ -15,7 +15,7 @@ That basic sequencer runs as one module in Hachi.
 
 # Documentation
 
-- [Getting Started](doc/Getting-Started.md): how to set up your computer and MIDI devices to run Issho applications.
+- [Getting Started](doc/getting-started.md): how to set up your computer and MIDI devices to run Issho applications.
 - [Hachi](doc/hachi/hachi.md): how to use Hachi, and how to configure and use various modules.
 - [Hachi Development](doc/hachi/development.md): details about Hachi's code and how to write your own modules. 
 

@@ -11,7 +11,7 @@ details on specific modules.
 
 # Getting Started and Configuration
 
-To set up your devices and run Hachi, see the [Getting Started](../Getting-Started.md) manual. 
+To set up your devices and run Hachi, see the [Getting Started](../getting-started.md) manual. 
 
 Hachi needs two pieces of configuration: a devices file, which tells Hachi how to identify and use MIDI 
 devices connected to the system, and a modules file that tells Hachi which modules to run and defines any
