@@ -33,7 +33,7 @@ If you wish to install it somewhere else, copy the script, the jar, and the `sam
 file, but be sure to edit the script to point to the copied jar. If you build the code elsewhere, 
 copy the script and jar to your Pi.
 
-For example, copy the script, jar, and properties to your `~/bin` directory, and edit the script like this:
+For example, copy the script, jar, settings, and properties to your `~/bin` directory, and edit the script like this:
 
 `#!/bin/sh`
 
