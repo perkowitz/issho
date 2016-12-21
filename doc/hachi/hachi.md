@@ -102,6 +102,8 @@ the data files.
 
 # Selecting Modules
 
+<img width="600px" src="hachi.png"/>
+
 Each button in Hachi's top row corresponds to one of the loaded modules. Tap the button to select
 the corresponding module. A selected module will take over the rest of the Launchpad's controls -- 
 the 8x8 grid, and the left, right, and bottom buttons. Each module will "redraw" the controls when
