@@ -1,4 +1,4 @@
-# Hachi
+# Overview
 
 Hachi will run up to 8 "modules" on a Launchpad Pro, with its 8x8 pad grid and rows of 8 buttons. Coincidentally,
 "hachi" means "8" in Japanese. All kinds of functionality can be implemented in a module; this repo includes
