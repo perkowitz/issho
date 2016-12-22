@@ -85,3 +85,17 @@ Shihai has no configuration options.
     }
   ]
 ```
+
+# Color Palette
+
+Shihai has only one defined palette. 
+
+- On most controls, dark blue indicates off/inactive, and pink indicates on/active.
+- Sessions are light blue, with the current session highlighted white.
+- Load and save files are green and red respectively, with the current file white.
+- MIDI channel is blue, with the selected channel white.
+- Muted modules are red, and active modules are white.
+- Patterns are dark blue, with the current pattern white, and chained patterns gray.
+- The measure clock is pink.
+- The step clock is dim pink.
+
