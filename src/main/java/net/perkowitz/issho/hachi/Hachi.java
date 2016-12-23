@@ -80,7 +80,7 @@ public class Hachi {
         LaunchpadPro launchpadPro = getLaunchpad();
         GridDisplay gridDisplay = launchpadPro;
 
-//        createKnobby();
+        createKnobby();
 
         Module[] modules;
         if (settings.get("modules") != null) {
@@ -118,29 +118,30 @@ public class Hachi {
 
         // get the device configs from the settings
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+        List<String> names = null;
 
         // find the controller device
         System.out.println("Finding controller device..");
         Map<Object,Object> controllerConfig = (Map<Object,Object>)deviceConfigs.get("controller");
         if (controllerConfig != null) {
-            List<String> names = (List<String>)controllerConfig.get("names");
+            names = (List<String>)controllerConfig.get("names");
             controllerInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
             controllerOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
-            if (controllerInput == null || controllerOutput == null) {
-                System.err.printf("Unable to find controller device matching name: %s\n", names);
-                System.exit(1);
-            }
+        }
+        if (controllerInput == null || controllerOutput == null) {
+            System.err.printf("Unable to find controller device matching name: %s\n", names);
+            System.exit(1);
         }
 
         Map<Object,Object> midiConfig = (Map<Object,Object>)deviceConfigs.get("midi");
         if (midiConfig != null) {
-            List<String> names = (List<String>)midiConfig.get("names");
+            names = (List<String>)midiConfig.get("names");
             midiInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
             midiOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
-            if (midiInput == null || midiOutput == null) {
-                System.err.printf("Unable to find midi device matching name: %s\n", names);
-                System.exit(1);
-            }
+        }
+        if (midiInput == null || midiOutput == null) {
+            System.err.printf("Unable to find midi device matching name: %s\n", names);
+            System.exit(1);
         }
 
         try {
@@ -255,25 +256,30 @@ public class Hachi {
 
     private static void createKnobby() {
 
-        // find the knob device
-        System.out.println("Finding knob device..");
-        String[] knobNames = new String[] { "nanokontrol" };
-        knobInput = MidiUtil.findMidiDevice(knobNames, false, true);
-        knobOutput = MidiUtil.findMidiDevice(knobNames, true, false);
-        if (knobInput == null || knobOutput == null) {
-            return;
+        // get the device configs from the settings
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+
+        // find the knobby device
+        System.out.println("Finding knobby device..");
+        Map<Object,Object> config = (Map<Object,Object>)deviceConfigs.get("knobby");
+        if (config != null) {
+            List<String> names = (List<String>)config.get("names");
+            knobInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            knobOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+            if (knobInput == null || knobOutput == null) {
+                System.out.printf("Unable to find knobby device matching name: %s\n", names);
+                return;
+            }
+
+            try {
+                knobInput.open();
+                knobOutput.open();
+                Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
-
-        try {
-            knobInput.open();
-            knobOutput.open();
-            Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-
     }
 
 

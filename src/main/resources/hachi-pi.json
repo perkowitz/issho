@@ -12,6 +12,11 @@
         "Launchpad Pro",
         "1,0,2"
         ]
+    },
+    "knobby": {
+      "names":[
+        "nanokontrol"
+      ]
     }
   },
   "modules": [

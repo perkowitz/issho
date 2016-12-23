@@ -12,6 +12,11 @@
         "Launchpad Pro",
         "Midi Port"
         ]
+    },
+    "knobby": {
+      "names":[
+        "nanokontrol"
+        ]
     }
   },
   "modules": [
