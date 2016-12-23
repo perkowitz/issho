@@ -1,0 +1,25 @@
+{
+  "filePrefix": "project1/",
+  "devices": {
+    "controller": {
+      "names": [
+        "Launchpad",
+        "Standalone"
+        ]
+    },
+    "midi": {
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+        ]
+    }
+  },
+  "modules": [
+    {
+      "class": "ShihaiModule"
+    },
+    {
+      "class": "PaletteModule"
+    }
+  ]
+}
