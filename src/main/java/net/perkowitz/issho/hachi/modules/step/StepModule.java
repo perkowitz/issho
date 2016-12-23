@@ -76,6 +76,11 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
             currentStageStepIndex = 0;
             currentSteps = currentStage().getSteps();
             // need to make sure stage0 has at least one step
+            if (memory.getCurrentSessionIndex() != memory.getNextSessionIndex()) {
+                memory.setCurrentSessionIndex(memory.getNextSessionIndex());
+                settingsModule.setCurrentSessionIndex(memory.getCurrentSessionIndex());
+                redraw();
+            }
         }
 
         stagesToRedraw.add(currentStageIndex);
@@ -208,9 +213,13 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
     /***** Sessionizeable implementation *************************************/
 
     public void selectSession(int index) {
+        memory.setNextSessionIndex(index);
     }
 
     public void selectPatterns(int firstIndex, int lastIndex) {
+        memory.setCurrentPatternIndex(firstIndex);
+        stepDisplay.drawPatterns(memory);
+        stepDisplay.drawStages(memory);
     }
 
 

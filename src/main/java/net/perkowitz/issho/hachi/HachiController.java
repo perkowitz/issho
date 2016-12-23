@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.hachi.modules.ShihaiModule;
+import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -15,24 +15,20 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 import static javax.sound.midi.ShortMessage.*;
-import static net.perkowitz.issho.hachi.HachiUtil.EXIT_BUTTON;
-import static net.perkowitz.issho.hachi.HachiUtil.PLAY_BUTTON;
+import static net.perkowitz.issho.hachi.HachiUtil.*;
 
 /**
  * Created by optic on 9/12/16.
  */
 public class HachiController implements GridListener, Clockable, Receiver {
 
-    private static boolean DEBUG_MODE = false;
+    private static boolean DEBUG_MODE = true;
 
     private static int STEP_MIN = 0;
     private static int STEP_MAX = 110;
     private static int RESET_MIN = 111;
     private static int RESET_MAX = 127;
     private static int MIDI_REALTIME_COMMAND = 0xF0;
-
-    private static GridColor COLOR_SELECTED = Color.LIGHT_GRAY; //Color.WHITE;//Color.BRIGHT_ORANGE;
-    private static GridColor COLOR_UNSELECTED = Color.DIM_RED; //Color.DIM_ORANGE;// Color.DARK_GRAY;
 
     private int triggerChannel = 9;//15;
     private int stepNote = 65;//36;
