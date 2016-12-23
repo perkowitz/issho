@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.example.ExampleModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
@@ -220,6 +221,9 @@ public class Hachi {
 
             } else if (className.equals("PaletteModule")) {
                 module = new PaletteModule(false);
+
+            } else if (className.equals("ExampleModule")) {
+                module = new ExampleModule(midiTransmitter, midiReceiver, filePrefix);
 
             }
 

@@ -21,7 +21,8 @@
   },
   "modules": [
     {
-      "class": "ShihaiModule"
+      "class": "ExampleModule",
+      "filePrefix": "example0"
     },
     {
       "class": "PaletteModule"
