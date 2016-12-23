@@ -17,10 +17,7 @@ import net.perkowitz.issho.util.SettingsUtil;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -90,8 +87,9 @@ public class Hachi {
             settings = SettingsUtil.getSettings(settingsFile);
         }
 
+        LaunchpadPro launchpadPro = getLaunchpad();
 
-        LaunchpadPro launchpadPro = findDevice();
+//        LaunchpadPro launchpadPro = findDevice();
         GridDisplay gridDisplay = launchpadPro;
         if (launchpadPro == null) {
             System.err.printf("Unable to find controller device matching name: %s\n", properties.getProperty(CONTROLLER_NAME_PROPERTY));
@@ -173,6 +171,56 @@ public class Hachi {
                 controllerInput.getTransmitter().setReceiver(launchpadPro);
                 return launchpadPro;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return null;
+    }
+
+    private static LaunchpadPro getLaunchpad() {
+
+        // get the device configs from the settings
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+
+        // find the controller device
+        System.out.println("Finding controller device..");
+        Map<Object,Object> controllerConfig = (Map<Object,Object>)deviceConfigs.get("controller");
+        if (controllerConfig != null) {
+            List<String> names = (List<String>)controllerConfig.get("names");
+            controllerInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            controllerOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+            if (controllerInput == null || controllerOutput == null) {
+                return null;
+            }
+        }
+
+        Map<Object,Object> midiConfig = (Map<Object,Object>)deviceConfigs.get("midi");
+        if (midiConfig != null) {
+            List<String> names = (List<String>)midiConfig.get("names");
+            midiInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            midiOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+            if (midiInput == null || midiOutput == null) {
+                return null;
+            }
+        }
+
+        try {
+            controllerInput.open();
+            controllerOutput.open();
+            controllerTransmitter = controllerInput.getTransmitter();
+            controllerReceiver = controllerOutput.getReceiver();
+
+            midiInput.open();
+            midiOutput.open();
+            midiTransmitter = midiInput.getTransmitter();
+            midiReceiver = midiOutput.getReceiver();
+
+            LaunchpadPro launchpadPro = new LaunchpadPro(controllerOutput.getReceiver(), null);
+            controllerInput.getTransmitter().setReceiver(launchpadPro);
+            return launchpadPro;
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

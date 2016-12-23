@@ -2,11 +2,16 @@
   "filePrefix": "project1/",
   "devices": {
     "controller": {
-      "name": "Launchpad/Standalone",
-      "type": "launchpadpro"
+      "names": [
+        "Launchpad",
+        "Standalone"
+        ]
     },
     "midi": {
-      "name": "Launchpad Pro/Midi Port"
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+        ]
     }
   },
   "modules": [
