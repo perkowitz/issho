@@ -1,0 +1,24 @@
+{
+  "filePrefix": "project1/",
+  "devices": {
+    "controller": {
+      "name": "Launchpad/Standalone",
+      "type": "launchpadpro"
+    },
+    "midi": {
+      "name": "Launchpad Pro/Midi Port"
+    }
+  },
+  "modules": [
+    {
+      "class": "ShihaiModule"
+    },
+    {
+      "class": "StepModule",
+      "filePrefix": "step0"
+    },
+    {
+      "class": "LogoModule"
+    }
+  ]
+}

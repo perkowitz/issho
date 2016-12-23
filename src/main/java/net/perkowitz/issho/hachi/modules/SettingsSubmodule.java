@@ -24,6 +24,20 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
 
     private Map<Integer, Color> palette = SettingsUtil.PALETTE;
 
+    private boolean includeSessions = true;
+    private boolean includeFiles = true;
+    private boolean includeMidiChannel = true;
+
+
+    /***** constructor ***********************************/
+
+    public SettingsSubmodule() {}
+
+    public SettingsSubmodule(boolean includeSessions, boolean includeFiles, boolean includeMidiChannel) {
+        this.includeSessions = includeSessions;
+        this.includeFiles = includeFiles;
+        this.includeMidiChannel = includeMidiChannel;
+    }
 
     /***** Module implementation ***********************************/
 
@@ -79,6 +93,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     /***** display **************************************/
 
     public void drawFiles() {
+        if (!includeFiles) return;
         for (GridControl control : loadControls.getControls()) {
             Color color = palette.get(COLOR_FILE_LOAD);
             if (control.getIndex() == currentFileIndex) {
@@ -96,6 +111,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     }
 
     public void drawSessions() {
+        if (!includeSessions) return;
         for (GridControl control : sessionControls.getControls()) {
             Color color = palette.get(COLOR_SESSION);
             if (control.getIndex() == currentSessionIndex) {
@@ -108,6 +124,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     }
 
     public void drawMidiChannel() {
+        if (!includeMidiChannel) return;
         for (GridControl control : midiChannelControls.getControls()) {
             Color color = palette.get(COLOR_MIDI_CHANNEL);
             if (control.getIndex() == midiChannel) {

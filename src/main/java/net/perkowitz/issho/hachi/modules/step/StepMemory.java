@@ -14,7 +14,7 @@ public class StepMemory {
 
     @Getter @Setter private int currentSessionIndex = 0;
     @Getter @Setter private int nextSessionIndex = 0;
-    @Getter @Setter private int currentPatternIndex = 0;
+    @Getter private int currentPatternIndex = 0;
 
     @Getter @Setter private int midiChannel = 0;
 
@@ -41,6 +41,9 @@ public class StepMemory {
         return currentSession().getScale();
     }
 
+    public void setCurrentPatternIndex(int currentPatternIndex) {
+        this.currentPatternIndex = currentPatternIndex % StepSession.PATTERN_COUNT;
+    }
 
     /***** select *******************************************************/
 
