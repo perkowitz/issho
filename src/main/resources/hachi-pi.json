@@ -2,11 +2,21 @@
   "filePrefix": "project1/",
   "devices": {
     "controller": {
-      "name": "Launchpad/Standalone",
-      "type": "launchpadpro"
+      "names": [
+        "Launchpad",
+        "1,0,1"
+        ]
     },
     "midi": {
-      "name": "Launchpad Pro/Midi Port"
+      "names":[
+        "Launchpad Pro",
+        "1,0,2"
+        ]
+    },
+    "knobby": {
+      "names":[
+        "nanokontrol"
+      ]
     }
   },
   "modules": [

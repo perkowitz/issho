@@ -1,0 +1,31 @@
+{
+  "filePrefix": "project1/",
+  "devices": {
+    "controller": {
+      "names": [
+        "Launchpad",
+        "Standalone"
+        ]
+    },
+    "midi": {
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+        ]
+    },
+    "knobby": {
+      "names":[
+        "nanokontrol"
+        ]
+    }
+  },
+  "modules": [
+    {
+      "class": "ExampleModule",
+      "filePrefix": "example0"
+    },
+    {
+      "class": "PaletteModule"
+    }
+  ]
+}

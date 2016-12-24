@@ -1,0 +1,57 @@
+{
+  "filePrefix": "project1/",
+  "devices": {
+    "controller": {
+      "names": [
+        "Launchpad",
+        "Standalone"
+        ]
+    },
+    "midi": {
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+        ]
+    },
+    "knobby": {
+      "names":[
+        "nanokontrol"
+      ]
+    }
+  },
+  "modules": [
+    {
+      "class": "ShihaiModule"
+    },
+    {
+      "class": "DrawingModule",
+      "filePrefix": "drawing"
+    },
+    {
+      "class": "RhythmModule",
+      "filePrefix": "rhythm1"
+    },
+    {
+      "class": "RhythmModule",
+      "filePrefix": "rhythm2",
+      "palette": "red",
+      "midiNoteOffset": 24
+    },
+    {
+      "class": "MonoModule",
+      "filePrefix": "mono1"
+    },
+    {
+      "class": "MonoModule",
+      "filePrefix": "mono2",
+      "palette": "orange"
+    },
+    {
+      "class": "StepModule",
+      "filePrefix": "step0"
+    },
+    {
+      "class": "PaletteModule"
+    }
+  ]
+}

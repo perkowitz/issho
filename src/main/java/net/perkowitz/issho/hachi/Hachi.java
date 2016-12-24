@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.example.ExampleModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
@@ -64,40 +65,21 @@ public class Hachi {
      */
     public static void main(String args[]) throws Exception {
 
-        // properties
-        String propertyFile = null;
-        if (args.length > 0) {
-            propertyFile = args[0];
-        }
-        if (propertyFile == null) {
-            System.out.println("Getting app settings..");
-            properties = PropertiesUtil.getProperties("hachi.properties");
-        } else {
-            System.out.printf("Getting app settings from %s..\n", propertyFile);
-            properties = PropertiesUtil.getProperties(propertyFile);
-        }
-
         // settings
         String settingsFile = null;
-        if (args.length > 1) {
-            settingsFile = args[1];
+        if (args.length > 0) {
+            settingsFile = args[0];
         }
         if (settingsFile == null) {
             System.out.println("Getting app settings..");
             settings = SettingsUtil.getSettings("settings.json");
         } else {
-            System.out.printf("Getting app settings from %s..\n", propertyFile);
+            System.out.printf("Getting app settings from %s..\n", settingsFile);
             settings = SettingsUtil.getSettings(settingsFile);
         }
 
-
-        LaunchpadPro launchpadPro = findDevice();
+        LaunchpadPro launchpadPro = getLaunchpad();
         GridDisplay gridDisplay = launchpadPro;
-        if (launchpadPro == null) {
-            System.err.printf("Unable to find controller device matching name: %s\n", properties.getProperty(CONTROLLER_NAME_PROPERTY));
-            System.exit(1);
-//            gridDisplay = new Console();
-        }
 
         createKnobby();
 
@@ -133,46 +115,51 @@ public class Hachi {
         return rhythm;
     }
 
+    private static LaunchpadPro getLaunchpad() {
 
-
-    private static LaunchpadPro findDevice() {
+        // get the device configs from the settings
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+        List<String> names = null;
 
         // find the controller device
         System.out.println("Finding controller device..");
-        String[] controllerNames = properties.getProperty(CONTROLLER_NAME_PROPERTY).split("/");
-        controllerInput = MidiUtil.findMidiDevice(controllerNames, false, true);
-        controllerOutput = MidiUtil.findMidiDevice(controllerNames, true, false);
+        Map<Object,Object> controllerConfig = (Map<Object,Object>)deviceConfigs.get("controller");
+        if (controllerConfig != null) {
+            names = (List<String>)controllerConfig.get("names");
+            controllerInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            controllerOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+        }
         if (controllerInput == null || controllerOutput == null) {
-            return null;
+            System.err.printf("Unable to find controller device matching name: %s\n", names);
+            System.exit(1);
         }
 
-        // find the midi device
-        System.out.println("Finding midi device..");
-        String[] midiNames = properties.getProperty(MIDI_NAME_PROPERTY).split("/");
-        midiInput = MidiUtil.findMidiDevice(midiNames, false, true);
-        midiOutput = MidiUtil.findMidiDevice(midiNames, true, false);
+        Map<Object,Object> midiConfig = (Map<Object,Object>)deviceConfigs.get("midi");
+        if (midiConfig != null) {
+            names = (List<String>)midiConfig.get("names");
+            midiInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            midiOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+        }
         if (midiInput == null || midiOutput == null) {
-            return null;
+            System.err.printf("Unable to find midi device matching name: %s\n", names);
+            System.exit(1);
         }
 
         try {
-            String type = properties.getProperty(CONTROLLER_TYPE_PROPERTY);
-            if (type.toLowerCase().equals("launchpadpro")) {
+            controllerInput.open();
+            controllerOutput.open();
+            controllerTransmitter = controllerInput.getTransmitter();
+            controllerReceiver = controllerOutput.getReceiver();
 
-                controllerInput.open();
-                controllerOutput.open();
-                controllerTransmitter = controllerInput.getTransmitter();
-                controllerReceiver = controllerOutput.getReceiver();
+            midiInput.open();
+            midiOutput.open();
+            midiTransmitter = midiInput.getTransmitter();
+            midiReceiver = midiOutput.getReceiver();
 
-                midiInput.open();
-                midiOutput.open();
-                midiTransmitter = midiInput.getTransmitter();
-                midiReceiver = midiOutput.getReceiver();
+            LaunchpadPro launchpadPro = new LaunchpadPro(controllerOutput.getReceiver(), null);
+            controllerInput.getTransmitter().setReceiver(launchpadPro);
+            return launchpadPro;
 
-                LaunchpadPro launchpadPro = new LaunchpadPro(controllerOutput.getReceiver(), null);
-                controllerInput.getTransmitter().setReceiver(launchpadPro);
-                return launchpadPro;
-            }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -235,6 +222,9 @@ public class Hachi {
             } else if (className.equals("PaletteModule")) {
                 module = new PaletteModule(false);
 
+            } else if (className.equals("ExampleModule")) {
+                module = new ExampleModule(midiTransmitter, midiReceiver, filePrefix);
+
             }
 
             // if module was created, add it
@@ -270,25 +260,30 @@ public class Hachi {
 
     private static void createKnobby() {
 
-        // find the knob device
-        System.out.println("Finding knob device..");
-        String[] knobNames = new String[] { "nanokontrol" };
-        knobInput = MidiUtil.findMidiDevice(knobNames, false, true);
-        knobOutput = MidiUtil.findMidiDevice(knobNames, true, false);
-        if (knobInput == null || knobOutput == null) {
-            return;
+        // get the device configs from the settings
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+
+        // find the knobby device
+        System.out.println("Finding knobby device..");
+        Map<Object,Object> config = (Map<Object,Object>)deviceConfigs.get("knobby");
+        if (config != null) {
+            List<String> names = (List<String>)config.get("names");
+            knobInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            knobOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+            if (knobInput == null || knobOutput == null) {
+                System.out.printf("Unable to find knobby device matching name: %s\n", names);
+                return;
+            }
+
+            try {
+                knobInput.open();
+                knobOutput.open();
+                Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
-
-        try {
-            knobInput.open();
-            knobOutput.open();
-            Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-
     }
 
 
