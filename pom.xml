@@ -75,12 +75,6 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
-                                        <!--<exclude>classworlds:classworlds</exclude>-->
-                                        <!--<exclude>junit:junit</exclude>-->
-                                        <!--<exclude>jmock:*</exclude>-->
-                                        <!--<exclude>*:xml-apis</exclude>-->
-                                        <!--<exclude>org.apache.maven:lib:tests</exclude>-->
-                                        <!--<exclude>log4j:log4j:jar:</exclude>-->
                                     </excludes>
                                 </filter>
                             </filters>
@@ -88,43 +82,6 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>net.perkowitz.issho.hachi.Hachi</mainClass>
                                 </transformer>
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">-->
-                                    <!--<resource>META-INF/spring.handlers</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">-->
-                                    <!--<resource>META-INF/services/com.sun.tools.xjc.Plugin</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">-->
-                                    <!--<resource>META-INF/spring.schemas</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">-->
-                                    <!--<resource>META-INF/cxf/cxf.extension</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">-->
-                                    <!--<resource>META-INF/extensions.xml</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">-->
-                                    <!--<resource>META-INF/cxf/extensions.xml</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">-->
-                                    <!--<resource>META-INF/cxf/bus-extensions.txt</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">-->
-                                    <!--<resource>META-INF/cxf/bus-extensions.xml</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">-->
-                                    <!--<resource>META-INF/wsdl.plugin.xml</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">-->
-                                    <!--<resource>META-INF/tools.service.validator.xml</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.cxf.maven.PluginTransformer">
-                                    <resource>META-INF/tools-plugin.xml</resource>
-                                </transformer>-->
-                                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">-->
-                                    <!--<resource>META-INF/cxf/java2wsbeans.xml</resource>-->
-                                <!--</transformer>-->
-                                <!--<transformer implementation="org.apache.cxf.maven.CXFAllTransformer" />-->
                             </transformers>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                         </configuration>
