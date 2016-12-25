@@ -13,14 +13,15 @@ details on specific modules.
 
 To set up your devices and run Hachi, see the [Getting Started](../getting-started.md) manual. 
 
-Hachi needs two pieces of configuration: a devices file, which tells Hachi how to identify and use MIDI 
-devices connected to the system, and a modules file that tells Hachi which modules to run and defines any
-module-specific settings. These are separated because you may wish to run Hachi on multiple devices 
-(e.g. a studio Mac and a portable Raspberry Pi) with the same module configuration.
+Hachi uses a JSON configuration file to specify what devices and modules to use. Examples are included
+in this repo, but custom config files can be created. Provide the config file path as the first
+argument when running Hachi.
+
+See [this sample config file](../src/main/resources/hachi-mac.json).
 
 ## Device Configuration
 
-The device configuration specifies MIDI devices to look for and what to look for in their name and description
+The device configuration section specifies MIDI devices to look for and what to look for in their name and description
 fields. Note that the same MIDI device may appear with different descriptions on difference hosts, so device
 configuration may need to be customized for each host. A device like the Novation Launchpad will have multiple
 logical ports visible to the host, with various names.
@@ -29,18 +30,45 @@ Here's an example device configuration, specifying how to find the Launchpad dev
 its MIDI ports. This configuration works well on a Mac.
 
 ```
-controller.name=Launchpad/Standalone
-controller.type=launchpadpro
-midi.name=Launchpad Pro/Midi Port
+  "devices": {
+    "controller": {
+      "names": [
+        "Launchpad",
+        "Standalone"
+        ]
+    },
+    "midi": {
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+        ]
+    },
+    "knobby": {
+      "names":[
+        "nanokontrol"
+      ]
+    }
+  }
 ```
 
-This device configuration is the equivalent, but for a Raspberry Pi. For whatever reason, the Launchpad's 
+Here's a similar configuration for a Raspberry Pi.For whatever reason, the Launchpad's 
 MIDI ports appear with different names on the Pi. 
 
 ```
-controller.name=Launchpad/1,0,1
-controller.type=launchpadpro
-midi.name=Launchpad Pro/1,0,2
+  "devices": {
+    "controller": {
+      "names": [
+        "Launchpad",
+        "1,0,1"
+        ]
+    },
+    "midi": {
+      "names":[
+        "Launchpad Pro",
+        "1,0,2"
+        ]
+    }
+  }
 ```
 
 If Hachi can't find MIDI devices matching those defined in the configuration, it will print a list of
@@ -56,16 +84,6 @@ the data files.
 
 ```
 {
-  "filePrefix": "project1/",
-  "devices": {
-    "controller": {
-      "name": "Launchpad/Standalone",
-      "type": "launchpadpro"
-    },
-    "midi": {
-      "name": "Launchpad Pro/Midi Port"
-    }
-  },
   "modules": [
     {
       "class": "ShihaiModule"
