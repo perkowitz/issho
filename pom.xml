@@ -9,18 +9,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>net.thecodersbreakfast</groupId>
-            <artifactId>lp4j-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.thecodersbreakfast</groupId>
-            <artifactId>lp4j-midi</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <!-- 3rd Party Dependencies -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
