@@ -74,6 +74,11 @@ MIDI ports appear with different names on the Pi.
 If Hachi can't find MIDI devices matching those defined in the configuration, it will print a list of
 devices found, to help you correct the configuration.
 
+Knobby, shown in the first configuration above, simply allows a MIDI controller to be routed to the 
+Launchpad's MIDI out port. For example, I have my NanoKontrol programmed to control a few parameters on my 
+Mutable Shruthi. While using Hachi to sequence the Shruthi, I can plug the NanoKontrol into the Pi and use
+it to tweak the Shruthi's sounds.
+
 
 ## Module Configuration
 
