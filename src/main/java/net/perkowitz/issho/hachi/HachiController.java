@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
+import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
@@ -50,6 +51,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private boolean clockRunning = false;
     private boolean midiClockRunning = false;
     private int tickCount = 0;
+    @Setter private boolean midiContinueAsStart = true;
 
     private int tempo = 120;
     private int tempoIntervalInMillis = 125 * 120 / tempo;
@@ -283,11 +285,6 @@ public class HachiController implements GridListener, Clockable, Receiver {
     }
 
     public void send(MidiMessage message, long timeStamp) {
-//        System.out.printf("MSG (%d, %d): ", message.getLength(), message.getStatus());
-//        for (byte b : message.getMessage()) {
-//            System.out.printf("%d ", b);
-//        }
-//        System.out.printf("\n");
 
         if (message instanceof ShortMessage) {
             ShortMessage shortMessage = (ShortMessage) message;
@@ -297,33 +294,31 @@ public class HachiController implements GridListener, Clockable, Receiver {
             if (command == MIDI_REALTIME_COMMAND) {
                 switch (status) {
                     case START:
-                        System.out.println("START");
+//                        System.out.println("START");
                         midiClockCount = 0;
                         this.start(true);
                         break;
                     case STOP:
-                        System.out.println("STOP");
+//                        System.out.println("STOP");
                         this.stop();
                         break;
                     case CONTINUE:
-                        System.out.println("CONTINUE");
-                        this.start(false);
+//                        System.out.println("CONTINUE");
+                        this.start(midiContinueAsStart);
                         break;
                     case TIMING_CLOCK:
 //                        System.out.println("TICK");
                         if (midiClockCount % midiClockDivider == 0) {
                             boolean andReset = (tickCount % 16 == 0);
-                            System.out.printf("Tick=%d, Clock=%d, Reset=%s\n", tickCount, midiClockCount, andReset);
                             this.tick(andReset);
                             tickCount++;
                         }
                         midiClockCount++;
                         break;
                     default:
-                        System.out.printf("REALTIME: %d\n", status);
+//                        System.out.printf("REALTIME: %d\n", status);
                         break;
                 }
-
 
             } else {
                 switch (command) {

@@ -92,6 +92,10 @@ public class Hachi {
 
         System.out.println("Creating modules...");
         controller = new HachiController(modules, gridDisplay);
+        Boolean midiContinueAsStart = (Boolean)settings.get("midiContinueAsStart");
+        if (midiContinueAsStart != null) {
+            controller.setMidiContinueAsStart(midiContinueAsStart);
+        }
         launchpadPro.setListener(controller);
 
         // make the HachiController receive external midi

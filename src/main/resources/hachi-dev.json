@@ -1,5 +1,6 @@
 {
   "filePrefix": "project1/",
+  "midiContinueAsStart": true,
   "devices": {
     "controller": {
       "names": [

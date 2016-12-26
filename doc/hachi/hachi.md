@@ -123,6 +123,18 @@ the data files.
 }
 ```
 
+## Other Configuration
+
+```
+  "midiContinueAsStart": true,
+  "devices": {..},
+  "modules": {..}
+```
+
+Setting the midiContinueAsStart option to true will cause Hachi to restart on MIDI continue messages; when it is false, Hachi will continue
+running from the current step.
+
+
 # Selecting Modules
 
 <img width="600px" src="hachi.png"/>
