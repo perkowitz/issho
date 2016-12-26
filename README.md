@@ -19,3 +19,7 @@ That basic sequencer runs as one module in Hachi.
 - [Hachi](doc/hachi/hachi.md): how to use Hachi, and how to configure and use various modules.
 - [Hachi Development](doc/hachi/development.md): details about Hachi's code and how to write your own modules. 
 
+# Issues
+
+Tracking bugs, needed improvements, and all-new features using [issues](https://github.com/perkowitz/issho/issues) 
+here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/milestones). 
