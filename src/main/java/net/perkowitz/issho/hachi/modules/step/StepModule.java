@@ -389,15 +389,15 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
     public void start(boolean restart) {
         notesOff();
         sendAllNotesOff(memory.getMidiChannel());
-        currentStageIndex = 0;
-        currentStageStepIndex = 0;
+        if (restart) {
+            currentStageIndex = 0;
+            currentStageStepIndex = 0;
+        }
     }
 
     public void stop() {
         notesOff();
         sendAllNotesOff(memory.getMidiChannel());
-        currentStageIndex = 0;
-        currentStageStepIndex = 0;
     }
 
     public void tick(boolean andReset) {

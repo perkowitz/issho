@@ -252,18 +252,19 @@ public class HachiController implements GridListener, Clockable, Receiver {
     /***** Clockable implementation ***************/
 
     public void start(boolean restart) {
-        for (Clockable clockable : clockables) {
+        midiClockRunning = true;
+        if (restart) {
             tickCount = 0;
-            midiClockRunning = true;
+        }
+        for (Clockable clockable : clockables) {
             clockable.start(restart);
         }
     }
 
     public void stop() {
+        midiClockRunning = false;
         for (Clockable clockable : clockables) {
             clockable.stop();
-            midiClockRunning = false;
-            tickCount = 0;
         }
     }
 
@@ -296,26 +297,30 @@ public class HachiController implements GridListener, Clockable, Receiver {
             if (command == MIDI_REALTIME_COMMAND) {
                 switch (status) {
                     case START:
-//                        System.out.println("START");
+                        System.out.println("START");
                         midiClockCount = 0;
                         this.start(true);
                         break;
                     case STOP:
-//                        System.out.println("STOP");
-                        midiClockCount = 0;
+                        System.out.println("STOP");
                         this.stop();
+                        break;
+                    case CONTINUE:
+                        System.out.println("CONTINUE");
+                        this.start(false);
                         break;
                     case TIMING_CLOCK:
 //                        System.out.println("TICK");
                         if (midiClockCount % midiClockDivider == 0) {
                             boolean andReset = (tickCount % 16 == 0);
+                            System.out.printf("Tick=%d, Clock=%d, Reset=%s\n", tickCount, midiClockCount, andReset);
                             this.tick(andReset);
                             tickCount++;
                         }
                         midiClockCount++;
                         break;
                     default:
-//                        System.out.printf("REALTIME: %d\n", status);
+                        System.out.printf("REALTIME: %d\n", status);
                         break;
                 }
 
