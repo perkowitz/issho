@@ -51,7 +51,7 @@ its MIDI ports. This configuration works well on a Mac.
   }
 ```
 
-Here's a similar configuration for a Raspberry Pi.For whatever reason, the Launchpad's 
+Here's a similar configuration for a Raspberry Pi. For whatever reason, the Launchpad's 
 MIDI ports appear with different names on the Pi. 
 
 ```
