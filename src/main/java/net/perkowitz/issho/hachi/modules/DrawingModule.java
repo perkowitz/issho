@@ -179,12 +179,12 @@ public class DrawingModule extends BasicModule implements Clockable {
     /***** Clockable implementation ****************************************/
 
     public void start(boolean restart) {
-        tickCount = 0;
+        if (restart) {
+            tickCount = 0;
+        }
     }
 
-    public void stop() {
-        tickCount = 0;
-    }
+    public void stop() {}
 
     public void tick(boolean andReset) {
         int frameIndex = (loopStart + (tickCount % loopLength)) % FRAMES_PER_PATTERN;

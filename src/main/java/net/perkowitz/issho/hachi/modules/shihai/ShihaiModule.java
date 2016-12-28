@@ -210,16 +210,16 @@ public class ShihaiModule extends BasicModule implements Clockable {
         playing = true;
         display.initialize();
         redraw();
-        tickCount = 0;
-        measureCount = 0;
+        if (restart) {
+            tickCount = 0;
+            measureCount = 0;
+        }
     }
 
     public void stop() {
         playing = false;
         display.initialize();
         redraw();
-        tickCount = 0;
-        measureCount = 0;
     }
 
     public void tick(boolean andReset) {
