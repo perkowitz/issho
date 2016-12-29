@@ -17,7 +17,12 @@ Hachi uses a JSON configuration file to specify what devices and modules to use.
 in this repo, but custom config files can be created. Provide the config file path as the first
 argument when running Hachi.
 
-See [this sample config file](../../src/main/resources/hachi-mac.json).
+See [this config file](../../src/main/resources/hachi-mac.json).
+
+The repo includes two config files, `hachi-mac.json` and `hachi-pi.json` which should work to get Hachi running 
+on a Mac or Pi. Once you have Hachi running, you'll probably want to create your own config. Create a file in 
+your main hachi directory similar to the above, and just provide the filename of that file as the argument 
+to Hachi when you run.
 
 ## Device Configuration
 

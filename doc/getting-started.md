@@ -12,8 +12,17 @@ install standard tools.
 - Raspberry Pi, with 1 free USB port (2 if you want to add USB wifi for remote login).
 - Novation Launchpad Pro
 
-# Build the Code
+# Getting and running the code
 
+## Download binaries
+
+The most recent release of Hachi can be found in the 
+[releases section](https://github.com/perkowitz/issho/releases) of the Issho repository. Download
+the shaded-jar file and put it into its own directory (e.g. `~/hachi`).
+
+## Build the repo yourself
+
+If you prefer, you can build the application yourself from the source code.
 Clone the git repo into your src directory (or wherever you like), and then build the project. 
 You can build the code directly on the Pi, or build it elsewhere and copy it over.
 
@@ -28,22 +37,39 @@ You can build the code directly on the Pi, or build it elsewhere and copy it ove
 `> mvn package`
 
 Issho will be built into a jar file with all dependencies, in `target/issho-NNN-shaded.jar` 
-(NNN is the version number). On a Pi, run it with this command:
+(NNN is the version number). Make a directory for the application (e.g. `~/hachi`) and
+copy the jar there.
 
-`> java -cp ~/bin/issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json`
+## Running the application
+
+At a unix command line, go into your hachi directory to run the application. Hachi will save
+sequence data in the directory you run it from, so always run it from here.
+
+On a Pi, run it with this command:
+
+`> java -cp issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json`
 
 On a Mac:
 
-`> java -cp ~/bin/issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-mac.json`
+`> java -cp issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-mac.json`
 
 
 # Set up the Pi
 
 To make a fully portable sequencer, you'll want to run the Pi with no monitor or keyboard, set up so 
 that when you turn it on it will log in and run the sequencer automatically. To set up automatic login, 
-see [these instructions](http://elinux.org/RPi_Debian_Auto_Login). To run the sequencer on login, 
-add the script to the end of your .bashrc (or whatever you use). If you copied the script and JAR 
-to your `~/bin` directory, for example, add `bin/seq` to your .bashrc.
+see [these instructions](http://elinux.org/RPi_Debian_Auto_Login). To run Hachi on login,
+add the above run command to the end of your .bashrc (or whatever you use). If you put the jar in
+a directory like `~/hachi`, add the following to the end of your .bashrc.
+
+`cd ~/hachi; java -cp issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json` 
+
+
+# Define your configuration
+
+Hachi looks for a config file to tell it what MIDI devices to look for and what modules to load.
+For help setting up a config file, see [the Hachi manual](hachi/hachi.md).
+
 
 # Set up your hardware
 
@@ -51,35 +77,4 @@ to your `~/bin` directory, for example, add `bin/seq` to your .bashrc.
 - Plug the MIDI output of the Launchpad into your drum module, sampler, etc
 - Plug the output of your main clock source into the MIDI input of the Launchpad
 - Plug in the Pi and wait
-
-# Define your properties
-
-Sequence looks for a properties file to define the names and ports of the MIDI devices it will use. 
-If you wish to override the default settings, you can provide a path to a properties file as an 
-argument. See the `seq` script in the root of the repo. 
-
-To run Hachi, you may need to edit the `sample.properties` file to provide the name of the Launchpad
-device. If Issho can't find a matching device, it will print a list of the devices found. In the 
-properties file, you can provide one or more strings (case insensitive) to match against the device 
-name or description; all the provided strings must be found. Note that different machines may report 
-device names and descriptions differently (and the names may be changed with midi settings), 
-so this may take some trial and error.
-
-If the specified device isn't found, you'll see something like this:
-
-`Getting app settings from sample.properties..`
-
-`Setting memory sizes..`
-
-`Finding controller device..`
-
-`Loading device info..`
-
-`Found midi device: MIDISPORT 8x8/s 1`
-
-`Found midi device: MIDISPORT 8x8/s 2`
-
-`Unable to find controller input device matching name: Launchpad`
-
-If the devices are found, the buttons and pads on the Launchpad will light up and you'll be ready to go!
 
