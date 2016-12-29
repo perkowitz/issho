@@ -28,16 +28,14 @@ You can build the code directly on the Pi, or build it elsewhere and copy it ove
 `> mvn package`
 
 Issho will be built into a jar file with all dependencies, in `target/issho-NNN-shaded.jar` 
-(NNN is the version number). You can run it using the `hachi` command in the root directory of the repo. 
-If you wish to install it somewhere else, copy the script, the jar, and the `sample.properties` 
-file, but be sure to edit the script to point to the copied jar. If you build the code elsewhere, 
-copy the script and jar to your Pi.
+(NNN is the version number). On a Pi, run it with this command:
 
-For example, copy the script, jar, settings, and properties to your `~/bin` directory, and edit the script like this:
+`> java -cp ~/bin/issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json`
 
-`#!/bin/sh`
+On a Mac:
 
-`java -cp ~/bin/issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi sample.properties`
+`> java -cp ~/bin/issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-mac.json`
+
 
 # Set up the Pi
 
