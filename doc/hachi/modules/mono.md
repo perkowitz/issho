@@ -2,7 +2,7 @@
 
 Mono is a monophonic grid-based sequencer. 
 
-Step can hold 16 sessions in memory at a time. 
+Mono can hold 16 sessions in memory at a time. 
 Each session contains 16 patterns.
 Each pattern consists of 16 steps. 
 Each step can play a note (with settable velocity) or rest, or tie
@@ -72,7 +72,7 @@ shift right to shift the steps to the right.
 
 ## Settings View
 
-<img width="600px" src="step-settings.png"/>
+<img width="600px" src="mono-settings.png"/>
 
 ### Sessions
 
@@ -81,8 +81,8 @@ Tap a session pad to select that session from memory. The current session is lit
 ### Files
 
 Tap a load pad to load the file with the corresponding number. For example,
-if Step is configured to use "step" as a file prefix, pressing the first
-pad will load "step-0.json" into memory. Similarly, tap a save pad to save 
+if Step is configured to use "mono" as a file prefix, pressing the first
+pad will load "mono-0.json" into memory. Similarly, tap a save pad to save 
 the current memory to the corresponding file. The previous file will be moved
 to a backup (but only the most recent backup will be retained). The most recently
 saved or loaded file will be lit; this is the file that will be written when
