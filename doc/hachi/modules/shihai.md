@@ -77,12 +77,15 @@ all modules that can load sessions.
 
 # Configuration
 
-Shihai has no configuration options. 
+The `panicExclude` configuration option can be used to exclude MIDI channels
+from the all-channels, all-notes-off panic message. This is a list of numbers
+ in the 0-15 range.
 
 ```
   "modules": [
     {
-      "class": "ShihaiModule"
+      "class": "ShihaiModule",
+      "panicExclude": [14, 15]
     }
   ]
 ```

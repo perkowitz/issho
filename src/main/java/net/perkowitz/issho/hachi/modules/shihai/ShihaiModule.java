@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi.modules.shihai;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import net.perkowitz.issho.hachi.modules.*;
 
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
+import java.util.List;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.shihai.ShihaiUtil.*;
@@ -39,6 +41,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private int patternsReleasedCount = 0;
     private int tempoIndex = 2;
+    @Setter private List<Integer> panicExclude = null;
 
 
     /***** constructor ****************************************/
@@ -111,7 +114,9 @@ public class ShihaiModule extends MidiModule implements Clockable {
 
         } else if (control.equals(ShihaiUtil.panicControl)) {
             for (int channel = 0; channel < 16; channel++) {
-                sendAllNotesOff(channel);
+                if (panicExclude == null || !panicExclude.contains(channel)) {
+                    sendAllNotesOff(channel);
+                }
             }
 
         } else if (settingsView) {

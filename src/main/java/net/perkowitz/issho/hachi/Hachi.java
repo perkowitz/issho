@@ -213,7 +213,11 @@ public class Hachi {
                 module = new StepModule(midiTransmitter, midiReceiver, filePrefix);
 
             } else if (className.equals("ShihaiModule")) {
-                shihaiModule = new ShihaiModule();
+                shihaiModule = new ShihaiModule(midiTransmitter, midiReceiver);
+                List<Integer> panicExclude = (List<Integer>)moduleSettings.get("panicExclude");
+                if (panicExclude != null) {
+                    shihaiModule.setPanicExclude(panicExclude);
+                }
                 module = shihaiModule;
 
             } else if (className.equals("DrawingModule")) {
