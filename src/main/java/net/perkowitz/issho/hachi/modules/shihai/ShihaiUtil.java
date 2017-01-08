@@ -37,6 +37,7 @@ public class ShihaiUtil {
     public static GridControlSet tempoControls = GridControlSet.buttonSide(GridButton.Side.Right);
 
     public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
+    public static GridControl panicControl = new GridControl(GridButton.at(Left, 4), null);
 
 
 }

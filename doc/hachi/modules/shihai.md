@@ -58,7 +58,8 @@ individual modules.
 
 ### Panic
 
-Press this button to force every midi module to send "all notes off" on its channel.
+Press this button to send an "all notes off" message on all MIDI channels,
+in case of any stuck notes.
 
 ### Settings
 
