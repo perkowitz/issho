@@ -103,6 +103,7 @@ public class ShihaiDisplay {
 
     public void drawLeftControls() {
         drawControl(ShihaiUtil.settingsControl, settingsView);
+        drawControl(ShihaiUtil.panicControl, false);
     }
 
     public void drawControl(GridControl control, boolean isOn) {

@@ -22,7 +22,8 @@
   },
   "modules": [
     {
-      "class": "ShihaiModule"
+      "class": "ShihaiModule",
+      "panicExclude": [14, 15]
     },
     {
       "class": "DrawingModule",

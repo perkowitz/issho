@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi.modules.shihai;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,9 @@ import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.hachi.modules.*;
 
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Transmitter;
+import java.util.List;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.shihai.ShihaiUtil.*;
@@ -18,7 +22,7 @@ import static net.perkowitz.issho.hachi.modules.shihai.ShihaiUtil.*;
 /**
  * Created by optic on 9/12/16.
  */
-public class ShihaiModule extends BasicModule implements Clockable {
+public class ShihaiModule extends MidiModule implements Clockable {
 
     private static int[] tempos = new int[] { 128, 124, 120, 116, 112, 108, 100, 92 };
 
@@ -37,11 +41,13 @@ public class ShihaiModule extends BasicModule implements Clockable {
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private int patternsReleasedCount = 0;
     private int tempoIndex = 2;
+    @Setter private List<Integer> panicExclude = null;
 
 
     /***** constructor ****************************************/
 
-    public ShihaiModule() {
+    public ShihaiModule(Transmitter inputTransmitter, Receiver outputReceiver) {
+        super(inputTransmitter, outputReceiver);
         this.shihaiDisplay = new ShihaiDisplay(display);
         this.settingsModule = new SettingsSubmodule(true, false, false);
     }
@@ -105,6 +111,14 @@ public class ShihaiModule extends BasicModule implements Clockable {
             settingsView = !settingsView;
             shihaiDisplay.setSettingsView(settingsView);
             this.redraw();
+
+        } else if (control.equals(ShihaiUtil.panicControl)) {
+            shihaiDisplay.drawControl(ShihaiUtil.panicControl, true);
+            for (int channel = 0; channel < 16; channel++) {
+                if (panicExclude == null || !panicExclude.contains(channel)) {
+                    sendAllNotesOff(channel);
+                }
+            }
 
         } else if (settingsView) {
             onControlPressedSettings(control, velocity);
@@ -174,6 +188,9 @@ public class ShihaiModule extends BasicModule implements Clockable {
                 }
                 redraw();
             }
+
+        } else if (control.equals(ShihaiUtil.panicControl)) {
+            shihaiDisplay.drawControl(ShihaiUtil.panicControl, false);
 
         }
 
