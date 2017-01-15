@@ -113,6 +113,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
             this.redraw();
 
         } else if (control.equals(ShihaiUtil.panicControl)) {
+            shihaiDisplay.drawControl(ShihaiUtil.panicControl, true);
             for (int channel = 0; channel < 16; channel++) {
                 if (panicExclude == null || !panicExclude.contains(channel)) {
                     sendAllNotesOff(channel);
@@ -187,6 +188,9 @@ public class ShihaiModule extends MidiModule implements Clockable {
                 }
                 redraw();
             }
+
+        } else if (control.equals(ShihaiUtil.panicControl)) {
+            shihaiDisplay.drawControl(ShihaiUtil.panicControl, false);
 
         }
 
