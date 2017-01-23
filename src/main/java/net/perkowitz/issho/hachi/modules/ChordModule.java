@@ -21,6 +21,7 @@ public class ChordModule extends MidiModule implements Chordable {
     protected Chord chord = null;
 
     // remember what notes we actually played for input note numbers, so we can stop them later
+    // maps to a list rather than a set because some synths (e.g. Sub 37) track multiple ons/offs for same note
     private Map<Integer, List<Integer>> playedNotesMap = Maps.newHashMap();
 
 
@@ -61,7 +62,7 @@ public class ChordModule extends MidiModule implements Chordable {
 
         } else {
             // note on -- once we compute any mapping, add those mappings to the playedNotesMap
-            int mappedNote = noteNumber;                                                                                // have to add notes more than once for sub37
+            int mappedNote = noteNumber;
             if (chord != null && !chord.isEmpty()) {
                 mappedNote = chord.mapNote(noteNumber);
 //                System.out.printf("- mapped %d to %d\n", noteNumber, mappedNote);
