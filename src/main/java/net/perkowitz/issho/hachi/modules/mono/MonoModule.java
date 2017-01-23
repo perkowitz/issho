@@ -5,13 +5,8 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
-import net.perkowitz.issho.hachi.Chordable;
-import net.perkowitz.issho.hachi.Clockable;
-import net.perkowitz.issho.hachi.Saveable;
-import net.perkowitz.issho.hachi.Sessionizeable;
-import net.perkowitz.issho.hachi.modules.MidiModule;
-import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.hachi.modules.Muteable;
+import net.perkowitz.issho.hachi.*;
+import net.perkowitz.issho.hachi.modules.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -30,7 +25,7 @@ import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.View.SEQUENCE;
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable, Muteable {
+public class MonoModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
 
     private static int MAX_VELOCITY = 127;
     private static int MAX_OCTAVE = 7;
@@ -58,6 +53,8 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private String filePrefix = "monomodule";
     private int currentFileIndex = 0;
+
+    private int transpose = 0;
 
 
     /***** Constructor ****************************************/
@@ -109,7 +106,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
             notesOff();
         } else if (step.isEnabled() && step.getGate() == PLAY) {
             notesOff();
-            sendMidiNote(memory.getMidiChannel(), step.getNote(), step.getVelocity());
+            sendMidiNote(memory.getMidiChannel(), transpose + step.getNote(), step.getVelocity());
             onNotes.add(step.getNote());
         } else if (step.isEnabled() && step.getGate() == MonoUtil.Gate.TIE) {
             // do nothing
@@ -135,7 +132,7 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     private void notesOff() {
         for (Integer note : onNotes) {
-            sendMidiNote(memory.getMidiChannel(), note, 0);
+            sendMidiNote(memory.getMidiChannel(), transpose + note, 0);
 
         }
         onNotes.clear();
@@ -232,8 +229,9 @@ public class MonoModule extends MidiModule implements Module, Clockable, GridLis
 
     /***** Chordable implementation ***********************************/
 
-    public void setChordNotes(List<Integer> notes) {
-
+    public void xxxxxsetChord(Chord chord) {
+        System.out.printf("MonoModule.setChord: %s\n", chord);
+        transpose = chord.getTranspose();
     }
 
 

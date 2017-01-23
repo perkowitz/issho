@@ -2,6 +2,7 @@ package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.GridDisplay;
+import net.perkowitz.issho.devices.Keyboard;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.example.ExampleModule;
@@ -49,6 +50,8 @@ public class Hachi {
     private static MidiDevice knobInput;
     private static MidiDevice knobOutput;
 
+    private static Keyboard keyboard = null;
+
     private static HachiController controller;
     private static CountDownLatch stop = new CountDownLatch(1);
 
@@ -78,6 +81,10 @@ public class Hachi {
             settings = SettingsUtil.getSettings(settingsFile);
         }
 
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+
+
+
         LaunchpadPro launchpadPro = getLaunchpad();
         GridDisplay gridDisplay = launchpadPro;
 
@@ -100,6 +107,16 @@ public class Hachi {
 
         // make the HachiController receive external midi
         midiInput.getTransmitter().setReceiver(controller);
+
+        if (deviceConfigs != null) {
+            if (deviceConfigs.get("keyboard") != null) {
+                List<String> names = (List<String>)((Map<Object,Object>)deviceConfigs.get("keyboard")).get("names");
+                System.out.printf("Looking for keyboard: %s...\n", names);
+                keyboard = Keyboard.fromMidiDevice(names, controller.getChordReceiver());
+            }
+        }
+
+
 
         System.out.printf("Running controller...\n");
         controller.run();

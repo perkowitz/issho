@@ -14,9 +14,14 @@
         "Midi Port"
         ]
     },
-    "knobby": {
+    "knobbyx": {
       "names":[
         "nanokontrol"
+      ]
+    },
+    "keyboard": {
+      "names": [
+        "LPK25"
       ]
     }
   },
