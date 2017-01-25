@@ -56,6 +56,7 @@ public class Chord {
     /***** list management *****************************/
 
     public void add(Integer note) {
+        if (note == null || note < 0) return;
         Integer baseNote = note % 12;
         if (!baseNotes.contains(baseNote)) {
             baseNotes.add(baseNote);
@@ -76,10 +77,16 @@ public class Chord {
 
     public void clear() {
         baseNotes.clear();
+        computeTranspose();
+        computeNoteMap();
     }
 
     public boolean isEmpty() {
         return baseNotes.isEmpty();
+    }
+
+    public int size() {
+        return baseNotes.size();
     }
 
 

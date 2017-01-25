@@ -5,7 +5,6 @@ import javax.sound.midi.*;
 import java.util.List;
 
 import static javax.sound.midi.ShortMessage.*;
-import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
 
 /**
