@@ -47,17 +47,17 @@ public class ChordReceiver implements Receiver {
                     case NOTE_ON:
                         int note = shortMessage.getData1();
 //                        System.out.printf("ChordReceiver NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), note, shortMessage.getData2());
-                        if (shortMessage.getData2() != 0) {
+                        if (shortMessage.getData2() == 0) {
+                            chord.remove(note);
+                        } else {
                             chord.add(note);
-                            System.out.println(chord);
-                            sendChord();
                         }
+                        sendChord();
                         break;
                     case NOTE_OFF:
 //                        System.out.printf("ChordReceiver NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         note = shortMessage.getData1();
                         chord.remove(note);
-                        System.out.println(chord);
                         sendChord();
                         break;
                     default:
