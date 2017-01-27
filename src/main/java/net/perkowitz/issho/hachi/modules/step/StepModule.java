@@ -91,7 +91,6 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
 
     private void playStep(Step step) {
 
-        System.out.printf("playStep: %s\n", step);
         List<Integer> noteIndices = Lists.newArrayList();
         switch (step.getMode()) {
             case Play:
@@ -158,7 +157,6 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
     }
 
     private void notesOff() {
-        System.out.printf("notesOff: %s\n", onNotes);
         for (Integer note : onNotes) {
             sendMidiNote(memory.getMidiChannel(), note, 0);
 

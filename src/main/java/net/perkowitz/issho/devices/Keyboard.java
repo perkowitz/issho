@@ -44,7 +44,12 @@ public class Keyboard implements Receiver {
 //                        System.out.printf("Keyboard NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         outputReceiver.send(message, timeStamp);
                         break;
+                    case CONTROL_CHANGE:
+//                        System.out.printf("Keyboard MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+                        outputReceiver.send(message, timeStamp);
+                        break;
                     default:
+
                 }
             }
         }
