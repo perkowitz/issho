@@ -42,7 +42,7 @@ public class ChordReceiver implements Receiver {
 
 
     private void sendChord() {
-        System.out.printf("Chord: %s\n", chord);
+//        System.out.printf("Chord: %s\n", chord);
         for (Chordable chordable : chordables) {
             chordable.setChord(chord);
         }

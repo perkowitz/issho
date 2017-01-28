@@ -227,14 +227,6 @@ public class MonoModule extends ChordModule implements Module, Clockable, GridLi
         return isMuted;
     }
 
-    /***** Chordable implementation ***********************************/
-
-    public void xxxxxsetChord(Chord chord) {
-        System.out.printf("MonoModule.setChord: %s\n", chord);
-        transpose = chord.getTranspose();
-    }
-
-
     /***** Sessionizeable implementation *************************************/
 
     public void selectSession(int index) {
