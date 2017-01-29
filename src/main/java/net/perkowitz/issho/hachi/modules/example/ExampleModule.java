@@ -2,10 +2,7 @@ package net.perkowitz.issho.hachi.modules.example;
 
 import com.google.common.io.Files;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.hachi.Chordable;
-import net.perkowitz.issho.hachi.Clockable;
-import net.perkowitz.issho.hachi.Saveable;
-import net.perkowitz.issho.hachi.Sessionizeable;
+import net.perkowitz.issho.hachi.*;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.step.*;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -21,7 +18,7 @@ import static net.perkowitz.issho.hachi.modules.example.ExampleUtil.*;
 /**
  * Created by optic on 10/24/16.
  */
-public class ExampleModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable, Muteable {
+public class ExampleModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -133,7 +130,7 @@ public class ExampleModule extends MidiModule implements Module, Clockable, Grid
      * 
      * @param notes
      */
-    public void setChordNotes(List<Integer> notes) {
+    public void setChord(Chord chord) {
 
     }
 

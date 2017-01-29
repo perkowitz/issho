@@ -18,6 +18,13 @@
       "names":[
         "nanokontrol"
       ]
+    },
+    "keyboard": {
+      "names": [
+        "LPK25"
+      ],
+      "chordHoldEnabled": true,
+      "holdClearControllerNumber": 64
     }
   },
   "modules": [

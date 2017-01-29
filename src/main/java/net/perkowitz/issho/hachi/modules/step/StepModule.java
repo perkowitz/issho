@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.hachi.Chordable;
-import net.perkowitz.issho.hachi.Clockable;
-import net.perkowitz.issho.hachi.Saveable;
-import net.perkowitz.issho.hachi.Sessionizeable;
+import net.perkowitz.issho.hachi.*;
 import net.perkowitz.issho.hachi.modules.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -23,7 +20,7 @@ import static net.perkowitz.issho.hachi.modules.step.StepUtil.*;
 /**
  * Created by optic on 10/24/16.
  */
-public class StepModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Chordable, Saveable, Muteable {
+public class StepModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -200,13 +197,6 @@ public class StepModule extends MidiModule implements Module, Clockable, GridLis
 
     public boolean isMuted() {
         return isMuted;
-    }
-
-
-    /***** Chordable implementation ***********************************/
-
-    public void setChordNotes(List<Integer> notes) {
-
     }
 
 

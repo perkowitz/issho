@@ -14,13 +14,19 @@
         "Midi Port"
         ]
     },
-    "knobby": {
-      "names":[
-        "nanokontrol"
-        ]
+    "keyboard": {
+      "names": [
+        "LPK25"
+      ],
+      "chordHoldEnabled": true,
+      "holdClearControllerNumber": 64
     }
   },
   "modules": [
+    {
+      "class": "StepModule",
+      "filePrefix": "step0"
+    },
     {
       "class": "ExampleModule",
       "filePrefix": "example0"

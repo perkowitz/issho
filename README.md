@@ -23,3 +23,14 @@ That basic sequencer runs as one module in Hachi.
 
 Tracking bugs, needed improvements, and all-new features using [issues](https://github.com/perkowitz/issho/issues) 
 here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/milestones). 
+
+# Release notes
+
+## 2017-01-29: v1.0.1
+
+- Add configurable keyboard device
+- Added Chords, ChordReceiver, ChordModule to track chords from keyboard device and apply chords to outgoing MIDI notes
+- Updated MonoModule and StepModule to extend ChordModule so they follow chords
+- Added chord options to keyboard configuration
+- Updated doc to cover chords and keyboard configuration
+- Added tests for Chords

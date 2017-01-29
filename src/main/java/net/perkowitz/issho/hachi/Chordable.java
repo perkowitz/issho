@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface Chordable extends Module {
 
-    public void setChordNotes(List<Integer> notes);
+    public void setChord(Chord chord);
 
 }

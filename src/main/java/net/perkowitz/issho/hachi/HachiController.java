@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
@@ -42,9 +43,12 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private GridListener activeListener = null;
     private GridDisplay display;
     private ModuleDisplay[] displays;
+
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
+    private List<Chordable> chordables = Lists.newArrayList();
     private ShihaiModule shihaiModule = null;
+    @Getter private ChordReceiver chordReceiver;
 
     private static CountDownLatch stop = new CountDownLatch(1);
     private static Timer timer = null;
@@ -78,10 +82,16 @@ public class HachiController implements GridListener, Clockable, Receiver {
                 triggerables.add((Triggerable) modules[i]);
             }
 
+            if (modules[i] instanceof Chordable) {
+                chordables.add((Chordable) modules[i]);
+            }
+
             if (shihaiModule == null && modules[i] instanceof ShihaiModule) {
                 shihaiModule = (ShihaiModule)modules[i];
             }
         }
+
+        chordReceiver = new ChordReceiver(chordables);
 
     }
 
@@ -322,24 +332,17 @@ public class HachiController implements GridListener, Clockable, Receiver {
 
             } else {
                 switch (command) {
-//                    case NOTE_ON:
-////                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-//                        if (shortMessage.getChannel() == triggerChannel && shortMessage.getData1() == stepNote &&
-//                                shortMessage.getData2() >= STEP_MIN && shortMessage.getData2() <= STEP_MAX) {
-//                            sequencer.trigger(false);
-//                        } else if (shortMessage.getChannel() == triggerChannel && shortMessage.getData1() == stepNote &&
-//                                shortMessage.getData2() >= RESET_MIN && shortMessage.getData2() <= RESET_MAX) {
-//                            sequencer.trigger(true);
-//                        }
-//                        break;
-//                    case NOTE_OFF:
-////                        System.out.println("NOTE OFF");
-//                        break;
-//                    case CONTROL_CHANGE:
-////                        System.out.println("MIDI CC");
-//                        break;
-//                    default:
-////                        System.out.printf("MSG: %d\n", command);
+                    case NOTE_ON:
+                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+                        break;
+                    case NOTE_OFF:
+                        System.out.println("NOTE OFF");
+                        break;
+                    case CONTROL_CHANGE:
+//                        System.out.println("MIDI CC");
+                        break;
+                    default:
+//                        System.out.printf("MSG: %d\n", command);
                 }
             }
         }
