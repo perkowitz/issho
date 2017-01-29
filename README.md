@@ -34,3 +34,9 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 - Added chord options to keyboard configuration
 - Updated doc to cover chords and keyboard configuration
 - Added tests for Chords
+
+# Hachi
+
+Here is our friend, the other Hachi: 
+
+![The Other Hachi](doc/hachi/hachi-face.jpg)
