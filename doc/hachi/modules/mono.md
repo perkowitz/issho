@@ -110,6 +110,11 @@ set to use a fuchsia or orange color palette.
   ]
 ```
 
+## Keyboard and Chords
+
+If Hachi is configured with a MIDI keyboard (see [the main Hachi manual](../hachi.md)), MonoModule will respond to 
+chords by filtering output MIDI notes to the closest Chord note.
+
 # Color Palette
 
 Mono has two defined palettes: fuchsia and orange. This section describes the color values in the fuchsia palette.

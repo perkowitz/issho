@@ -111,11 +111,17 @@ public class Hachi {
         if (deviceConfigs != null) {
             if (deviceConfigs.get("keyboard") != null) {
                 List<String> names = (List<String>)((Map<Object,Object>)deviceConfigs.get("keyboard")).get("names");
-                Integer holdClearControllerNumber = (Integer)((Map<Object,Object>)deviceConfigs.get("keyboard")).get("holdClearControllerNumber");
                 System.out.printf("Looking for keyboard: %s...\n", names);
                 keyboard = Keyboard.fromMidiDevice(names, controller.getChordReceiver());
+
+                Integer holdClearControllerNumber = (Integer)((Map<Object,Object>)deviceConfigs.get("keyboard")).get("holdClearControllerNumber");
                 if (holdClearControllerNumber != null) {
                     controller.getChordReceiver().setHoldClearControllerNumber(holdClearControllerNumber);
+                }
+
+                Boolean chordHoldEnabled = (Boolean)((Map<Object,Object>)deviceConfigs.get("keyboard")).get("chordHoldEnabled");
+                if (chordHoldEnabled != null) {
+                    controller.getChordReceiver().setChordHold(chordHoldEnabled);
                 }
             }
         }

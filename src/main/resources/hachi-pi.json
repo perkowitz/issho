@@ -23,6 +23,7 @@
       "names": [
         "LPK25"
       ],
+      "chordHoldEnabled": true,
       "holdClearControllerNumber": 64
     }
   },

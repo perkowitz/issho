@@ -84,6 +84,49 @@ Launchpad's MIDI out port. For example, I have my NanoKontrol programmed to cont
 Mutable Shruthi. While using Hachi to sequence the Shruthi, I can plug the NanoKontrol into the Pi and use
 it to tweak the Shruthi's sounds.
 
+### Knobby Configuration
+
+A "knobby" device can be added for sending MIDI controllers to downstream MIDI modules. Adding the device to the config will tell
+Hachi to route the controller's output to the Launchpad Pro's MIDI out, so that control messages can be sent to any devices
+on the MIDI chain. The controller must be set up to send the desired messages; Hachi will not remap the MIDI messages in any way.
+
+```
+  "devices": {
+    "knobby": {
+      "names":[
+        "nanokontrol"
+      ]
+    }
+  }
+```
+
+### Keyboard Configuration
+
+A MIDI keyboard device can be added to Hachi. Hachi will route MIDI from the keyboard into a ChordReceiver object, which monitors the currently played
+notes to maintain the current chord. This chord is passed on to modules like MonoModule and StepModule, which can remap their MIDI notes to use 
+only notes in the specified chord. In other words, playing a chord on the connected keyboard will cause Hachi's sequencers to play their sequences
+in that key. 
+
+The ChordReceiver may have hold enabled or disabled. When disabled, the chord will be maintained only as long as the keys are held down.
+When a key is released, it is removed from the chord, and when all keys are released the chord is cleared. With hold enabled, as long as 
+a note is held down, additional notes played will be added to the current chord. When all notes are released, the current chord will be 
+held. The chord will be cleared when the ChordReceiver receives a MIDI controller message (any value) for the 
+holdClearControllerNumber (defaults to 64, hold). Hold can be enabled or disabled in the configuration with "chordHoldEnabled" set to
+true or false. The hold clear controller number can also be specified. For example, if your MIDI keyboard has a mod wheel but no hold controller,
+set the controller number to 1 to use the mod wheel to clear hold.
+
+
+```
+  "devices": {
+    "keyboard": {
+      "names":[
+        "LPK25"
+      ],
+      "chordHoldEnabled": false,
+      "holdClearControllerNumber": 64
+    }
+  }
+```
 
 ## Module Configuration
 

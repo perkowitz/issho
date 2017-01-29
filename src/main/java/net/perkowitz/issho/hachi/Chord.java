@@ -30,7 +30,7 @@ public class Chord {
     }
 
     @Setter private TransposeMode transposeMode = NO_TRANSPOSE;
-    @Setter private NoteMapMode noteMapMode = ROUND_ROBIN;
+    @Setter private NoteMapMode noteMapMode = NEAREST;
     @Getter private List<Integer> baseNotes;
     private List<Integer> notes;
     @Getter private int transpose = 0;
