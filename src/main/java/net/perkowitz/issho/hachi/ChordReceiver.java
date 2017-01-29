@@ -13,8 +13,6 @@ import java.util.Set;
 import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
 import static javax.sound.midi.ShortMessage.NOTE_ON;
-import static net.perkowitz.issho.hachi.ChordReceiver.SustainToggleMode.HIGH_TOGGLE;
-import static net.perkowitz.issho.hachi.ChordReceiver.SustainToggleMode.NORMAL;
 
 /**
  * Created by optic on 1/14/17.
@@ -30,7 +28,7 @@ public class ChordReceiver implements Receiver {
     private List<Chordable> chordables;
     private Chord chord;
     private Set<Integer> currentlyHeldNotes = Sets.newHashSet();
-    private boolean chordHold = true;
+    @Setter private boolean chordHold = true;
     private int sustainControllerNumber = 64;
 
 
@@ -63,7 +61,9 @@ public class ChordReceiver implements Receiver {
                         int note = shortMessage.getData1();
 //                        System.out.printf("ChordReceiver NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), note, shortMessage.getData2());
                         if (shortMessage.getData2() == 0) {
-                            //chord.remove(note);  // we don't remove until all notes are lifted
+                            if (!chordHold) {
+                                chord.remove(note);
+                            }
                             currentlyHeldNotes.remove(note);
                         } else {
                             // as long as you hold down notes, you can add more to the chord; when you release all, next play will start a new chord
@@ -78,7 +78,9 @@ public class ChordReceiver implements Receiver {
                     case NOTE_OFF:
 //                        System.out.printf("ChordReceiver NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         note = shortMessage.getData1();
-                        //chord.remove(note);  // we don't remove until all notes are lifted
+                        if (!chordHold) {
+                            chord.remove(note);
+                        }
                         currentlyHeldNotes.remove(note);
                         sendChord();
                         break;
@@ -88,6 +90,7 @@ public class ChordReceiver implements Receiver {
                         if (controllerNumber == sustainControllerNumber) {
                             chord.clear();
                         }
+                        sendChord();
                         break;
                     default:
                 }
