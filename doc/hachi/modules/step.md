@@ -123,7 +123,7 @@ to specify filenames for saving data.
 
 ## Keyboard and Chords
 
-If Hachi is configured with a MIDI keyboard (see [the main Hachi manual](../hachi.md)), MonoModule will respond to 
+If Hachi is configured with a MIDI keyboard (see [the main Hachi manual](../hachi.md)), StepModule will respond to 
 chords by filtering output MIDI notes to the closest Chord note.
 
 # Color Palette
