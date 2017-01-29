@@ -29,7 +29,7 @@ public class ChordReceiver implements Receiver {
     private Chord chord;
     private Set<Integer> currentlyHeldNotes = Sets.newHashSet();
     @Setter private boolean chordHold = true;
-    private int sustainControllerNumber = 64;
+    @Setter private int holdClearControllerNumber = 64;
 
 
 
@@ -87,7 +87,7 @@ public class ChordReceiver implements Receiver {
                     case CONTROL_CHANGE:
 //                        System.out.printf("ChordReceiver MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         int controllerNumber = shortMessage.getData1();
-                        if (controllerNumber == sustainControllerNumber) {
+                        if (controllerNumber == holdClearControllerNumber) {
                             chord.clear();
                         }
                         sendChord();

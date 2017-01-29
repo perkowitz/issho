@@ -111,12 +111,14 @@ public class Hachi {
         if (deviceConfigs != null) {
             if (deviceConfigs.get("keyboard") != null) {
                 List<String> names = (List<String>)((Map<Object,Object>)deviceConfigs.get("keyboard")).get("names");
+                Integer holdClearControllerNumber = (Integer)((Map<Object,Object>)deviceConfigs.get("keyboard")).get("holdClearControllerNumber");
                 System.out.printf("Looking for keyboard: %s...\n", names);
                 keyboard = Keyboard.fromMidiDevice(names, controller.getChordReceiver());
+                if (holdClearControllerNumber != null) {
+                    controller.getChordReceiver().setHoldClearControllerNumber(holdClearControllerNumber);
+                }
             }
         }
-
-
 
         System.out.printf("Running controller...\n");
         controller.run();

@@ -22,7 +22,8 @@
     "keyboard": {
       "names": [
         "LPK25"
-      ]
+      ],
+      "holdClearControllerNumber": 64
     }
   },
   "modules": [
