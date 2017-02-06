@@ -6,6 +6,7 @@ import net.perkowitz.issho.devices.Keyboard;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.example.ExampleModule;
+import net.perkowitz.issho.hachi.modules.minibeat.MinibeatModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
@@ -237,6 +238,9 @@ public class Hachi {
             } else if (className.equals("StepModule")) {
                 module = new StepModule(midiTransmitter, midiReceiver, filePrefix);
 
+            } else if (className.equals("MinibeatModule")) {
+                module = new MinibeatModule(midiTransmitter, midiReceiver, filePrefix);
+
             } else if (className.equals("ShihaiModule")) {
                 shihaiModule = new ShihaiModule(midiTransmitter, midiReceiver);
                 List<Integer> panicExclude = (List<Integer>)moduleSettings.get("panicExclude");
@@ -255,7 +259,7 @@ public class Hachi {
             } else if (className.equals("PaletteModule")) {
                 module = new PaletteModule(false);
 
-            } else if (className.equals("ExampleModule")) {
+            } else if (className.equals("MinibeatModule")) {
                 module = new ExampleModule(midiTransmitter, midiReceiver, filePrefix);
 
             }

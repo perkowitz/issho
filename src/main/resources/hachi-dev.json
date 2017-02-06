@@ -24,8 +24,8 @@
   },
   "modules": [
     {
-      "class": "StepModule",
-      "filePrefix": "step0"
+      "class": "MinibeatModule",
+      "filePrefix": "minibeat0"
     },
     {
       "class": "ExampleModule",
