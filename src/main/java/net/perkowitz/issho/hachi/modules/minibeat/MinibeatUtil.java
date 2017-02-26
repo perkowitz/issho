@@ -12,29 +12,35 @@ import java.util.Map;
 
 import static net.perkowitz.issho.devices.GridButton.Side.Bottom;
 import static net.perkowitz.issho.devices.GridButton.Side.Left;
+import static net.perkowitz.issho.devices.GridButton.Side.Right;
 
 /**
  * Created by optic on 10/24/16.
  */
 public class MinibeatUtil {
 
+    public static int SESSION_COUNT = 16;
+    public static int PATTERN_COUNT = 16;
+    public static int TRACK_COUNT = 8;
+    public static int STEP_COUNT = 16;
+
+
     /***** controls *****************/
 
     // a GridControlSet containing all the buttons along the bottom
-    public static GridControlSet buttonControls = GridControlSet.buttonSide(Bottom);
+    public static GridControlSet valueControls = GridControlSet.buttonSide(Right);
 
     // GridControlSets for rows of pads
+    public static GridControlSet patternPlayControls = GridControlSet.padRows(0,1);
+    public static GridControlSet patternSelectControls = GridControlSet.padRows(2,3);
     public static GridControlSet trackMuteControls = GridControlSet.padRow(4);
     public static GridControlSet trackSelectControls = GridControlSet.padRow(5);
     public static GridControlSet stepControls = GridControlSet.padRows(6, 7);
-    public static GridControlSet partialPadRowControls = GridControlSet.pads(6, 7, 2, 5);
 
-    // a single button
-    public static GridControl buttonControl = new GridControl(GridButton.at(Left, 7), null);
+    // left controls
+    public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
     public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
-
-    // a single pad
-    public static GridControl padControl = new GridControl(GridPad.at(0, 5), null);
+    public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
 
     // standard settings controls
     public static GridControlSet sessionControls = GridControlSet.padRows(MonoUtil.SESSION_MIN_ROW, MonoUtil.SESSION_MAX_ROW);
@@ -48,25 +54,41 @@ public class MinibeatUtil {
     // give color indices some easy names to refer to
     public static Integer COLOR_OFF = 0;
     public static Integer COLOR_ON = 1;
-    public static Integer COLOR_PADS = 2;
-    public static Integer COLOR_MORE_PADS = 3;
+    public static Integer COLOR_PATTERN = 10;
+    public static Integer COLOR_PATTERN_PLAYING = 11;
+    public static Integer COLOR_PATTERN_CHAINED = 12;
+    public static Integer COLOR_PATTERN_SELECTION = 13;
+    public static Integer COLOR_PATTERN_SELECTED = 14;
+    public static Integer COLOR_TRACK = 20;
+    public static Integer COLOR_TRACK_SELECTION = 21;
+    public static Integer COLOR_TRACK_SELECTED = 22;
+    public static Integer COLOR_TRACK_MUTED = 23;
+    public static Integer COLOR_TRACK_PLAYING = 24;
+    public static Integer COLOR_STEP_OFF = 30;
+    public static Integer COLOR_STEP_ON = 31;
 
     // make a palette by setting colors for the named indices
     public static Map<Integer, Color> PALETTE = Maps.newHashMap();
     static {
         PALETTE.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE.put(COLOR_ON, Color.WHITE);
-        PALETTE.put(COLOR_PADS, Color.fromIndex(55));
-        PALETTE.put(COLOR_MORE_PADS, Color.BRIGHT_ORANGE);
+        PALETTE.put(COLOR_PATTERN, Color.BRIGHT_PINK_PURPLE);
+        PALETTE.put(COLOR_PATTERN_PLAYING, Color.WHITE);
+        PALETTE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
+        PALETTE.put(COLOR_PATTERN_SELECTION, Color.BRIGHT_ORANGE);
+        PALETTE.put(COLOR_PATTERN_SELECTED, Color.WHITE);
+        PALETTE.put(COLOR_TRACK, Color.BRIGHT_PINK_PURPLE);
+        PALETTE.put(COLOR_TRACK_SELECTION, Color.BRIGHT_ORANGE);
+        PALETTE.put(COLOR_TRACK_MUTED, Color.DIM_PINK_PURPLE);
+        PALETTE.put(COLOR_TRACK_SELECTED, Color.WHITE);
+        PALETTE.put(COLOR_TRACK_PLAYING, Color.WHITE);
+        PALETTE.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE.put(COLOR_STEP_ON, Color.BRIGHT_RED);
     }
 
     // make another palette just for fun
     public static Map<Integer, Color> ANOTHER_PALETTE = Maps.newHashMap();
     static {
-        ANOTHER_PALETTE.put(COLOR_OFF, Color.DIM_RED);
-        ANOTHER_PALETTE.put(COLOR_ON, Color.BRIGHT_GREEN);
-        ANOTHER_PALETTE.put(COLOR_PADS, Color.BRIGHT_BLUE);
-        ANOTHER_PALETTE.put(COLOR_MORE_PADS, Color.WHITE);
     }
 
 }

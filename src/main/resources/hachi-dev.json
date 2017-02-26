@@ -28,10 +28,6 @@
       "filePrefix": "minibeat0"
     },
     {
-      "class": "ExampleModule",
-      "filePrefix": "example0"
-    },
-    {
       "class": "PaletteModule"
     }
   ]

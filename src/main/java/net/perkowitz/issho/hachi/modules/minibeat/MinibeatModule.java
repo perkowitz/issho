@@ -130,7 +130,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     /**
      * receive a set of notes for adjusting/filtering the module's output 
      * 
-     * @param notes
+     * @param chord
      */
     public void setChord(Chord chord) {
 
@@ -163,8 +163,8 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      * @param lastIndex
      */
     public void selectPatterns(int firstIndex, int lastIndex) {
-        memory.setCurrentPatternIndex(firstIndex);
-        minibeatDisplay.drawPads(memory);
+        memory.setPlayingPatternIndex(firstIndex);
+//        minibeatDisplay.drawPads(memory);
     }
 
 
@@ -203,41 +203,41 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             minibeatDisplay.setSettingsView(settingsView);
             this.redraw();
 
-        } else if (control.equals(buttonControl)) {
-            // check this control first because it's in the main and settings view
-            someModeIsSet = !someModeIsSet;
-            minibeatDisplay.setSomeModeIsSet(someModeIsSet);
-            minibeatDisplay.drawLeftControls();
-
-        } else if (settingsView) {
-            // now check if we're in settings view and then process the input accordingly
-           onControlPressedSettings(control, velocity);
-
-        } else if (buttonControls.contains(control)) {
-            // now see if it's one of the button controls, and then get the index to figure out which one
-            int index = buttonControls.getIndex(control);
-            someIndexOrOther = index;
-            minibeatDisplay.drawControl(control, true);
-
-        } else if (trackMuteControls.contains(control)) {
-            // now see if it's one of the pad controls
-            int index = trackMuteControls.getIndex(control);
-            minibeatDisplay.drawPads(memory);
-
-        } else if (stepControls.contains(control)) {
-            // and so on
-            int index = stepControls.getIndex(control);
-            minibeatDisplay.drawPads(memory);
-
-        } else if (partialPadRowControls.contains(control)) {
-            // and so forth
-            int index = trackMuteControls.getIndex(control);
-            minibeatDisplay.drawPads(memory);
-
-        } else if (control.equals(padControl)) {
-            // or maybe it was a single pad
-            memory.setSomeSettingOn(!memory.isSomeSettingOn());
-            minibeatDisplay.drawPads(memory);
+//        } else if (control.equals(buttonControl)) {
+//            // check this control first because it's in the main and settings view
+//            someModeIsSet = !someModeIsSet;
+//            minibeatDisplay.setSomeModeIsSet(someModeIsSet);
+//            minibeatDisplay.drawLeftControls();
+//
+//        } else if (settingsView) {
+//            // now check if we're in settings view and then process the input accordingly
+//           onControlPressedSettings(control, velocity);
+//
+//        } else if (buttonControls.contains(control)) {
+//            // now see if it's one of the button controls, and then get the index to figure out which one
+//            int index = buttonControls.getIndex(control);
+//            someIndexOrOther = index;
+//            minibeatDisplay.drawControl(control, true);
+//
+//        } else if (trackMuteControls.contains(control)) {
+//            // now see if it's one of the pad controls
+//            int index = trackMuteControls.getIndex(control);
+//            minibeatDisplay.drawPads(memory);
+//
+//        } else if (stepControls.contains(control)) {
+//            // and so on
+//            int index = stepControls.getIndex(control);
+//            minibeatDisplay.drawPads(memory);
+//
+//        } else if (partialPadRowControls.contains(control)) {
+//            // and so forth
+//            int index = trackMuteControls.getIndex(control);
+//            minibeatDisplay.drawPads(memory);
+//
+//        } else if (control.equals(padControl)) {
+//            // or maybe it was a single pad
+//            memory.setSomeSettingOn(!memory.isSomeSettingOn());
+//            minibeatDisplay.drawPads(memory);
         }
 
     }
@@ -278,10 +278,10 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     private void onControlReleased(GridControl control) {
         if (settingsView) return;
 
-        if (buttonControls.contains(control)) {
-            minibeatDisplay.drawControl(control, false);
-        }
-
+//        if (buttonControls.contains(control)) {
+//            minibeatDisplay.drawControl(control, false);
+//        }
+//
 
     }
 

@@ -8,6 +8,7 @@ import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil.*;
@@ -24,7 +25,6 @@ public class MinibeatDisplay {
     @Setter private boolean settingsView = false;
     @Setter private boolean someModeIsSet = false;
 
-
     public MinibeatDisplay(GridDisplay display) {
         this.display = display;
     }
@@ -36,9 +36,11 @@ public class MinibeatDisplay {
      * @param memory
      */
     public void redraw(MinibeatMemory memory) {
-        drawButtons();
-        drawPads(memory);
-        drawLeftControls();
+        if (!settingsView) {
+            drawPatterns(memory);
+            drawTracks(memory);
+            drawSteps(memory);
+        }
     }
 
 
@@ -53,40 +55,76 @@ public class MinibeatDisplay {
 
     /***** draw main view ****************************************/
 
-    /**
-     * a method for just redrawing part of the UI, in case we only change that part
-     */
-    public void drawButtons() {
-        if (settingsView) return;
-        for (GridControl button : buttonControls.getControls()) {
-            drawControl(button, false);
+    public void drawPatterns(MinibeatMemory memory) {
+
+        int playingIndex = memory.getPlayingPatternIndex();
+        int selectedIndex = memory.getSelectedPatternIndex();
+        List<Integer> chainedPatternIndices = memory.getChainedPatternIndices();
+
+        for (int index = 0; index < MinibeatUtil.PATTERN_COUNT; index++) {
+
+            // draw the playing pattern controls
+            GridControl playingControl = MinibeatUtil.patternPlayControls.get(index);
+            Color color = palette.get(MinibeatUtil.COLOR_PATTERN);
+            if (playingIndex == index) {
+                color = palette.get(MinibeatUtil.COLOR_PATTERN_PLAYING);
+            } else if (chainedPatternIndices.contains(index)) {
+                color = palette.get(MinibeatUtil.COLOR_PATTERN_CHAINED);
+            }
+            playingControl.draw(display, color);
+
+            // draw the selected pattern controls
+            GridControl selectedControl = MinibeatUtil.patternSelectControls.get(index);
+            color = palette.get(MinibeatUtil.COLOR_PATTERN_SELECTION);
+            if (selectedIndex == index) {
+                color = palette.get(MinibeatUtil.COLOR_PATTERN_SELECTED);
+            }
+            selectedControl.draw(display, color);
         }
     }
 
-    /**
-     * draw a different part of the UI, based on current memory values
-     *
-     * @param memory
-     */
-    public void drawPads(MinibeatMemory memory) {
-        if (settingsView) return;
-        trackMuteControls.draw(display, palette.get(COLOR_PADS));
-        stepControls.draw(display, palette.get(COLOR_MORE_PADS));
-        partialPadRowControls.draw(display, palette.get(COLOR_PADS));
+    public void drawTracks(MinibeatMemory memory) {
 
-        if (memory.isSomeSettingOn()) {
-            padControl.draw(display, palette.get(COLOR_ON));
-        } else {
-            padControl.draw(display, palette.get(COLOR_OFF));
+        int selectedIndex = memory.getSelectedTrackIndex();
+
+        for (int index = 0; index < MinibeatUtil.TRACK_COUNT; index++) {
+
+            GridControl muteControl = MinibeatUtil.trackMuteControls.get(index);
+            Color color = palette.get(MinibeatUtil.COLOR_TRACK);
+            MinibeatTrack track = memory.getSelectedPattern().getTrack(index);
+            if (!track.isEnabled()) {
+                color = palette.get(MinibeatUtil.COLOR_TRACK_MUTED);
+            }
+            muteControl.draw(display, color);
+
+            GridControl selectControl = MinibeatUtil.trackSelectControls.get(index);
+            color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTION);
+            if (index == selectedIndex) {
+                color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTED);
+            }
+            selectControl.draw(display, color);
+
         }
     }
 
-    /**
-     * draw some other UI based on some mode setting, not a value in memory
-     */
+    public void drawSteps(MinibeatMemory memory) {
+
+        MinibeatTrack track = memory.getSelectedTrack();
+
+        for (int index = 0; index < MinibeatUtil.STEP_COUNT; index++) {
+            GridControl control = MinibeatUtil.stepControls.get(index);
+            Color color = palette.get(MinibeatUtil.COLOR_STEP_OFF);
+            if (track.getStep(index).isEnabled()) {
+                color = palette.get(MinibeatUtil.COLOR_STEP_ON);
+            }
+            control.draw(display, color);
+        }
+    }
+
     public void drawLeftControls() {
-        drawControl(buttonControl, someModeIsSet);
         drawControl(settingsControl, settingsView);
+        drawControl(muteControl, false);
+        drawControl(saveControl, false);
     }
 
     public void drawControl(GridControl control, boolean isOn) {
