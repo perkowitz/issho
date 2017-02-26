@@ -14,7 +14,7 @@ public class MinibeatStep {
     private int DEFAULT_VELOCITY = 100;
 
     private int index;
-    private int velocity;
+    @Getter private int velocity;
     @Getter @Setter private boolean enabled = false;
 
 
@@ -22,5 +22,10 @@ public class MinibeatStep {
         this.index = index;
         this.velocity = DEFAULT_VELOCITY;
     }
+
+    public void toggleEnabled() {
+        enabled = !enabled;
+    }
+
 
 }

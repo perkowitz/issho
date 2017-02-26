@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi.modules.minibeat;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class MinibeatPattern {
 
     private int index;
-    private List<MinibeatTrack> tracks = Lists.newArrayList();
+    @Getter private List<MinibeatTrack> tracks = Lists.newArrayList();
 
 
     public MinibeatPattern(int index) {

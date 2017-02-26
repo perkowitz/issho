@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi.modules.minibeat;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.hachi.Chord;
@@ -7,12 +8,16 @@ import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.rhythm.models.Pattern;
+import net.perkowitz.issho.hachi.modules.rhythm.models.Step;
+import net.perkowitz.issho.hachi.modules.rhythm.models.Track;
 import net.perkowitz.issho.hachi.modules.step.StepUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 import java.io.File;
+import java.util.List;
 
 import static net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil.*;
 
@@ -32,8 +37,10 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     private String filePrefix = "minibeat";
     private int currentFileIndex = 0;
 
-    private boolean someModeIsSet = false;
-    private int someIndexOrOther = 0;
+    private int nextStepIndex = 0;
+    private Integer nextSessionIndex = null;
+    private Integer nextChainStart = null;
+    private Integer nextChainEnd = null;
 
 
     /***** Constructor ****************************************/
@@ -41,7 +48,6 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     public MinibeatModule(Transmitter inputTransmitter, Receiver outputReceiver, String filePrefix) {
         super(inputTransmitter, outputReceiver);
         this.minibeatDisplay = new MinibeatDisplay(this.display);
-        minibeatDisplay.setSomeModeIsSet(someModeIsSet);
         this.filePrefix = filePrefix;
         load(0);
         this.settingsModule = new SettingsSubmodule();
@@ -56,7 +62,52 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      * @param andReset
      */
     private void advance(boolean andReset) {
-        
+
+        if (andReset) {
+            nextStepIndex = 0;
+        }
+
+        if (nextStepIndex == 0) {
+
+            // check for new session
+            if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
+                memory.selectSession(nextSessionIndex);
+                nextSessionIndex = null;
+            }
+
+            if (nextChainStart != null && nextChainEnd != null) {
+                // set chain, and advance pattern to start of chain
+                memory.selectChain(nextChainStart, nextChainEnd);
+                nextChainStart = null;
+                nextChainEnd = null;
+            } else {
+                // otherwise advance pattern
+                memory.advancePattern();
+            }
+
+            minibeatDisplay.drawPatterns(memory);
+            minibeatDisplay.drawSteps(memory);
+        }
+
+        // send the midi notes
+        for (MinibeatTrack track : memory.getPlayingPattern().getTracks()) {
+            MinibeatStep step = track.getStep(nextStepIndex);
+            if (step.isEnabled()) {
+                track.setPlaying(true);
+                if (track.isEnabled()) {
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
+                }
+            }
+        }
+
+        // THEN update track displays
+        for (MinibeatTrack track : memory.getPlayingPattern().getTracks()) {
+            minibeatDisplay.drawTrack(memory, track.getIndex());
+            track.setPlaying(false);
+        }
+
+        nextStepIndex = (nextStepIndex + 1) % MinibeatUtil.STEP_COUNT;
+
     }
 
 
@@ -110,6 +161,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      */
     public void mute(boolean muted) {
         this.isMuted = muted;
+        minibeatDisplay.setMuted(isMuted);
     }
 
     /**
@@ -119,21 +171,6 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      */
     public boolean isMuted() {
         return isMuted;
-    }
-
-
-    /***** Chordable implementation **********************************
-     * 
-     * a Chordable may want to adjust its output based on notes sent in (e.g. from a ShihaiModule)
-     */
-
-    /**
-     * receive a set of notes for adjusting/filtering the module's output 
-     * 
-     * @param chord
-     */
-    public void setChord(Chord chord) {
-
     }
 
 
@@ -151,7 +188,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      * @param index
      */
     public void selectSession(int index) {
-        memory.setNextSessionIndex(index);
+//        memory.selectSession(index);
         redraw();
     }
 
@@ -163,8 +200,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      * @param lastIndex
      */
     public void selectPatterns(int firstIndex, int lastIndex) {
-        memory.setPlayingPatternIndex(firstIndex);
-//        minibeatDisplay.drawPads(memory);
+//        memory.selectChain(firstIndex, lastIndex);
     }
 
 
@@ -203,41 +239,46 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             minibeatDisplay.setSettingsView(settingsView);
             this.redraw();
 
-//        } else if (control.equals(buttonControl)) {
-//            // check this control first because it's in the main and settings view
-//            someModeIsSet = !someModeIsSet;
-//            minibeatDisplay.setSomeModeIsSet(someModeIsSet);
-//            minibeatDisplay.drawLeftControls();
-//
-//        } else if (settingsView) {
-//            // now check if we're in settings view and then process the input accordingly
-//           onControlPressedSettings(control, velocity);
-//
-//        } else if (buttonControls.contains(control)) {
-//            // now see if it's one of the button controls, and then get the index to figure out which one
-//            int index = buttonControls.getIndex(control);
-//            someIndexOrOther = index;
-//            minibeatDisplay.drawControl(control, true);
-//
-//        } else if (trackMuteControls.contains(control)) {
-//            // now see if it's one of the pad controls
-//            int index = trackMuteControls.getIndex(control);
-//            minibeatDisplay.drawPads(memory);
-//
-//        } else if (stepControls.contains(control)) {
-//            // and so on
-//            int index = stepControls.getIndex(control);
-//            minibeatDisplay.drawPads(memory);
-//
-//        } else if (partialPadRowControls.contains(control)) {
-//            // and so forth
-//            int index = trackMuteControls.getIndex(control);
-//            minibeatDisplay.drawPads(memory);
-//
-//        } else if (control.equals(padControl)) {
-//            // or maybe it was a single pad
-//            memory.setSomeSettingOn(!memory.isSomeSettingOn());
-//            minibeatDisplay.drawPads(memory);
+        } else if (control.equals(muteControl)) {
+            isMuted = !isMuted();
+            minibeatDisplay.setMuted(isMuted);
+            minibeatDisplay.drawLeftControls();
+
+        } else if (control.equals(saveControl)) {
+            this.save(currentFileIndex);
+            minibeatDisplay.drawControl(control, true);
+
+        } else if (settingsView) {
+            // now check if we're in settings view and then process the input accordingly
+           onControlPressedSettings(control, velocity);
+
+        } else if (patternPlayControls.contains(control)) {
+            int index = patternPlayControls.getIndex(control);
+            nextChainStart = nextChainEnd = index;
+            memory.selectPattern(index); // when a new pattern played, select it for editing too
+
+        } else if (patternSelectControls.contains(control)) {
+            int index = patternSelectControls.getIndex(control);
+            memory.selectPattern(index);
+            minibeatDisplay.drawPatterns(memory);
+            minibeatDisplay.drawSteps(memory);
+
+        } else if (trackMuteControls.contains(control)) {
+            int index = trackMuteControls.getIndex(control);
+            memory.getSelectedPattern().getTrack(index).toggleEnabled();
+            minibeatDisplay.drawTracks(memory);
+
+        } else if (trackSelectControls.contains(control)) {
+            int index = trackSelectControls.getIndex(control);
+            memory.selectTrack(index);
+            minibeatDisplay.drawTracks(memory);
+            minibeatDisplay.drawSteps(memory);
+
+        } else if (stepControls.contains(control)) {
+            int index = stepControls.getIndex(control);
+            memory.getSelectedTrack().getStep(index).toggleEnabled();
+            minibeatDisplay.drawSteps(memory);
+
         }
 
     }
@@ -278,10 +319,9 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     private void onControlReleased(GridControl control) {
         if (settingsView) return;
 
-//        if (buttonControls.contains(control)) {
-//            minibeatDisplay.drawControl(control, false);
-//        }
-//
+        if (control.equals(saveControl)) {
+            minibeatDisplay.drawControl(control, false);
+        }
 
     }
 

@@ -23,7 +23,7 @@ public class MinibeatDisplay {
     @Getter @Setter private Map<Integer, Color> palette = MinibeatUtil.PALETTE;
     @Getter @Setter private int currentFileIndex = 0;
     @Setter private boolean settingsView = false;
-    @Setter private boolean someModeIsSet = false;
+    @Setter private boolean isMuted = false;
 
     public MinibeatDisplay(GridDisplay display) {
         this.display = display;
@@ -40,6 +40,7 @@ public class MinibeatDisplay {
             drawPatterns(memory);
             drawTracks(memory);
             drawSteps(memory);
+            drawLeftControls();
         }
     }
 
@@ -84,27 +85,33 @@ public class MinibeatDisplay {
     }
 
     public void drawTracks(MinibeatMemory memory) {
-
-        int selectedIndex = memory.getSelectedTrackIndex();
-
         for (int index = 0; index < MinibeatUtil.TRACK_COUNT; index++) {
-
-            GridControl muteControl = MinibeatUtil.trackMuteControls.get(index);
-            Color color = palette.get(MinibeatUtil.COLOR_TRACK);
-            MinibeatTrack track = memory.getSelectedPattern().getTrack(index);
-            if (!track.isEnabled()) {
-                color = palette.get(MinibeatUtil.COLOR_TRACK_MUTED);
-            }
-            muteControl.draw(display, color);
-
-            GridControl selectControl = MinibeatUtil.trackSelectControls.get(index);
-            color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTION);
-            if (index == selectedIndex) {
-                color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTED);
-            }
-            selectControl.draw(display, color);
-
+              drawTrack(memory, index);
         }
+    }
+
+    public void drawTrack(MinibeatMemory memory, int index) {
+
+        MinibeatTrack track = memory.getSelectedPattern().getTrack(index);
+        Color color = null;
+        if (track.isPlaying() && track.isEnabled()) {
+            color = palette.get(MinibeatUtil.COLOR_TRACK_PLAYING);
+        } else if (track.isPlaying() && !track.isEnabled()) {
+            color = palette.get(MinibeatUtil.COLOR_TRACK_PLAYING_MUTED);
+        } else if (!track.isPlaying() && track.isEnabled()) {
+            color = palette.get(MinibeatUtil.COLOR_TRACK);
+        } else if (!track.isPlaying() && !track.isEnabled()) {
+            color = palette.get(MinibeatUtil.COLOR_TRACK_MUTED);
+        }
+        GridControl muteControl = MinibeatUtil.trackMuteControls.get(index);
+        muteControl.draw(display, color);
+
+        GridControl selectControl = MinibeatUtil.trackSelectControls.get(index);
+        color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTION);
+        if (index == memory.getSelectedTrackIndex()) {
+            color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTED);
+        }
+        selectControl.draw(display, color);
     }
 
     public void drawSteps(MinibeatMemory memory) {
@@ -123,7 +130,7 @@ public class MinibeatDisplay {
 
     public void drawLeftControls() {
         drawControl(settingsControl, settingsView);
-        drawControl(muteControl, false);
+        drawControl(muteControl, isMuted);
         drawControl(saveControl, false);
     }
 

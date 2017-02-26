@@ -64,26 +64,31 @@ public class MinibeatUtil {
     public static Integer COLOR_TRACK_SELECTED = 22;
     public static Integer COLOR_TRACK_MUTED = 23;
     public static Integer COLOR_TRACK_PLAYING = 24;
+    public static Integer COLOR_TRACK_PLAYING_MUTED = 25;
     public static Integer COLOR_STEP_OFF = 30;
     public static Integer COLOR_STEP_ON = 31;
 
     // make a palette by setting colors for the named indices
     public static Map<Integer, Color> PALETTE = Maps.newHashMap();
     static {
+        Color playColor = Color.BRIGHT_BLUE;
+        Color playColorDim = Color.DIM_BLUE;
+        Color selectColor = Color.fromIndex(27);
         PALETTE.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE.put(COLOR_ON, Color.WHITE);
-        PALETTE.put(COLOR_PATTERN, Color.BRIGHT_PINK_PURPLE);
+        PALETTE.put(COLOR_PATTERN, playColor);
         PALETTE.put(COLOR_PATTERN_PLAYING, Color.WHITE);
-        PALETTE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
-        PALETTE.put(COLOR_PATTERN_SELECTION, Color.BRIGHT_ORANGE);
+        PALETTE.put(COLOR_PATTERN_CHAINED, playColorDim);
+        PALETTE.put(COLOR_PATTERN_SELECTION, selectColor);
         PALETTE.put(COLOR_PATTERN_SELECTED, Color.WHITE);
-        PALETTE.put(COLOR_TRACK, Color.BRIGHT_PINK_PURPLE);
-        PALETTE.put(COLOR_TRACK_SELECTION, Color.BRIGHT_ORANGE);
-        PALETTE.put(COLOR_TRACK_MUTED, Color.DIM_PINK_PURPLE);
+        PALETTE.put(COLOR_TRACK, playColor);
+        PALETTE.put(COLOR_TRACK_SELECTION, selectColor);
+        PALETTE.put(COLOR_TRACK_MUTED, playColorDim);
         PALETTE.put(COLOR_TRACK_SELECTED, Color.WHITE);
-        PALETTE.put(COLOR_TRACK_PLAYING, Color.WHITE);
+        PALETTE.put(COLOR_TRACK_PLAYING, Color.BRIGHT_YELLOW);
+        PALETTE.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
         PALETTE.put(COLOR_STEP_OFF, Color.OFF);
-        PALETTE.put(COLOR_STEP_ON, Color.BRIGHT_RED);
+        PALETTE.put(COLOR_STEP_ON, playColor);
     }
 
     // make another palette just for fun

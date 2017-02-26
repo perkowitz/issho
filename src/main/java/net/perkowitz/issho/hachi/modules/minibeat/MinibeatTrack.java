@@ -11,9 +11,10 @@ import java.util.List;
  */
 public class MinibeatTrack {
 
-    private int index;
-    private int noteNumber;
+    @Getter private int index;
+    @Getter private int noteNumber;
     @Getter @Setter private boolean enabled = true;
+    @Getter @Setter private boolean playing = false;
     private List<MinibeatStep> steps = Lists.newArrayList();
 
 
@@ -27,6 +28,10 @@ public class MinibeatTrack {
 
     public MinibeatStep getStep(int index) {
         return steps.get(index);
+    }
+
+    public void toggleEnabled() {
+        enabled = !enabled;
     }
 
 }
