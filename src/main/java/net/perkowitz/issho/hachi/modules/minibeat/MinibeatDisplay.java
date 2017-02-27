@@ -7,6 +7,7 @@ import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.Color;
+import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class MinibeatDisplay {
             drawTracks(memory);
             drawSteps(memory);
             drawLeftControls();
+            drawValue(0, 7);
         }
     }
 
@@ -62,7 +64,6 @@ public class MinibeatDisplay {
 
         int playingIndex = memory.getPlayingPatternIndex();
         int selectedIndex = memory.getSelectedPatternIndex();
-        List<Integer> chainedPatternIndices = memory.getChainedPatternIndices();
 
         for (int index = 0; index < MinibeatUtil.PATTERN_COUNT; index++) {
 
@@ -71,7 +72,7 @@ public class MinibeatDisplay {
             Color color = palette.get(MinibeatUtil.COLOR_PATTERN);
             if (playingIndex == index) {
                 color = palette.get(MinibeatUtil.COLOR_PATTERN_PLAYING);
-            } else if (chainedPatternIndices.contains(index)) {
+            } else if (memory.patternIsChained(index)) {
                 color = palette.get(MinibeatUtil.COLOR_PATTERN_CHAINED);
             }
             playingControl.draw(display, color);
@@ -147,5 +148,18 @@ public class MinibeatDisplay {
             control.draw(display, palette.get(COLOR_OFF));
         }
     }
+
+    public void drawValue(int value, int maxValue) {
+        int valueAsEight = (value * 8) / maxValue;
+        for (int index = 0; index < 8; index++) {
+            GridControl control = MinibeatUtil.valueControls.get(index);
+            if ((7 - index) <= valueAsEight) {
+                control.draw(display, palette.get(MinibeatUtil.COLOR_VALUE_ON));
+            } else {
+                control.draw(display, palette.get(MinibeatUtil.COLOR_VALUE_OFF));
+            }
+        }
+    }
+
 
 }

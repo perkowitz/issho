@@ -14,7 +14,7 @@ public class MinibeatStep {
     private int DEFAULT_VELOCITY = 100;
 
     @Getter private int index;
-    @Getter private int velocity;
+    @Getter @Setter private int velocity;
     @Getter @Setter private boolean enabled = false;
 
     public MinibeatStep() {}

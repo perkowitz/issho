@@ -25,6 +25,7 @@ public class MinibeatTrack {
         this.noteNumber = noteNumber;
         for (int i = 0; i < MinibeatUtil.STEP_COUNT; i++) {
             steps.add(new MinibeatStep(i));
+            steps.get(i).setVelocity((i + 1) * 7);
         }
     }
 

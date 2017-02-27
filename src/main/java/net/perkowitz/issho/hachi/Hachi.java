@@ -239,7 +239,14 @@ public class Hachi {
                 module = new StepModule(midiTransmitter, midiReceiver, filePrefix);
 
             } else if (className.equals("MinibeatModule")) {
-                module = new MinibeatModule(midiTransmitter, midiReceiver, filePrefix);
+                MinibeatModule minibeatModule = new MinibeatModule(midiTransmitter, midiReceiver, filePrefix);
+                if (moduleSettings.get("midiNoteOffset") != null) {
+                    Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
+                    if (offset != null) {
+                        minibeatModule.setMidiNoteOffset(offset);
+                    }
+                }
+                module = minibeatModule;
 
             } else if (className.equals("ShihaiModule")) {
                 shihaiModule = new ShihaiModule(midiTransmitter, midiReceiver);

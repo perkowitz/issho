@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class MinibeatPattern {
 
+    private int[] notes = new int[] { 0, 2, 3, 6, 10, 5, 7, 12 };
+
     @Getter private int index;
     @Getter private List<MinibeatTrack> tracks = Lists.newArrayList();
 
@@ -19,7 +21,7 @@ public class MinibeatPattern {
     public MinibeatPattern(int index) {
         this.index = index;
         for (int i = 0; i < MinibeatUtil.TRACK_COUNT; i++) {
-            tracks.add(new MinibeatTrack(i, 36 + i));
+            tracks.add(new MinibeatTrack(i, 36 + notes[i]));
         }
     }
 

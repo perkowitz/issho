@@ -42,12 +42,6 @@ public class MinibeatUtil {
     public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
     public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
 
-    // standard settings controls
-    public static GridControlSet sessionControls = GridControlSet.padRows(MonoUtil.SESSION_MIN_ROW, MonoUtil.SESSION_MAX_ROW);
-    public static GridControlSet loadControls = GridControlSet.padRows(MonoUtil.FILE_LOAD_ROW, MonoUtil.FILE_LOAD_ROW);
-    public static GridControlSet saveControls = GridControlSet.padRows(MonoUtil.FILE_SAVE_ROW, MonoUtil.FILE_SAVE_ROW);
-    public static GridControlSet midiChannelControls = GridControlSet.padRows(MonoUtil.MIDI_CHANNEL_MIN_ROW, MonoUtil.MIDI_CHANNEL_MAX_ROW);
-
 
     /***** colors **********************************************************/
 
@@ -67,13 +61,15 @@ public class MinibeatUtil {
     public static Integer COLOR_TRACK_PLAYING_MUTED = 25;
     public static Integer COLOR_STEP_OFF = 30;
     public static Integer COLOR_STEP_ON = 31;
+    public static Integer COLOR_VALUE_OFF = 40;
+    public static Integer COLOR_VALUE_ON = 41;
 
     // make a palette by setting colors for the named indices
     public static Map<Integer, Color> PALETTE = Maps.newHashMap();
     static {
         Color playColor = Color.DIM_GREEN;
         Color playColorDim = Color.DARK_GRAY;
-        Color selectColor = Color.DIM_BLUE;
+        Color selectColor = Color.DIM_BLUE_GREEN;
         PALETTE.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE.put(COLOR_ON, Color.WHITE);
         PALETTE.put(COLOR_PATTERN, playColor);
@@ -89,6 +85,8 @@ public class MinibeatUtil {
         PALETTE.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
         PALETTE.put(COLOR_STEP_OFF, Color.OFF);
         PALETTE.put(COLOR_STEP_ON, playColor);
+        PALETTE.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE.put(COLOR_VALUE_ON, selectColor);
     }
 
     // make another palette just for fun

@@ -1,23 +1,24 @@
 package net.perkowitz.issho.hachi.modules.minibeat;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import lombok.Setter;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.hachi.Chord;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
-import net.perkowitz.issho.hachi.modules.rhythm.models.Pattern;
-import net.perkowitz.issho.hachi.modules.rhythm.models.Step;
-import net.perkowitz.issho.hachi.modules.rhythm.models.Track;
+import net.perkowitz.issho.hachi.modules.mono.MonoStep;
+import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.step.StepUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
-import java.util.List;
+import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil.*;
 
@@ -35,11 +36,16 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     private boolean settingsView = false;
 
     private String filePrefix = "minibeat";
+    @Setter private int midiNoteOffset = 0;
 
     private int nextStepIndex = 0;
     private Integer nextSessionIndex = null;
     private Integer nextChainStart = null;
     private Integer nextChainEnd = null;
+
+    private int selectedStep = 0;
+    private int patternsReleasedCount = 0;
+    private Set<Integer> patternsPressed = Sets.newHashSet();
 
 
     /***** Constructor ****************************************/
@@ -253,8 +259,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
         } else if (patternPlayControls.contains(control)) {
             int index = patternPlayControls.getIndex(control);
-            nextChainStart = nextChainEnd = index;
-            memory.selectPattern(index); // when a new pattern played, select it for editing too
+            patternsPressed.add(index);
 
         } else if (patternSelectControls.contains(control)) {
             int index = patternSelectControls.getIndex(control);
@@ -275,10 +280,20 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
         } else if (stepControls.contains(control)) {
             int index = stepControls.getIndex(control);
-            memory.getSelectedTrack().getStep(index).toggleEnabled();
+            MinibeatStep step = memory.getSelectedTrack().getStep(index);
+            step.toggleEnabled();
+            selectedStep = index;
             minibeatDisplay.drawSteps(memory);
+            minibeatDisplay.drawValue(step.getVelocity(), 127);
+
+        } else if (MonoUtil.valueControls.contains(control)) {
+            MinibeatStep step = memory.getSelectedTrack().getStep(selectedStep);
+            Integer index = MonoUtil.valueControls.getIndex(control);
+            step.setVelocity((index + 1) * 16 - 1);
+            minibeatDisplay.drawValue(step.getVelocity(), 127);
 
         }
+
 
     }
 
@@ -320,6 +335,38 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
         if (control.equals(saveControl)) {
             minibeatDisplay.drawControl(control, false);
+
+        } else if (patternPlayControls.contains(control)) {
+            // releasing a pattern pad
+            // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
+            patternsReleasedCount++;
+            if (patternsReleasedCount >= patternsPressed.size()) {
+                GridControl selectedControl = MonoUtil.patternControls.get(control);
+                Integer index = selectedControl.getIndex();
+                patternsPressed.add(index); // just to make sure
+                int min = index;
+                int max = index;
+                if (patternsPressed.size() > 1) {
+                    for (Integer pattern : patternsPressed) {
+                        if (pattern < min) {
+                            min = pattern;
+                        }
+                        if (pattern > max) {
+                            max = pattern;
+                        }
+                    }
+                }
+                nextChainStart = min;
+                nextChainEnd = max;
+                memory.selectPattern(min);
+                patternsPressed.clear();
+                patternsReleasedCount = 0;
+            }
+
+
+
+
+
         }
 
     }
@@ -341,6 +388,27 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
         advance(andReset);
     }
 
+
+
+    /************************************************************************
+     * midi output implementation
+     *
+     */
+    protected void sendMidiNote(int channel, int noteNumber, int velocity) {
+
+        if (isMuted && velocity > 0) return;
+
+        try {
+            int offsetNoteNumber = midiNoteOffset + noteNumber;
+            ShortMessage noteMessage = new ShortMessage();
+            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, offsetNoteNumber, velocity);
+            outputReceiver.send(noteMessage, -1);
+
+        } catch (InvalidMidiDataException e) {
+            System.err.println(e);
+        }
+
+    }
 
     /***** Saveable implementation ***************************************
      * 

@@ -35,11 +35,6 @@ public class MinibeatMemory {
     /***** get current *************************************/
 
     @JsonIgnore
-    public List<Integer> getChainedPatternIndices() {
-        return Lists.newArrayList();
-    }
-
-    @JsonIgnore
     public MinibeatSession getCurrentSession() {
         return sessions.get(currentSessionIndex);
     }
@@ -90,6 +85,9 @@ public class MinibeatMemory {
         }
     }
 
+    public boolean patternIsChained(int index) {
+        return index >= chainStartIndex && index <= chainEndIndex;
+    }
 
 
 }
