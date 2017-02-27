@@ -58,6 +58,8 @@ public class MinibeatDisplay {
 
     public void drawPatterns(MinibeatMemory memory) {
 
+        if (settingsView) return;
+
         int playingIndex = memory.getPlayingPatternIndex();
         int selectedIndex = memory.getSelectedPatternIndex();
         List<Integer> chainedPatternIndices = memory.getChainedPatternIndices();
@@ -92,6 +94,8 @@ public class MinibeatDisplay {
 
     public void drawTrack(MinibeatMemory memory, int index) {
 
+        if (settingsView) return;
+
         MinibeatTrack track = memory.getSelectedPattern().getTrack(index);
         Color color = null;
         if (track.isPlaying() && track.isEnabled()) {
@@ -115,6 +119,8 @@ public class MinibeatDisplay {
     }
 
     public void drawSteps(MinibeatMemory memory) {
+
+        if (settingsView) return;
 
         MinibeatTrack track = memory.getSelectedTrack();
 

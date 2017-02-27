@@ -10,9 +10,11 @@ import java.util.List;
  */
 public class MinibeatPattern {
 
-    private int index;
+    @Getter private int index;
     @Getter private List<MinibeatTrack> tracks = Lists.newArrayList();
 
+
+    public MinibeatPattern() {}
 
     public MinibeatPattern(int index) {
         this.index = index;

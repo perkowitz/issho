@@ -3,6 +3,7 @@ package net.perkowitz.issho.hachi.modules.minibeat;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
 
@@ -21,11 +22,10 @@ public class MinibeatMemory {
 
     @Getter @Setter private int midiChannel = 0;
 
-    private List<MinibeatSession> sessions = Lists.newArrayList();
+    @Getter private List<MinibeatSession> sessions = Lists.newArrayList();
 
 
     public MinibeatMemory() {
-
         for (int i = 0; i < MinibeatUtil.SESSION_COUNT; i++) {
             sessions.add(new MinibeatSession(i));
         }
@@ -34,22 +34,27 @@ public class MinibeatMemory {
 
     /***** get current *************************************/
 
+    @JsonIgnore
     public List<Integer> getChainedPatternIndices() {
         return Lists.newArrayList();
     }
 
+    @JsonIgnore
     public MinibeatSession getCurrentSession() {
         return sessions.get(currentSessionIndex);
     }
 
+    @JsonIgnore
     public MinibeatPattern getPlayingPattern() {
         return getCurrentSession().getPattern(playingPatternIndex);
     }
 
+    @JsonIgnore
     public MinibeatPattern getSelectedPattern() {
         return getCurrentSession().getPattern(selectedPatternIndex);
     }
 
+    @JsonIgnore
     public MinibeatTrack getSelectedTrack() {
         return getSelectedPattern().getTrack(selectedTrackIndex);
     }

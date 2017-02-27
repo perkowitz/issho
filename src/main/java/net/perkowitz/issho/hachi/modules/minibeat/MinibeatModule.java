@@ -35,7 +35,6 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     private boolean settingsView = false;
 
     private String filePrefix = "minibeat";
-    private int currentFileIndex = 0;
 
     private int nextStepIndex = 0;
     private Integer nextSessionIndex = null;
@@ -245,7 +244,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             minibeatDisplay.drawLeftControls();
 
         } else if (control.equals(saveControl)) {
-            this.save(currentFileIndex);
+            this.save(settingsModule.getCurrentFileIndex());
             minibeatDisplay.drawControl(control, true);
 
         } else if (settingsView) {

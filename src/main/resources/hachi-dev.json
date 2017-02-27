@@ -28,6 +28,10 @@
       "filePrefix": "minibeat0"
     },
     {
+      "class": "ShihaiModule",
+      "panicExclude": [14, 15]
+    },
+    {
       "class": "PaletteModule"
     }
   ]

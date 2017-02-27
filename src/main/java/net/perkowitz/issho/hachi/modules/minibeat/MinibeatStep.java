@@ -13,10 +13,11 @@ public class MinibeatStep {
 
     private int DEFAULT_VELOCITY = 100;
 
-    private int index;
+    @Getter private int index;
     @Getter private int velocity;
     @Getter @Setter private boolean enabled = false;
 
+    public MinibeatStep() {}
 
     public MinibeatStep(int index) {
         this.index = index;

@@ -71,9 +71,9 @@ public class MinibeatUtil {
     // make a palette by setting colors for the named indices
     public static Map<Integer, Color> PALETTE = Maps.newHashMap();
     static {
-        Color playColor = Color.BRIGHT_BLUE;
-        Color playColorDim = Color.DIM_BLUE;
-        Color selectColor = Color.fromIndex(27);
+        Color playColor = Color.DIM_GREEN;
+        Color playColorDim = Color.DARK_GRAY;
+        Color selectColor = Color.DIM_BLUE;
         PALETTE.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE.put(COLOR_ON, Color.WHITE);
         PALETTE.put(COLOR_PATTERN, playColor);

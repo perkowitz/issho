@@ -15,8 +15,10 @@ public class MinibeatTrack {
     @Getter private int noteNumber;
     @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean playing = false;
-    private List<MinibeatStep> steps = Lists.newArrayList();
+    @Getter private List<MinibeatStep> steps = Lists.newArrayList();
 
+
+    public MinibeatTrack() {}
 
     public MinibeatTrack(int index, int noteNumber) {
         this.index = index;
