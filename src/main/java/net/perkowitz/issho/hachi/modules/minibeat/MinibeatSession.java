@@ -13,6 +13,12 @@ public class MinibeatSession {
     @Getter private int index;
     @Getter private List<MinibeatPattern> patterns = Lists.newArrayList();
 
+    // sessions remember their state so you can load them to specific patterns and mutes
+    @Getter private List<Boolean> tracksEnabled = Lists.newArrayList();
+    @Getter private int chainStartIndex = 0;
+    @Getter private int chainEndIndex = 0;
+    @Getter private int selectedTrackIndex = 0;
+
 
     public MinibeatSession() {}
 
@@ -21,10 +27,24 @@ public class MinibeatSession {
         for (int i = 0; i < MinibeatUtil.PATTERN_COUNT; i++) {
             patterns.add(new MinibeatPattern(i));
         }
+        for (int i = 0; i < MinibeatUtil.TRACK_COUNT; i++) {
+            tracksEnabled.add(true);
+        }
     }
 
     public MinibeatPattern getPattern(int index) {
         return patterns.get(index);
+    }
+
+    public Boolean trackIsEnabled(int index) { return tracksEnabled.get(index); }
+
+    public void toggleTrackEnabled(int index) {
+        tracksEnabled.set(index, !tracksEnabled.get(index));
+    }
+
+    public void selectChain(int chainStartIndex, int chainEndIndex) {
+        this.chainStartIndex = chainStartIndex;
+        this.chainEndIndex = chainEndIndex;
     }
 
 }

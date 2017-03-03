@@ -13,7 +13,6 @@ public class MinibeatTrack {
 
     @Getter private int index;
     @Getter private int noteNumber;
-    @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean playing = false;
     @Getter private List<MinibeatStep> steps = Lists.newArrayList();
 
@@ -25,16 +24,11 @@ public class MinibeatTrack {
         this.noteNumber = noteNumber;
         for (int i = 0; i < MinibeatUtil.STEP_COUNT; i++) {
             steps.add(new MinibeatStep(i));
-            steps.get(i).setVelocity((i + 1) * 7);
         }
     }
 
     public MinibeatStep getStep(int index) {
         return steps.get(index);
-    }
-
-    public void toggleEnabled() {
-        enabled = !enabled;
     }
 
 }

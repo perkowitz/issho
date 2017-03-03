@@ -98,14 +98,15 @@ public class MinibeatDisplay {
         if (settingsView) return;
 
         MinibeatTrack track = memory.getSelectedPattern().getTrack(index);
+        boolean enabled = memory.getCurrentSession().trackIsEnabled(index);
         Color color = null;
-        if (track.isPlaying() && track.isEnabled()) {
+        if (track.isPlaying() && enabled) {
             color = palette.get(MinibeatUtil.COLOR_TRACK_PLAYING);
-        } else if (track.isPlaying() && !track.isEnabled()) {
+        } else if (track.isPlaying() && !enabled) {
             color = palette.get(MinibeatUtil.COLOR_TRACK_PLAYING_MUTED);
-        } else if (!track.isPlaying() && track.isEnabled()) {
+        } else if (!track.isPlaying() && enabled) {
             color = palette.get(MinibeatUtil.COLOR_TRACK);
-        } else if (!track.isPlaying() && !track.isEnabled()) {
+        } else if (!track.isPlaying() && !enabled) {
             color = palette.get(MinibeatUtil.COLOR_TRACK_MUTED);
         }
         GridControl muteControl = MinibeatUtil.trackMuteControls.get(index);

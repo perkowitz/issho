@@ -15,8 +15,6 @@ public class MinibeatMemory {
     @Getter private int currentSessionIndex = 0;
     @Getter private int nextSessionIndex = 0;
     @Getter private int playingPatternIndex = 0;
-    @Getter private int chainStartIndex = 0;
-    @Getter private int chainEndIndex = 0;
     @Getter private int selectedPatternIndex = 0;
     @Getter private int selectedTrackIndex = 0;
 
@@ -54,6 +52,22 @@ public class MinibeatMemory {
         return getSelectedPattern().getTrack(selectedTrackIndex);
     }
 
+    @JsonIgnore
+    public int getChainStartIndex() {
+        return getCurrentSession().getChainStartIndex();
+    }
+
+    @JsonIgnore
+    public int getChainEndIndex() {
+        return getCurrentSession().getChainEndIndex();
+    }
+
+    @JsonIgnore
+    public int getSelectedTrackIndex() {
+        return getCurrentSession().getSelectedTrackIndex();
+    }
+
+
 
     /***** make selections *************************************/
 
@@ -66,9 +80,8 @@ public class MinibeatMemory {
     }
 
     public void selectChain(int startIndex, int endIndex) {
-        chainStartIndex = startIndex;
-        chainEndIndex = endIndex;
-        playingPatternIndex = chainStartIndex;
+        getCurrentSession().selectChain(startIndex, endIndex);
+        playingPatternIndex = startIndex;
     }
 
     public void selectTrack(int index) {
@@ -80,13 +93,13 @@ public class MinibeatMemory {
 
     public void advancePattern() {
         playingPatternIndex++;
-        if (playingPatternIndex > chainEndIndex) {
-            playingPatternIndex = chainStartIndex;
+        if (playingPatternIndex > getChainEndIndex()) {
+            playingPatternIndex = getChainStartIndex();
         }
     }
 
     public boolean patternIsChained(int index) {
-        return index >= chainStartIndex && index <= chainEndIndex;
+        return index >= getChainStartIndex() && index <= getChainEndIndex();
     }
 
 

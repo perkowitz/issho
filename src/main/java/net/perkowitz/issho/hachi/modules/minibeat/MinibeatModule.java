@@ -8,9 +8,6 @@ import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
-import net.perkowitz.issho.hachi.modules.mono.MonoStep;
-import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
-import net.perkowitz.issho.hachi.modules.step.StepUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -42,6 +39,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     private Integer nextSessionIndex = null;
     private Integer nextChainStart = null;
     private Integer nextChainEnd = null;
+    private boolean playing = false;
 
     private int selectedStep = 0;
     private int patternsReleasedCount = 0;
@@ -77,6 +75,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             // check for new session
             if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
                 memory.selectSession(nextSessionIndex);
+                settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 nextSessionIndex = null;
             }
 
@@ -99,7 +98,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             MinibeatStep step = track.getStep(nextStepIndex);
             if (step.isEnabled()) {
                 track.setPlaying(true);
-                if (track.isEnabled()) {
+                if (memory.getCurrentSession().trackIsEnabled(track.getIndex())) {
                     sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
                 }
             }
@@ -193,8 +192,13 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      * @param index
      */
     public void selectSession(int index) {
-//        memory.selectSession(index);
-        redraw();
+        if (playing) {
+            nextSessionIndex = index;
+        } else {
+            memory.selectSession(index);
+            settingsModule.setCurrentSessionIndex(index);
+            redraw();
+        }
     }
 
     /**
@@ -239,7 +243,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      */
     private void onControlPressed(GridControl control, int velocity) {
 
-        if (control.equals(StepUtil.settingsControl)) {
+        if (control.equals(settingsControl)) {
             settingsView = !settingsView;
             minibeatDisplay.setSettingsView(settingsView);
             this.redraw();
@@ -269,7 +273,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
         } else if (trackMuteControls.contains(control)) {
             int index = trackMuteControls.getIndex(control);
-            memory.getSelectedPattern().getTrack(index).toggleEnabled();
+            memory.getCurrentSession().toggleTrackEnabled(index);
             minibeatDisplay.drawTracks(memory);
 
         } else if (trackSelectControls.contains(control)) {
@@ -286,9 +290,9 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             minibeatDisplay.drawSteps(memory);
             minibeatDisplay.drawValue(step.getVelocity(), 127);
 
-        } else if (MonoUtil.valueControls.contains(control)) {
+        } else if (valueControls.contains(control)) {
             MinibeatStep step = memory.getSelectedTrack().getStep(selectedStep);
-            Integer index = MonoUtil.valueControls.getIndex(control);
+            Integer index = valueControls.getIndex(control);
             step.setVelocity((index + 1) * 16 - 1);
             minibeatDisplay.drawValue(step.getVelocity(), 127);
 
@@ -341,7 +345,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
             patternsReleasedCount++;
             if (patternsReleasedCount >= patternsPressed.size()) {
-                GridControl selectedControl = MonoUtil.patternControls.get(control);
+                GridControl selectedControl = patternPlayControls.get(control);
                 Integer index = selectedControl.getIndex();
                 patternsPressed.add(index); // just to make sure
                 int min = index;
@@ -377,15 +381,17 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      */
 
     public void start(boolean restart) {
-
+        playing = true;
     }
 
     public void stop() {
-
+        playing = false;
     }
 
     public void tick(boolean andReset) {
-        advance(andReset);
+        if (playing) {
+            advance(andReset);
+        }
     }
 
 
