@@ -114,7 +114,9 @@ public class MinibeatDisplay {
 
         GridControl selectControl = MinibeatUtil.trackSelectControls.get(index);
         color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTION);
-        if (index == memory.getSelectedTrackIndex()) {
+        if (track.isPlaying()) {
+            color = palette.get(MinibeatUtil.COLOR_TRACK_PLAYING);
+        } else if (index == memory.getSelectedTrackIndex()) {
             color = palette.get(MinibeatUtil.COLOR_TRACK_SELECTED);
         }
         selectControl.draw(display, color);

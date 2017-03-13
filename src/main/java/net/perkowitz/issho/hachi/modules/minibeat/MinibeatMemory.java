@@ -16,7 +16,6 @@ public class MinibeatMemory {
     @Getter private int nextSessionIndex = 0;
     @Getter private int playingPatternIndex = 0;
     @Getter private int selectedPatternIndex = 0;
-    @Getter private int selectedTrackIndex = 0;
 
     @Getter @Setter private int midiChannel = 0;
 
@@ -49,7 +48,7 @@ public class MinibeatMemory {
 
     @JsonIgnore
     public MinibeatTrack getSelectedTrack() {
-        return getSelectedPattern().getTrack(selectedTrackIndex);
+        return getSelectedPattern().getTrack(getSelectedTrackIndex());
     }
 
     @JsonIgnore
@@ -85,7 +84,7 @@ public class MinibeatMemory {
     }
 
     public void selectTrack(int index) {
-        selectedTrackIndex = index;
+        getCurrentSession().setSelectedTrackIndex(index);
     }
 
 

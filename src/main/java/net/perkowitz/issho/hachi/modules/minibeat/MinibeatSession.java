@@ -2,6 +2,7 @@ package net.perkowitz.issho.hachi.modules.minibeat;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class MinibeatSession {
     @Getter private List<Boolean> tracksEnabled = Lists.newArrayList();
     @Getter private int chainStartIndex = 0;
     @Getter private int chainEndIndex = 0;
-    @Getter private int selectedTrackIndex = 0;
+    @Getter @Setter private int selectedTrackIndex = 0;
 
 
     public MinibeatSession() {}
