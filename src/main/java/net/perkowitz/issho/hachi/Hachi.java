@@ -135,7 +135,7 @@ public class Hachi {
         Thread t = new Thread(new CommandLine(controller));
         t.start();
 
-        System.out.printf("Awaiting...\n");
+//        System.out.printf("Awaiting...\n");
         stop.await();
 
     }
@@ -336,6 +336,7 @@ public class Hachi {
         public void run() {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String input = "";
+            System.out.print("> ");
             while (true) {
                 try {
                     input = br.readLine();

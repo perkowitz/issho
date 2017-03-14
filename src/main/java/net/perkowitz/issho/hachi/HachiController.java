@@ -196,10 +196,17 @@ public class HachiController implements GridListener, Clockable, Receiver {
     }
 
     public void processCommand(String command) {
-        System.out.printf("Hachi: %s\n", command);
-        if (command.toLowerCase().equals("end")) {
-            System.exit(0);
+        command = command.toLowerCase();
+
+        if (command.equals("end")) {
+            shutdown();
+        } else if (command.equals("ls")) {
+            for (int index = 0; index < modules.length; index++) {
+                System.out.printf("%d: %s\n", index, modules[index]);
+            }
         }
+
+        System.out.print("> ");
     }
 
 

@@ -24,8 +24,8 @@
   },
   "modules": [
     {
-      "class": "StepModule",
-      "filePrefix": "step0"
+      "class": "MonoModule",
+      "filePrefix": "mono0"
     },
     {
       "class": "ExampleModule",

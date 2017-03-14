@@ -50,6 +50,14 @@ public class MonoStep {
         octave = note / 12;
     }
 
+    public String toString() {
+        if (enabled) {
+            return "MonoStep:" + index + ":O";
+        } else {
+            return "MonoStep:" + index + ":.";
+        }
+    }
+
     /***** static methods **************************/
 
     public static MonoStep copy(MonoStep step) {

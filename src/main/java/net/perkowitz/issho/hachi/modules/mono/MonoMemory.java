@@ -1,14 +1,18 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.hachi.MemoryObject;
+
+import java.util.List;
 
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepEditState.NOTE;
 
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoMemory {
+public class MonoMemory implements MemoryObject {
 
     private static int SESSION_COUNT = 16;
 
@@ -85,5 +89,24 @@ public class MonoMemory {
 
     }
 
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        List<MemoryObject> objects = Lists.newArrayList();
+        for (MonoSession session : sessions) {
+            objects.add(session);
+        }
+        return objects;
+    }
+
+    public boolean nonEmpty() {
+        for (MemoryObject object : list()) {
+            if (object.nonEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

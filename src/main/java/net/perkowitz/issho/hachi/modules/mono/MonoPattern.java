@@ -1,11 +1,18 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.perkowitz.issho.hachi.MemoryObject;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import java.util.List;
+
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.REST;
 
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoPattern {
+public class MonoPattern implements MemoryObject {
 
     public static int STEP_COUNT = 16;
 
@@ -38,6 +45,42 @@ public class MonoPattern {
             shiftedSteps[shifted] = step;
         }
         steps = shiftedSteps;
+    }
+
+    public String toString() {
+
+        String stepString = "";
+        for (MonoStep step : steps) {
+            switch (step.getGate()) {
+                case PLAY:
+                    stepString += "O";
+                    break;
+                case TIE:
+                    stepString += "-";
+                    break;
+                case REST:
+                    stepString += ".";
+                    break;
+            }
+        }
+
+        return String.format("MonoPattern:%02d:%s", index, stepString);
+    }
+
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        return Lists.newArrayList();
+    }
+
+    public boolean nonEmpty() {
+        for (MonoStep step : steps) {
+            if (step.getGate() != REST) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
