@@ -2,6 +2,7 @@ package net.perkowitz.issho.hachi.modules.mono;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -16,7 +17,7 @@ public class MonoPattern implements MemoryObject {
 
     public static int STEP_COUNT = 16;
 
-    @Getter private int index;
+    @Getter @Setter private int index;
     @Getter private MonoStep[] steps = new MonoStep[STEP_COUNT];
 
 
@@ -74,6 +75,11 @@ public class MonoPattern implements MemoryObject {
         return Lists.newArrayList();
     }
 
+    public void put(int index, MemoryObject memoryObject) {
+        System.out.println("Cannot add a MemoryObject to a MonoPattern");
+    }
+
+
     public boolean nonEmpty() {
         for (MonoStep step : steps) {
             if (step.getGate() != REST) {
@@ -81,6 +87,10 @@ public class MonoPattern implements MemoryObject {
             }
         }
         return false;
+    }
+
+    public MemoryObject clone() {
+        return MonoPattern.copy(this, this.index);
     }
 
 

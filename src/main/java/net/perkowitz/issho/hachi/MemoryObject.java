@@ -8,5 +8,9 @@ import java.util.List;
 public interface MemoryObject {
 
     public List<MemoryObject> list();
+    public void put(int index, MemoryObject memoryObject);
     public boolean nonEmpty();
+    public MemoryObject clone();
+    public int getIndex();
+    public void setIndex(int index);
 }

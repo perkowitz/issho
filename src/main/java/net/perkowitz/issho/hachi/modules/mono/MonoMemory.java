@@ -65,6 +65,11 @@ public class MonoMemory implements MemoryObject {
     public MonoStep getStep(int index) { return currentPattern().getStep(index); }
 
 
+    public String toString() {
+        return "MonoMemory";
+    }
+
+
     /***** select *******************************************************/
 
     public void selectStep(int index) {
@@ -100,6 +105,16 @@ public class MonoMemory implements MemoryObject {
         return objects;
     }
 
+    public void put(int index, MemoryObject memoryObject) {
+        if (memoryObject instanceof MonoSession) {
+            MonoSession session = (MonoSession) memoryObject;
+            session.setIndex(index);
+            sessions[index] = session;
+        } else {
+            System.out.printf("Cannot put object %s of type %s in object %s\n", memoryObject, memoryObject.getClass().getSimpleName(), this);
+        }
+    }
+
     public boolean nonEmpty() {
         for (MemoryObject object : list()) {
             if (object.nonEmpty()) {
@@ -108,5 +123,13 @@ public class MonoMemory implements MemoryObject {
         }
         return false;
     }
+
+    public int getIndex() { return 0; }
+    public void setIndex(int index) {}
+
+    public MemoryObject clone() {
+        return null;
+    }
+
 
 }
