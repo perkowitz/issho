@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.modules.mono.MonoMemory;
+import net.perkowitz.issho.hachi.modules.step.StepMemory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -240,12 +241,24 @@ public class MemoryApp {
         try {
             if (type.equals("mono")) {
                 if (file.exists()) {
+                    System.out.printf("Loading MonoMemory from %s\n", filename);
                     return objectMapper.readValue(file, MonoMemory.class);
                 } else {
                     System.out.println("File not found. Initializing new MemoryObject.");
                     return new MonoMemory();
                 }
 
+            } else if (type.equals("step")) {
+                if (file.exists()) {
+                    System.out.printf("Loading StepMemory from %s\n", filename);
+                    return objectMapper.readValue(file, StepMemory.class);
+                } else {
+                    System.out.println("File not found. Initializing new MemoryObject.");
+                    return new StepMemory();
+                }
+
+            } else {
+                System.out.printf("Type %s not recognized\n", type);
             }
 
         } catch (Exception e) {
