@@ -4,11 +4,9 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
-import net.perkowitz.issho.hachi.modules.mono.MonoStep;
 
 import java.util.List;
 
-import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.REST;
 import static net.perkowitz.issho.hachi.modules.step.Stage.Marker.None;
 
 /**
