@@ -1,9 +1,8 @@
-package net.perkowitz.issho.util;
+package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.modules.mono.MonoMemory;
 import net.perkowitz.issho.hachi.modules.step.StepMemory;
 import org.codehaus.jackson.map.ObjectMapper;
