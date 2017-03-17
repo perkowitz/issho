@@ -1,11 +1,10 @@
 package net.perkowitz.issho.util;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.modules.mono.MonoMemory;
-import net.perkowitz.issho.hachi.modules.mono.MonoPattern;
-import net.perkowitz.issho.hachi.modules.mono.MonoSession;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -13,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by optic on 3/13/17.
@@ -21,7 +21,7 @@ public class MemoryApp {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private MemoryObject memory;
+    private Map<String, MemoryObject> files = Maps.newHashMap();
 
 
     public static void main(String args[]) throws Exception {
@@ -86,7 +86,10 @@ public class MemoryApp {
             } else {
                 String type = args.get(0);
                 String filename = args.get(1);
-                load(type, filename);
+                MemoryObject memoryObject = load(type, filename);
+                if (memoryObject != null) {
+                    files.put(filename, memoryObject);
+                }
             }
 
         } else if (command.equals("save")) {
@@ -98,7 +101,17 @@ public class MemoryApp {
             }
             
         } else if (command.equals("print")) {
-            print(memory, "");
+            if (args.size() < 1) {
+                System.out.println("Usage: print <filename>");
+            } else {
+                String filename = args.get(0);
+                MemoryObject memoryObject = files.get(filename);
+                if (memoryObject == null) {
+                    System.out.printf("MemoryObject %s has not been opened.", filename);
+                } else {
+                    print(memoryObject, "");
+                }
+            }
 
         } else if (command.equals("cp")) {
             if (args.size() < 2) {
@@ -106,13 +119,32 @@ public class MemoryApp {
             } else {
                 String sourcePath = args.get(0);
                 String destinationPath = args.get(1);
-                MemoryObject source = get(memory, sourcePath);
+                MemoryObject source = get(sourcePath);
                 MemoryObject clone = source.clone();
-                MemoryObject destination = get(memory, destinationPath);
-                clone.setIndex(destination.getIndex());
-                System.out.printf("Copying %s over %s\n", source, destination);
-                put(memory, destinationPath, clone);
+                MemoryObject destination = get(destinationPath);
+
+                if (!sourcePath.contains("/") && !sourcePath.contains("/")) {
+                    System.out.println("Cannot copy entire file");
+                } else {
+//                    System.out.printf("Printing %s:\n", sourcePath);
+//                    print(source, "");
+//                    System.out.printf("Printing %s:\n", destinationPath);
+//                    print(destination, "");
+
+                    clone.setIndex(destination.getIndex());
+                    System.out.printf("Copying %s over %s\n", source, destination);
+                    put(destinationPath, clone);
+                }
             }
+
+        } else if (command.equals("help")) {
+            System.out.println("Commands");
+            System.out.println("- ls");
+            System.out.println("- q");
+            System.out.println("- open");
+            System.out.println("- save");
+            System.out.println("- cp");
+            System.out.println("- print");
 
         } else {
             System.out.printf("Unrecognized command: %s\n", command);
@@ -130,27 +162,29 @@ public class MemoryApp {
         }
     }
 
-    private MemoryObject get(MemoryObject memoryObject, String path) {
-
-        List<String> pathElements = Lists.newArrayList(path.split("/"));
-
-        MemoryObject current = memoryObject;
-        while (pathElements.size() > 0) {
-            Integer index = new Integer(pathElements.get(0));
-            pathElements.remove(0);
-            current = current.list().get(index);
-        }
-
-        return current;
+    private MemoryObject get(String path) {
+        return pathGetPut(path, null);
     }
 
-    private void put(MemoryObject memoryObject, String path, MemoryObject putObject) {
+    private void put(String path, MemoryObject putObject) {
+        pathGetPut(path, putObject);
+    }
+
+    private MemoryObject pathGetPut(String path, MemoryObject putObject) {
 
         List<String> pathElements = Lists.newArrayList(path.split("/"));
+
+        MemoryObject current = null;
+        if (pathElements.size() > 0) {
+            String filename = pathElements.get(0);
+            pathElements.remove(0);
+            current = files.get(filename);
+        } else {
+            return null;
+        }
 
         Integer lastIndex = null;
         MemoryObject previous = null;
-        MemoryObject current = memoryObject;
         while (pathElements.size() > 0) {
             Integer index = new Integer(pathElements.get(0));
             pathElements.remove(0);
@@ -159,11 +193,20 @@ public class MemoryApp {
             current = current.list().get(index);
         }
 
-        if (previous != null) {
+        if (putObject == null) {
+            // just get object specified by path
+            return current;
+        } else if (previous != null) {
+            // store the putObject in the specified path
             previous.put(lastIndex, putObject);
+            return putObject;
         }
 
+        return null;
     }
+
+
+
 
 
     private void save(String filename) {
@@ -175,7 +218,11 @@ public class MemoryApp {
                 Files.copy(file, new File(filename + ".backup"));
             }
 
-            objectMapper.writeValue(file, memory);
+            if (files.get(filename) != null) {
+                objectMapper.writeValue(file, files.get(filename));
+            } else {
+                System.out.printf("%s not found in memory\n", filename);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -183,7 +230,7 @@ public class MemoryApp {
 
     }
 
-    private void load(String type, String filename) {
+    private MemoryObject load(String type, String filename) {
 
         File file = new File(filename);
         if (!file.exists()) {
@@ -193,10 +240,10 @@ public class MemoryApp {
         try {
             if (type.equals("mono")) {
                 if (file.exists()) {
-                    memory = objectMapper.readValue(file, MonoMemory.class);
+                    return objectMapper.readValue(file, MonoMemory.class);
                 } else {
                     System.out.println("File not found. Initializing new MemoryObject.");
-                    memory = new MonoMemory();
+                    return new MonoMemory();
                 }
 
             }
@@ -204,7 +251,10 @@ public class MemoryApp {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return null;
     }
+
 
 
 }
