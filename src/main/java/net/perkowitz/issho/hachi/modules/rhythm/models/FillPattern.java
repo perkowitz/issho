@@ -20,9 +20,9 @@ public class FillPattern extends Pattern {
 
     }
 
-    @Override
-    public String toString() {
-        return "Fill:" + getIndex();
-    }
+//    @Override
+//    public String toString() {
+//        return "Fill:" + getIndex();
+//    }
 
 }

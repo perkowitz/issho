@@ -23,7 +23,18 @@ public class Step {
 
     @Override
     public String toString() {
-        return "Stage:" + getIndex();
+        return "Step:" + getIndex();
+    }
+
+
+    /***** static methods ***********************/
+
+    public static Step copy(Step step, int newIndex) {
+        Step newStep = new Step(newIndex);
+        newStep.selected = step.selected;
+        newStep.on = step.on;
+        newStep.velocity = step.velocity;
+        return newStep;
     }
 
 }

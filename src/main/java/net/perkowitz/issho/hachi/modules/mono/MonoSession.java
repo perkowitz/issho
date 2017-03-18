@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class MonoSession implements MemoryObject {
     }
 
     public String toString() {
-        return "MonoSession:" + index;
+        return String.format("MonoSession:%02d", index);
     }
 
     /***** MemoryObject implementation ***********************/
@@ -66,6 +67,10 @@ public class MonoSession implements MemoryObject {
 
     public MemoryObject clone() {
         return MonoSession.copy(this, this.index);
+    }
+
+    public String render() {
+        return MemoryUtil.countRender(this);
     }
 
 

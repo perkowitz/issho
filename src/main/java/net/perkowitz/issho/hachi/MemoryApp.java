@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import net.perkowitz.issho.hachi.modules.mono.MonoMemory;
+import net.perkowitz.issho.hachi.modules.rhythm.models.Memory;
 import net.perkowitz.issho.hachi.modules.step.StepMemory;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -102,14 +103,14 @@ public class MemoryApp {
             
         } else if (command.equals("print")) {
             if (args.size() < 1) {
-                System.out.println("Usage: print <filename>");
+                System.out.println("Usage: print <path>");
             } else {
-                String filename = args.get(0);
-                MemoryObject memoryObject = files.get(filename);
-                if (memoryObject == null) {
-                    System.out.printf("MemoryObject %s has not been opened.", filename);
+                String path = args.get(0);
+                MemoryObject memoryObject = get(path);
+                if (memoryObject != null) {
+                    print(memoryObject);
                 } else {
-                    print(memoryObject, "");
+                    System.out.printf("Cannot find object %s.\n", path);
                 }
             }
 
@@ -153,11 +154,11 @@ public class MemoryApp {
 
     }
 
-    private void print(MemoryObject object, String indent) {
+    private void print(MemoryObject object) {
+        System.out.println(object.render());
         for (MemoryObject child : object.list()) {
             if (child.nonEmpty()) {
-                System.out.println(indent + child);
-                print(child, indent + "  ");
+                System.out.println("  . " + child.render());
             }
         }
     }
@@ -204,10 +205,6 @@ public class MemoryApp {
 
         return null;
     }
-
-
-
-
 
     private void save(String filename) {
 
@@ -256,8 +253,17 @@ public class MemoryApp {
                     return new StepMemory();
                 }
 
+            } else if (type.equals("rhythm")) {
+                if (file.exists()) {
+                    System.out.printf("Loading RhythmMemory from %s\n", filename);
+                    return objectMapper.readValue(file, Memory.class);
+                } else {
+                    System.out.println("File not found. Initializing new MemoryObject.");
+                    return new Memory();
+                }
+
             } else {
-                System.out.printf("Type %s not recognized\n", type);
+                System.out.printf("Type %s not recognized. Valid types: mono, step, rhythm.\n", type);
             }
 
         } catch (Exception e) {

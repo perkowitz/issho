@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
@@ -60,6 +61,34 @@ public class Stage implements MemoryObject {
 
     @Override
     public String toString() {
+        return String.format("Stage:%02d", index);
+    }
+
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        return Lists.newArrayList();
+    }
+
+    public void put(int index, MemoryObject memoryObject) {
+        System.out.println("Cannot add a MemoryObject to a Stage");
+    }
+
+    public boolean nonEmpty() {
+        for (Marker marker : markers) {
+            if (marker != None) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public MemoryObject clone() {
+        return Stage.copy(this);
+    }
+
+    public String render() {
 
         String string = "";
         for (Marker marker : markers) {
@@ -107,31 +136,7 @@ public class Stage implements MemoryObject {
             }
         }
 
-        return String.format("Stage:%02d:%s", index, string);
-    }
-
-
-    /***** MemoryObject implementation ***********************/
-
-    public List<MemoryObject> list() {
-        return Lists.newArrayList();
-    }
-
-    public void put(int index, MemoryObject memoryObject) {
-        System.out.println("Cannot add a MemoryObject to a Stage");
-    }
-
-    public boolean nonEmpty() {
-        for (Marker marker : markers) {
-            if (marker != None) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public MemoryObject clone() {
-        return Stage.copy(this);
+        return MemoryUtil.countRender(this, string);
     }
 
 

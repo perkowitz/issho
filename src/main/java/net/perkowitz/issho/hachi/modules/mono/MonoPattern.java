@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
@@ -49,23 +50,7 @@ public class MonoPattern implements MemoryObject {
     }
 
     public String toString() {
-
-        String stepString = "";
-        for (MonoStep step : steps) {
-            switch (step.getGate()) {
-                case PLAY:
-                    stepString += "O";
-                    break;
-                case TIE:
-                    stepString += "-";
-                    break;
-                case REST:
-                    stepString += ".";
-                    break;
-            }
-        }
-
-        return String.format("MonoPattern:%02d:%s", index, stepString);
+        return String.format("MonoPattern:%02d", index);
     }
 
 
@@ -92,6 +77,27 @@ public class MonoPattern implements MemoryObject {
     public MemoryObject clone() {
         return MonoPattern.copy(this, this.index);
     }
+
+    public String render() {
+
+        String stepString = "";
+        for (MonoStep step : steps) {
+            switch (step.getGate()) {
+                case PLAY:
+                    stepString += "O";
+                    break;
+                case TIE:
+                    stepString += "-";
+                    break;
+                case REST:
+                    stepString += ".";
+                    break;
+            }
+        }
+
+        return MemoryUtil.countRender(this, stepString);
+    }
+
 
 
     /***** static methods **************************/

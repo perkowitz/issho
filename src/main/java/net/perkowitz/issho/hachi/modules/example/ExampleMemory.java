@@ -87,6 +87,8 @@ public class ExampleMemory {
         return null;
     }
 
+    public String render() { return toString(); }
+
 
 
 }

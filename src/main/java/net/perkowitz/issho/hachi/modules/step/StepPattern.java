@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class StepPattern implements MemoryObject {
 
     @Override
     public String toString() {
-        return "StepPattern:" + index;
+        return String.format("StepPattern:%02d", index);
     }
 
 
@@ -87,6 +88,9 @@ public class StepPattern implements MemoryObject {
         return StepPattern.copy(this, this.index);
     }
 
+    public String render() {
+        return MemoryUtil.countRender(this);
+    }
 
     /***** static methods **************************/
 

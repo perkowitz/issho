@@ -49,6 +49,11 @@ public class StepMemory implements MemoryObject {
         this.currentPatternIndex = currentPatternIndex % StepSession.PATTERN_COUNT;
     }
 
+    public String toString() {
+        return "MonoMemory";
+    }
+
+
     /***** select *******************************************************/
 
 
@@ -87,6 +92,8 @@ public class StepMemory implements MemoryObject {
     public MemoryObject clone() {
         return null;
     }
+
+    public String render() { return toString(); }
 
 
 

@@ -131,5 +131,7 @@ public class MonoMemory implements MemoryObject {
         return null;
     }
 
+    public String render() { return toString(); }
+
 
 }

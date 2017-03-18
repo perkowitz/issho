@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class StepSession implements MemoryObject {
     }
 
     public String toString() {
-        return "StepSession:" + index;
+        return String.format("StepSession:%02d", index);
     }
 
     /***** MemoryObject implementation ***********************/
@@ -72,6 +73,10 @@ public class StepSession implements MemoryObject {
 
     public MemoryObject clone() {
         return StepSession.copy(this, this.index);
+    }
+
+    public String render() {
+        return MemoryUtil.countRender(this);
     }
 
 
