@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
@@ -87,18 +88,27 @@ public class Track implements MemoryObject {
 
     public String render() {
 
-        String binary = "";
-        for (int i = stepCount-1; i >= 0; i--) {
+        String string = "";
+        for (int i = 0; i < stepCount; i++) {
             if (steps[i].isOn()) {
-                binary += "1";
+                string += "O";
             } else {
-                binary += "0";
+                string += ".";
             }
         }
-        int decimal = Integer.parseInt(binary,2);
-        String hexStr = Integer.toString(decimal,16);
 
-        return(hexStr);
+//        String binary = "";
+//        for (int i = stepCount-1; i >= 0; i--) {
+//            if (steps[i].isOn()) {
+//                binary += "1";
+//            } else {
+//                binary += "0";
+//            }
+//        }
+//        int decimal = Integer.parseInt(binary,2);
+//        String hexStr = Integer.toString(decimal,16);
+
+        return(MemoryUtil.countRender(this, string));
     }
 
 

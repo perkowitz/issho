@@ -19,11 +19,11 @@ public class MemoryUtil {
                     nonEmpty++;
                 }
             }
-            string += String.format(":%02d/%02d Children", nonEmpty, list.size());
+            string += String.format(" - %02d/%02d children", nonEmpty, list.size());
         }
 
         if (suffix != null) {
-            string += ":" + suffix;
+            string += " - " + suffix;
         }
 
         return string;

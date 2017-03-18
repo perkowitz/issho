@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 import net.perkowitz.issho.hachi.modules.mono.MonoPattern;
 import net.perkowitz.issho.hachi.modules.mono.MonoStep;
 
@@ -63,16 +64,7 @@ public class Pattern implements MemoryObject {
 
     @Override
     public String toString() {
-
-        String string = "";
-        for (Track track : tracks) {
-            if (!string.equals("")) {
-                string += "-";
-            }
-            string += track;
-        }
-
-        return String.format("Pattern:%02d:%s", index, string);
+        return String.format("Pattern:%02d", index);
     }
 
 
@@ -110,7 +102,18 @@ public class Pattern implements MemoryObject {
         return Pattern.copy(this, this.index);
     }
 
-    public String render() { return toString(); }
+    public String render() {
+//
+//        String string = "";
+//        for (Track track : tracks) {
+//            if (!string.equals("")) {
+//                string += "-";
+//            }
+//            string += track;
+//        }
+//
+        return MemoryUtil.countRender(this);
+    }
 
 
     /***** static methods ***********************/

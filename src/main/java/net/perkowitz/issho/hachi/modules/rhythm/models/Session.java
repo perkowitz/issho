@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
@@ -46,6 +47,11 @@ public class Session implements MemoryObject {
     }
     public FillPattern getFill(int index) { return fills[index % fillCount]; }
 
+    public String toString() {
+        return String.format("RhythmSession:%02d", index);
+    }
+
+
     /***** MemoryObject implementation ***********************/
 
     public List<MemoryObject> list() {
@@ -82,8 +88,9 @@ public class Session implements MemoryObject {
         return null;
     }
 
-    public String render() { return toString(); }
-
+    public String render() {
+        return MemoryUtil.countRender(this);
+    }
 
     /***** static methods ***********************/
 

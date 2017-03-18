@@ -255,6 +255,10 @@ public class Memory implements MemoryObject {
         return isSet;
     }
 
+    public String toString() {
+        return("RhythmMemory");
+    }
+
     /***** MemoryObject implementation ***********************/
 
     public List<MemoryObject> list() {
