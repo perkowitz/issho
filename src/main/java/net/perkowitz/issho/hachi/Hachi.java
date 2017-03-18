@@ -131,11 +131,12 @@ public class Hachi {
         System.out.printf("Running controller...\n");
         controller.run();
 
-        System.out.printf("Starting up command processor...\n");
-        Thread t = new Thread(new CommandLine(controller));
-        t.start();
+        // if we want to be able to send commands to Hachi from command line someday
+//        System.out.printf("Starting up command processor...\n");
+//        Thread t = new Thread(new CommandLine(controller));
+//        t.start();
 
-//        System.out.printf("Awaiting...\n");
+        System.out.printf("Awaiting...\n");
         stop.await();
 
     }
