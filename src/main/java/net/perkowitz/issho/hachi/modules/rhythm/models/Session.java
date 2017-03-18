@@ -85,7 +85,7 @@ public class Session implements MemoryObject {
     }
 
     public MemoryObject clone() {
-        return null;
+        return Session.copy(this, this.getIndex());
     }
 
     public String render() {
@@ -100,7 +100,7 @@ public class Session implements MemoryObject {
             newSession.patterns[index] = Pattern.copy(session.patterns[index], index);
         }
         for (int index = 0; index < fillCount; index++) {
-            newSession.fills[index] = (FillPattern) Pattern.copy(session.fills[index], index);
+            newSession.fills[index] = (FillPattern) FillPattern.copy(session.fills[index], index);
         }
         return newSession;
     }

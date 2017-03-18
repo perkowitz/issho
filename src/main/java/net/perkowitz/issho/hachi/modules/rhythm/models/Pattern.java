@@ -26,8 +26,8 @@ public class Pattern implements MemoryObject {
     @Getter @Setter private boolean playing = false;
     @Getter @Setter private boolean chained = false;
 
-    @Getter @Setter private static int trackCount = 16;
-    @Getter private Track[] tracks;
+    @Getter @Setter protected static int trackCount = 16;
+    @Getter protected Track[] tracks;
 
     // only used for deserializing JSON; Pattern should always be created with an index
     public Pattern() {}

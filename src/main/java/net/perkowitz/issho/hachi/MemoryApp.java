@@ -81,7 +81,7 @@ public class MemoryApp {
                 }
             }
 
-        } else if (command.equals("open")) {
+        } else if (command.equals("open") || command.equals("o")) {
             if (args.size() < 2) {
                 System.out.println("Usage: open <type> <filename>");
             } else {
@@ -101,7 +101,7 @@ public class MemoryApp {
                 save(filename);
             }
             
-        } else if (command.equals("print")) {
+        } else if (command.equals("print") || command.equals("p")) {
             if (args.size() < 1) {
                 System.out.println("Usage: print <path>");
             } else {
@@ -210,9 +210,14 @@ public class MemoryApp {
 
         try {
 
-            File file = new File(filename);
+            String outputName = filename;
+            if (!filename.endsWith(".json")) {
+                outputName += ".json";
+            }
+
+            File file = new File(outputName);
             if (file.exists()) {
-                Files.copy(file, new File(filename + ".backup"));
+                Files.copy(file, new File(outputName + ".backup"));
             }
 
             if (files.get(filename) != null) {
