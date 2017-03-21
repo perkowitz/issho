@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.modules.mono.MonoSession;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
 
 import java.util.List;
@@ -17,7 +19,7 @@ import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.Switch.TR
 /**
  * Created by optic on 7/9/16.
  */
-public class Memory {
+public class Memory implements MemoryObject {
 
     @Getter @Setter private static int sessionCount = 16;
     @Getter private Session[] sessions;
@@ -252,6 +254,49 @@ public class Memory {
         }
         return isSet;
     }
+
+    public String toString() {
+        return("RhythmMemory");
+    }
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        List<MemoryObject> objects = Lists.newArrayList();
+        for (Session session : sessions) {
+            objects.add(session);
+        }
+        return objects;
+    }
+
+    public void put(int index, MemoryObject memoryObject) {
+        if (memoryObject instanceof Session) {
+            Session session = (Session) memoryObject;
+            session.setIndex(index);
+            sessions[index] = session;
+        } else {
+            System.out.printf("Cannot put object %s of type %s in object %s\n", memoryObject, memoryObject.getClass().getSimpleName(), this);
+        }
+    }
+
+    public boolean nonEmpty() {
+        for (MemoryObject object : list()) {
+            if (object.nonEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getIndex() { return 0; }
+    public void setIndex(int index) {}
+
+    public MemoryObject clone() {
+        return null;
+    }
+
+    public String render() { return toString(); }
+
 
 
 }

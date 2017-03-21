@@ -22,7 +22,19 @@ public class FillPattern extends Pattern {
 
     @Override
     public String toString() {
-        return "Fill:" + getIndex();
+        return String.format("FillPattern:%02d", getIndex());
     }
+
+    /***** static methods ***********************/
+
+    public static FillPattern copy(FillPattern pattern, int newIndex) {
+        FillPattern newPattern = new FillPattern(newIndex, pattern.getFillInterval());
+        newPattern.setFillPercent(pattern.getFillPercent());
+        for (int index = 0; index < Pattern.trackCount; index++) {
+            newPattern.tracks[index] = Track.copy(pattern.tracks[index], index);
+        }
+        return newPattern;
+    }
+
 
 }

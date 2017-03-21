@@ -14,12 +14,14 @@ import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
 import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
 import net.perkowitz.issho.hachi.modules.step.StepModule;
 import net.perkowitz.issho.util.MidiUtil;
-import net.perkowitz.issho.util.PropertiesUtil;
 import net.perkowitz.issho.util.SettingsUtil;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -128,6 +130,11 @@ public class Hachi {
 
         System.out.printf("Running controller...\n");
         controller.run();
+
+        // if we want to be able to send commands to Hachi from command line someday
+//        System.out.printf("Starting up command processor...\n");
+//        Thread t = new Thread(new CommandLine(controller));
+//        t.start();
 
         System.out.printf("Awaiting...\n");
         stop.await();
@@ -318,6 +325,31 @@ public class Hachi {
             }
         }
     }
+
+    private static class CommandLine implements Runnable {
+
+        private HachiController listener;
+
+        public CommandLine(HachiController listener) {
+            this.listener = listener;
+        }
+
+        public void run() {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String input = "";
+            System.out.print("> ");
+            while (true) {
+                try {
+                    input = br.readLine();
+                    listener.processCommand(input);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
 
 
 }
