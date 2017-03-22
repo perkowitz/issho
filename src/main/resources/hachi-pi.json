@@ -5,13 +5,13 @@
     "controller": {
       "names": [
         "Launchpad",
-        "1,0,1"
+        ",0,1"
         ]
     },
     "midi": {
       "names":[
         "Launchpad Pro",
-        "1,0,2"
+        ",0,2"
         ]
     },
     "knobby": {

@@ -24,12 +24,12 @@
   },
   "modules": [
     {
-      "class": "MonoModule",
-      "filePrefix": "mono0"
+      "class": "MinibeatModule",
+      "filePrefix": "minibeat0"
     },
     {
-      "class": "ExampleModule",
-      "filePrefix": "example0"
+      "class": "ShihaiModule",
+      "panicExclude": [14, 15]
     },
     {
       "class": "PaletteModule"

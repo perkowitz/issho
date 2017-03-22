@@ -31,6 +31,8 @@ public class Color implements GridColor {
     public static Color DIM_YELLOW = Color.fromIndex(15);
     public static Color BRIGHT_PINK = Color.fromIndex(57);
     public static Color DIM_PINK = Color.fromIndex(59);
+    public static Color BRIGHT_PINK_PURPLE = Color.fromIndex(53);
+    public static Color DIM_PINK_PURPLE = Color.fromIndex(55);
     public static Color BRIGHT_PURPLE = Color.fromIndex(49);
     public static Color DIM_PURPLE = Color.fromIndex(51);
 
