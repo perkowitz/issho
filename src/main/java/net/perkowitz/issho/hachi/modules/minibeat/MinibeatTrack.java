@@ -31,4 +31,15 @@ public class MinibeatTrack {
         return steps.get(index);
     }
 
+
+    /***** static methods **************************/
+
+    public static MinibeatTrack copy(MinibeatTrack track, int newIndex) {
+        MinibeatTrack newTrack = new MinibeatTrack(newIndex, track.getNoteNumber());
+        for (int i = 0; i < MinibeatUtil.STEP_COUNT; i++) {
+            newTrack.steps.set(i, MinibeatStep.copy(track.steps.get(i), i));
+        }
+        return newTrack;
+    }
+
 }

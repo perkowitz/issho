@@ -146,6 +146,7 @@ public class MinibeatDisplay {
         drawControl(settingsControl, settingsView);
         drawControl(muteControl, isMuted);
         drawControl(saveControl, false);
+        drawControl(copyControl, false);
     }
 
     public void drawControl(GridControl control, boolean isOn) {

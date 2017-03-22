@@ -41,6 +41,7 @@ public class MinibeatUtil {
     public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
     public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
     public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
+    public static GridControl copyControl = new GridControl(GridButton.at(Left, 2), null);
 
 
     /***** colors **********************************************************/
