@@ -1,14 +1,18 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.hachi.MemoryObject;
+
+import java.util.List;
 
 import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.StepEditState.NOTE;
 
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoMemory {
+public class MonoMemory implements MemoryObject {
 
     private static int SESSION_COUNT = 16;
 
@@ -61,6 +65,11 @@ public class MonoMemory {
     public MonoStep getStep(int index) { return currentPattern().getStep(index); }
 
 
+    public String toString() {
+        return "MonoMemory";
+    }
+
+
     /***** select *******************************************************/
 
     public void selectStep(int index) {
@@ -84,6 +93,45 @@ public class MonoMemory {
         patternChainMax = maxIndex;
 
     }
+
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        List<MemoryObject> objects = Lists.newArrayList();
+        for (MonoSession session : sessions) {
+            objects.add(session);
+        }
+        return objects;
+    }
+
+    public void put(int index, MemoryObject memoryObject) {
+        if (memoryObject instanceof MonoSession) {
+            MonoSession session = (MonoSession) memoryObject;
+            session.setIndex(index);
+            sessions[index] = session;
+        } else {
+            System.out.printf("Cannot put object %s of type %s in object %s\n", memoryObject, memoryObject.getClass().getSimpleName(), this);
+        }
+    }
+
+    public boolean nonEmpty() {
+        for (MemoryObject object : list()) {
+            if (object.nonEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getIndex() { return 0; }
+    public void setIndex(int index) {}
+
+    public MemoryObject clone() {
+        return null;
+    }
+
+    public String render() { return toString(); }
 
 
 }

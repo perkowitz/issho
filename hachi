@@ -1,4 +1,4 @@
 #!/bin/sh
 
-java -cp target/issho-1.0.1-shaded.jar net.perkowitz.issho.hachi.Hachi
+java -cp target/issho-1.0.1-shaded.jar net.perkowitz.issho.hachi.Hachi $1
 
