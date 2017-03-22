@@ -25,6 +25,8 @@ public class MinibeatDisplay {
     @Getter @Setter private int currentFileIndex = 0;
     @Setter private boolean settingsView = false;
     @Setter private boolean isMuted = false;
+    @Setter private Integer nextChainStart = null;
+    @Setter private Integer nextChainEnd = null;
 
     public MinibeatDisplay(GridDisplay display) {
         this.display = display;
@@ -72,6 +74,8 @@ public class MinibeatDisplay {
             Color color = palette.get(MinibeatUtil.COLOR_PATTERN);
             if (playingIndex == index) {
                 color = palette.get(MinibeatUtil.COLOR_PATTERN_PLAYING);
+            } else if (nextChainStart != null && nextChainEnd != null && index >= nextChainStart && index <= nextChainEnd) {
+                color = palette.get(MinibeatUtil.COLOR_PATTERN_NEXT);
             } else if (memory.patternIsChained(index)) {
                 color = palette.get(MinibeatUtil.COLOR_PATTERN_CHAINED);
             }

@@ -84,6 +84,8 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
                 memory.selectChain(nextChainStart, nextChainEnd);
                 nextChainStart = null;
                 nextChainEnd = null;
+                minibeatDisplay.setNextChainStart(null);
+                minibeatDisplay.setNextChainEnd(null);
             } else {
                 // otherwise advance pattern
                 memory.advancePattern();
@@ -302,7 +304,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
         } else if (valueControls.contains(control)) {
             MinibeatStep step = memory.getSelectedTrack().getStep(selectedStep);
             Integer index = valueControls.getIndex(control);
-            step.setVelocity((index + 1) * 16 - 1);
+            step.setVelocity((8 - index) * 16 - 1);
             minibeatDisplay.drawValue(step.getVelocity(), 127);
 
         }
@@ -371,15 +373,14 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
                 }
                 nextChainStart = min;
                 nextChainEnd = max;
+                minibeatDisplay.setNextChainStart(nextChainStart);
+                minibeatDisplay.setNextChainEnd(nextChainEnd);
+
                 memory.selectPattern(min);
                 patternsPressed.clear();
                 patternsReleasedCount = 0;
+                minibeatDisplay.drawPatterns(memory);
             }
-
-
-
-
-
         }
 
     }

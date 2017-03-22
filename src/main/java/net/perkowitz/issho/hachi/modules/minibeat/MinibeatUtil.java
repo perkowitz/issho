@@ -53,6 +53,7 @@ public class MinibeatUtil {
     public static Integer COLOR_PATTERN_CHAINED = 12;
     public static Integer COLOR_PATTERN_SELECTION = 13;
     public static Integer COLOR_PATTERN_SELECTED = 14;
+    public static Integer COLOR_PATTERN_NEXT = 15;
     public static Integer COLOR_TRACK = 20;
     public static Integer COLOR_TRACK_SELECTION = 21;
     public static Integer COLOR_TRACK_SELECTED = 22;
@@ -77,6 +78,7 @@ public class MinibeatUtil {
         PALETTE.put(COLOR_PATTERN_CHAINED, playColorDim);
         PALETTE.put(COLOR_PATTERN_SELECTION, selectColor);
         PALETTE.put(COLOR_PATTERN_SELECTED, Color.WHITE);
+        PALETTE.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
         PALETTE.put(COLOR_TRACK, playColor);
         PALETTE.put(COLOR_TRACK_SELECTION, selectColor);
         PALETTE.put(COLOR_TRACK_MUTED, playColorDim);
