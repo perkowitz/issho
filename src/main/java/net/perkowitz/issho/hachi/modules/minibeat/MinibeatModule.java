@@ -95,9 +95,16 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
         // send the midi notes
         for (MinibeatTrack track : memory.getPlayingPattern().getTracks()) {
+
+            // when the selected track isn't the one currently being played (when there's a chain)
+            // get the selected track so we can highlight the playing tracks as the notes hit
+            MinibeatTrack playingTrack = memory.getSelectedPattern().getTrack(track.getIndex());
+
+
             MinibeatStep step = track.getStep(nextStepIndex);
             if (step.isEnabled()) {
-                track.setPlaying(true);
+//                track.setPlaying(true);
+                playingTrack.setPlaying(true);
                 if (memory.getCurrentSession().trackIsEnabled(track.getIndex())) {
                     sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
                 }
@@ -106,8 +113,10 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
         // THEN update track displays
         for (MinibeatTrack track : memory.getPlayingPattern().getTracks()) {
+            MinibeatTrack playingTrack = memory.getSelectedPattern().getTrack(track.getIndex());
             minibeatDisplay.drawTrack(memory, track.getIndex());
-            track.setPlaying(false);
+//            track.setPlaying(false);
+            playingTrack.setPlaying(false);
         }
 
         nextStepIndex = (nextStepIndex + 1) % MinibeatUtil.STEP_COUNT;
