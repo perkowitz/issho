@@ -1,15 +1,24 @@
 package net.perkowitz.issho.hachi.modules.mono;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
+import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import java.util.List;
+
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.Gate.REST;
 
 /**
  * Created by optic on 10/24/16.
  */
-public class MonoPattern {
+public class MonoPattern implements MemoryObject {
 
     public static int STEP_COUNT = 16;
 
-    @Getter private int index;
+    @Getter @Setter private int index;
     @Getter private MonoStep[] steps = new MonoStep[STEP_COUNT];
 
 
@@ -39,6 +48,56 @@ public class MonoPattern {
         }
         steps = shiftedSteps;
     }
+
+    public String toString() {
+        return String.format("MonoPattern:%02d", index);
+    }
+
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        return Lists.newArrayList();
+    }
+
+    public void put(int index, MemoryObject memoryObject) {
+        System.out.println("Cannot add a MemoryObject to a MonoPattern");
+    }
+
+
+    public boolean nonEmpty() {
+        for (MonoStep step : steps) {
+            if (step.getGate() != REST) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public MemoryObject clone() {
+        return MonoPattern.copy(this, this.index);
+    }
+
+    public String render() {
+
+        String stepString = "";
+        for (MonoStep step : steps) {
+            switch (step.getGate()) {
+                case PLAY:
+                    stepString += "O";
+                    break;
+                case TIE:
+                    stepString += "-";
+                    break;
+                case REST:
+                    stepString += ".";
+                    break;
+            }
+        }
+
+        return MemoryUtil.countRender(this, stepString);
+    }
+
 
 
     /***** static methods **************************/

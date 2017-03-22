@@ -52,5 +52,10 @@ public class Scale {
         return new Scale(notes);
     }
 
+    public static Scale copy(Scale scale) {
+        Scale newScale = new Scale(scale.scale);
+        return newScale;
+    }
+
 
 }
