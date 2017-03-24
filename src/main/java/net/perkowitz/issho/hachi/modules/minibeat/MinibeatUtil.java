@@ -4,13 +4,10 @@ import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
-import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
-import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 
 import java.util.Map;
 
-import static net.perkowitz.issho.devices.GridButton.Side.Bottom;
 import static net.perkowitz.issho.devices.GridButton.Side.Left;
 import static net.perkowitz.issho.devices.GridButton.Side.Right;
 
@@ -66,35 +63,55 @@ public class MinibeatUtil {
     public static Integer COLOR_VALUE_OFF = 40;
     public static Integer COLOR_VALUE_ON = 41;
 
-    // make a palette by setting colors for the named indices
-    public static Map<Integer, Color> PALETTE = Maps.newHashMap();
+    public static Map<Integer, Color> PALETTE_GREEN = Maps.newHashMap();
     static {
         Color playColor = Color.DIM_GREEN;
         Color playColorDim = Color.DARK_GRAY;
         Color selectColor = Color.DIM_BLUE_GREEN;
-        PALETTE.put(COLOR_OFF, Color.DARK_GRAY);
-        PALETTE.put(COLOR_ON, Color.WHITE);
-        PALETTE.put(COLOR_PATTERN, playColor);
-        PALETTE.put(COLOR_PATTERN_PLAYING, Color.WHITE);
-        PALETTE.put(COLOR_PATTERN_CHAINED, playColorDim);
-        PALETTE.put(COLOR_PATTERN_SELECTION, selectColor);
-        PALETTE.put(COLOR_PATTERN_SELECTED, Color.WHITE);
-        PALETTE.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
-        PALETTE.put(COLOR_TRACK, playColor);
-        PALETTE.put(COLOR_TRACK_SELECTION, selectColor);
-        PALETTE.put(COLOR_TRACK_MUTED, playColorDim);
-        PALETTE.put(COLOR_TRACK_SELECTED, Color.WHITE);
-        PALETTE.put(COLOR_TRACK_PLAYING, Color.BRIGHT_YELLOW);
-        PALETTE.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
-        PALETTE.put(COLOR_STEP_OFF, Color.OFF);
-        PALETTE.put(COLOR_STEP_ON, playColor);
-        PALETTE.put(COLOR_VALUE_OFF, Color.OFF);
-        PALETTE.put(COLOR_VALUE_ON, selectColor);
+        PALETTE_GREEN.put(COLOR_OFF, Color.DARK_GRAY);
+        PALETTE_GREEN.put(COLOR_ON, Color.WHITE);
+        PALETTE_GREEN.put(COLOR_PATTERN, playColor);
+        PALETTE_GREEN.put(COLOR_PATTERN_PLAYING, Color.WHITE);
+        PALETTE_GREEN.put(COLOR_PATTERN_CHAINED, playColorDim);
+        PALETTE_GREEN.put(COLOR_PATTERN_SELECTION, selectColor);
+        PALETTE_GREEN.put(COLOR_PATTERN_SELECTED, Color.WHITE);
+        PALETTE_GREEN.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
+        PALETTE_GREEN.put(COLOR_TRACK, playColor);
+        PALETTE_GREEN.put(COLOR_TRACK_SELECTION, selectColor);
+        PALETTE_GREEN.put(COLOR_TRACK_MUTED, playColorDim);
+        PALETTE_GREEN.put(COLOR_TRACK_SELECTED, Color.WHITE);
+        PALETTE_GREEN.put(COLOR_TRACK_PLAYING, Color.BRIGHT_YELLOW);
+        PALETTE_GREEN.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
+        PALETTE_GREEN.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE_GREEN.put(COLOR_STEP_ON, playColor);
+        PALETTE_GREEN.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE_GREEN.put(COLOR_VALUE_ON, selectColor);
     }
 
-    // make another palette just for fun
-    public static Map<Integer, Color> ANOTHER_PALETTE = Maps.newHashMap();
+    public static Map<Integer, Color> PALETTE_BLUE = Maps.newHashMap();
     static {
+        Color playColor = Color.LIGHT_BLUE;
+        Color playColorDim = Color.DARK_GRAY;
+        Color selectColor = Color.BRIGHT_BLUE_GREEN;
+        PALETTE_BLUE.put(COLOR_OFF, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_ON, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_PATTERN, playColor);
+        PALETTE_BLUE.put(COLOR_PATTERN_PLAYING, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_PATTERN_CHAINED, playColorDim);
+        PALETTE_BLUE.put(COLOR_PATTERN_SELECTION, selectColor);
+        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
+        PALETTE_BLUE.put(COLOR_TRACK, playColor);
+        PALETTE_BLUE.put(COLOR_TRACK_SELECTION, selectColor);
+        PALETTE_BLUE.put(COLOR_TRACK_MUTED, playColorDim);
+        PALETTE_BLUE.put(COLOR_TRACK_SELECTED, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_TRACK_PLAYING, Color.BRIGHT_YELLOW);
+        PALETTE_BLUE.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
+        PALETTE_BLUE.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE_BLUE.put(COLOR_STEP_ON, playColor);
+        PALETTE_BLUE.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE_BLUE.put(COLOR_VALUE_ON, selectColor);
     }
+
 
 }

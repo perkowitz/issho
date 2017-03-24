@@ -7,6 +7,7 @@ import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.example.ExampleModule;
 import net.perkowitz.issho.hachi.modules.minibeat.MinibeatModule;
+import net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil;
 import net.perkowitz.issho.hachi.modules.mono.MonoModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
@@ -246,7 +247,11 @@ public class Hachi {
                 module = new StepModule(midiTransmitter, midiReceiver, filePrefix);
 
             } else if (className.equals("MinibeatModule")) {
-                MinibeatModule minibeatModule = new MinibeatModule(midiTransmitter, midiReceiver, filePrefix);
+                Map<Integer, Color> palette = MinibeatUtil.PALETTE_GREEN;
+                if (paletteName != null && paletteName.toUpperCase().equals("BLUE")) {
+                    palette = MinibeatUtil.PALETTE_BLUE;
+                }
+                MinibeatModule minibeatModule = new MinibeatModule(midiTransmitter, midiReceiver, palette, filePrefix);
                 if (moduleSettings.get("midiNoteOffset") != null) {
                     Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
                     if (offset != null) {

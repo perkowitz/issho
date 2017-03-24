@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
+import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
@@ -17,6 +18,7 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil.*;
@@ -53,9 +55,10 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
     /***** Constructor ****************************************/
 
-    public MinibeatModule(Transmitter inputTransmitter, Receiver outputReceiver, String filePrefix) {
+    public MinibeatModule(Transmitter inputTransmitter, Receiver outputReceiver, Map<Integer, Color> palette, String filePrefix) {
         super(inputTransmitter, outputReceiver);
         this.minibeatDisplay = new MinibeatDisplay(this.display);
+        this.minibeatDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
         load(0);
         this.settingsModule = new SettingsSubmodule();
