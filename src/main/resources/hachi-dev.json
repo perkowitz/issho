@@ -24,9 +24,9 @@
   },
   "modules": [
     {
-      "class": "MinibeatModule",
-      "palette": "Green",
-      "filePrefix": "minibeat0"
+      "class": "BeatModule",
+      "palette": "Pink",
+      "filePrefix": "beat0"
     },
     {
       "class": "ShihaiModule",
