@@ -2,6 +2,8 @@ package net.perkowitz.issho.hachi.modules.minibeat;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.perkowitz.issho.hachi.modules.mono.MonoPattern;
+import net.perkowitz.issho.hachi.modules.mono.MonoStep;
 
 import java.util.List;
 
@@ -29,5 +31,21 @@ public class MinibeatPattern {
     public MinibeatTrack getTrack(int index) {
         return tracks.get(index);
     }
+
+
+    /***** static methods **************************/
+
+    public static MinibeatPattern copy(MinibeatPattern pattern, int newIndex) {
+        MinibeatPattern newPattern = new MinibeatPattern(newIndex);
+        try {
+            for (int i = 0; i < MinibeatUtil.TRACK_COUNT; i++) {
+                newPattern.tracks.set(i, MinibeatTrack.copy(pattern.tracks.get(i), i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newPattern;
+    }
+
 
 }

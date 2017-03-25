@@ -7,9 +7,7 @@ import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.launchpadpro.Color;
-import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
 
-import java.util.List;
 import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil.*;
@@ -21,7 +19,7 @@ import static net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil.*;
 public class MinibeatDisplay {
 
     @Setter private GridDisplay display;
-    @Getter @Setter private Map<Integer, Color> palette = MinibeatUtil.PALETTE;
+    @Getter @Setter private Map<Integer, Color> palette = MinibeatUtil.PALETTE_GREEN;
     @Getter @Setter private int currentFileIndex = 0;
     @Setter private boolean settingsView = false;
     @Setter private boolean isMuted = false;
@@ -146,6 +144,7 @@ public class MinibeatDisplay {
         drawControl(settingsControl, settingsView);
         drawControl(muteControl, isMuted);
         drawControl(saveControl, false);
+        drawControl(copyControl, false);
     }
 
     public void drawControl(GridControl control, boolean isOn) {

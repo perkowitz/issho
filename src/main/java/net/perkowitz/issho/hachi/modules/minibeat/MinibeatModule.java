@@ -1,9 +1,11 @@
 package net.perkowitz.issho.hachi.modules.minibeat;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
+import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
@@ -15,9 +17,12 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil.*;
+import static net.perkowitz.issho.hachi.modules.mono.MonoUtil.patternCopyControl;
 
 
 /**
@@ -44,13 +49,16 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
     private int selectedStep = 0;
     private int patternsReleasedCount = 0;
     private Set<Integer> patternsPressed = Sets.newHashSet();
+    private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
+    private boolean patternEditing = false;
 
 
     /***** Constructor ****************************************/
 
-    public MinibeatModule(Transmitter inputTransmitter, Receiver outputReceiver, String filePrefix) {
+    public MinibeatModule(Transmitter inputTransmitter, Receiver outputReceiver, Map<Integer, Color> palette, String filePrefix) {
         super(inputTransmitter, outputReceiver);
         this.minibeatDisplay = new MinibeatDisplay(this.display);
+        this.minibeatDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
         load(0);
         this.settingsModule = new SettingsSubmodule();
@@ -254,6 +262,7 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
      */
     private void onControlPressed(GridControl control, int velocity) {
 
+        // these controls apply in main view or settings view
         if (control.equals(settingsControl)) {
             settingsView = !settingsView;
             minibeatDisplay.setSettingsView(settingsView);
@@ -272,9 +281,19 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
             // now check if we're in settings view and then process the input accordingly
            onControlPressedSettings(control, velocity);
 
+        // these controls are main view only
+        } else if (control.equals(copyControl)) {
+            patternEditIndexBuffer.clear();
+            patternEditing = true;
+            minibeatDisplay.drawControl(control, true);
+
         } else if (patternPlayControls.contains(control)) {
             int index = patternPlayControls.getIndex(control);
-            patternsPressed.add(index);
+            if (patternEditing) {
+                patternEditIndexBuffer.add(index);
+            } else {
+                patternsPressed.add(index);
+            }
 
         } else if (patternSelectControls.contains(control)) {
             int index = patternSelectControls.getIndex(control);
@@ -351,35 +370,53 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
         if (control.equals(saveControl)) {
             minibeatDisplay.drawControl(control, false);
 
+        } else if (control.equals(copyControl)) {
+            if (patternEditIndexBuffer.size() >= 2) {
+                Integer fromIndex = patternEditIndexBuffer.get(0);
+                Integer toIndex = patternEditIndexBuffer.get(1);
+                if (fromIndex != null && toIndex != null) {
+                    MinibeatSession currentSession = memory.getCurrentSession();
+                    MinibeatPattern fromPattern = currentSession.getPattern(fromIndex);
+                    MinibeatPattern clone = MinibeatPattern.copy(fromPattern, toIndex);
+                    currentSession.getPatterns().set(toIndex, clone);
+//                    memory.getCurrentSession().getPatterns().set(toIndex, MinibeatPattern.copy(memory.getCurrentSession().getPattern(fromIndex), toIndex));
+                }
+            }
+            patternEditIndexBuffer.clear();
+            patternEditing = false;
+            minibeatDisplay.drawControl(control, false);
+
         } else if (patternPlayControls.contains(control)) {
             // releasing a pattern pad
             // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
-            patternsReleasedCount++;
-            if (patternsReleasedCount >= patternsPressed.size()) {
-                GridControl selectedControl = patternPlayControls.get(control);
-                Integer index = selectedControl.getIndex();
-                patternsPressed.add(index); // just to make sure
-                int min = index;
-                int max = index;
-                if (patternsPressed.size() > 1) {
-                    for (Integer pattern : patternsPressed) {
-                        if (pattern < min) {
-                            min = pattern;
-                        }
-                        if (pattern > max) {
-                            max = pattern;
+            if (!patternEditing) {
+                patternsReleasedCount++;
+                if (patternsReleasedCount >= patternsPressed.size()) {
+                    GridControl selectedControl = patternPlayControls.get(control);
+                    Integer index = selectedControl.getIndex();
+                    patternsPressed.add(index); // just to make sure
+                    int min = index;
+                    int max = index;
+                    if (patternsPressed.size() > 1) {
+                        for (Integer pattern : patternsPressed) {
+                            if (pattern < min) {
+                                min = pattern;
+                            }
+                            if (pattern > max) {
+                                max = pattern;
+                            }
                         }
                     }
-                }
-                nextChainStart = min;
-                nextChainEnd = max;
-                minibeatDisplay.setNextChainStart(nextChainStart);
-                minibeatDisplay.setNextChainEnd(nextChainEnd);
+                    nextChainStart = min;
+                    nextChainEnd = max;
+                    minibeatDisplay.setNextChainStart(nextChainStart);
+                    minibeatDisplay.setNextChainEnd(nextChainEnd);
 
-                memory.selectPattern(min);
-                patternsPressed.clear();
-                patternsReleasedCount = 0;
-                minibeatDisplay.drawPatterns(memory);
+                    memory.selectPattern(min);
+                    patternsPressed.clear();
+                    patternsReleasedCount = 0;
+                    minibeatDisplay.drawPatterns(memory);
+                }
             }
         }
 

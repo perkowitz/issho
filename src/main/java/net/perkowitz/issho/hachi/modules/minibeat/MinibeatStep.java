@@ -29,4 +29,13 @@ public class MinibeatStep {
     }
 
 
+    /***** static methods **************************/
+
+    public static MinibeatStep copy(MinibeatStep step, int newIndex) {
+        MinibeatStep newStep = new MinibeatStep(newIndex);
+        newStep.velocity = step.velocity;
+        newStep.enabled = step.enabled;
+        return newStep;
+    }
+
 }

@@ -5,10 +5,7 @@ import com.google.common.collect.Sets;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
+import javax.sound.midi.*;
 
 import java.util.Set;
 
@@ -67,6 +64,10 @@ public class LaunchpadPro implements Receiver, GridDisplay {
 
     public void setButton(GridButton button, GridColor color) {
         cc(CHANNEL, buttonToCc(button), color.getIndex());
+    }
+
+    public void setSide() {
+        sysex();
     }
 
 
@@ -160,6 +161,23 @@ public class LaunchpadPro implements Receiver, GridDisplay {
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.CONTROL_CHANGE, channel, ccNumber, value);
+            receiver.send(message, -1);
+
+        } catch (InvalidMidiDataException e) {
+            System.err.println(e);
+        }
+
+    }
+
+    // sysex via javax classes doesn't seem to work on osx
+    private void sysex() {
+
+        byte[] testMsg = {(byte) 0xf0, 0x00, 0x20, 0x29, 0x02, 0x10, 0x0b, 0x63, 0x00, 0x00, 0x3f, (byte) 0xf7 };
+
+        try {
+            SysexMessage message = new SysexMessage();
+            message.setMessage(testMsg, testMsg.length);
+
             receiver.send(message, -1);
 
         } catch (InvalidMidiDataException e) {

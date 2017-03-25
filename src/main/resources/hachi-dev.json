@@ -25,6 +25,7 @@
   "modules": [
     {
       "class": "MinibeatModule",
+      "palette": "Green",
       "filePrefix": "minibeat0"
     },
     {
