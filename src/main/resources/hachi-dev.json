@@ -31,6 +31,7 @@
     {
       "class": "BeatModule",
       "palette": "Pink",
+      "midiNoteOffset": 24,
       "filePrefix": "beat1"
     },
     {

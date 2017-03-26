@@ -474,19 +474,8 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      *
      */
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
-
-        if (isMuted && velocity > 0) return;
-
-        try {
-            int offsetNoteNumber = midiNoteOffset + noteNumber;
-            ShortMessage noteMessage = new ShortMessage();
-            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, offsetNoteNumber, velocity);
-            outputReceiver.send(noteMessage, -1);
-
-        } catch (InvalidMidiDataException e) {
-            System.err.println(e);
-        }
-
+        int offsetNoteNumber = midiNoteOffset + noteNumber;
+        super.sendMidiNote(channel, offsetNoteNumber, velocity);
     }
 
     /***** Saveable implementation ***************************************

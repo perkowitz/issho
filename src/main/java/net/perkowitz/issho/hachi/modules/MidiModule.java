@@ -63,7 +63,7 @@ public class MidiModule extends BasicModule implements Receiver {
     }
 
     protected void sendMidiCC(int channel, int ccNumber, int value) {
-//        System.out.printf("Note: %d, %d, %d\n", channel, noteNumber, velocity);
+//        System.out.printf("CC: %d, %d, %d\n", channel, ccNumber, value);
 
         if (isMuted && value > 0) return;
 
