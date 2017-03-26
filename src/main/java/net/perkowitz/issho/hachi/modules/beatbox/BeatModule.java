@@ -51,6 +51,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
+    private boolean patternSelecting = false;
 
 
     /***** Constructor ****************************************/
@@ -313,19 +314,21 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             patternEditing = true;
             beatDisplay.drawControl(control, true);
 
+        } else if (control.equals(patternSelectControl)) {
+            patternSelecting = true;
+            beatDisplay.drawControl(control, true);
+
         } else if (patternPlayControls.contains(control)) {
             int index = patternPlayControls.getIndex(control);
             if (patternEditing) {
                 patternEditIndexBuffer.add(index);
+            } else if (patternSelecting) {
+                memory.selectPattern(index);
+                beatDisplay.drawPatterns(memory);
+                beatDisplay.drawSteps(memory);
             } else {
                 patternsPressed.add(index);
             }
-
-        } else if (patternSelectControls.contains(control)) {
-            int index = patternSelectControls.getIndex(control);
-            memory.selectPattern(index);
-            beatDisplay.drawPatterns(memory);
-            beatDisplay.drawSteps(memory);
 
         } else if (trackMuteControls.contains(control)) {
             int index = trackMuteControls.getIndex(control);
@@ -412,10 +415,14 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             patternEditing = false;
             beatDisplay.drawControl(control, false);
 
+        } else if (control.equals(patternSelectControl)) {
+            patternSelecting = false;
+            beatDisplay.drawControl(control, false);
+
         } else if (patternPlayControls.contains(control)) {
             // releasing a pattern pad
             // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
-            if (!patternEditing) {
+            if (!patternEditing && !patternSelecting) {
                 patternsReleasedCount++;
                 if (patternsReleasedCount >= patternsPressed.size()) {
                     GridControl selectedControl = patternPlayControls.get(control);

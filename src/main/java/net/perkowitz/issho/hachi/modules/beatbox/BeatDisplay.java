@@ -66,12 +66,12 @@ public class BeatDisplay {
         int selectedIndex = memory.getSelectedPatternIndex();
 
         for (int index = 0; index < BeatUtil.PATTERN_COUNT; index++) {
-
-            // draw the playing pattern controls
             GridControl playingControl = BeatUtil.patternPlayControls.get(index);
             Color color = palette.get(BeatUtil.COLOR_PATTERN);
             if (playingIndex == index) {
                 color = palette.get(BeatUtil.COLOR_PATTERN_PLAYING);
+            } else if (selectedIndex == index) {
+                color = palette.get(BeatUtil.COLOR_PATTERN_SELECTED);
             } else if (nextChainStart != null && nextChainEnd != null && index >= nextChainStart && index <= nextChainEnd) {
                 color = palette.get(BeatUtil.COLOR_PATTERN_NEXT);
             } else if (memory.patternIsChained(index)) {
@@ -79,13 +79,6 @@ public class BeatDisplay {
             }
             playingControl.draw(display, color);
 
-            // draw the selected pattern controls
-            GridControl selectedControl = BeatUtil.patternSelectControls.get(index);
-            color = palette.get(BeatUtil.COLOR_PATTERN_SELECTION);
-            if (selectedIndex == index) {
-                color = palette.get(BeatUtil.COLOR_PATTERN_SELECTED);
-            }
-            selectedControl.draw(display, color);
         }
     }
 
@@ -145,6 +138,7 @@ public class BeatDisplay {
         drawControl(muteControl, isMuted);
         drawControl(saveControl, false);
         drawControl(copyControl, false);
+        drawControl(patternSelectControl, false);
     }
 
     public void drawControl(GridControl control, boolean isOn) {

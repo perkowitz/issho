@@ -31,23 +31,16 @@ public class BeatUtil {
 
     // GridControlSets for rows of pads
     public static GridControlSet patternPlayControls = GridControlSet.padRows(0,1);
-//    public static GridControlSet patternSelectControls = GridControlSet.buttonSide(Bottom);
     public static GridControlSet trackMuteControls = GridControlSet.padRows(2,3);
     public static GridControlSet trackSelectControls = GridControlSet.padRows(4,5);
     public static GridControlSet stepControls = GridControlSet.padRows(6, 7);
-    public static GridControlSet patternSelectControls = null;
-    static {
-
-        List<GridControl> extraControls = GridControlSet.buttonSide(Bottom).getControls();
-        extraControls.addAll(GridControlSet.buttonSide(Bottom).getControls());
-        patternSelectControls = new GridControlSet(extraControls);
-    }
 
     // left controls
     public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
     public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
     public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
     public static GridControl copyControl = new GridControl(GridButton.at(Left, 2), null);
+    public static GridControl patternSelectControl = new GridControl(GridButton.at(Left, 3), null);
 
 
     /***** colors **********************************************************/
@@ -84,7 +77,7 @@ public class BeatUtil {
         PALETTE_PINK.put(COLOR_PATTERN_PLAYING, Color.WHITE);
         PALETTE_PINK.put(COLOR_PATTERN_CHAINED, playColorDim);
         PALETTE_PINK.put(COLOR_PATTERN_SELECTION, selectColor);
-        PALETTE_PINK.put(COLOR_PATTERN_SELECTED, Color.WHITE);
+        PALETTE_PINK.put(COLOR_PATTERN_SELECTED, highlightColor);
         PALETTE_PINK.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
         PALETTE_PINK.put(COLOR_TRACK, selectColor);
         PALETTE_PINK.put(COLOR_TRACK_SELECTION, playColor);
@@ -110,7 +103,7 @@ public class BeatUtil {
         PALETTE_BLUE.put(COLOR_PATTERN_PLAYING, Color.WHITE);
         PALETTE_BLUE.put(COLOR_PATTERN_CHAINED, playColorDim);
         PALETTE_BLUE.put(COLOR_PATTERN_SELECTION, selectColor);
-        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED, highlightColor);
         PALETTE_BLUE.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
         PALETTE_BLUE.put(COLOR_TRACK, selectColor);
         PALETTE_BLUE.put(COLOR_TRACK_SELECTION, playColor);
