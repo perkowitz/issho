@@ -7,6 +7,7 @@ import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
+import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
@@ -27,7 +28,7 @@ import static net.perkowitz.issho.hachi.modules.beatbox.BeatUtil.*;
 /**
  * Created by optic on 10/24/16.
  */
-public class BeatModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
+public class BeatModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable, Multitrack {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -195,13 +196,29 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         return isMuted;
     }
 
+    /***** Multitrack implementation ************************************/
+
+    public boolean getTrackEnabled(int index) {
+        return memory.getCurrentSession().getTracksEnabled().get(index);
+    }
+
+    public void setTrackEnabled(int index, boolean enabled) {
+        // uh huh
+    }
+
+    public GridColor getEnabledColor() {
+        return beatDisplay.getPalette().get(BeatUtil.COLOR_TRACK);
+    }
+
+
+
 
     /***** Sessionizeable implementation ************************************
-     *
-     * a Sessionizeable implements sessions and/or patterns and can be told
-     * which sessions or patterns to load (e.g. by a ShihaiModule)
-     * sessions/patterns may be defined differently for every module; they are just referred to by index
-     */
+    *
+    * a Sessionizeable implements sessions and/or patterns and can be told
+    * which sessions or patterns to load (e.g. by a ShihaiModule)
+    * sessions/patterns may be defined differently for every module; they are just referred to by index
+    */
 
     /**
      * select a new Session.

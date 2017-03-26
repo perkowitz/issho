@@ -7,6 +7,8 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.Muteable;
 
+import java.util.List;
+
 import static net.perkowitz.issho.hachi.modules.shihai.ShihaiUtil.*;
 
 
@@ -18,6 +20,7 @@ public class ShihaiDisplay {
     @Setter private GridDisplay display;
 
     @Setter private boolean settingsView = false;
+    @Setter private List<Module> multitrackModules = null;
 
 
     public ShihaiDisplay(GridDisplay display) {

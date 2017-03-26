@@ -60,7 +60,9 @@
       "filePrefix": "step0"
     },
     {
-      "class": "PaletteModule"
+      "class": "BeatModule",
+      "palette": "Pink",
+      "filePrefix": "beat0"
     }
   ]
 }
