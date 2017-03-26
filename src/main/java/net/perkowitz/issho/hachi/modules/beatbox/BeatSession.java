@@ -18,7 +18,7 @@ public class BeatSession {
     @Getter private List<Boolean> tracksEnabled = Lists.newArrayList();
     @Getter private int chainStartIndex = 0;
     @Getter private int chainEndIndex = 0;
-    @Getter @Setter private int selectedTrackIndex = 0;
+    @Getter @Setter private int selectedTrackIndex = 8;
 
 
     public BeatSession() {}
@@ -38,6 +38,8 @@ public class BeatSession {
     }
 
     public Boolean trackIsEnabled(int index) { return tracksEnabled.get(index); }
+
+    public void setTrackEnabled(int index, boolean isEnabled) { tracksEnabled.set(index, isEnabled); }
 
     public void toggleTrackEnabled(int index) {
         tracksEnabled.set(index, !tracksEnabled.get(index));

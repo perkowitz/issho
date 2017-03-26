@@ -198,16 +198,26 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
     /***** Multitrack implementation ************************************/
 
+    public int trackCount() {
+        return BeatUtil.TRACK_COUNT;
+    }
+
     public boolean getTrackEnabled(int index) {
         return memory.getCurrentSession().getTracksEnabled().get(index);
     }
 
     public void setTrackEnabled(int index, boolean enabled) {
-        // uh huh
+        memory.getCurrentSession().setTrackEnabled(index, enabled);
+        beatDisplay.drawTracks(memory);
+    }
+
+    public void toggleTrackEnabled(int index) {
+        memory.getCurrentSession().toggleTrackEnabled(index);
+        beatDisplay.drawTracks(memory);
     }
 
     public GridColor getEnabledColor() {
-        return beatDisplay.getPalette().get(BeatUtil.COLOR_TRACK);
+        return beatDisplay.getPalette().get(BeatUtil.COLOR_TRACK_SELECTION);
     }
 
 

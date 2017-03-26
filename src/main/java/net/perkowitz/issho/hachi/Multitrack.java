@@ -11,7 +11,9 @@ import java.util.List;
  */
 public interface Multitrack extends Module {
 
+    public int trackCount();
     public boolean getTrackEnabled(int index);
+    public void toggleTrackEnabled(int index);
     public void setTrackEnabled(int index, boolean enabled);
     public GridColor getEnabledColor();
 

@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
+import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.Muteable;
 
@@ -20,7 +21,7 @@ public class ShihaiDisplay {
     @Setter private GridDisplay display;
 
     @Setter private boolean settingsView = false;
-    @Setter private List<Module> multitrackModules = null;
+    @Setter private List<Multitrack> multitrackModules = null;
 
 
     public ShihaiDisplay(GridDisplay display) {
@@ -36,6 +37,7 @@ public class ShihaiDisplay {
 //        }
 
         drawPatterns(minPatternIndex, maxPatternIndex);
+        drawMultitracks();
         drawTempo(tempoIndex);
         drawMutes(modules);
         drawClock(tickCount, measureCount);
@@ -70,6 +72,24 @@ public class ShihaiDisplay {
         }
     }
 
+    public void drawMultitracks() {
+
+        int multitrackCount = Math.min(multitrackModules.size(), multitrackControls.size());
+
+        for (int m = 0; m < multitrackCount; m++) {
+            Multitrack module = (Multitrack)multitrackModules.get(m);
+            GridControlSet controlSet = multitrackControls.get(m);
+            for (int index = 0; index < module.trackCount(); index++ ) {
+                GridColor color = Color.OFF;
+                if (module.getTrackEnabled(index)) {
+                    color = module.getEnabledColor();
+                }
+                controlSet.get(index).draw(display, color);
+            }
+        }
+
+    }
+
     public void drawTempo(int tempoIndex) {
         for (GridControl control : tempoControls.getControls()) {
             Color color = COLOR_TEMPO;
@@ -83,19 +103,14 @@ public class ShihaiDisplay {
     public void drawClock(int tickCount, int measureCount) {
 //        if (!playing) return;
 
-        GridControl tickControl = tickControls.get(tickCount % 16);
-        GridControl measureControl = measureControls.get(measureCount % 8);
+        GridControl tickControl = clockControls.get(tickCount % 16);
+        GridControl measureControl = clockControls.get(measureCount % 8);
 
-        for (GridControl control : tickControls.getControls()) {
+        for (GridControl control : clockControls.getControls()) {
             Color color = COLOR_TICK;
             if (control == tickControl) {
                 color = COLOR_TICK_HIGHLIGHT;
             }
-            control.draw(display, color);
-        }
-
-        for (GridControl control : measureControls.getControls()) {
-            Color color = COLOR_MEASURE;
             if (control == measureControl) {
                 color = COLOR_MEASURE_HIGHLIGHT;
             }

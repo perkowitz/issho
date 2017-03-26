@@ -33,18 +33,14 @@
       "panicExclude": [14, 15]
     },
     {
-      "class": "DrawingModule",
-      "filePrefix": "drawing"
+      "class": "BeatModule",
+      "palette": "Blue",
+      "filePrefix": "beat0"
     },
     {
-      "class": "RhythmModule",
-      "filePrefix": "rhythm1"
-    },
-    {
-      "class": "RhythmModule",
-      "filePrefix": "rhythm2",
-      "palette": "red",
-      "midiNoteOffset": 24
+      "class": "BeatModule",
+      "palette": "Pink",
+      "filePrefix": "beat1"
     },
     {
       "class": "MonoModule",
@@ -60,9 +56,9 @@
       "filePrefix": "step0"
     },
     {
-      "class": "BeatModule",
-      "palette": "Pink",
-      "filePrefix": "beat0"
+      "class": "DrawingModule",
+      "filePrefix": "drawing"
     }
+
   ]
 }

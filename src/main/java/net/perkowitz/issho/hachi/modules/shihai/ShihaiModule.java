@@ -33,7 +33,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
     private SettingsSubmodule settingsModule;
     private boolean settingsView = false;
 
-    private List<Module> multitrackModules = null;
+    private List<Multitrack> multitrackModules = null;
 
     private boolean playing = false;
     private int tickCount = 0;
@@ -70,7 +70,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
         multitrackModules = Lists.newArrayList();
         for (Module module : this.modules) {
             if (module instanceof Multitrack) {
-                multitrackModules.add(module);
+                multitrackModules.add((Multitrack)module);
             }
         }
         shihaiDisplay.setMultitrackModules(multitrackModules);
@@ -145,6 +145,15 @@ public class ShihaiModule extends MidiModule implements Clockable {
             Integer index = patternControls.getIndex(control);
             if (index != null) {
                 patternsPressed.add(index);
+            }
+
+        } else if (allMultitrack.contains(control)) {
+            for (int m = 0; m < multitrackControls.size(); m++) {
+                if (multitrackControls.get(m).contains(control)) {
+                    int index = multitrackControls.get(m).getIndex(control);
+                    multitrackModules.get(m).toggleTrackEnabled(index);
+                    shihaiDisplay.drawMultitracks();
+                }
             }
 
         } else if (tempoControls.contains(control)) {

@@ -74,9 +74,9 @@ public class BeatUtil {
 
     public static Map<Integer, Color> PALETTE_PINK = Maps.newHashMap();
     static {
-        Color playColor = Color.DIM_PINK;
+        Color playColor = Color.BRIGHT_PINK;
         Color playColorDim = Color.DARK_GRAY;
-        Color selectColor = Color.fromIndex(2);
+        Color selectColor = Color.fromIndex(1);
         Color highlightColor = Color.BRIGHT_YELLOW;
         PALETTE_PINK.put(COLOR_OFF, playColorDim);
         PALETTE_PINK.put(COLOR_ON, Color.WHITE);
@@ -102,7 +102,7 @@ public class BeatUtil {
     static {
         Color playColor = Color.BRIGHT_BLUE;
         Color playColorDim = Color.DARK_GRAY;
-        Color selectColor = Color.fromIndex(2);
+        Color selectColor = Color.fromIndex(1);
         Color highlightColor = Color.BRIGHT_YELLOW;
         PALETTE_BLUE.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE_BLUE.put(COLOR_ON, Color.WHITE);
