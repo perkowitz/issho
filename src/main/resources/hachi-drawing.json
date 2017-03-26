@@ -1,0 +1,31 @@
+{
+  "filePrefix": "project1/",
+  "devices": {
+    "controller": {
+      "name": "Launchpad/Standalone",
+      "type": "launchpadpro"
+    },
+    "midi": {
+      "name": "Launchpad Pro/Midi Port"
+    }
+  },
+  "modules": [
+    {
+      "class": "LogoModule"
+    },
+    {
+      "class": "ShihaiModule"
+    },
+    {
+      "class": "PaletteModule"
+    },
+    {
+      "class": "DrawingModule",
+      "filePrefix": "drawing1"
+    },
+    {
+      "class": "DrawingModule",
+      "filePrefix": "drawing1"
+    }
+  ]
+}

@@ -36,7 +36,7 @@ public class Color implements GridColor {
     public static int[] greens = new int[] { 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 63, 64, 65, 75, 76, 77, 86, 87, 88, 101, 102, 122, 123 };
     public static int[] blues = new int[] { 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 66, 67, 68, 78, 79, 91, 92, 103, 104, 112, 115 };
 
-    @Getter @Setter private int index;
+    @Getter @Setter private Integer index;
 
     public Color() {
         this.index = 0;
@@ -64,6 +64,19 @@ public class Color implements GridColor {
         }
 
         return colors;
+    }
+
+
+    public boolean equals(Object o) {
+        if (o instanceof Color) {
+            Color color = (Color) o;
+            return this.index.equals(color.index);
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return index.hashCode();
     }
 
 }

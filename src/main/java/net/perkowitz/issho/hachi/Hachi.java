@@ -82,7 +82,7 @@ public class Hachi {
         }
         if (settingsFile == null) {
             System.out.println("Getting app settings..");
-            settings = SettingsUtil.getSettings("settings.json");
+            settings = SettingsUtil.getSettings("hachi-drawing.json");
         } else {
             System.out.printf("Getting app settings from %s..\n", propertyFile);
             settings = SettingsUtil.getSettings(settingsFile);

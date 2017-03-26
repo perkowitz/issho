@@ -5,6 +5,5 @@ package net.perkowitz.issho.devices;
  */
 public interface GridColor {
 
-    public int getIndex();
-
+    public Integer getIndex();
 }

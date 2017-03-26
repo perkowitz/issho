@@ -9,6 +9,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
 
 import java.util.Set;
 
@@ -69,6 +70,22 @@ public class LaunchpadPro implements Receiver, GridDisplay {
         cc(CHANNEL, buttonToCc(button), color.getIndex());
     }
 
+    // todo this isn't used anywhere, and the pad index isn't right
+//    public void setPad(GridPad pad, RGBColor color) {
+//
+//        byte index = (byte) (pad.getIndex()*8 + pad.getSide());
+//        byte r = (byte) Math.round(color.getR()*255);
+//        byte g = (byte) Math.round(color.getG()*255);
+//        byte b = (byte) Math.round(color.getB()*255);
+//
+//        byte[] data = {
+//            (byte) 0xF0, 0x00, 0x20, 0x29, 0x02, 0x10, 0x0B,
+//                index, r, g, b,
+//                (byte) 0xF7
+//        };
+//
+//        sysex(data);
+//    }
 
     /***** midi receiver implementation **************************************************************/
 
@@ -143,7 +160,6 @@ public class LaunchpadPro implements Receiver, GridDisplay {
     /***** private implementation **************************************************************/
 
     private void note(int channel, int noteNumber, int velocity) {
-
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
@@ -152,11 +168,9 @@ public class LaunchpadPro implements Receiver, GridDisplay {
         } catch (InvalidMidiDataException e) {
             System.err.println(e);
         }
-
     }
 
     private void cc(int channel, int ccNumber, int value) {
-
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.CONTROL_CHANGE, channel, ccNumber, value);
@@ -165,7 +179,6 @@ public class LaunchpadPro implements Receiver, GridDisplay {
         } catch (InvalidMidiDataException e) {
             System.err.println(e);
         }
-
     }
 
     private int padToNote(GridPad pad) {
