@@ -35,8 +35,17 @@
       "filePrefix": "beat1"
     },
     {
+      "class": "BeatModule",
+      "palette": "Green",
+      "filePrefix": "beat2"
+    },
+    {
       "class": "ShihaiModule",
       "panicExclude": [14, 15]
+    },
+    {
+      "class": "DrawingModule",
+      "filePrefix": "drawing0"
     },
     {
       "class": "PaletteModule"

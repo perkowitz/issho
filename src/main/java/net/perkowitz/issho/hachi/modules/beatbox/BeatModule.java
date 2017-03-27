@@ -4,18 +4,25 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import lombok.Setter;
-import net.perkowitz.issho.devices.*;
+import net.perkowitz.issho.devices.GridButton;
+import net.perkowitz.issho.devices.GridColor;
+import net.perkowitz.issho.devices.GridControl;
+import net.perkowitz.issho.devices.GridDisplay;
+import net.perkowitz.issho.devices.GridListener;
+import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
-import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.MidiModule;
+import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.hachi.modules.Muteable;
+import net.perkowitz.issho.hachi.modules.SettingsSubmodule;
+import net.perkowitz.issho.hachi.modules.SettingsUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import java.io.File;
 import java.util.List;
@@ -256,7 +263,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      * @param lastIndex
      */
     public void selectPatterns(int firstIndex, int lastIndex) {
-//        memory.selectChain(firstIndex, lastIndex);
+        memory.selectChain(firstIndex, lastIndex);
     }
 
 

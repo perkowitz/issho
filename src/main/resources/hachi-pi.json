@@ -29,21 +29,24 @@
   },
   "modules": [
     {
-      "class": "ShihaiModule"
+      "class": "ShihaiModule",
+      "panicExclude": [14, 15]
     },
     {
-      "class": "DrawingModule",
-      "filePrefix": "drawing"
+      "class": "BeatModule",
+      "palette": "Blue",
+      "filePrefix": "beat0"
     },
     {
-      "class": "RhythmModule",
-      "filePrefix": "rhythm1"
+      "class": "BeatModule",
+      "palette": "Pink",
+      "midiNoteOffset": 24,
+      "filePrefix": "beat1"
     },
     {
-      "class": "RhythmModule",
-      "filePrefix": "rhythm2",
-      "palette": "red",
-      "midiNoteOffset": 24
+      "class": "BeatModule",
+      "palette": "Green",
+      "filePrefix": "beat2"
     },
     {
       "class": "MonoModule",
@@ -59,9 +62,8 @@
       "filePrefix": "step0"
     },
     {
-      "class": "BeatModule",
-      "palette": "pink",
-      "filePrefix": "beat0"
+      "class": "StepModule",
+      "filePrefix": "step1"
     }
   ]
 }

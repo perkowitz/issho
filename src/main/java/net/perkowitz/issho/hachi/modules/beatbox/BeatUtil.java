@@ -8,9 +8,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.Map;
 
-import static net.perkowitz.issho.devices.GridButton.Side.Bottom;
-import static net.perkowitz.issho.devices.GridButton.Side.Left;
-import static net.perkowitz.issho.devices.GridButton.Side.Right;
+import static net.perkowitz.issho.devices.GridButton.Side.*;
 
 /**
  * Created by optic on 10/24/16.

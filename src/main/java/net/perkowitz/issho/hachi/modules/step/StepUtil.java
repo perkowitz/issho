@@ -83,7 +83,7 @@ public class StepUtil {
     
     public static Map<Integer, Color> PALETTE = Maps.newHashMap();
     static {
-        PALETTE.put(COLOR_OFF, Color.DARK_BLUE);
+        PALETTE.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE.put(COLOR_ON, Color.BRIGHT_ORANGE);
         PALETTE.put(COLOR_SESSION, Color.fromIndex(55));
         PALETTE.put(COLOR_SESSION_ACTIVE, Color.WHITE);

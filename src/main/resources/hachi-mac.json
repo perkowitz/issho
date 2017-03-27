@@ -40,7 +40,13 @@
     {
       "class": "BeatModule",
       "palette": "Pink",
+      "midiNoteOffset": 24,
       "filePrefix": "beat1"
+    },
+    {
+      "class": "BeatModule",
+      "palette": "Green",
+      "filePrefix": "beat2"
     },
     {
       "class": "MonoModule",
@@ -56,9 +62,8 @@
       "filePrefix": "step0"
     },
     {
-      "class": "DrawingModule",
-      "filePrefix": "drawing"
+      "class": "StepModule",
+      "filePrefix": "step1"
     }
-
   ]
 }
