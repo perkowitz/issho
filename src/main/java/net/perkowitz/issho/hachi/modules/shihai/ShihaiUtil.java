@@ -2,7 +2,6 @@ package net.perkowitz.issho.hachi.modules.shihai;
 
 import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridColor;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
 import net.perkowitz.issho.devices.launchpadpro.Color;
@@ -27,7 +26,7 @@ public class ShihaiUtil {
     public static Color COLOR_PATTERN = Color.DARK_GRAY;
     public static Color COLOR_PATTERN_HIGHLIGHT = Color.WHITE;
     public static Color COLOR_TICK = Color.OFF;
-    public static Color COLOR_TICK_HIGHLIGHT = Color.DARK_GRAY;
+    public static Color COLOR_TICK_HIGHLIGHT = Color.DIM_YELLOW;
     public static Color COLOR_MEASURE_HIGHLIGHT = Color.WHITE;
     public static Color COLOR_TEMPO = Color.DARK_GRAY;
     public static Color COLOR_TEMPO_HIGHLIGHT = Color.WHITE;
@@ -41,8 +40,9 @@ public class ShihaiUtil {
     // controls for muting/unmuting multitrack modules
     public static GridControlSet multitrack1 = GridControlSet.padRows(2, 3);
     public static GridControlSet multitrack2 = GridControlSet.padRows(4, 5);
+    public static GridControlSet multitrack3 = GridControlSet.padRows(6, 7);
     public static GridControlSet allMultitrack = null;
-    public static List<GridControlSet> multitrackControls = Lists.newArrayList(multitrack1, multitrack2);
+    public static List<GridControlSet> multitrackControls = Lists.newArrayList(multitrack1, multitrack2, multitrack3);
     static {
         List<GridControl> controls = Lists.newArrayList();
         for (int m = 0; m < multitrackControls.size(); m++) {

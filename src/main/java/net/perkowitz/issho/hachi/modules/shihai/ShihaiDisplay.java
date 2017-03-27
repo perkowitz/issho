@@ -77,17 +77,21 @@ public class ShihaiDisplay {
         int multitrackCount = Math.min(multitrackModules.size(), multitrackControls.size());
 
         for (int m = 0; m < multitrackCount; m++) {
-            Multitrack module = (Multitrack)multitrackModules.get(m);
-            GridControlSet controlSet = multitrackControls.get(m);
-            for (int index = 0; index < module.trackCount(); index++ ) {
-                GridColor color = Color.OFF;
-                if (module.getTrackEnabled(index)) {
-                    color = module.getEnabledColor();
-                }
-                controlSet.get(index).draw(display, color);
-            }
+            drawMultitrack(m);
         }
 
+    }
+
+    public void drawMultitrack(int m) {
+        Multitrack module = (Multitrack)multitrackModules.get(m);
+        GridControlSet controlSet = multitrackControls.get(m);
+        for (int index = 0; index < module.trackCount(); index++ ) {
+            GridColor color = Color.OFF;
+            if (module.getTrackEnabled(index)) {
+                color = module.getEnabledColor();
+            }
+            controlSet.get(index).draw(display, color);
+        }
     }
 
     public void drawTempo(int tempoIndex) {
@@ -101,18 +105,28 @@ public class ShihaiDisplay {
     }
 
     public void drawClock(int tickCount, int measureCount) {
-//        if (!playing) return;
+
+        //if (!playing) return;
 
         GridControl tickControl = clockControls.get(tickCount % 16);
         GridControl measureControl = clockControls.get(measureCount % 8);
 
+        // draw the 3rd multitrack, if present; it shares space with the clock
+        Color defaultColor = COLOR_TICK;
+        Multitrack multitrackModule = null;
+        if (multitrackControls.size() > 2 && multitrackModules.size() > 2) {
+            defaultColor= Color.OFF;
+            multitrackModule = (Multitrack)multitrackModules.get(2);
+        }
+
         for (GridControl control : clockControls.getControls()) {
-            Color color = COLOR_TICK;
-            if (control == tickControl) {
-                color = COLOR_TICK_HIGHLIGHT;
-            }
+            Color color = defaultColor;
             if (control == measureControl) {
                 color = COLOR_MEASURE_HIGHLIGHT;
+            } else if (control == tickControl) {
+                color = COLOR_TICK_HIGHLIGHT;
+            } else if (multitrackModule != null && multitrackModule.getTrackEnabled(control.getIndex())) {
+                color = (Color)multitrackModule.getEnabledColor();
             }
             control.draw(display, color);
         }

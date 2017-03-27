@@ -152,7 +152,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
                 if (multitrackControls.get(m).contains(control)) {
                     int index = multitrackControls.get(m).getIndex(control);
                     multitrackModules.get(m).toggleTrackEnabled(index);
-                    shihaiDisplay.drawMultitracks();
+                    shihaiDisplay.drawMultitrack(m);
                 }
             }
 

@@ -254,6 +254,8 @@ public class Hachi {
                     palette = BeatUtil.PALETTE_PINK;
                 } else if (paletteName != null && paletteName.toUpperCase().equals("BLUE")) {
                     palette = BeatUtil.PALETTE_BLUE;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("GREEN")) {
+                    palette = BeatUtil.PALETTE_GREEN;
                 }
                 BeatModule beatModule = new BeatModule(midiTransmitter, midiReceiver, palette, filePrefix);
                 if (moduleSettings.get("midiNoteOffset") != null) {
