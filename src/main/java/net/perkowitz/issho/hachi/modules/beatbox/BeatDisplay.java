@@ -25,6 +25,8 @@ public class BeatDisplay {
     @Setter private boolean isMuted = false;
     @Setter private Integer nextChainStart = null;
     @Setter private Integer nextChainEnd = null;
+    @Setter private EditMode editMode = EditMode.ENABLE;
+
 
     public BeatDisplay(GridDisplay display) {
         this.display = display;
@@ -43,6 +45,7 @@ public class BeatDisplay {
             drawSteps(memory);
             drawLeftControls();
             drawValue(0, 7);
+            drawEditMode();
         }
     }
 
@@ -146,6 +149,16 @@ public class BeatDisplay {
             control.draw(display, palette.get(COLOR_ON));
         } else {
             control.draw(display, palette.get(COLOR_OFF));
+        }
+    }
+
+    public void drawEditMode() {
+        for (int i = 0; i < EditMode.values().length; i++) {
+            Color color = palette.get(COLOR_OFF);
+            if (i == editMode.ordinal()) {
+                color = palette.get(COLOR_ON);
+            }
+            editModeControls.get(i).draw(display, color);
         }
     }
 

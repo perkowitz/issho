@@ -24,6 +24,11 @@ public class BeatUtil {
     public static int STEP_COUNT = 16;
 
 
+    public enum EditMode {
+        ENABLE, VELOCITY, JUMP, PLAY
+    }
+
+
     /***** controls *****************/
 
     // a GridControlSet containing all the buttons along the bottom
@@ -41,6 +46,9 @@ public class BeatUtil {
     public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
     public static GridControl copyControl = new GridControl(GridButton.at(Left, 2), null);
     public static GridControl patternSelectControl = new GridControl(GridButton.at(Left, 3), null);
+
+    // edit mode controls
+    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 3);
 
 
     /***** colors **********************************************************/
@@ -67,7 +75,7 @@ public class BeatUtil {
 
     public static Map<Integer, Color> PALETTE_PINK = Maps.newHashMap();
     static {
-        Color playColor = Color.BRIGHT_PINK;
+        Color playColor = Color.DIM_PINK;
         Color playColorDim = Color.DARK_GRAY;
         Color selectColor = Color.fromIndex(1);
         Color highlightColor = Color.BRIGHT_YELLOW;

@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 public class BeatStep {
 
-    private int DEFAULT_VELOCITY = 100;
+    private int DEFAULT_VELOCITY = 80;
 
     @Getter private int index;
     @Getter @Setter private int velocity;

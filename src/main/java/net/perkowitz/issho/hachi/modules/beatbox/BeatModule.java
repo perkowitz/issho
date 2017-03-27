@@ -52,6 +52,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
     private boolean patternSelecting = false;
+    private EditMode editMode = EditMode.ENABLE;
 
 
     /***** Constructor ****************************************/
@@ -344,10 +345,32 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         } else if (stepControls.contains(control)) {
             int index = stepControls.getIndex(control);
             BeatStep step = memory.getSelectedTrack().getStep(index);
-            step.toggleEnabled();
-            selectedStep = index;
-            beatDisplay.drawSteps(memory);
-            beatDisplay.drawValue(step.getVelocity(), 127);
+            switch (editMode) {
+                case ENABLE:
+                    step.toggleEnabled();
+                    selectedStep = index;
+                    beatDisplay.drawSteps(memory);
+                    beatDisplay.drawValue(step.getVelocity(), 127);
+                    break;
+                case VELOCITY:
+                    selectedStep = index;
+                    beatDisplay.drawSteps(memory);
+                    beatDisplay.drawValue(step.getVelocity(), 127);
+                    break;
+                case JUMP:
+                    nextStepIndex = index;
+                    break;
+                case PLAY:
+                    BeatTrack track = memory.getSelectedPattern().getTrack(index);
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
+                    break;
+            }
+
+        } else if (editModeControls.contains(control)) {
+            int index = editModeControls.getIndex(control);
+            editMode = EditMode.values()[index];
+            beatDisplay.setEditMode(editMode);
+            beatDisplay.drawEditMode();
 
         } else if (valueControls.contains(control)) {
             BeatStep step = memory.getSelectedTrack().getStep(selectedStep);
