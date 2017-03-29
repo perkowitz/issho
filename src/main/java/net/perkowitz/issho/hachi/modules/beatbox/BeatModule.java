@@ -89,6 +89,8 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
         if (nextStepIndex == 0) {
 
+            int currentPatternIndex = memory.getPlayingPatternIndex();
+
             // check for new session
             if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
                 memory.selectSession(nextSessionIndex);
@@ -108,8 +110,10 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 memory.advancePattern();
             }
 
-            beatDisplay.drawPatterns(memory);
-            beatDisplay.drawSteps(memory);
+            if (memory.getPlayingPatternIndex() != currentPatternIndex) {
+                beatDisplay.drawPatterns(memory);
+                beatDisplay.drawSteps(memory);
+            }
         }
 
         // send the midi notes
