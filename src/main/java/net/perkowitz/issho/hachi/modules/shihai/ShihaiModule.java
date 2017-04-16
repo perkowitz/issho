@@ -8,6 +8,7 @@ import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.hachi.Clockable;
+import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.hachi.modules.*;
@@ -31,6 +32,8 @@ public class ShihaiModule extends MidiModule implements Clockable {
     private ShihaiDisplay shihaiDisplay;
     private SettingsSubmodule settingsModule;
     private boolean settingsView = false;
+
+    private List<Multitrack> multitrackModules = null;
 
     private boolean playing = false;
     private int tickCount = 0;
@@ -64,6 +67,13 @@ public class ShihaiModule extends MidiModule implements Clockable {
 
     public void setModules(Module[] modules) {
         this.modules = modules;
+        multitrackModules = Lists.newArrayList();
+        for (Module module : this.modules) {
+            if (module instanceof Multitrack) {
+                multitrackModules.add((Multitrack)module);
+            }
+        }
+        shihaiDisplay.setMultitrackModules(multitrackModules);
     }
 
     @Override
@@ -135,6 +145,15 @@ public class ShihaiModule extends MidiModule implements Clockable {
             Integer index = patternControls.getIndex(control);
             if (index != null) {
                 patternsPressed.add(index);
+            }
+
+        } else if (allMultitrack.contains(control)) {
+            for (int m = 0; m < multitrackControls.size(); m++) {
+                if (multitrackControls.get(m).contains(control)) {
+                    int index = multitrackControls.get(m).getIndex(control);
+                    multitrackModules.get(m).toggleTrackEnabled(index);
+                    shihaiDisplay.drawMultitrack(m);
+                }
             }
 
         } else if (tempoControls.contains(control)) {

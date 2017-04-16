@@ -5,6 +5,8 @@ import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.Keyboard;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.beatbox.BeatModule;
+import net.perkowitz.issho.hachi.modules.beatbox.BeatUtil;
 import net.perkowitz.issho.hachi.modules.example.ExampleModule;
 import net.perkowitz.issho.hachi.modules.minibeat.MinibeatModule;
 import net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil;
@@ -245,6 +247,24 @@ public class Hachi {
 
             } else if (className.equals("StepModule")) {
                 module = new StepModule(midiTransmitter, midiReceiver, filePrefix);
+
+            } else if (className.equals("BeatModule")) {
+                Map<Integer, Color> palette = BeatUtil.PALETTE_PINK;
+                if (paletteName != null && paletteName.toUpperCase().equals("PINK")) {
+                    palette = BeatUtil.PALETTE_PINK;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("BLUE")) {
+                    palette = BeatUtil.PALETTE_BLUE;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("GREEN")) {
+                    palette = BeatUtil.PALETTE_GREEN;
+                }
+                BeatModule beatModule = new BeatModule(midiTransmitter, midiReceiver, palette, filePrefix);
+                if (moduleSettings.get("midiNoteOffset") != null) {
+                    Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
+                    if (offset != null) {
+                        beatModule.setMidiNoteOffset(offset);
+                    }
+                }
+                module = beatModule;
 
             } else if (className.equals("MinibeatModule")) {
                 Map<Integer, Color> palette = MinibeatUtil.PALETTE_GREEN;

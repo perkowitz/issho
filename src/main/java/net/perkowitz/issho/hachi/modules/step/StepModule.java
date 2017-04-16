@@ -86,6 +86,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
 
         // we assume that the current stage/step exists (make sure of that during increment)
         // and we don't recompute current steps until we go to next stage
+        if (currentSteps.size() == 0) {
+            nextStep();
+        }
         playStep(currentSteps.get(currentStageStepIndex));
 
         nextStep();

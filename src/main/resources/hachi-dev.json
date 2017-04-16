@@ -24,13 +24,28 @@
   },
   "modules": [
     {
-      "class": "MinibeatModule",
+      "class": "BeatModule",
+      "palette": "Blue",
+      "filePrefix": "beat0"
+    },
+    {
+      "class": "BeatModule",
+      "palette": "Pink",
+      "midiNoteOffset": 24,
+      "filePrefix": "beat1"
+    },
+    {
+      "class": "BeatModule",
       "palette": "Green",
-      "filePrefix": "minibeat0"
+      "filePrefix": "beat2"
     },
     {
       "class": "ShihaiModule",
       "panicExclude": [14, 15]
+    },
+    {
+      "class": "DrawingModule",
+      "filePrefix": "drawing0"
     },
     {
       "class": "PaletteModule"
