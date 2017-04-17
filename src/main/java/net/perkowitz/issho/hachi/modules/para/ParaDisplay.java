@@ -9,6 +9,7 @@ import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;
+import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
 
@@ -19,7 +20,7 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
 public class ParaDisplay {
 
     @Setter private GridDisplay display;
-    @Getter @Setter private List<Color> palette = ParaUtil.PALETTE_FUCHSIA;
+    @Getter @Setter private Map<Integer, Color> palette = ParaUtil.PALETTE;
     @Getter @Setter private boolean settingsMode = false;
     @Getter @Setter private int currentFileIndex = 0;
 
@@ -125,7 +126,13 @@ public class ParaDisplay {
 
     public void drawKeyboard(ParaMemory memory) {
         if (settingsMode) return;
-        keyboardControls.draw(display, palette.get(ParaUtil.COLOR_KEYBOARD_KEY));
+        for (GridControl control : keyboardControls.getControls()) {
+            Color color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
+            if (control.getPad().getY() == KEYBOARD_UPPER_BLACK || control.getPad().getY() == KEYBOARD_LOWER_BLACK) {
+                color = palette.get(COLOR_KEYBOARD_BLACK_KEY);
+            }
+            control.draw(display, color);
+        }
 //        ParaStep step = memory.currentStep();
 //        GridControl control = controls.get(step.getOctaveNote());
 //        control.draw(display, palette.get(ParaUtil.COLOR_KEYBOARD_SELECTED));
@@ -162,7 +169,7 @@ public class ParaDisplay {
         int octaveNote = step.getNote() % 12;
         int index = ParaUtil.KEYBOARD_NOTE_TO_INDEX[octaveNote];
         int keyX = index % 8;
-        int keyY = ParaUtil.KEYBOARD_MIN_ROW + index / 8;
+        int keyY = ParaUtil.KEYBOARD_LOWER_BLACK + index / 8;
 
         // display the selected step's note on the keyboard
         if (step.isSelected() && step.isEnabled()) {

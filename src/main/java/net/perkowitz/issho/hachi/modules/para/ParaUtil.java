@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi.modules.para;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
@@ -8,6 +9,7 @@ import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by optic on 10/24/16.
@@ -40,8 +42,10 @@ public class ParaUtil {
     /***** locations of various controls on the grid ************************/
     public static int PATTERN_MIN_ROW = 0;
     public static int PATTERN_MAX_ROW = 1;
-    public static int KEYBOARD_MIN_ROW = 4;
-    public static int KEYBOARD_MAX_ROW = 5;
+    public static int KEYBOARD_UPPER_BLACK = 2;
+    public static int KEYBOARD_UPPER_WHITE = 3;
+    public static int KEYBOARD_LOWER_BLACK = 4;
+    public static int KEYBOARD_LOWER_WHITE = 5;
     public static int STEP_MIN_ROW = 6;
     public static int STEP_MAX_ROW = 7;
 
@@ -66,18 +70,30 @@ public class ParaUtil {
     public static List<GridControl> keyboardList = Lists.newArrayList();
     static {
         // index them by their note value (offset from C: 0..11) so we can find them easily
-        keyboardList.add(new GridControl(GridPad.at(0, KEYBOARD_MAX_ROW), 0));
-        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_MIN_ROW), 1));
-        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_MAX_ROW), 2));
-        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_MIN_ROW), 3));
-        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_MAX_ROW), 4));
-        keyboardList.add(new GridControl(GridPad.at(3, KEYBOARD_MAX_ROW), 5));
-        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_MIN_ROW), 6));
-        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_MAX_ROW), 7));
-        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_MIN_ROW), 8));
-        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_MAX_ROW), 9));
-        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_MIN_ROW), 10));
-        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_MAX_ROW), 11));
+        keyboardList.add(new GridControl(GridPad.at(0, KEYBOARD_LOWER_WHITE), 0));
+        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_LOWER_BLACK), 1));
+        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_LOWER_WHITE), 2));
+        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_LOWER_BLACK), 3));
+        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_LOWER_WHITE), 4));
+        keyboardList.add(new GridControl(GridPad.at(3, KEYBOARD_LOWER_WHITE), 5));
+        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_LOWER_BLACK), 6));
+        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_LOWER_WHITE), 7));
+        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_LOWER_BLACK), 8));
+        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_LOWER_WHITE), 9));
+        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_LOWER_BLACK), 10));
+        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_LOWER_WHITE), 11));
+        keyboardList.add(new GridControl(GridPad.at(0, KEYBOARD_UPPER_WHITE), 0));
+        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_UPPER_BLACK), 1));
+        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_UPPER_WHITE), 2));
+        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_UPPER_BLACK), 3));
+        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_UPPER_WHITE), 4));
+        keyboardList.add(new GridControl(GridPad.at(3, KEYBOARD_UPPER_WHITE), 5));
+        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_UPPER_BLACK), 6));
+        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_UPPER_WHITE), 7));
+        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_UPPER_BLACK), 8));
+        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_UPPER_WHITE), 9));
+        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_UPPER_BLACK), 10));
+        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_UPPER_WHITE), 11));
     }
 
     // map the keyboard index (0..15) to the note numbers as laid out on a piano octave
@@ -105,9 +121,8 @@ public class ParaUtil {
     public static GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 8);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
-    public static GridControl patternCopyControl = new GridControl(GridPad.at(0,2), 0);
-    public static GridControl patternClearControl = new GridControl(GridPad.at(1,2), 0);
-//    public static GridControlSet patternEditControls = GridControlSet.pads(2, 2, 0, 1);
+    public static GridControl patternCopyControl = new GridControl(GridButton.at(GridButton.Side.Left, 2), 0);
+    public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(ParaUtil.SESSION_MIN_ROW, ParaUtil.SESSION_MAX_ROW);
@@ -122,57 +137,70 @@ public class ParaUtil {
     public static Integer COLOR_STEP_TIE = 2;
     public static Integer COLOR_STEP_REST = 3;
     public static Integer COLOR_STEP_HIGHLIGHT = 4;
-    public static Integer COLOR_KEYBOARD_KEY = 5;
-    public static Integer COLOR_KEYBOARD_HIGHLIGHT = 6;
-    public static Integer COLOR_KEYBOARD_SELECTED = 7;
-    public static Integer COLOR_MODE_INACTIVE = 8;
-    public static Integer COLOR_MODE_ACTIVE = 9;
-    public static Integer COLOR_VALUE_OFF = 10;
-    public static Integer COLOR_VALUE_ON = 11;
-    public static Integer COLOR_PATTERN = 12;
-    public static Integer COLOR_PATTERN_SELECTED = 13;
-    public static Integer COLOR_PATTERN_PLAYING = 14;
-    public static Integer COLOR_PATTERN_CHAINED = 15;
-    public static Integer COLOR_PATTERN_SELECTED_PLAYING = 16;
-    public static Integer COLOR_SESSION = 17;
-    public static Integer COLOR_SESSION_ACTIVE = 18;
-    public static Integer COLOR_SESSION_NEXT = 19;
-    public static Integer COLOR_FILE_LOAD = 20;
-    public static Integer COLOR_FILE_SAVE = 21;
-    public static Integer COLOR_FILE_ACTIVE = 22;
-    public static Integer COLOR_MIDI_CHANNEL = 23;
-    public static Integer COLOR_MIDI_CHANNEL_ACTIVE = 24;
-    public static Integer COLOR_PATTERN_EDIT = 25;
-    public static Integer COLOR_PATTERN_EDIT_SELECTED = 26;
 
-    public static List<Color> PALETTE_FUCHSIA = Lists.newArrayList(
-            // 52-55 purple-pinks, 12-15 yellows, 40-43 blues
-            Color.OFF, Color.fromIndex(53), Color.fromIndex(55), Color.OFF, Color.fromIndex(13),    // step
-            Color.DARK_GRAY, Color.fromIndex(13), Color.WHITE,                                      // keyboard
-            Color.DARK_GRAY, Color.fromIndex(55),                                                   // gate
-            Color.OFF, Color.fromIndex(55),                                                         // value
-            Color.fromIndex(43), Color.WHITE, Color.fromIndex(40), Color.DARK_GRAY, Color.WHITE,    // pattern
-            Color.fromIndex(55), Color.WHITE, Color.DARK_GRAY,                                      // session
-            Color.DIM_GREEN, Color.DIM_RED, Color.WHITE,                                            // file
-            Color.fromIndex(55), Color.WHITE,                                                       // midi channel
-            Color.DARK_GRAY, Color.WHITE                                                            // pattern edit
-    );
+    public static Integer COLOR_KEYBOARD_WHITE_KEY = 10;
+    public static Integer COLOR_KEYBOARD_BLACK_KEY = 11;
+    public static Integer COLOR_KEYBOARD_HIGHLIGHT = 12;
+    public static Integer COLOR_KEYBOARD_SELECTED = 13;
 
-    public static List<Color> PALETTE_ORANGE = Lists.newArrayList(
-            // 8-11 oranges, 36-39 blues
-            Color.OFF, Color.fromIndex(9), Color.fromIndex(11), Color.OFF, Color.fromIndex(16),    // step
-            Color.DARK_GRAY, Color.fromIndex(17), Color.WHITE,                                      // keyboard
-            Color.DARK_GRAY, Color.fromIndex(11),                                                   // gate
-            Color.OFF, Color.fromIndex(11),                                                         // value
-            Color.fromIndex(19), Color.WHITE, Color.fromIndex(16), Color.DARK_GRAY, Color.WHITE,    // pattern
-            Color.fromIndex(10), Color.WHITE, Color.DARK_GRAY,                                      // session
-            Color.DIM_GREEN, Color.DIM_RED, Color.WHITE,                                            // file
-            Color.fromIndex(10), Color.WHITE,                                                       // midi channel
-            Color.DARK_GRAY, Color.WHITE                                                            // pattern edit
-    );
+    public static Integer COLOR_MODE_INACTIVE = 20;
+    public static Integer COLOR_MODE_ACTIVE = 21;
+    public static Integer COLOR_VALUE_OFF = 22;
+    public static Integer COLOR_VALUE_ON = 23;
 
+    public static Integer COLOR_PATTERN = 30;
+    public static Integer COLOR_PATTERN_SELECTED = 31;
+    public static Integer COLOR_PATTERN_PLAYING = 32;
+    public static Integer COLOR_PATTERN_CHAINED = 33;
+    public static Integer COLOR_PATTERN_SELECTED_PLAYING = 34;
+    public static Integer COLOR_PATTERN_EDIT = 35;
+    public static Integer COLOR_PATTERN_EDIT_SELECTED = 36;
 
+    public static Integer COLOR_SESSION = 40;
+    public static Integer COLOR_SESSION_ACTIVE = 41;
+    public static Integer COLOR_SESSION_NEXT = 42;
 
+    public static Integer COLOR_FILE_LOAD = 50;
+    public static Integer COLOR_FILE_SAVE = 51;
+    public static Integer COLOR_FILE_ACTIVE = 52;
 
+    public static Integer COLOR_MIDI_CHANNEL = 60;
+    public static Integer COLOR_MIDI_CHANNEL_ACTIVE = 61;
+
+    public static Map<Integer, Color> PALETTE = Maps.newHashMap();
+    static {
+        Color mainColor = Color.BRIGHT_YELLOW;
+        Color mainColorDim = Color.DIM_YELLOW;
+        Color selectColor = Color.WHITE;
+        Color highlightColor = Color.BRIGHT_BLUE;
+        PALETTE.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE.put(COLOR_STEP_PLAY, mainColor);
+        PALETTE.put(COLOR_STEP_TIE, mainColorDim);
+        PALETTE.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE.put(COLOR_KEYBOARD_WHITE_KEY, Color.fromIndex(2));
+        PALETTE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
+        PALETTE.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
+        PALETTE.put(COLOR_KEYBOARD_SELECTED, selectColor);
+        PALETTE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
+        PALETTE.put(COLOR_MODE_ACTIVE, mainColor);
+        PALETTE.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE.put(COLOR_VALUE_ON, mainColor);
+        PALETTE.put(COLOR_PATTERN, mainColorDim);
+        PALETTE.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE.put(COLOR_PATTERN_PLAYING, selectColor);
+        PALETTE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
+        PALETTE.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
+        PALETTE.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
+        PALETTE.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE.put(COLOR_SESSION, Color.BRIGHT_BLUE);
+        PALETTE.put(COLOR_SESSION_ACTIVE, Color.WHITE);
+        PALETTE.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
+        PALETTE.put(COLOR_FILE_LOAD, Color.BRIGHT_GREEN);
+        PALETTE.put(COLOR_FILE_SAVE, Color.BRIGHT_RED);
+        PALETTE.put(COLOR_FILE_ACTIVE, Color.WHITE);
+        PALETTE.put(COLOR_MIDI_CHANNEL, Color.DARK_GRAY);
+        PALETTE.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
+    }
 
 }

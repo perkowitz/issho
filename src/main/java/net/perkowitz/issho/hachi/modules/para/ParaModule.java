@@ -16,10 +16,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 import java.io.File;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
@@ -63,7 +60,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     /***** Constructor ****************************************/
 
-    public ParaModule(Transmitter inputTransmitter, Receiver outputReceiver, List<Color> palette, String filePrefix) {
+    public ParaModule(Transmitter inputTransmitter, Receiver outputReceiver, Map<Integer, Color> palette, String filePrefix) {
         super(inputTransmitter, outputReceiver);
         paraDisplay = new ParaDisplay(this.display);
         paraDisplay.setPalette(palette);
@@ -310,7 +307,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             paraDisplay.drawSteps(memory.currentPattern().getSteps());
 
             // highlight the step's note in the keyboard
-            ParaUtil.keyboardControls.draw(display, paraDisplay.getPalette().get(ParaUtil.COLOR_KEYBOARD_KEY)); // or just redraw the current key?
+            ParaUtil.keyboardControls.draw(display, paraDisplay.getPalette().get(ParaUtil.COLOR_KEYBOARD_WHITE_KEY)); // or just redraw the current key?
             int note = step.getOctaveNote();
             GridControl keyControl = ParaUtil.keyboardControls.get(note);
 //            keyControl.draw(display, palette.get(ParaUtil.COLOR_KEYBOARD_HIGHLIGHT));
