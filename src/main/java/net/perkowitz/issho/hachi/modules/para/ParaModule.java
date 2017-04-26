@@ -20,7 +20,7 @@ import java.util.*;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
-import static net.perkowitz.issho.hachi.modules.para.ParaUtil.ValueState.STEP_OCTAVE;
+import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.TIE;
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.View.SEQUENCE;
 
 /**
@@ -51,6 +51,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     private int patternsReleasedCount = 0;
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
+    private int currentKeyboardOctave = 5;
 
     private String filePrefix = "polymodule";
     private int currentFileIndex = 0;
@@ -91,28 +92,29 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             memory.selectNextPattern();
             if (currentPatternIndex != memory.getCurrentPatternIndex()) {
                 paraDisplay.drawPatterns(memory);
-                paraDisplay.drawSteps(memory.currentPattern().getSteps());
+                paraDisplay.drawSteps(memory, memory.currentPattern().getSteps());
             }
         }
 
         if (lastStep != null) {
-            paraDisplay.drawStep(lastStep);
+            paraDisplay.drawStep(memory, lastStep);
             lastStep = null;
         }
 
         ParaStep step = memory.currentPattern().getStep(nextStepIndex);
-//        paraDisplay.drawKeyboard(memory, keyboardList);
 
-        if (!step.isEnabled() || step.getGate() == Gate.REST) {
+        if (!step.isEnabled()) {
             notesOff();
         } else if (step.isEnabled() && step.getGate() == PLAY) {
             notesOff();
-            sendMidiNote(memory.getMidiChannel(), transpose + step.getNote(), step.getVelocity());
-            onNotes.add(step.getNote());
-        } else if (step.isEnabled() && step.getGate() == Gate.TIE) {
+            for (int note : step.getNotes()) {
+                sendMidiNote(memory.getMidiChannel(), transpose + note, step.getVelocity());
+                onNotes.add(note);
+            }
+        } else if (step.isEnabled() && step.getGate() == TIE) {
             // do nothing
         }
-        paraDisplay.drawStep(step, true);
+        paraDisplay.drawStep(memory, step, true);
         lastStep = step;
 
         // get new note
@@ -269,7 +271,6 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         }
 
         if (ParaUtil.patternControls.contains(control)) {
-
             // find the control's index and get the corresponding pattern
             GridControl selectedControl = ParaUtil.patternControls.get(control);
             Integer index = selectedControl.getIndex();
@@ -292,97 +293,64 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             paraDisplay.drawPatternEditControls(false, true);
 
         } else if (ParaUtil.stepControls.contains(control)) {
-
             // unselect the current selected step and redraw it
             ParaStep step = memory.currentStep();
             step.setSelected(false);
-            paraDisplay.drawStep(step);
+//            paraDisplay.drawStep(step);
 
             // find the control's index and get the corresponding step
-            GridControl selectedControl = ParaUtil.stepControls.get(control);
-            Integer index = selectedControl.getIndex();   // todo null check
+            Integer index = ParaUtil.stepControls.getIndex(control);
             memory.selectStep(index);
             step = memory.currentStep();
-
-            paraDisplay.drawSteps(memory.currentPattern().getSteps());
-
-            // highlight the step's note in the keyboard
-            ParaUtil.keyboardControls.draw(display, paraDisplay.getPalette().get(ParaUtil.COLOR_KEYBOARD_WHITE_KEY)); // or just redraw the current key?
-            int note = step.getOctaveNote();
-            GridControl keyControl = ParaUtil.keyboardControls.get(note);
-//            keyControl.draw(display, palette.get(ParaUtil.COLOR_KEYBOARD_HIGHLIGHT));
-
-            // what to update based on current step edit state
-            switch (memory.getStepEditState()) {
-                case NOTE:
-                    memory.setValueState(STEP_OCTAVE);
-                    displayValue(step.getOctave() - ParaUtil.LOWEST_OCTAVE, MAX_OCTAVE);
+            switch (memory.getStepSelectMode()) {
+                case TOGGLE:
+                    step.toggleEnabled();
                     break;
-                case GATE:
-                    memory.setValueState(ValueState.NONE);
-                    displayValue(0, -1);
-                    if (step.getGate() == PLAY) {
-                        step.setGate(Gate.TIE);
-                    } else if (step.getGate() == Gate.TIE) {
-                        step.setGate(Gate.REST);
-                    } else if (step.getGate() == Gate.REST) {
-                        step.setGate(PLAY);
-                    }
+                case SELECT:
                     break;
-                case VELOCITY:
-                    memory.setValueState(ValueState.VELOCITY);
-                    displayValue(step.getVelocity(), MAX_VELOCITY);
-                    break;
-//                case PLAY:
-//                    memory.setValueState(ParaUtil.ValueState.KEYBOARD_OCTAVE);
-//                    displayValue(memory.getKeyboardOctave() - ParaUtil.LOWEST_OCTAVE, MAX_OCTAVE);
-//                    break;
-
             }
-            paraDisplay.drawSteps(memory.currentPattern().getSteps());
+            paraDisplay.drawKeyboard(memory);
+            paraDisplay.drawStep(memory, step);
 
         } else if (ParaUtil.keyboardControls.contains(control)) {
-
-            // get current note index
-            int currentOctaveNote = 0; // todo ???
-
-            paraDisplay.drawKeyboard(memory);
-
             // find the control's index, get the current step
-            GridControl selectedControl = ParaUtil.keyboardControls.get(control);
-            Integer index = selectedControl.getIndex();
+            Integer index = ParaUtil.keyboardControls.getIndex(control);
             ParaStep step = memory.currentStep();
+            int note = currentKeyboardOctave * 12 + index;//KEYBOARD_NOTE_TO_INDEX[index];
+            step.toggleNote(note);
+            paraDisplay.drawStep(memory, step);
 
-            switch (memory.getStepEditState()) {
-                case NOTE:
-                case VELOCITY:
-                    step.setOctaveNote(index);
-                    selectedControl.draw(display, paraDisplay.getPalette().get(ParaUtil.COLOR_KEYBOARD_SELECTED));
-                    // todo redraw the old key
-                    break;
-//                case PLAY:
-//                    int note = memory.getKeyboardOctave() * 12 + index;
-//                    sendMidiNote(memory.getMidiChannel(), note, velocity);
-//                    break;
-            }
-
-        } else if (ParaUtil.stepEditControls.contains(control)) {
-
+        } else if (ParaUtil.stepSelectModeControls.contains(control)) {
             // find the control's index, get the current step
-            Integer index = ParaUtil.stepEditControls.getIndex(control);
+            Integer index = ParaUtil.stepSelectModeControls.getIndex(control);
             if (index != null) {
-                StepEditState[] states = StepEditState.values();
+                StepSelectMode[] states = StepSelectMode.values();
                 if (index >= 0 && index < states.length) {
-                    memory.setStepEditState(states[index]);
+                    memory.setStepSelectMode(states[index]);
                 } else if (index == ParaUtil.STEP_CONTROL_SHIFT_LEFT_INDEX) {
                     memory.currentPattern().shift(-1);
-                    paraDisplay.drawSteps(memory.currentPattern().getSteps());
+                    paraDisplay.drawSteps(memory, memory.currentPattern().getSteps());
                 } else if (index == ParaUtil.STEP_CONTROL_SHIFT_RIGHT_INDEX) {
                     memory.currentPattern().shift(1);
-                    paraDisplay.drawSteps(memory.currentPattern().getSteps());
+                    paraDisplay.drawSteps(memory, memory.currentPattern().getSteps());
                 }
             }
-            paraDisplay.drawStepEdits(memory.getStepEditState());
+            paraDisplay.drawStepEditControls(memory.getStepSelectMode());
+
+        } else if (ParaUtil.stepGateControls.contains(control)) {
+            // find the control's index, get the current step
+            Integer index = ParaUtil.stepGateControls.getIndex(control);
+            if (index != null) {
+                switch (index) {
+                    case 2:
+                        memory.currentStep().setGate(PLAY);
+                        break;
+                    case 3:
+                        memory.currentStep().setGate(TIE);
+                        break;
+                }
+            }
+            paraDisplay.drawStep(memory, memory.currentStep());
 
         } else if (ParaUtil.valueControls.contains(control)) {
 
@@ -392,13 +360,11 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 displayValue(index, 7);
                 switch (memory.getValueState()) {
                     case STEP_OCTAVE:
-                        step.setOctave(index + ParaUtil.LOWEST_OCTAVE);
                         break;
                     case VELOCITY:
                         step.setVelocity((index + 1) * 16 - 1);
                         break;
                     case KEYBOARD_OCTAVE:
-                        memory.setKeyboardOctave(index + ParaUtil.LOWEST_OCTAVE);
                         break;
                     case NONE:
                         break;

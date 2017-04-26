@@ -7,7 +7,7 @@ import net.perkowitz.issho.hachi.MemoryObject;
 
 import java.util.List;
 
-import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepEditState.NOTE;
+import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepSelectMode.TOGGLE;
 
 /**
  * Created by optic on 10/24/16.
@@ -31,7 +31,8 @@ public class ParaMemory implements MemoryObject {
 
     @Getter @Setter private int midiChannel = 0;
 
-    @Getter @Setter ParaUtil.StepEditState stepEditState = NOTE;
+    @Getter @Setter
+    ParaUtil.StepSelectMode stepSelectMode = TOGGLE;
     @Getter @Setter ParaUtil.ValueState valueState = ParaUtil.ValueState.VELOCITY;
 
 

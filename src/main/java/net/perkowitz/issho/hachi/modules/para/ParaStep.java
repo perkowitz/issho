@@ -1,9 +1,13 @@
 package net.perkowitz.issho.hachi.modules.para;
 
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
-import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.REST;
+import java.util.Collection;
+import java.util.Set;
+
+import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
 
 /**
  * Created by optic on 10/24/16.
@@ -12,42 +16,55 @@ public class ParaStep {
 
     private static int DEFAULT_NOTE = 60;
     private static int DEFAULT_VELOCITY = 100;
-    private static ParaUtil.Gate DEFAULT_GATE = REST;
+    private static ParaUtil.Gate DEFAULT_GATE = PLAY;
 
     @Getter @Setter private int index;
 
-    @Getter @Setter private int octaveNote;
-    @Getter @Setter private int octave;
+    @Getter @Setter private Set<Integer> notes = Sets.newHashSet();
     @Getter @Setter private int velocity;
-    @Getter @Setter private int length;
     @Getter @Setter private ParaUtil.Gate gate;
     @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean selected = false;
+
 
     public ParaStep() {}
 
     public ParaStep(int index) {
         this.index = index;
-        this.octaveNote = DEFAULT_NOTE % 12;
-        this.octave = DEFAULT_NOTE / 12;
         this.velocity = DEFAULT_VELOCITY;
-        this.length = 1;
         this.gate = DEFAULT_GATE;
-        this.enabled = true;
+        this.enabled = false;
         this.selected = false;
     }
 
+    public void addNote(Integer note) {
+        notes.add(note);
+    }
+
+    public void addNotes(Collection<Integer> notes) {
+        for (Integer note : notes) {
+            this.notes.add(note);
+        }
+    }
+
+    public void removeNote(Integer note) {
+        notes.remove(note);
+    }
+
+    public void toggleNote(Integer note) {
+        if (notes.contains(note)) {
+            notes.remove(note);
+        } else {
+            notes.add(note);
+        }
+    }
+
+    public void clearNotes() {
+        notes.clear();
+    }
+
     public void toggleEnabled() {
-//        enabled = !enabled;
-    }
-
-    public int getNote() {
-        return octave * 12 + octaveNote;
-    }
-
-    public void setNote(int note) {
-        octaveNote = note % 12;
-        octave = note / 12;
+        enabled = !enabled;
     }
 
     public String toString() {
@@ -63,13 +80,11 @@ public class ParaStep {
 
     /***** static methods **************************/
 
-    public static ParaStep copy(ParaStep step) {
+    public static ParaStep copy(ParaStep step, int newIndex) {
         ParaStep newStep = new ParaStep();
-        newStep.index = step.index;
-        newStep.octaveNote = step.octaveNote;
-        newStep.octave = step.octave;
+        newStep.index = newIndex;
+        newStep.addNotes(step.getNotes());
         newStep.velocity = step.velocity;
-        newStep.length = step.length;
         newStep.gate = step.gate;
         newStep.enabled = step.enabled;
         newStep.selected = step.selected;

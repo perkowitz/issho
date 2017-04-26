@@ -8,7 +8,6 @@ import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
-import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.REST;
 
 /**
  * Created by optic on 10/24/16.
@@ -41,8 +40,7 @@ public class ParaPattern implements MemoryObject {
         for (int i = 0; i < steps.length; i++) {
             int shifted = (i + shiftAmount + STEP_COUNT) % STEP_COUNT;
             ParaStep step = new ParaStep(shifted);
-            step = ParaStep.copy(steps[i]);
-            step.setIndex(shifted);             // consider creating a pattern.putStep() that keeps the index in sync
+            step = ParaStep.copy(steps[i], shifted);
             shiftedSteps[shifted] = step;
         }
         steps = shiftedSteps;
@@ -66,7 +64,7 @@ public class ParaPattern implements MemoryObject {
 
     public boolean nonEmpty() {
         for (ParaStep step : steps) {
-            if (step.getGate() != REST) {
+            if (step.isEnabled()) {
                 return true;
             }
         }
@@ -81,16 +79,17 @@ public class ParaPattern implements MemoryObject {
 
         String stepString = "";
         for (ParaStep step : steps) {
-            switch (step.getGate()) {
-                case PLAY:
-                    stepString += "O";
-                    break;
-                case TIE:
-                    stepString += "-";
-                    break;
-                case REST:
-                    stepString += ".";
-                    break;
+            if (step.isEnabled()) {
+                switch (step.getGate()) {
+                    case PLAY:
+                        stepString += "O";
+                        break;
+                    case TIE:
+                        stepString += "-";
+                        break;
+                }
+            } else {
+                stepString += ".";
             }
         }
 
@@ -104,7 +103,7 @@ public class ParaPattern implements MemoryObject {
     public static ParaPattern copy(ParaPattern pattern, int newIndex) {
         ParaPattern newPattern = new ParaPattern(newIndex);
         for (int i = 0; i < STEP_COUNT; i++) {
-            newPattern.steps[i] = ParaStep.copy(pattern.steps[i]);
+            newPattern.steps[i] = ParaStep.copy(pattern.steps[i], i);
         }
         return newPattern;
     }

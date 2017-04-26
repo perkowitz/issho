@@ -18,13 +18,12 @@ public class ParaUtil {
 
     /***** enums for various modes and settings *****************/
     public enum Gate {
-        PLAY, TIE, REST
+        PLAY, TIE
     }
 
-    public enum StepEditState {
+    public enum StepSelectMode {
         // in button layout order
-        NOTE, GATE, VELOCITY
-//        MUTE, NOTE, VELOCITY, LENGTH, GATE, PLAY
+        TOGGLE, SELECT
     }
 
     public enum Function {
@@ -82,29 +81,19 @@ public class ParaUtil {
         keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_LOWER_WHITE), 9));
         keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_LOWER_BLACK), 10));
         keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_LOWER_WHITE), 11));
-        keyboardList.add(new GridControl(GridPad.at(0, KEYBOARD_UPPER_WHITE), 0));
-        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_UPPER_BLACK), 1));
-        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_UPPER_WHITE), 2));
-        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_UPPER_BLACK), 3));
-        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_UPPER_WHITE), 4));
-        keyboardList.add(new GridControl(GridPad.at(3, KEYBOARD_UPPER_WHITE), 5));
-        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_UPPER_BLACK), 6));
-        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_UPPER_WHITE), 7));
-        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_UPPER_BLACK), 8));
-        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_UPPER_WHITE), 9));
-        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_UPPER_BLACK), 10));
-        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_UPPER_WHITE), 11));
+        keyboardList.add(new GridControl(GridPad.at(0, KEYBOARD_UPPER_WHITE), 12));
+        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_UPPER_BLACK), 13));
+        keyboardList.add(new GridControl(GridPad.at(1, KEYBOARD_UPPER_WHITE), 14));
+        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_UPPER_BLACK), 15));
+        keyboardList.add(new GridControl(GridPad.at(2, KEYBOARD_UPPER_WHITE), 16));
+        keyboardList.add(new GridControl(GridPad.at(3, KEYBOARD_UPPER_WHITE), 17));
+        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_UPPER_BLACK), 18));
+        keyboardList.add(new GridControl(GridPad.at(4, KEYBOARD_UPPER_WHITE), 19));
+        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_UPPER_BLACK), 20));
+        keyboardList.add(new GridControl(GridPad.at(5, KEYBOARD_UPPER_WHITE), 21));
+        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_UPPER_BLACK), 22));
+        keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_UPPER_WHITE), 23));
     }
-
-    // map the keyboard index (0..15) to the note numbers as laid out on a piano octave
-    public static Integer[] KEYBOARD_INDEX_TO_NOTE = new Integer[] {
-            null, 1, 3, null, 6, 8, 10, null,
-            0, 2, 4, 5, 7, 9, 11, 12
-    };
-    // map the octave note to index (0..15)
-    public static Integer[] KEYBOARD_NOTE_TO_INDEX = new Integer[] {
-            8, 1, 9, 2, 10, 11, 4, 12, 5, 13, 6, 14, 15
-    };
 
 
     /***** control sets for each function group *****************************/
@@ -118,11 +107,14 @@ public class ParaUtil {
     public static GridControlSet patternControls = GridControlSet.padRows(ParaUtil.PATTERN_MIN_ROW, ParaUtil.PATTERN_MAX_ROW);
     public static GridControlSet stepControls = GridControlSet.padRows(ParaUtil.STEP_MIN_ROW, ParaUtil.STEP_MAX_ROW);
     public static GridControlSet keyboardControls = new GridControlSet(ParaUtil.keyboardList);
-    public static GridControlSet stepEditControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 8);
+    public static GridControlSet stepSelectModeControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 1);
+    public static GridControlSet stepGateControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 2, 3);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
     public static GridControl patternCopyControl = new GridControl(GridButton.at(GridButton.Side.Left, 2), 0);
     public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
+    public static GridControl octaveDownControl = new GridControl(GridPad.at(KEYBOARD_LOWER_BLACK, 0), 0);
+    public static GridControl octaveUpControl = new GridControl(GridPad.at(KEYBOARD_LOWER_BLACK, 7), 0);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(ParaUtil.SESSION_MIN_ROW, ParaUtil.SESSION_MAX_ROW);
@@ -167,40 +159,76 @@ public class ParaUtil {
     public static Integer COLOR_MIDI_CHANNEL = 60;
     public static Integer COLOR_MIDI_CHANNEL_ACTIVE = 61;
 
-    public static Map<Integer, Color> PALETTE = Maps.newHashMap();
+    public static Map<Integer, Color> PALETTE_YELLOW = Maps.newHashMap();
     static {
         Color mainColor = Color.BRIGHT_YELLOW;
         Color mainColorDim = Color.DIM_YELLOW;
         Color selectColor = Color.WHITE;
-        Color highlightColor = Color.BRIGHT_BLUE;
-        PALETTE.put(COLOR_STEP_OFF, Color.OFF);
-        PALETTE.put(COLOR_STEP_PLAY, mainColor);
-        PALETTE.put(COLOR_STEP_TIE, mainColorDim);
-        PALETTE.put(COLOR_STEP_REST, Color.OFF);
-        PALETTE.put(COLOR_STEP_HIGHLIGHT, selectColor);
-        PALETTE.put(COLOR_KEYBOARD_WHITE_KEY, Color.fromIndex(2));
-        PALETTE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
-        PALETTE.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
-        PALETTE.put(COLOR_KEYBOARD_SELECTED, selectColor);
-        PALETTE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
-        PALETTE.put(COLOR_MODE_ACTIVE, mainColor);
-        PALETTE.put(COLOR_VALUE_OFF, Color.OFF);
-        PALETTE.put(COLOR_VALUE_ON, mainColor);
-        PALETTE.put(COLOR_PATTERN, mainColorDim);
-        PALETTE.put(COLOR_PATTERN_SELECTED, selectColor);
-        PALETTE.put(COLOR_PATTERN_PLAYING, selectColor);
-        PALETTE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
-        PALETTE.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
-        PALETTE.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
-        PALETTE.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
-        PALETTE.put(COLOR_SESSION, Color.BRIGHT_BLUE);
-        PALETTE.put(COLOR_SESSION_ACTIVE, Color.WHITE);
-        PALETTE.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
-        PALETTE.put(COLOR_FILE_LOAD, Color.BRIGHT_GREEN);
-        PALETTE.put(COLOR_FILE_SAVE, Color.BRIGHT_RED);
-        PALETTE.put(COLOR_FILE_ACTIVE, Color.WHITE);
-        PALETTE.put(COLOR_MIDI_CHANNEL, Color.DARK_GRAY);
-        PALETTE.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
+        Color highlightColor = Color.LIGHT_BLUE;
+        PALETTE_YELLOW.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE_YELLOW.put(COLOR_STEP_PLAY, mainColor);
+        PALETTE_YELLOW.put(COLOR_STEP_TIE, mainColorDim);
+        PALETTE_YELLOW.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE_YELLOW.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_WHITE_KEY, Color.fromIndex(2));
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_HIGHLIGHT, highlightColor);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_SELECTED, mainColor);
+        PALETTE_YELLOW.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_MODE_ACTIVE, mainColor);
+        PALETTE_YELLOW.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE_YELLOW.put(COLOR_VALUE_ON, mainColor);
+        PALETTE_YELLOW.put(COLOR_PATTERN, mainColorDim);
+        PALETTE_YELLOW.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_YELLOW.put(COLOR_PATTERN_PLAYING, selectColor);
+        PALETTE_YELLOW.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_SESSION, Color.BRIGHT_BLUE);
+        PALETTE_YELLOW.put(COLOR_SESSION_ACTIVE, Color.WHITE);
+        PALETTE_YELLOW.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_FILE_LOAD, Color.BRIGHT_GREEN);
+        PALETTE_YELLOW.put(COLOR_FILE_SAVE, Color.BRIGHT_RED);
+        PALETTE_YELLOW.put(COLOR_FILE_ACTIVE, Color.WHITE);
+        PALETTE_YELLOW.put(COLOR_MIDI_CHANNEL, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
+    }
+
+    public static Map<Integer, Color> PALETTE_ORANGE = Maps.newHashMap();
+    static {
+        Color mainColor = Color.BRIGHT_ORANGE;
+        Color mainColorDim = Color.DIM_ORANGE;
+        Color selectColor = Color.WHITE;
+        Color highlightColor = Color.LIGHT_BLUE;
+        PALETTE_ORANGE.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE_ORANGE.put(COLOR_STEP_PLAY, mainColor);
+        PALETTE_ORANGE.put(COLOR_STEP_TIE, mainColorDim);
+        PALETTE_ORANGE.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE_ORANGE.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_WHITE_KEY, Color.fromIndex(2));
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_HIGHLIGHT, highlightColor);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_SELECTED, mainColor);
+        PALETTE_ORANGE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_MODE_ACTIVE, mainColor);
+        PALETTE_ORANGE.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE_ORANGE.put(COLOR_VALUE_ON, mainColor);
+        PALETTE_ORANGE.put(COLOR_PATTERN, mainColorDim);
+        PALETTE_ORANGE.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_ORANGE.put(COLOR_PATTERN_PLAYING, selectColor);
+        PALETTE_ORANGE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_SESSION, Color.BRIGHT_BLUE);
+        PALETTE_ORANGE.put(COLOR_SESSION_ACTIVE, Color.WHITE);
+        PALETTE_ORANGE.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_FILE_LOAD, Color.BRIGHT_GREEN);
+        PALETTE_ORANGE.put(COLOR_FILE_SAVE, Color.BRIGHT_RED);
+        PALETTE_ORANGE.put(COLOR_FILE_ACTIVE, Color.WHITE);
+        PALETTE_ORANGE.put(COLOR_MIDI_CHANNEL, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
     }
 
 }

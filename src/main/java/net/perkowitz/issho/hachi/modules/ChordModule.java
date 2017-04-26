@@ -46,7 +46,7 @@ public class ChordModule extends MidiModule implements Chordable {
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 
         if (isMuted && velocity > 0) return;
-//        System.out.printf("ChordModule Note: ch=%d, note=%d, vel=%d\n", channel, noteNumber, velocity);
+        System.out.printf("ChordModule Note: ch=%d, note=%d, vel=%d\n", channel, noteNumber, velocity);
 
         if (velocity == 0) {
             // note off -- send note off for any notes we mapped this note number to

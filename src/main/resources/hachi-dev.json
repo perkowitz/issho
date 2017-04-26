@@ -25,6 +25,7 @@
   "modules": [
     {
       "class": "ParaModule",
+      "palette": "yellow",
       "filePrefix": "para0"
     },
     {

@@ -8,7 +8,6 @@ import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
-import java.util.List;
 import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
@@ -20,9 +19,11 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
 public class ParaDisplay {
 
     @Setter private GridDisplay display;
-    @Getter @Setter private Map<Integer, Color> palette = ParaUtil.PALETTE;
+    @Getter @Setter private Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
     @Getter @Setter private boolean settingsMode = false;
     @Getter @Setter private int currentFileIndex = 0;
+    @Getter @Setter private int currentKeyboardOctave = 5;
+
 
     public ParaDisplay(GridDisplay display) {
         this.display = display;
@@ -37,8 +38,8 @@ public class ParaDisplay {
             drawPatterns(memory);
             drawPatternEditControls(false, false);
             drawKeyboard(memory);
-            drawSteps(memory.currentPattern().getSteps());
-            drawStepEdits(memory.getStepEditState());
+            drawSteps(memory, memory.currentPattern().getSteps());
+            drawStepEditControls(memory.getStepSelectMode());
         }
     }
 
@@ -139,15 +140,15 @@ public class ParaDisplay {
     }
 
 
-    public void drawSteps(ParaStep[] steps) {
+    public void drawSteps(ParaMemory memory, ParaStep[] steps) {
         if (settingsMode) return;
         for (int index = 0; index < steps.length; index++) {
-            drawStep(steps[index]);
+            drawStep(memory, steps[index]);
         }
     }
 
-    public void drawStep(ParaStep step) {
-        drawStep(step, false);
+    public void drawStep(ParaMemory memory, ParaStep step) {
+        drawStep(memory, step, false);
     }
 
     public void drawStepOff(ParaStep step) {
@@ -157,26 +158,13 @@ public class ParaDisplay {
         display.setPad(GridPad.at(x, y), Color.OFF);
     }
 
-    public void drawStep(ParaStep step, boolean highlight) {
+    public void drawStep(ParaMemory memory, ParaStep step, boolean highlight) {
 
         if (settingsMode) return;
 
-        // get step location
+        // draw step itself
         int x = step.getIndex() % 8;
         int y = step.getIndex() / 8 + ParaUtil.STEP_MIN_ROW;
-
-        // get keyboard location
-        int octaveNote = step.getNote() % 12;
-        int index = ParaUtil.KEYBOARD_NOTE_TO_INDEX[octaveNote];
-        int keyX = index % 8;
-        int keyY = ParaUtil.KEYBOARD_LOWER_BLACK + index / 8;
-
-        // display the selected step's note on the keyboard
-        if (step.isSelected() && step.isEnabled()) {
-            display.setPad(GridPad.at(keyX, keyY), palette.get(ParaUtil.COLOR_KEYBOARD_SELECTED));
-        }
-
-
         Color stepColor = palette.get(ParaUtil.COLOR_STEP_OFF);
         if (highlight) {
             stepColor = palette.get(ParaUtil.COLOR_STEP_HIGHLIGHT);
@@ -191,24 +179,40 @@ public class ParaDisplay {
                 case TIE:
                     stepColor = palette.get(ParaUtil.COLOR_STEP_TIE);
                     break;
-                case REST:
-                    stepColor = palette.get(ParaUtil.COLOR_STEP_REST);
-                    break;
             }
         }
         display.setPad(GridPad.at(x, y), stepColor);
 
+        // draw step notes on keyboard
+        // Assumes keyboard has been drawn in its default state already
+        int noteRangeLower = currentKeyboardOctave * 12;
+        int noteRangeUpper = noteRangeLower + 23;
+        if (!highlight) {
+            drawKeyboard(memory);
+        }
+        for (int note : step.getNotes()) {
+            if (note >= noteRangeLower && note <= noteRangeUpper) {
+                int octaveNote = note - noteRangeLower;
+                GridControl key = keyboardControls.get(octaveNote);
+                Color color = palette.get(COLOR_KEYBOARD_SELECTED);
+                if (highlight) {
+                    color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
+                }
+                key.draw(display, color);
+            }
+        }
+
     }
 
-    public void drawStepEdits(StepEditState currentState) {
+    public void drawStepEditControls(StepSelectMode currentState) {
 
         if (settingsMode) return;
 
         // some of the step edit controls are step edit mode buttons
-        StepEditState[] states = StepEditState.values();
+        StepSelectMode[] states = StepSelectMode.values();
         for (int i = 0; i < states.length; i++) {
-            GridControl control = stepEditControls.get(i);
-            StepEditState state = states[i];
+            GridControl control = stepSelectModeControls.get(i);
+            StepSelectMode state = states[i];
             Color color = palette.get(COLOR_MODE_INACTIVE);
             if (state == currentState) {
                 color = palette.get(ParaUtil.COLOR_MODE_ACTIVE);
@@ -216,9 +220,13 @@ public class ParaDisplay {
             control.draw(display, color);
         }
 
+        // draw the play/tie setting buttons; draw the play button play-color and the tie button tie-color
+        stepGateControls.get(0).draw(display, palette.get(COLOR_STEP_PLAY));
+        stepGateControls.get(1).draw(display, palette.get(COLOR_STEP_TIE));
+
         // and there's some other stuff
-        stepEditControls.get(ParaUtil.STEP_CONTROL_SHIFT_LEFT_INDEX).draw(display, palette.get(COLOR_MODE_INACTIVE));
-        stepEditControls.get(ParaUtil.STEP_CONTROL_SHIFT_RIGHT_INDEX).draw(display, palette.get(COLOR_MODE_INACTIVE));
+//        stepSelectModeControls.get(ParaUtil.STEP_CONTROL_SHIFT_LEFT_INDEX).draw(display, palette.get(COLOR_MODE_INACTIVE));
+//        stepSelectModeControls.get(ParaUtil.STEP_CONTROL_SHIFT_RIGHT_INDEX).draw(display, palette.get(COLOR_MODE_INACTIVE));
 
     }
 

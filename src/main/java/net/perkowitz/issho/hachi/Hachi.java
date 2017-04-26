@@ -248,7 +248,10 @@ public class Hachi {
                 module = new MonoModule(midiTransmitter, midiReceiver, palette, filePrefix);
 
             } else if (className.equals("ParaModule")) {
-                Map<Integer, Color> palette = ParaUtil.PALETTE;
+                Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
+                if (paletteName != null && paletteName.toUpperCase().equals("ORANGE")) {
+                    palette = ParaUtil.PALETTE_ORANGE;
+                }
                 module = new ParaModule(midiTransmitter, midiReceiver, palette, filePrefix);
 
             } else if (className.equals("StepModule")) {
