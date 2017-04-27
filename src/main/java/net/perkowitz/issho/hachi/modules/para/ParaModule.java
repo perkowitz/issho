@@ -79,20 +79,24 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             nextStepIndex = 0;
         }
 
+        // keep track of which things need to be redrawn and draw then AFTER sending midi notes
+        boolean drawSessions = false;
+        boolean drawPatterns = false;
+        boolean drawSteps = false;
+
         if (nextStepIndex == 0) {
 
-            int currentSessionIndex = memory.getCurrentSessionIndex();
             Integer nextSessionIndex = memory.getNextSessionIndex();
             if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
                 memory.setCurrentSessionIndex(nextSessionIndex);
-                paraDisplay.drawSessions(memory);
+                drawSessions = true;
             }
 
             int currentPatternIndex = memory.getCurrentPatternIndex();
             memory.selectNextPattern();
             if (currentPatternIndex != memory.getCurrentPatternIndex()) {
-                paraDisplay.drawPatterns(memory);
-                paraDisplay.drawSteps(memory, memory.currentPattern().getSteps());
+                drawPatterns = true;
+                drawSteps = true;
             }
         }
 
@@ -114,7 +118,17 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         } else if (step.isEnabled() && step.getGate() == TIE) {
             // do nothing
         }
-        paraDisplay.drawStep(memory, step, true);
+
+        // now redraw what needs to be redrawn
+        if (drawSessions) { paraDisplay.drawSessions(memory); }
+        if (drawPatterns) { paraDisplay.drawPatterns(memory); }
+
+        if (drawSteps) {
+            paraDisplay.drawSteps(memory, memory.currentPattern().getSteps());
+        } else {
+            paraDisplay.drawStep(memory, step, true);
+        }
+
         lastStep = step;
 
         // get new note

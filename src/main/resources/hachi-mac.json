@@ -58,8 +58,9 @@
       "palette": "orange"
     },
     {
-      "class": "StepModule",
-      "filePrefix": "step0"
+      "class": "ParaModule",
+      "palette": "yellow",
+      "filePrefix": "para0"
     },
     {
       "class": "StepModule",
