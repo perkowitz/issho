@@ -83,6 +83,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         boolean drawSessions = false;
         boolean drawPatterns = false;
         boolean drawSteps = false;
+        boolean drawKeyboard = true;
 
         if (nextStepIndex == 0) {
 
@@ -101,7 +102,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         }
 
         if (lastStep != null) {
-            paraDisplay.drawStep(memory, lastStep);
+            paraDisplay.drawStep(memory, lastStep, false);
             lastStep = null;
         }
 
@@ -117,17 +118,16 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             }
         } else if (step.isEnabled() && step.getGate() == TIE) {
             // do nothing
+            drawKeyboard = false;
         }
 
         // now redraw what needs to be redrawn
         if (drawSessions) { paraDisplay.drawSessions(memory); }
         if (drawPatterns) { paraDisplay.drawPatterns(memory); }
+        if (drawSteps) { paraDisplay.drawSteps(memory, memory.currentPattern().getSteps()); }
+        if (drawKeyboard) { paraDisplay.drawKeyboard(memory, step); }
 
-        if (drawSteps) {
-            paraDisplay.drawSteps(memory, memory.currentPattern().getSteps());
-        } else {
-            paraDisplay.drawStep(memory, step, true);
-        }
+        paraDisplay.drawStep(memory, step, true);
 
         lastStep = step;
 
@@ -323,8 +323,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 case SELECT:
                     break;
             }
-            paraDisplay.drawKeyboard(memory);
-            paraDisplay.drawStep(memory, step);
+            paraDisplay.drawStep(memory, step, false);
+            paraDisplay.drawKeyboard(memory, step);
 
         } else if (ParaUtil.keyboardControls.contains(control)) {
             // find the control's index, get the current step
@@ -332,7 +332,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             ParaStep step = memory.currentStep();
             int note = currentKeyboardOctave * 12 + index;//KEYBOARD_NOTE_TO_INDEX[index];
             step.toggleNote(note);
-            paraDisplay.drawStep(memory, step);
+            paraDisplay.drawStep(memory, step, false);
+            paraDisplay.drawKeyboard(memory, step);
 
         } else if (ParaUtil.stepSelectModeControls.contains(control)) {
             // find the control's index, get the current step
@@ -364,7 +365,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                         break;
                 }
             }
-            paraDisplay.drawStep(memory, memory.currentStep());
+            paraDisplay.drawStep(memory, memory.currentStep(), false);
 
         } else if (ParaUtil.valueControls.contains(control)) {
 

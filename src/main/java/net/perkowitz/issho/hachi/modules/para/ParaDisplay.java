@@ -11,6 +11,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
+import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
 
 
 /**
@@ -18,11 +19,20 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
  */
 public class ParaDisplay {
 
-    @Setter private GridDisplay display;
-    @Getter @Setter private Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
-    @Getter @Setter private boolean settingsMode = false;
-    @Getter @Setter private int currentFileIndex = 0;
-    @Getter @Setter private int currentKeyboardOctave = 5;
+    @Setter
+    private GridDisplay display;
+    @Getter
+    @Setter
+    private Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
+    @Getter
+    @Setter
+    private boolean settingsMode = false;
+    @Getter
+    @Setter
+    private int currentFileIndex = 0;
+    @Getter
+    @Setter
+    private int currentKeyboardOctave = 5;
 
 
     public ParaDisplay(GridDisplay display) {
@@ -126,6 +136,10 @@ public class ParaDisplay {
     }
 
     public void drawKeyboard(ParaMemory memory) {
+        drawKeyboard(memory, null);
+    }
+
+    public void drawKeyboard(ParaMemory memory, ParaStep step) {
         if (settingsMode) return;
         for (GridControl control : keyboardControls.getControls()) {
             Color color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
@@ -134,20 +148,35 @@ public class ParaDisplay {
             }
             control.draw(display, color);
         }
-//        ParaStep step = memory.currentStep();
-//        GridControl control = controls.get(step.getOctaveNote());
-//        control.draw(display, palette.get(ParaUtil.COLOR_KEYBOARD_SELECTED));
+
+        if (step != null && step.isEnabled() && step.getGate() == PLAY) {
+            int noteRangeLower = currentKeyboardOctave * 12;
+            int noteRangeUpper = noteRangeLower + 23;
+            for (int note : step.getNotes()) {
+                if (note >= noteRangeLower && note <= noteRangeUpper) {
+                    int octaveNote = note - noteRangeLower;
+                    GridControl key = keyboardControls.get(octaveNote);
+                    Color color = palette.get(COLOR_KEYBOARD_SELECTED);
+                    color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
+//                    if (highlight) {
+//                        color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
+//                    }
+                    key.draw(display, color);
+                }
+            }
+        }
+
     }
 
 
     public void drawSteps(ParaMemory memory, ParaStep[] steps) {
         if (settingsMode) return;
         for (int index = 0; index < steps.length; index++) {
-            drawStep(memory, steps[index]);
+            drawStep(memory, steps[index], false);
         }
     }
 
-    public void drawStep(ParaMemory memory, ParaStep step) {
+    public void drawStepxxxxx(ParaMemory memory, ParaStep step) {
         drawStep(memory, step, false);
     }
 
@@ -168,9 +197,6 @@ public class ParaDisplay {
         Color stepColor = palette.get(ParaUtil.COLOR_STEP_OFF);
         if (highlight) {
             stepColor = palette.get(ParaUtil.COLOR_STEP_HIGHLIGHT);
-            if (highlight && step.isEnabled()) {
-//                display.setPad(GridPad.at(keyX, keyY), palette.get(ParaUtil.COLOR_KEYBOARD_HIGHLIGHT));
-            }
         } else if (step.isEnabled()) {
             switch (step.getGate()) {
                 case PLAY:
@@ -182,25 +208,6 @@ public class ParaDisplay {
             }
         }
         display.setPad(GridPad.at(x, y), stepColor);
-
-        // draw step notes on keyboard
-        // Assumes keyboard has been drawn in its default state already
-        int noteRangeLower = currentKeyboardOctave * 12;
-        int noteRangeUpper = noteRangeLower + 23;
-        if (!highlight) {
-            drawKeyboard(memory);
-        }
-        for (int note : step.getNotes()) {
-            if (note >= noteRangeLower && note <= noteRangeUpper) {
-                int octaveNote = note - noteRangeLower;
-                GridControl key = keyboardControls.get(octaveNote);
-                Color color = palette.get(COLOR_KEYBOARD_SELECTED);
-                if (highlight) {
-                    color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
-                }
-                key.draw(display, color);
-            }
-        }
 
     }
 
