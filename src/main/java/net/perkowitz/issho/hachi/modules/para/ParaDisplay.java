@@ -24,7 +24,7 @@ public class ParaDisplay {
     @Getter @Setter private Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
     @Getter @Setter private boolean settingsMode = false;
     @Getter @Setter private int currentFileIndex = 0;
-    @Getter @Setter private int currentKeyboardOctave = 5;
+    @Setter private int currentKeyboardOctave = 5;
     @Setter private boolean stepEditing = false;
 
 
@@ -139,6 +139,9 @@ public class ParaDisplay {
             }
             control.draw(display, color);
         }
+
+        octaveDownControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_DOWN));
+        octaveUpControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_UP));
     }
 
     public void drawKeyboardNotes(Set<Integer> notes, boolean undraw, boolean stepEditing) {
@@ -146,6 +149,8 @@ public class ParaDisplay {
         if (settingsMode) return;
 
         Color color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
+        Color octaveDownColor = palette.get(COLOR_KEYBOARD_OCTAVE_DOWN);
+        Color octaveUpColor = palette.get(COLOR_KEYBOARD_OCTAVE_UP);
         if (stepEditing) {
             color = palette.get(COLOR_KEYBOARD_SELECTED);
         }
@@ -161,7 +166,16 @@ public class ParaDisplay {
                 GridControl key = keyboardControls.get(octaveNote);
                 key.draw(display, color);
             }
+            if (note < noteRangeLower) {
+                octaveDownColor = color;
+            }
+            if (note > noteRangeUpper) {
+                octaveUpColor = color;
+            }
         }
+
+        octaveDownControl.draw(display, octaveDownColor);
+        octaveUpControl.draw(display, octaveUpColor);
 
     }
 

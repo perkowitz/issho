@@ -113,8 +113,8 @@ public class ParaUtil {
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
     public static GridControl patternCopyControl = new GridControl(GridButton.at(GridButton.Side.Left, 2), 0);
     public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
-    public static GridControl octaveDownControl = new GridControl(GridPad.at(KEYBOARD_LOWER_BLACK, 0), 0);
-    public static GridControl octaveUpControl = new GridControl(GridPad.at(KEYBOARD_LOWER_BLACK, 7), 0);
+    public static GridControl octaveDownControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_WHITE), 0);
+    public static GridControl octaveUpControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_BLACK), 0);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(ParaUtil.SESSION_MIN_ROW, ParaUtil.SESSION_MAX_ROW);
@@ -134,6 +134,8 @@ public class ParaUtil {
     public static Integer COLOR_KEYBOARD_BLACK_KEY = 11;
     public static Integer COLOR_KEYBOARD_HIGHLIGHT = 12;
     public static Integer COLOR_KEYBOARD_SELECTED = 13;
+    public static Integer COLOR_KEYBOARD_OCTAVE_DOWN = 14;
+    public static Integer COLOR_KEYBOARD_OCTAVE_UP = 15;
 
     public static Integer COLOR_MODE_INACTIVE = 20;
     public static Integer COLOR_MODE_ACTIVE = 21;
@@ -174,6 +176,8 @@ public class ParaUtil {
         PALETTE_YELLOW.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
         PALETTE_YELLOW.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
         PALETTE_YELLOW.put(COLOR_KEYBOARD_SELECTED, highlightColor);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
         PALETTE_YELLOW.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
         PALETTE_YELLOW.put(COLOR_MODE_ACTIVE, mainColor);
         PALETTE_YELLOW.put(COLOR_VALUE_OFF, Color.OFF);
@@ -210,6 +214,8 @@ public class ParaUtil {
         PALETTE_ORANGE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_HIGHLIGHT, highlightColor);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_SELECTED, mainColor);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
         PALETTE_ORANGE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_MODE_ACTIVE, mainColor);
         PALETTE_ORANGE.put(COLOR_VALUE_OFF, Color.OFF);

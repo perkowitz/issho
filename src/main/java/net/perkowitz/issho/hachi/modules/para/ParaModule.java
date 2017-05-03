@@ -29,7 +29,8 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.View.SEQUENCE;
 public class ParaModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
 
     private static int MAX_VELOCITY = 127;
-    private static int MAX_OCTAVE = 7;
+    private static int MIN_OCTAVE = 0;
+    private static int MAX_OCTAVE = 10;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -146,7 +147,11 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
 //        paraDisplay.drawKeyboard();
         if (!stepEditing) {
-            paraDisplay.drawKeyboardNotes(onNotes, false, false);
+            boolean editFlag = false;
+            if (step.equals(memory.selectedStep())) {
+                editFlag = true;
+            }
+            paraDisplay.drawKeyboardNotes(onNotes, false, editFlag);
         }
 
         // always draw the step itself
@@ -360,6 +365,22 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             paraDisplay.drawKeyboard();
             paraDisplay.drawKeyboardNotes(step.getNotes(), false, true);
 
+        } else if (octaveDownControl.equals(control)) {
+            currentKeyboardOctave--;
+            if (currentKeyboardOctave < MIN_OCTAVE) {
+                currentKeyboardOctave = MIN_OCTAVE;
+            }
+            paraDisplay.setCurrentKeyboardOctave(currentKeyboardOctave);
+            paraDisplay.drawKeyboard();
+
+        } else if (octaveUpControl.equals(control)) {
+            currentKeyboardOctave++;
+            if (currentKeyboardOctave > MAX_OCTAVE) {
+                currentKeyboardOctave = MAX_OCTAVE;
+            }
+            paraDisplay.setCurrentKeyboardOctave(currentKeyboardOctave);
+            paraDisplay.drawKeyboard();
+
         } else if (ParaUtil.stepSelectModeControls.contains(control)) {
             // find the control's index, get the current step
             Integer index = ParaUtil.stepSelectModeControls.getIndex(control);
@@ -383,14 +404,14 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             if (index != null) {
                 switch (index) {
                     case 2:
-                        memory.currentStep().setGate(PLAY);
+                        memory.selectedStep().setGate(PLAY);
                         break;
                     case 3:
-                        memory.currentStep().setGate(TIE);
+                        memory.selectedStep().setGate(TIE);
                         break;
                 }
             }
-            paraDisplay.drawStep(memory, memory.currentStep(), false);
+            paraDisplay.drawStep(memory, memory.selectedStep(), false);
 
         } else if (ParaUtil.valueControls.contains(control)) {
 
