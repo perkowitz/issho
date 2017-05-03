@@ -51,6 +51,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     private int patternsReleasedCount = 0;
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
+    private boolean stepEditing = false;
     private int currentKeyboardOctave = 5;
 
     private String filePrefix = "polymodule";
@@ -79,59 +80,79 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             nextStepIndex = 0;
         }
 
-        // keep track of which things need to be redrawn and draw then AFTER sending midi notes
+        // keep track of which things need to be redrawn and draw them AFTER sending midi notes
         boolean drawSessions = false;
         boolean drawPatterns = false;
         boolean drawSteps = false;
-        boolean drawKeyboard = true;
+        boolean drawKeyboardNotes = false;
 
+        // figure out if we're starting a new pattern or session
         if (nextStepIndex == 0) {
-
             Integer nextSessionIndex = memory.getNextSessionIndex();
             if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
                 memory.setCurrentSessionIndex(nextSessionIndex);
                 drawSessions = true;
             }
-
             int currentPatternIndex = memory.getCurrentPatternIndex();
             memory.selectNextPattern();
             if (currentPatternIndex != memory.getCurrentPatternIndex()) {
                 drawPatterns = true;
                 drawSteps = true;
+                drawKeyboardNotes = true;
             }
         }
 
+        // unhighlight the previous step
         if (lastStep != null) {
             paraDisplay.drawStep(memory, lastStep, false);
-            lastStep = null;
+//            lastStep = null;
         }
 
-        ParaStep step = memory.currentPattern().getStep(nextStepIndex);
+//        paraDisplay.drawKeyboard(memory, memory.currentStep(), false);
 
+        if (!stepEditing) {
+            paraDisplay.drawKeyboardNotes(onNotes, true, false);
+        }
+
+        // advance to the next step and decide what to do
+        ParaStep step = memory.currentPattern().getStep(nextStepIndex);
         if (!step.isEnabled()) {
+            // if the step is disabled, it's a rest so we stop any previous notes
             notesOff();
+            drawKeyboardNotes = true;
         } else if (step.isEnabled() && step.getGate() == PLAY) {
+            // if it's PLAY stop any previous notes so we can play new ones
             notesOff();
+            drawKeyboardNotes = true;
             for (int note : step.getNotes()) {
                 sendMidiNote(memory.getMidiChannel(), transpose + note, step.getVelocity());
                 onNotes.add(note);
             }
         } else if (step.isEnabled() && step.getGate() == TIE) {
-            // do nothing
-            drawKeyboard = false;
+            // for a TIE we just keep doing what we've been doing
         }
 
         // now redraw what needs to be redrawn
         if (drawSessions) { paraDisplay.drawSessions(memory); }
         if (drawPatterns) { paraDisplay.drawPatterns(memory); }
         if (drawSteps) { paraDisplay.drawSteps(memory, memory.currentPattern().getSteps()); }
-        if (drawKeyboard) { paraDisplay.drawKeyboard(memory, step); }
+//        if (drawKeyboardNotes) {
+////            paraDisplay.drawKeyboard();
+//            if (lastStep != null) {
+//                paraDisplay.drawKeyboardNotes(onNotes, true);
+//            }
+//            paraDisplay.drawKeyboardNotes(step.getNotes(), false);
+//        }
 
+//        paraDisplay.drawKeyboard();
+        if (!stepEditing) {
+            paraDisplay.drawKeyboardNotes(onNotes, false, false);
+        }
+
+        // always draw the step itself
         paraDisplay.drawStep(memory, step, true);
 
         lastStep = step;
-
-        // get new note
         nextStepIndex = (nextStepIndex + 1) % ParaPattern.STEP_COUNT;
     }
 
@@ -315,7 +336,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             // find the control's index and get the corresponding step
             Integer index = ParaUtil.stepControls.getIndex(control);
             memory.selectStep(index);
-            step = memory.currentStep();
+            step = memory.selectedStep();
             switch (memory.getStepSelectMode()) {
                 case TOGGLE:
                     step.toggleEnabled();
@@ -323,17 +344,21 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 case SELECT:
                     break;
             }
+            stepEditing = true;
+            paraDisplay.setStepEditing(stepEditing);
             paraDisplay.drawStep(memory, step, false);
-            paraDisplay.drawKeyboard(memory, step);
+            paraDisplay.drawKeyboard();
+            paraDisplay.drawKeyboardNotes(step.getNotes(), false, true);
 
         } else if (ParaUtil.keyboardControls.contains(control)) {
             // find the control's index, get the current step
             Integer index = ParaUtil.keyboardControls.getIndex(control);
-            ParaStep step = memory.currentStep();
-            int note = currentKeyboardOctave * 12 + index;//KEYBOARD_NOTE_TO_INDEX[index];
+            ParaStep step = memory.selectedStep();
+            int note = currentKeyboardOctave * 12 + index;
             step.toggleNote(note);
             paraDisplay.drawStep(memory, step, false);
-            paraDisplay.drawKeyboard(memory, step);
+            paraDisplay.drawKeyboard();
+            paraDisplay.drawKeyboardNotes(step.getNotes(), false, true);
 
         } else if (ParaUtil.stepSelectModeControls.contains(control)) {
             // find the control's index, get the current step
@@ -479,6 +504,14 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                     selectPatterns(min, max);
                 }
             }
+
+        } else if (ParaUtil.stepControls.contains(control)) {
+            Integer index = ParaUtil.stepControls.getIndex(control);
+            ParaStep step = memory.currentPattern().getStep(index);
+            stepEditing = false;
+            paraDisplay.setStepEditing(stepEditing);
+            paraDisplay.drawStep(memory, step, false);
+//            paraDisplay.drawKeyboard(memory, step, false);
 
         } else if (patternCopyControl.equals(control)) {
             if (patternEditIndexBuffer.size() >= 2) {

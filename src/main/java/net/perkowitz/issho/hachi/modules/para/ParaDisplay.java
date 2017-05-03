@@ -9,6 +9,7 @@ import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.Map;
+import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
@@ -19,20 +20,12 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
  */
 public class ParaDisplay {
 
-    @Setter
-    private GridDisplay display;
-    @Getter
-    @Setter
-    private Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
-    @Getter
-    @Setter
-    private boolean settingsMode = false;
-    @Getter
-    @Setter
-    private int currentFileIndex = 0;
-    @Getter
-    @Setter
-    private int currentKeyboardOctave = 5;
+    @Setter private GridDisplay display;
+    @Getter @Setter private Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
+    @Getter @Setter private boolean settingsMode = false;
+    @Getter @Setter private int currentFileIndex = 0;
+    @Getter @Setter private int currentKeyboardOctave = 5;
+    @Setter private boolean stepEditing = false;
 
 
     public ParaDisplay(GridDisplay display) {
@@ -47,7 +40,7 @@ public class ParaDisplay {
         } else {
             drawPatterns(memory);
             drawPatternEditControls(false, false);
-            drawKeyboard(memory);
+            drawKeyboard();
             drawSteps(memory, memory.currentPattern().getSteps());
             drawStepEditControls(memory.getStepSelectMode());
         }
@@ -135,12 +128,10 @@ public class ParaDisplay {
         control.draw(display, color);
     }
 
-    public void drawKeyboard(ParaMemory memory) {
-        drawKeyboard(memory, null);
-    }
+    public void drawKeyboard() {
 
-    public void drawKeyboard(ParaMemory memory, ParaStep step) {
         if (settingsMode) return;
+
         for (GridControl control : keyboardControls.getControls()) {
             Color color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
             if (control.getPad().getY() == KEYBOARD_UPPER_BLACK || control.getPad().getY() == KEYBOARD_LOWER_BLACK) {
@@ -148,36 +139,37 @@ public class ParaDisplay {
             }
             control.draw(display, color);
         }
+    }
 
-        if (step != null && step.isEnabled() && step.getGate() == PLAY) {
-            int noteRangeLower = currentKeyboardOctave * 12;
-            int noteRangeUpper = noteRangeLower + 23;
-            for (int note : step.getNotes()) {
-                if (note >= noteRangeLower && note <= noteRangeUpper) {
-                    int octaveNote = note - noteRangeLower;
-                    GridControl key = keyboardControls.get(octaveNote);
-                    Color color = palette.get(COLOR_KEYBOARD_SELECTED);
-                    color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
-//                    if (highlight) {
-//                        color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
-//                    }
-                    key.draw(display, color);
-                }
+    public void drawKeyboardNotes(Set<Integer> notes, boolean undraw, boolean stepEditing) {
+
+        if (settingsMode) return;
+
+        Color color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
+        if (stepEditing) {
+            color = palette.get(COLOR_KEYBOARD_SELECTED);
+        }
+        if (undraw) {
+            color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
+        }
+
+        int noteRangeLower = currentKeyboardOctave * 12;
+        int noteRangeUpper = noteRangeLower + 23;
+        for (int note : notes) {
+            if (note >= noteRangeLower && note <= noteRangeUpper) {
+                int octaveNote = note - noteRangeLower;
+                GridControl key = keyboardControls.get(octaveNote);
+                key.draw(display, color);
             }
         }
 
     }
-
 
     public void drawSteps(ParaMemory memory, ParaStep[] steps) {
         if (settingsMode) return;
         for (int index = 0; index < steps.length; index++) {
             drawStep(memory, steps[index], false);
         }
-    }
-
-    public void drawStepxxxxx(ParaMemory memory, ParaStep step) {
-        drawStep(memory, step, false);
     }
 
     public void drawStepOff(ParaStep step) {

@@ -248,7 +248,7 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     public void selectStep(int index) {
 
-//        System.out.printf("selectStep: %d, %s\n", index, stepMode);
+//        System.out.printf("setCurrentStep: %d, %s\n", index, stepMode);
         Step step = memory.selectedTrack().getStep(index);
         if (stepMode == StepMode.MUTE) {
             // in mute gate, both mute/unmute and select that step

@@ -20,6 +20,7 @@ public class ParaMemory implements MemoryObject {
     @Getter @Setter private int currentSessionIndex = 0;
     @Getter private int currentPatternIndex = 0;
     @Getter private int currentStepIndex = 0;
+    @Getter private int selectedStepIndex = 0;
     @Getter @Setter private int keyboardOctave;
 
     @Getter private int playingPatternIndex;// the currently playing pattern (which might not be in the chain, if a new one has been selected)
@@ -57,6 +58,8 @@ public class ParaMemory implements MemoryObject {
         return currentPattern().getStep(currentStepIndex);
     }
 
+    public ParaStep selectedStep() { return currentPattern().getStep(selectedStepIndex); }
+
     public ParaSession getSession(int index) {
         return sessions[index];
     }
@@ -73,10 +76,14 @@ public class ParaMemory implements MemoryObject {
 
     /***** select *******************************************************/
 
-    public void selectStep(int index) {
-        currentStep().setSelected(false);
+    public void setCurrentStep(int index) {
         currentStepIndex = index;
-        currentStep().setSelected(true);
+    }
+
+    public void selectStep(int index) {
+        selectedStep().setSelected(false);
+        selectedStepIndex = index;
+        selectedStep().setSelected(true);
     }
 
     public void selectNextPattern() {
