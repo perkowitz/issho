@@ -210,10 +210,10 @@ public class ParaUtil {
         PALETTE_ORANGE.put(COLOR_STEP_TIE, mainColorDim);
         PALETTE_ORANGE.put(COLOR_STEP_REST, Color.OFF);
         PALETTE_ORANGE.put(COLOR_STEP_HIGHLIGHT, selectColor);
-        PALETTE_ORANGE.put(COLOR_KEYBOARD_WHITE_KEY, Color.fromIndex(2));
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
-        PALETTE_ORANGE.put(COLOR_KEYBOARD_HIGHLIGHT, highlightColor);
-        PALETTE_ORANGE.put(COLOR_KEYBOARD_SELECTED, mainColor);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_SELECTED, highlightColor);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
         PALETTE_ORANGE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
@@ -235,6 +235,82 @@ public class ParaUtil {
         PALETTE_ORANGE.put(COLOR_FILE_ACTIVE, Color.WHITE);
         PALETTE_ORANGE.put(COLOR_MIDI_CHANNEL, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
+    }
+
+    public static Map<Integer, Color> PALETTE_BLUE = Maps.newHashMap();
+    static {
+        Color mainColor = Color.LIGHT_BLUE;
+        Color mainColorDim = Color.DIM_BLUE;
+        Color selectColor = Color.WHITE;
+        Color highlightColor = Color.BRIGHT_GREEN;
+        PALETTE_BLUE.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE_BLUE.put(COLOR_STEP_PLAY, mainColor);
+        PALETTE_BLUE.put(COLOR_STEP_TIE, mainColorDim);
+        PALETTE_BLUE.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE_BLUE.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_SELECTED, highlightColor);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
+        PALETTE_BLUE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_MODE_ACTIVE, mainColor);
+        PALETTE_BLUE.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE_BLUE.put(COLOR_VALUE_ON, mainColor);
+        PALETTE_BLUE.put(COLOR_PATTERN, mainColorDim);
+        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_BLUE.put(COLOR_PATTERN_PLAYING, selectColor);
+        PALETTE_BLUE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_SESSION, Color.BRIGHT_BLUE);
+        PALETTE_BLUE.put(COLOR_SESSION_ACTIVE, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_FILE_LOAD, Color.BRIGHT_GREEN);
+        PALETTE_BLUE.put(COLOR_FILE_SAVE, Color.BRIGHT_RED);
+        PALETTE_BLUE.put(COLOR_FILE_ACTIVE, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_MIDI_CHANNEL, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
+    }
+
+    public static Map<Integer, Color> PALETTE_PINK = Maps.newHashMap();
+    static {
+        Color mainColor = Color.BRIGHT_PINK;
+        Color mainColorDim = Color.DIM_PINK;
+        Color selectColor = Color.WHITE;
+        Color highlightColor = Color.BRIGHT_YELLOW;
+        PALETTE_PINK.put(COLOR_STEP_OFF, Color.OFF);
+        PALETTE_PINK.put(COLOR_STEP_PLAY, mainColor);
+        PALETTE_PINK.put(COLOR_STEP_TIE, mainColorDim);
+        PALETTE_PINK.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE_PINK.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE_PINK.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
+        PALETTE_PINK.put(COLOR_KEYBOARD_SELECTED, highlightColor);
+        PALETTE_PINK.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
+        PALETTE_PINK.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
+        PALETTE_PINK.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_MODE_ACTIVE, mainColor);
+        PALETTE_PINK.put(COLOR_VALUE_OFF, Color.OFF);
+        PALETTE_PINK.put(COLOR_VALUE_ON, mainColor);
+        PALETTE_PINK.put(COLOR_PATTERN, mainColorDim);
+        PALETTE_PINK.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_PINK.put(COLOR_PATTERN_PLAYING, selectColor);
+        PALETTE_PINK.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_SESSION, Color.BRIGHT_BLUE);
+        PALETTE_PINK.put(COLOR_SESSION_ACTIVE, Color.WHITE);
+        PALETTE_PINK.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_FILE_LOAD, Color.BRIGHT_GREEN);
+        PALETTE_PINK.put(COLOR_FILE_SAVE, Color.BRIGHT_RED);
+        PALETTE_PINK.put(COLOR_FILE_ACTIVE, Color.WHITE);
+        PALETTE_PINK.put(COLOR_MIDI_CHANNEL, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
     }
 
 }

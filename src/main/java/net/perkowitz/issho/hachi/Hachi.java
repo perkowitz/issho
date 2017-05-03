@@ -251,6 +251,10 @@ public class Hachi {
                 Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
                 if (paletteName != null && paletteName.toUpperCase().equals("ORANGE")) {
                     palette = ParaUtil.PALETTE_ORANGE;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("BLUE")) {
+                    palette = ParaUtil.PALETTE_BLUE;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("PINK")) {
+                    palette = ParaUtil.PALETTE_PINK;
                 }
                 module = new ParaModule(midiTransmitter, midiReceiver, palette, filePrefix);
 
