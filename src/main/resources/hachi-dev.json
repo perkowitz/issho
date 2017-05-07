@@ -26,7 +26,8 @@
     {
       "class": "ParaModule",
       "palette": "yellow",
-      "filePrefix": "para0"
+      "filePrefix": "para0",
+      "monophonic": false
     },
     {
       "class": "PaletteModule"

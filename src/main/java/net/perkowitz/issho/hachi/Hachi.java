@@ -256,7 +256,14 @@ public class Hachi {
                 } else if (paletteName != null && paletteName.toUpperCase().equals("PINK")) {
                     palette = ParaUtil.PALETTE_PINK;
                 }
-                module = new ParaModule(midiTransmitter, midiReceiver, palette, filePrefix);
+                ParaModule paraModule = new ParaModule(midiTransmitter, midiReceiver, palette, filePrefix);
+                if (moduleSettings.get("monophonic") != null) {
+                    Boolean monophonic = (Boolean)moduleSettings.get("monophonic");
+                    if (monophonic != null) {
+                        paraModule.setMonophonic(monophonic);
+                    }
+                }
+                module = paraModule;
 
             } else if (className.equals("StepModule")) {
                 module = new StepModule(midiTransmitter, midiReceiver, filePrefix);

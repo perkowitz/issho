@@ -3,6 +3,7 @@ package net.perkowitz.issho.hachi.modules.para;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
@@ -29,8 +30,6 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.View.SEQUENCE;
 public class ParaModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
 
     private static int MAX_VELOCITY = 127;
-    private static int MIN_OCTAVE = 0;
-    private static int MAX_OCTAVE = 10;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -54,6 +53,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     private boolean patternEditing = false;
     private boolean stepEditing = false;
     private int currentKeyboardOctave = 5;
+    @Setter private boolean monophonic = false;
+    @Setter int controlA = 1;
 
     private String filePrefix = "polymodule";
     private int currentFileIndex = 0;
@@ -115,8 +116,15 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             paraDisplay.drawKeyboardNotes(onNotes, true, false);
         }
 
-        // advance to the next step and decide what to do
+        // advance to the next step and play notes
         ParaStep step = memory.currentPattern().getStep(nextStepIndex);
+
+        // if controller is set and step enabled, send controller (even if step is a TIE or no notes programmed)
+        if (step.isEnabled() && step.getControlA() != null) {
+            sendMidiCC(memory.getMidiChannel(), controlA, step.getControlA());
+        }
+
+        // send notes
         if (!step.isEnabled()) {
             // if the step is disabled, it's a rest so we stop any previous notes
             notesOff();
@@ -360,7 +368,11 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             Integer index = ParaUtil.keyboardControls.getIndex(control);
             ParaStep step = memory.selectedStep();
             int note = currentKeyboardOctave * 12 + index;
-            step.toggleNote(note);
+            if (monophonic) {
+                step.setNote(note);
+            } else {
+                step.toggleNote(note);
+            }
             paraDisplay.drawStep(memory, step, false);
             paraDisplay.drawKeyboard();
             paraDisplay.drawKeyboardNotes(step.getNotes(), false, true);
@@ -372,6 +384,9 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             }
             paraDisplay.setCurrentKeyboardOctave(currentKeyboardOctave);
             paraDisplay.drawKeyboard();
+            if (stepEditing) {
+                paraDisplay.drawKeyboardNotes(memory.selectedStep().getNotes(), false, true);
+            }
 
         } else if (octaveUpControl.equals(control)) {
             currentKeyboardOctave++;
@@ -380,6 +395,22 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             }
             paraDisplay.setCurrentKeyboardOctave(currentKeyboardOctave);
             paraDisplay.drawKeyboard();
+            if (stepEditing) {
+                paraDisplay.drawKeyboardNotes(memory.selectedStep().getNotes(), false, true);
+            }
+
+        } else if (transposeDownControl.equals(control) || transposeUpControl.equals(control)) {
+            int steps = 12;
+            if (transposeDownControl.equals(control)) {
+                steps = -12;
+            }
+            if (memory.selectedStep() != null) {
+                memory.selectedStep().transpose(steps);
+            }
+            paraDisplay.drawKeyboard();
+            if (stepEditing) {
+                paraDisplay.drawKeyboardNotes(memory.selectedStep().getNotes(), false, true);
+            }
 
         } else if (ParaUtil.stepSelectModeControls.contains(control)) {
             // find the control's index, get the current step

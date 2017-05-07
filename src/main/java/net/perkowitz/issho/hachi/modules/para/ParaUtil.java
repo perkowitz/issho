@@ -38,6 +38,12 @@ public class ParaUtil {
         SEQUENCE, SETTINGS
     }
 
+    public static int MIN_OCTAVE = 0;
+    public static int MAX_OCTAVE = 9;
+    public static int MIN_NOTE = MIN_OCTAVE * 12;
+    public static int MAX_NOTE = MAX_OCTAVE * 12 + 11;
+
+
     /***** locations of various controls on the grid ************************/
     public static int PATTERN_MIN_ROW = 0;
     public static int PATTERN_MAX_ROW = 1;
@@ -115,6 +121,8 @@ public class ParaUtil {
     public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
     public static GridControl octaveDownControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_WHITE), 0);
     public static GridControl octaveUpControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_BLACK), 0);
+    public static GridControl transposeDownControl = new GridControl(GridPad.at(7, KEYBOARD_UPPER_WHITE), 0);
+    public static GridControl transposeUpControl = new GridControl(GridPad.at(7, KEYBOARD_UPPER_BLACK), 0);
 
     // settings
     public static GridControlSet sessionControls = GridControlSet.padRows(ParaUtil.SESSION_MIN_ROW, ParaUtil.SESSION_MAX_ROW);
@@ -136,6 +144,8 @@ public class ParaUtil {
     public static Integer COLOR_KEYBOARD_SELECTED = 13;
     public static Integer COLOR_KEYBOARD_OCTAVE_DOWN = 14;
     public static Integer COLOR_KEYBOARD_OCTAVE_UP = 15;
+    public static Integer COLOR_KEYBOARD_TRANSPOSE_DOWN = 16;
+    public static Integer COLOR_KEYBOARD_TRANSPOSE_UP = 17;
 
     public static Integer COLOR_MODE_INACTIVE = 20;
     public static Integer COLOR_MODE_ACTIVE = 21;
@@ -178,6 +188,8 @@ public class ParaUtil {
         PALETTE_YELLOW.put(COLOR_KEYBOARD_SELECTED, highlightColor);
         PALETTE_YELLOW.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
         PALETTE_YELLOW.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_TRANSPOSE_DOWN, mainColorDim);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_TRANSPOSE_UP, mainColorDim);
         PALETTE_YELLOW.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
         PALETTE_YELLOW.put(COLOR_MODE_ACTIVE, mainColor);
         PALETTE_YELLOW.put(COLOR_VALUE_OFF, Color.OFF);
@@ -216,6 +228,8 @@ public class ParaUtil {
         PALETTE_ORANGE.put(COLOR_KEYBOARD_SELECTED, highlightColor);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_TRANSPOSE_DOWN, mainColorDim);
+        PALETTE_ORANGE.put(COLOR_KEYBOARD_TRANSPOSE_UP, mainColorDim);
         PALETTE_ORANGE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_MODE_ACTIVE, mainColor);
         PALETTE_ORANGE.put(COLOR_VALUE_OFF, Color.OFF);
@@ -254,6 +268,8 @@ public class ParaUtil {
         PALETTE_BLUE.put(COLOR_KEYBOARD_SELECTED, highlightColor);
         PALETTE_BLUE.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
         PALETTE_BLUE.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_TRANSPOSE_DOWN, mainColorDim);
+        PALETTE_BLUE.put(COLOR_KEYBOARD_TRANSPOSE_UP, mainColorDim);
         PALETTE_BLUE.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
         PALETTE_BLUE.put(COLOR_MODE_ACTIVE, mainColor);
         PALETTE_BLUE.put(COLOR_VALUE_OFF, Color.OFF);
@@ -292,6 +308,8 @@ public class ParaUtil {
         PALETTE_PINK.put(COLOR_KEYBOARD_SELECTED, highlightColor);
         PALETTE_PINK.put(COLOR_KEYBOARD_OCTAVE_DOWN, selectColor);
         PALETTE_PINK.put(COLOR_KEYBOARD_OCTAVE_UP, selectColor);
+        PALETTE_PINK.put(COLOR_KEYBOARD_TRANSPOSE_DOWN, mainColorDim);
+        PALETTE_PINK.put(COLOR_KEYBOARD_TRANSPOSE_UP, mainColorDim);
         PALETTE_PINK.put(COLOR_MODE_INACTIVE, Color.DARK_GRAY);
         PALETTE_PINK.put(COLOR_MODE_ACTIVE, mainColor);
         PALETTE_PINK.put(COLOR_VALUE_OFF, Color.OFF);

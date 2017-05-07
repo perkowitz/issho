@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
-import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
 
 
 /**
@@ -142,6 +141,8 @@ public class ParaDisplay {
 
         octaveDownControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_DOWN));
         octaveUpControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_UP));
+        transposeDownControl.draw(display, palette.get(COLOR_KEYBOARD_TRANSPOSE_DOWN));
+        transposeUpControl.draw(display, palette.get(COLOR_KEYBOARD_TRANSPOSE_DOWN));
     }
 
     public void drawKeyboardNotes(Set<Integer> notes, boolean undraw, boolean stepEditing) {
