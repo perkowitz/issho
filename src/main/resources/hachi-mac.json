@@ -49,6 +49,18 @@
       "filePrefix": "beat2"
     },
     {
+      "class": "ParaModule",
+      "palette": "yellow",
+      "filePrefix": "para0",
+      "monophonic": false
+    },
+    {
+      "class": "ParaModule",
+      "palette": "pink",
+      "filePrefix": "para1",
+      "monophonic": true
+    },
+    {
       "class": "MonoModule",
       "filePrefix": "mono1"
     },
@@ -56,12 +68,6 @@
       "class": "MonoModule",
       "filePrefix": "mono2",
       "palette": "orange"
-    },
-    {
-      "class": "ParaModule",
-      "palette": "yellow",
-      "filePrefix": "para0",
-      "monophonic": false
     },
     {
       "class": "StepModule",

@@ -39,7 +39,7 @@ the desired destinaton. For clear, hold down the clear button and tap the patter
 
 ### Keyboard
 
-These pads form a simple one-octave keyboard, starting from C on the left. These keys can used
+These pads form a simple one-octave keyboard, starting from C on the left. These keys can be used
 to select the note for the currently selected step. 
 
 ### Steps
@@ -81,7 +81,7 @@ Tap a session pad to select that session from memory. The current session is lit
 ### Files
 
 Tap a load pad to load the file with the corresponding number. For example,
-if Step is configured to use "mono" as a file prefix, pressing the first
+if Mono is configured to use "mono" as a file prefix, pressing the first
 pad will load "mono-0.json" into memory. Similarly, tap a save pad to save 
 the current memory to the corresponding file. The previous file will be moved
 to a backup (but only the most recent backup will be retained). The most recently
