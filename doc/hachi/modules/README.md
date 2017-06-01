@@ -5,6 +5,9 @@
 - [Rhythm](rhythm.md): a 16-track drum sequencer.
 - [Mono](mono.md): a monophonic sequencer with an X0X-style grid and simple keyboard.
 - [Step](step.md): a monophonic analog-inspired sequencer.
+- [Minibeat](minibeat.md): a simple 8-track drum sequencer.
+- [Beat](beat.md): an improved 16-track drum sequencer.
+- [Para](para.md): a paraphonic sequencer.
 
 ## Graphics
 - [Draw](draw.md): a simple drawing tool with clocked frame animation.
