@@ -16,7 +16,7 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 ## Main View
 
-<!--<img width="600px" src="beat.png"/>-->
+<img width="600px" src="beat.png"/>
 
 ### Standard Controls
 
@@ -57,7 +57,7 @@ selecting a fill pattern for editing, the value buttons set the fill probability
 
 ## Settings View
 
-<!--<img width="600px" src="beat-settings.png"/>-->
+<img width="600px" src="beat-settings.png"/>
 
 ### Sessions
 
