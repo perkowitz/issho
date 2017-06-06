@@ -9,7 +9,7 @@ be completely controlled separately. Instead, it is programmed much like a monop
 active step ends all the previously-played notes. A step can be a "tie", which means it will continue
 notes played by a previous step. In essence, Para can play chords at each step, but cannot, for example,
 sustain one note while a sequence of other notes play beneath it. This makes for a simplified 
-interface that allows easy creation of chord sequences.
+interface that allows for easy creation of chord sequences.
 
 
 Para can hold 16 sessions in memory at a time. 
