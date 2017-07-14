@@ -1,14 +1,14 @@
 # Overview
 
-Minibeat is a drum sequencer. 
+Beat is a drum sequencer. 
 
-minibeat can hold 16 sessions in memory at a time. 
+Beat can hold 16 sessions in memory at a time. 
 Each session contains 16 patterns.
-Each pattern has 8 instrument tracks.
+Each pattern has 16 instrument tracks.
 Each track consists of 16 steps. 
 Each step can play a note (with settable velocity) or rest.
 The entire contents of memory can be saved to a file. 
-Within the Minibeat module, 8 different files can be saved and loaded, but
+Within the Beat module, 16 different files can be saved and loaded, but
 the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 
@@ -16,7 +16,7 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 ## Main View
 
-<img width="600px" src="beat.png"/>
+<!--<img width="600px" src="beat.png"/>-->
 
 ### Standard Controls
 
@@ -57,7 +57,7 @@ selecting a fill pattern for editing, the value buttons set the fill probability
 
 ## Settings View
 
-<img width="600px" src="beat-settings.png"/>
+<!--<img width="600px" src="beat-settings.png"/>-->
 
 ### Sessions
 
@@ -81,8 +81,8 @@ notes on that channel.
 
 # Configuration
 
-Minibeat has a configuration option for the file prefix, used to specify filenames for saving data. 
-Minibeat can also be set to use a green or blue color palette. Minibeat uses a default set of
+Beat has a configuration option for the file prefix, used to specify filenames for saving data. 
+Beat can also be set to use a green or blue color palette. Beat uses a default set of
 midi notes for its various tracks, corresponding to standard MIDI drum mappings. The ```midiNoteOffset```
 setting can be used to transpose all of the tracks by a number of semitones. For example, setting this
 value to 24 will transpose all note numbers by two octaves. 
@@ -90,7 +90,7 @@ value to 24 will transpose all note numbers by two octaves.
 ```
   "modules": [
     {
-      "class": "MinibeatModule",
+      "class": "BeatModule",
       "filePrefix": "beat0",
       "palette": "green",
       "midiNoteOffset": 24

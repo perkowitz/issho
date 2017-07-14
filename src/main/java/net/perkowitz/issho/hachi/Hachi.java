@@ -12,6 +12,8 @@ import net.perkowitz.issho.hachi.modules.minibeat.MinibeatModule;
 import net.perkowitz.issho.hachi.modules.minibeat.MinibeatUtil;
 import net.perkowitz.issho.hachi.modules.mono.MonoModule;
 import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
+import net.perkowitz.issho.hachi.modules.para.ParaModule;
+import net.perkowitz.issho.hachi.modules.para.ParaUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
@@ -244,6 +246,24 @@ public class Hachi {
                     palette = MonoUtil.PALETTE_ORANGE;
                 }
                 module = new MonoModule(midiTransmitter, midiReceiver, palette, filePrefix);
+
+            } else if (className.equals("ParaModule")) {
+                Map<Integer, Color> palette = ParaUtil.PALETTE_YELLOW;
+                if (paletteName != null && paletteName.toUpperCase().equals("ORANGE")) {
+                    palette = ParaUtil.PALETTE_ORANGE;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("BLUE")) {
+                    palette = ParaUtil.PALETTE_BLUE;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("PINK")) {
+                    palette = ParaUtil.PALETTE_PINK;
+                }
+                ParaModule paraModule = new ParaModule(midiTransmitter, midiReceiver, palette, filePrefix);
+                if (moduleSettings.get("monophonic") != null) {
+                    Boolean monophonic = (Boolean)moduleSettings.get("monophonic");
+                    if (monophonic != null) {
+                        paraModule.setMonophonic(monophonic);
+                    }
+                }
+                module = paraModule;
 
             } else if (className.equals("StepModule")) {
                 module = new StepModule(midiTransmitter, midiReceiver, filePrefix);

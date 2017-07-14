@@ -44,6 +44,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     public GridListener getGridListener() { return null; }
 
     public void redraw() {
+        display.initialize();
         drawSessions();
         drawFiles();
         drawMidiChannel();
