@@ -9,9 +9,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
-import net.perkowitz.issho.hachi.modules.ChordModule;
-import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.hachi.modules.Muteable;
+import net.perkowitz.issho.hachi.modules.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -29,24 +27,17 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.View.SEQUENCE;
  */
 public class ParaModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
 
-    private static int MAX_VELOCITY = 127;
-
     ObjectMapper objectMapper = new ObjectMapper();
 
     private ParaMemory memory = new ParaMemory();
-    private int nextStepIndex = 0;
     private ParaDisplay paraDisplay;
+    private SettingsSubmodule settingsModule;
 
     private Set<Integer> onNotes = Sets.newHashSet();
 
-    private static Timer timer = null;
-    private static int flashIntervalMillis = 125;
-    private static int flashCount = 0;
-
     private ParaStep lastStep = null;
 
-    private View currentView = SEQUENCE;
-
+    private int nextStepIndex = 0;
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private int patternsReleasedCount = 0;
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
@@ -69,8 +60,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         paraDisplay = new ParaDisplay(this.display);
         paraDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
-//        startTimer();
         load(0);
+        this.settingsModule = new SettingsSubmodule();
     }
 
 
@@ -93,6 +84,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             Integer nextSessionIndex = memory.getNextSessionIndex();
             if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
                 memory.setCurrentSessionIndex(nextSessionIndex);
+                settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 drawSessions = true;
             }
             int currentPatternIndex = memory.getCurrentPatternIndex();
@@ -142,7 +134,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         }
 
         // now redraw what needs to be redrawn
-        if (drawSessions) { paraDisplay.drawSessions(memory); }
+        if (paraDisplay.isSettingsMode() && drawSessions) { settingsModule.drawSessions(); }
         if (drawPatterns) { paraDisplay.drawPatterns(memory); }
         if (drawSteps) { paraDisplay.drawSteps(memory, memory.currentPattern().getSteps()); }
 //        if (drawKeyboardNotes) {
@@ -226,40 +218,22 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     }
 
-    public void startTimer() {
-
-        if (timer != null) {
-            timer.cancel();
-        }
-
-        timer = new Timer();
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-//                ParaStep step = memory.currentStep();
-//                if (step != null) {
-//                    if (flashCount == 0) {
-//                        paraDisplay.drawStepOff(step);
-//                    } else {
-//                        paraDisplay.drawStep(step);
-//                    }
-//                }
-//                flashCount = (flashCount + 1) % 2;
-            }
-        }, flashIntervalMillis, flashIntervalMillis);
-    }
-
 
     /***** Module implementation ***********************************/
 
     public void redraw() {
-        paraDisplay.redraw(memory);
+        if (paraDisplay.isSettingsMode()) {
+            settingsModule.redraw();
+        } else {
+            paraDisplay.redraw(memory);
+        }
         paraDisplay.drawFunctions(isMuted);
     }
 
     public void setDisplay(GridDisplay display) {
         this.display = display;
         this.paraDisplay.setDisplay(display);
+        this.settingsModule.setDisplay(display);
     }
 
     public void shutdown() {
@@ -282,7 +256,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     public void selectSession(int index) {
         memory.setNextSessionIndex(index);
-        paraDisplay.drawSessions(memory);
+        settingsModule.setCurrentSessionIndex(index);
+        redraw();
     }
 
     public void selectPatterns(int firstIndex, int lastIndex) {
@@ -313,12 +288,29 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     private void onControlPressed(GridControl control, int velocity) {
 
-        if (paraDisplay.isSettingsMode()) {
-            onControlPressedSettings(control, velocity);
-            return;
-        }
+        // these controls apply in main view or settings view
+        if (ParaUtil.functionControls.contains(control)) {
+            // find the control's index, get the current step
+            Integer index = ParaUtil.functionControls.getIndex(control);
+            if (index != null) {
+                if (index == FUNCTION_SAVE_INDEX) {
+                    this.save(settingsModule.getCurrentFileIndex());
+                    save(currentFileIndex);
+                    paraDisplay.drawFunctions(isMuted);
+                } else if (index == FUNCTION_MUTE_INDEX) {
+                    this.isMuted = !isMuted;
+                    paraDisplay.drawFunctions(isMuted);
+                } else if (index == FUNCTION_SETTINGS_INDEX) {
+                    paraDisplay.toggleSettings();
+                    this.redraw();
+                }
+            }
 
-        if (ParaUtil.patternControls.contains(control)) {
+        } else if (paraDisplay.isSettingsMode()) {
+            // now check if we're in settings view and then process the input accordingly
+            onControlPressedSettings(control, velocity);
+
+        } else if (ParaUtil.patternControls.contains(control)) {
             // find the control's index and get the corresponding pattern
             GridControl selectedControl = ParaUtil.patternControls.get(control);
             Integer index = selectedControl.getIndex();
@@ -463,68 +455,26 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 }
             }
 
-        } else if (ParaUtil.functionControls.contains(control)) {
-
-            // find the control's index, get the current step
-            Integer index = ParaUtil.functionControls.getIndex(control);
-            if (index != null) {
-                if (index == FUNCTION_SAVE_INDEX) {
-                    save(currentFileIndex);
-//                } else if (index == FUNCTION_LOAD_INDEX) {
-//                    load(currentFileIndex);
-//                    paraDisplay.redraw(memory);
-                } else if (index == FUNCTION_MUTE_INDEX) {
-                    this.isMuted = !isMuted;
-                    paraDisplay.redraw(memory);
-                } else if (index == FUNCTION_SETTINGS_INDEX) {
-                    paraDisplay.toggleSettings();
-                    paraDisplay.initialize();
-                    paraDisplay.redraw(memory);
-                }
-                paraDisplay.drawFunctions(isMuted);
-            }
-
         }
 
     }
 
     private void onControlPressedSettings(GridControl control, int velocity) {
 
-        if (ParaUtil.sessionControls.contains(control)) {
-            Integer index = ParaUtil.sessionControls.getIndex(control);
-            selectSession(index);
-
-        } else if (ParaUtil.loadControls.contains(control)) {
-            Integer index = ParaUtil.loadControls.getIndex(control);
-            currentFileIndex = index;
-            paraDisplay.setCurrentFileIndex(currentFileIndex);
-            load(currentFileIndex);
-            paraDisplay.redraw(memory);
-
-        } else if (ParaUtil.saveControls.contains(control)) {
-            Integer index = ParaUtil.saveControls.getIndex(control);
-            currentFileIndex = index;
-            paraDisplay.setCurrentFileIndex(currentFileIndex);
-            save(currentFileIndex);
-            paraDisplay.redraw(memory);
-
-        } else if (ParaUtil.midiChannelControls.contains(control)) {
-            Integer index = ParaUtil.midiChannelControls.getIndex(control);
-            notesOff();
-            memory.setMidiChannel(index);
-            paraDisplay.drawMidiChannel(memory);
-
-        } else if (ParaUtil.functionControls.contains(control)) {
-            Integer index = ParaUtil.functionControls.getIndex(control);
-            if (index != null) {
-                if (index == FUNCTION_SETTINGS_INDEX) {
-                    paraDisplay.toggleSettings();
-                    paraDisplay.initialize();
-                    paraDisplay.redraw(memory);
-                }
-                paraDisplay.drawFunctions(isMuted);
-            }
-
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
+        switch (settingsChanged) {
+            case SELECT_SESSION:
+                selectSession(settingsModule.getNextSessionIndex());
+                break;
+            case LOAD_FILE:
+                load(settingsModule.getCurrentFileIndex());
+                break;
+            case SAVE_FILE:
+                save(settingsModule.getCurrentFileIndex());
+                break;
+            case SET_MIDI_CHANNEL:
+                memory.setMidiChannel(settingsModule.getMidiChannel());
+                break;
         }
     }
 

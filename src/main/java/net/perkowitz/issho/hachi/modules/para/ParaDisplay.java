@@ -32,59 +32,12 @@ public class ParaDisplay {
     }
 
     public void redraw(ParaMemory memory) {
-        if (settingsMode) {
-            drawSessions(memory);
-            drawFiles(memory);
-            drawMidiChannel(memory);
-        } else {
-            drawPatterns(memory);
-            drawPatternEditControls(false, false);
-            drawKeyboard();
-            drawSteps(memory, memory.currentPattern().getSteps());
-            drawStepEditControls(memory.getStepSelectMode());
-        }
-    }
-
-    public void drawFiles(ParaMemory memory) {
-        if (!settingsMode) return;
-        for (GridControl control : loadControls.getControls()) {
-            Color color = palette.get(COLOR_FILE_LOAD);
-            if (control.getIndex() == currentFileIndex) {
-                color = palette.get(COLOR_FILE_ACTIVE);
-            }
-            control.draw(display, color);
-        }
-        for (GridControl control : saveControls.getControls()) {
-            Color color = palette.get(COLOR_FILE_SAVE);
-            if (control.getIndex() == currentFileIndex) {
-                color = palette.get(COLOR_FILE_ACTIVE);
-            }
-            control.draw(display, color);
-        }
-    }
-
-    public void drawSessions(ParaMemory memory) {
-        if (!settingsMode) return;
-        for (GridControl control : sessionControls.getControls()) {
-            Color color = palette.get(COLOR_SESSION);
-            if (control.getIndex() == memory.getCurrentSessionIndex()) {
-                color = palette.get(COLOR_SESSION_ACTIVE);
-            } else if (control.getIndex() == memory.getNextSessionIndex()) {
-                color = palette.get(COLOR_SESSION_NEXT);
-            }
-            control.draw(display, color);
-        }
-    }
-
-    public void drawMidiChannel(ParaMemory memory) {
-        if (!settingsMode) return;
-        for (GridControl control : midiChannelControls.getControls()) {
-            Color color = palette.get(COLOR_MIDI_CHANNEL);
-            if (control.getIndex() == memory.getMidiChannel()) {
-                color = palette.get(COLOR_MIDI_CHANNEL_ACTIVE);
-            }
-            control.draw(display, color);
-        }
+        if (settingsMode) return;
+        drawPatterns(memory);
+        drawPatternEditControls(false, false);
+        drawKeyboard();
+        drawSteps(memory, memory.currentPattern().getSteps());
+        drawStepEditControls(memory.getStepSelectMode());
     }
 
     public void drawPatterns(ParaMemory memory) {
@@ -98,6 +51,7 @@ public class ParaDisplay {
     }
 
     public void drawPatternEditControls(boolean copyActive, boolean clearActive) {
+        if (settingsMode) return;
         if (copyActive) {
             patternCopyControl.draw(display, palette.get(COLOR_PATTERN_EDIT_SELECTED));
         } else {

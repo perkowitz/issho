@@ -54,17 +54,7 @@ public class ParaUtil {
     public static int STEP_MIN_ROW = 6;
     public static int STEP_MAX_ROW = 7;
 
-    // settings
-    public static int SESSION_MIN_ROW = 0;
-    public static int SESSION_MAX_ROW = 1;
-    public static int FILE_LOAD_ROW = 2;
-    public static int FILE_SAVE_ROW = 3;
-    public static int MIDI_CHANNEL_MIN_ROW = 6;
-    public static int MIDI_CHANNEL_MAX_ROW = 7;
-
     public static int LOWEST_OCTAVE = 1;
-
-    public static GridControl SAVE_CONTROL = new GridControl(GridButton.at(GridButton.Side.Left, 7), 0);
 
     public static int STEP_CONTROL_SHIFT_LEFT_INDEX = 6;
     public static int STEP_CONTROL_SHIFT_RIGHT_INDEX = 7;
@@ -106,7 +96,6 @@ public class ParaUtil {
 
     // indices for functions
     public static int FUNCTION_SAVE_INDEX = 5;
-//    public static int FUNCTION_LOAD_INDEX = 6;
     public static int FUNCTION_SETTINGS_INDEX = 6;
     public static int FUNCTION_MUTE_INDEX = 7;
 
@@ -123,12 +112,6 @@ public class ParaUtil {
     public static GridControl octaveUpControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_BLACK), 0);
     public static GridControl transposeDownControl = new GridControl(GridPad.at(7, KEYBOARD_UPPER_WHITE), 0);
     public static GridControl transposeUpControl = new GridControl(GridPad.at(7, KEYBOARD_UPPER_BLACK), 0);
-
-    // settings
-    public static GridControlSet sessionControls = GridControlSet.padRows(ParaUtil.SESSION_MIN_ROW, ParaUtil.SESSION_MAX_ROW);
-    public static GridControlSet loadControls = GridControlSet.padRows(ParaUtil.FILE_LOAD_ROW, ParaUtil.FILE_LOAD_ROW);
-    public static GridControlSet saveControls = GridControlSet.padRows(ParaUtil.FILE_SAVE_ROW, ParaUtil.FILE_SAVE_ROW);
-    public static GridControlSet midiChannelControls = GridControlSet.padRows(ParaUtil.MIDI_CHANNEL_MIN_ROW, ParaUtil.MIDI_CHANNEL_MAX_ROW);
 
 
     /***** color palettes **********************************************************/
