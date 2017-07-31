@@ -347,10 +347,10 @@ public class HachiController implements GridListener, Clockable, Receiver {
             } else {
                 switch (command) {
                     case NOTE_ON:
-                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+//                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         break;
                     case NOTE_OFF:
-                        System.out.println("NOTE OFF");
+//                        System.out.println("NOTE OFF");
                         break;
                     case CONTROL_CHANGE:
 //                        System.out.println("MIDI CC");

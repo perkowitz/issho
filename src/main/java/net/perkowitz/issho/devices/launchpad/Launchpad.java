@@ -1,22 +1,21 @@
-package net.perkowitz.issho.devices.launchpadpro;
+package net.perkowitz.issho.devices.launchpad;
 
 
 import com.google.common.collect.Sets;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
+import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import javax.sound.midi.*;
-
 import java.util.Set;
 
 import static javax.sound.midi.ShortMessage.*;
 import static net.perkowitz.issho.devices.GridButton.Side.*;
-import static net.perkowitz.issho.devices.GridButton.Side.Top;
 
 /**
  * Created by optic on 9/3/16.
  */
-public class LaunchpadPro implements GridDevice {
+public class Launchpad implements GridDevice {
 
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
@@ -25,7 +24,7 @@ public class LaunchpadPro implements GridDevice {
     private Receiver receiver;
     @Setter private GridListener listener;
 
-    public LaunchpadPro(Receiver receiver, GridListener listener) {
+    public Launchpad(Receiver receiver, GridListener listener) {
         this.receiver = receiver;
         this.listener = listener;
     }
@@ -63,7 +62,19 @@ public class LaunchpadPro implements GridDevice {
     }
 
     public void setButton(GridButton button, GridColor color) {
-        cc(CHANNEL, buttonToCc(button), color.getIndex());
+        if (button.getSide() == GridButton.Side.Left) {
+            // nope
+        } else if (button.getSide() == GridButton.Side.Bottom) {
+            // nope
+        } else if (button.getSide() == GridButton.Side.Right) {
+            // right side uses notes, as though they were a 9th column of the grid pad
+            int note = (button.getIndex()) * 16 + 8;
+            note(CHANNEL, note, color.getIndex());
+        } else if (button.getSide() == GridButton.Side.Top) {
+            // nope
+            int cc = 104 + button.getIndex();
+            cc(CHANNEL, cc, color.getIndex());
+        }
     }
 
     public void setSide() {
@@ -187,12 +198,12 @@ public class LaunchpadPro implements GridDevice {
     }
 
     private int padToNote(GridPad pad) {
-        return (7-pad.getY()) * 10 + pad.getX() + 11;
+        return (pad.getY()) * 16 + pad.getX();
     }
 
     private GridPad noteToPad(int note) {
-        int x = note % 10 - 1;
-        int y = 7 - (note / 10 - 1);
+        int x = note % 16;
+        int y = (note / 16);
         return GridPad.at(x, y);
 
     }

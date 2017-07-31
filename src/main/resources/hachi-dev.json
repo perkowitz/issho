@@ -3,18 +3,26 @@
   "midiContinueAsStart": true,
   "devices": {
     "controller": {
+      "type": "launchpadpro",
       "names": [
         "Launchpad",
         "Standalone"
-        ]
+      ]
     },
     "midi": {
+      "type": "launchpadpro",
       "names":[
         "Launchpad Pro",
         "Midi Port"
+      ]
+    },
+    "controllerMirror": {
+      "type": "launchpad",
+      "names": [
+        "Launchpad"
         ]
     },
-    "keyboard": {
+    "xxxkeyboard": {
       "names": [
         "LPK25"
       ],
@@ -24,13 +32,46 @@
   },
   "modules": [
     {
+      "class": "ShihaiModule",
+      "panicExclude": [14, 15]
+    },
+    {
+      "class": "BeatModule",
+      "palette": "Blue",
+      "filePrefix": "beat0"
+    },
+    {
+      "class": "BeatModule",
+      "palette": "Pink",
+      "midiNoteOffset": 24,
+      "filePrefix": "beat1"
+    },
+    {
+      "class": "BeatModule",
+      "palette": "Green",
+      "filePrefix": "beat2"
+    },
+    {
+      "class": "ParaModule",
+      "palette": "pink",
+      "filePrefix": "para1",
+      "monophonic": true
+    },
+    {
       "class": "ParaModule",
       "palette": "yellow",
       "filePrefix": "para0",
       "monophonic": false
     },
     {
-      "class": "PaletteModule"
+      "class": "ParaModule",
+      "palette": "blue",
+      "filePrefix": "para1",
+      "monophonic": false
+    },
+    {
+      "class": "StepModule",
+      "filePrefix": "step1"
     }
   ]
 }

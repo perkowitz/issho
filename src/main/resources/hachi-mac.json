@@ -50,24 +50,21 @@
     },
     {
       "class": "ParaModule",
+      "palette": "pink",
+      "filePrefix": "para1",
+      "monophonic": true
+    },
+    {
+      "class": "ParaModule",
       "palette": "yellow",
       "filePrefix": "para0",
       "monophonic": false
     },
     {
       "class": "ParaModule",
-      "palette": "pink",
+      "palette": "blue",
       "filePrefix": "para1",
-      "monophonic": true
-    },
-    {
-      "class": "MonoModule",
-      "filePrefix": "mono1"
-    },
-    {
-      "class": "MonoModule",
-      "filePrefix": "mono2",
-      "palette": "orange"
+      "monophonic": false
     },
     {
       "class": "StepModule",
