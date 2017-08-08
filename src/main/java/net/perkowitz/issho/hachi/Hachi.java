@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import net.perkowitz.issho.devices.GridDevice;
 import net.perkowitz.issho.devices.GridDisplay;
 import net.perkowitz.issho.devices.Keyboard;
-import net.perkowitz.issho.devices.MultiDevice;
 import net.perkowitz.issho.devices.launchpad.Launchpad;
 import net.perkowitz.issho.devices.launchpadpro.*;
 import net.perkowitz.issho.hachi.modules.*;
@@ -95,28 +94,36 @@ public class Hachi {
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
 
 
+        List<GridDevice> gridDevices = getControllers();
 
-        GridDevice mainDevice = getGridDevice();
-        GridDevice mirrorDevice = getMirrorGridDevice();
-        GridDevice gridDevice = new MultiDevice(Lists.<GridDevice>newArrayList(mainDevice, mirrorDevice));
-        GridDisplay gridDisplay = gridDevice;
+        getMidiDevice();
+
+//        GridDevice mainDevice = getGridDevice();
+////        GridDevice mirrorDevice = getMirrorGridDevice();
+////        GridDevice gridDevice = new MultiDevice(Lists.<GridDevice>newArrayList(mainDevice, mirrorDevice));
+//        GridDevice gridDevice = mainDevice;
 
         createKnobby();
 
+        System.out.println("Creating modules...");
         Module[] modules;
         if (settings.get("modules") != null) {
-            modules = createModules(gridDevice);
+            modules = createModules();
         } else {
-            modules = defaultModules(gridDevice);
+            modules = defaultModules();
         }
 
-        System.out.println("Creating modules...");
-        controller = new HachiController(modules, gridDisplay);
+
+        GridDevice[] gridDevicesArray = new GridDevice[gridDevices.size()];
+        for (int i = 0; i < gridDevices.size(); i++) {
+            gridDevicesArray[i] = gridDevices.get(i);
+        }
+
+        controller = new HachiController(modules, gridDevicesArray);
         Boolean midiContinueAsStart = (Boolean)settings.get("midiContinueAsStart");
         if (midiContinueAsStart != null) {
             controller.setMidiContinueAsStart(midiContinueAsStart);
         }
-        gridDevice.setListener(controller);
 
         // make the HachiController receive external midi
         midiInput.getTransmitter().setReceiver(controller);
@@ -162,7 +169,80 @@ public class Hachi {
         return rhythm;
     }
 
-    private static GridDevice getGridDevice() {
+    private static List<GridDevice> getControllers() {
+
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+        List<Object> controllerConfigs = (List<Object>)deviceConfigs.get("controllers");
+
+        List<GridDevice> gridDevices = Lists.newArrayList();
+
+        for (Object controllerConfig : controllerConfigs) {
+            Map<Object, Object> config = (Map<Object,Object>)controllerConfig;
+            List<String> names = (List<String>)config.get("names");
+            String type = (String)config.get("type");
+            MidiDevice input = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            MidiDevice output = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+            if (input == null || output == null) {
+                System.err.printf("Unable to find controller device matching name: %s\n", names);
+            } else {
+                try {
+                    input.open();
+                    output.open();
+
+                    GridDevice gridDevice = null;
+                    if (type == null) {
+                        gridDevice = new LaunchpadPro(output.getReceiver(), null);
+                    } else if (type.equals("launchpad")) {
+                        gridDevice = new Launchpad(output.getReceiver(), null);
+                    } else {
+                        gridDevice = new LaunchpadPro(output.getReceiver(), null);
+                    }
+                    input.getTransmitter().setReceiver(gridDevice);
+
+                    gridDevices.add(gridDevice);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
+        }
+
+        return gridDevices;
+    }
+
+    private static void getMidiDevice() {
+
+        // get the device configs from the settings
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+        List<String> names = null;
+
+        // find the midi device
+        Map<Object,Object> midiConfig = (Map<Object,Object>)deviceConfigs.get("midi");
+        if (midiConfig != null) {
+            names = (List<String>)midiConfig.get("names");
+            midiInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
+            midiOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+        }
+        if (midiInput == null || midiOutput == null) {
+            System.err.printf("Unable to find midi device matching name: %s\n", names);
+            System.exit(1);
+        }
+
+        try {
+            midiInput.open();
+            midiOutput.open();
+            midiTransmitter = midiInput.getTransmitter();
+            midiReceiver = midiOutput.getReceiver();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+
+    private static GridDevice getGridDevice2() {
 
         // get the device configs from the settings
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
@@ -207,7 +287,9 @@ public class Hachi {
             // assumes controller and midi device are same type
             String type = (String)controllerConfig.get("type");
             GridDevice gridDevice = null;
-            if (type.equals("launchpad")) {
+            if (type == null) {
+                gridDevice = new LaunchpadPro(controllerOutput.getReceiver(), null);
+            } else if (type.equals("launchpad")) {
                 gridDevice = new Launchpad(controllerOutput.getReceiver(), null);
             } else {
                 gridDevice = new LaunchpadPro(controllerOutput.getReceiver(), null);
@@ -329,7 +411,7 @@ public class Hachi {
         return null;
     }
 
-    private static Module[] createModules(GridDevice lpp) {
+    private static Module[] createModules() {
 
         ShihaiModule shihaiModule = null;
 
@@ -457,7 +539,7 @@ public class Hachi {
         return modules;
     }
 
-    private static Module[] defaultModules(GridDevice lpp) {
+    private static Module[] defaultModules() {
 
         Module[] modules = new Module[6];
         modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);

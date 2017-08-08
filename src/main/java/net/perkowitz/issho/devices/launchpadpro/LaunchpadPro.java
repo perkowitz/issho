@@ -66,6 +66,8 @@ public class LaunchpadPro implements GridDevice {
         cc(CHANNEL, buttonToCc(button), color.getIndex());
     }
 
+    public void setKnob(GridKnob knob, int value) {}
+
     public void setSide() {
         sysex();
     }

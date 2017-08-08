@@ -2,6 +2,7 @@ package net.perkowitz.issho.devices.launchpadpro;
 
 import lombok.Setter;
 import net.perkowitz.issho.devices.GridButton;
+import net.perkowitz.issho.devices.GridKnob;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.util.MidiUtil;
@@ -97,6 +98,10 @@ public class LPPKill {
             System.exit(0);
         }
         public void onButtonReleased(GridButton button) {}
+
+        public void onKnobChanged(GridKnob knob, int delta) {}
+        public void onKnobSet(GridKnob knob, int value) {}
+
 
     }
 

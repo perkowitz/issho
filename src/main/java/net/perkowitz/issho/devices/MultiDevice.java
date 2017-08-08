@@ -47,6 +47,9 @@ public class MultiDevice implements GridDevice {
         }
     }
 
+    public void setKnob(GridKnob knob, int value) {}
+
+
     public void send(MidiMessage message, long timeStamp) {
         for (GridDevice gridDevice : gridDevices) {
             gridDevice.send(message, timeStamp);

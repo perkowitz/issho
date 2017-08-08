@@ -3,10 +3,7 @@ package net.perkowitz.issho.hachi;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridColor;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridPad;
+import net.perkowitz.issho.devices.*;
 
 import java.util.Set;
 
@@ -54,6 +51,8 @@ public class ModuleDisplay implements GridDisplay {
             display.setButton(button, color);
         }
     }
+
+    public void setKnob(GridKnob knob, int value) {}
 
 
 }

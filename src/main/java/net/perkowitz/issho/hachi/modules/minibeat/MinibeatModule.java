@@ -422,6 +422,10 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 
     }
 
+    public void onKnobChanged(GridKnob knob, int delta) {}
+    public void onKnobSet(GridKnob knob, int value) {}
+
+
     /***** Clockable implementation ***************************************
      * 
      * a Clockable can receive clock ticks and start/stop messages from Hachi's master clock. 

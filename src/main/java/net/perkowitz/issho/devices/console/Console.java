@@ -29,6 +29,10 @@ public class Console implements GridListener, GridDisplay {
         System.out.printf("[][][][] ButtonReleased: %s\n", button);
     }
 
+    public void onKnobChanged(GridKnob knob, int delta) {}
+    public void onKnobSet(GridKnob knob, int value) {}
+
+
 
     /***** GridDisplay implementation ************************************/
 
@@ -42,6 +46,8 @@ public class Console implements GridListener, GridDisplay {
     public void setButton(GridButton button, GridColor color) {
         System.out.printf("[][][][] SetButton: %s, %s\n", button, color);
     }
+
+    public void setKnob(GridKnob knob, int value) {}
 
 
 

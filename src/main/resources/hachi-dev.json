@@ -2,25 +2,27 @@
   "filePrefix": "project1/",
   "midiContinueAsStart": true,
   "devices": {
-    "controller": {
-      "type": "launchpadpro",
-      "names": [
-        "Launchpad",
-        "Standalone"
-      ]
-    },
+    "controllers": [
+      {
+        "type": "launchpadpro",
+        "names": [
+          "Launchpad",
+          "Standalone"
+        ]
+      },
+      {
+        "type": "launchpad",
+        "names": [
+          "Launchpad"
+        ]
+      }
+    ],
     "midi": {
       "type": "launchpadpro",
       "names":[
         "Launchpad Pro",
         "Midi Port"
       ]
-    },
-    "controllerMirror": {
-      "type": "launchpad",
-      "names": [
-        "Launchpad"
-        ]
     },
     "xxxkeyboard": {
       "names": [
