@@ -16,7 +16,6 @@ public class HachiDeviceManager implements GridListener {
     private GridListener activeListener = null;
     private GridDisplay display;
     private GridDevice gridDevice;
-    private ModuleDisplay[] displays;
     private HachiController hachiController;
 
 
@@ -28,12 +27,9 @@ public class HachiDeviceManager implements GridListener {
         gridDevice.setListener(this);
         this.display = gridDevice;
         this.hachiController = hachiController;
-        displays = new ModuleDisplay[modules.length];
         for (int i = 0; i < modules.length; i++) {
             moduleListeners[i] = modules[i].getGridListener();
-            ModuleDisplay moduleDisplay = new ModuleDisplay(display);
-            displays[i] = moduleDisplay;
-            modules[i].setDisplay(moduleDisplay);
+            modules[i].setDisplay(hachiController.getDisplay(i));
         }
 
     }
@@ -43,22 +39,20 @@ public class HachiDeviceManager implements GridListener {
 
     public void selectModule(int index) {
         if (index < modules.length && modules[index] != null) {
-            selectDisplay(index);
-            display.initialize();
+
+            // set this device for the chosen module and not for any other modules
+            hachiController.getDisplay(index).add(gridDevice);
+            for (int i = 0; i < modules.length; i++) {
+                if (i != index) {
+                    hachiController.getDisplay(i).remove(gridDevice);
+                }
+            }
+
+            display = hachiController.getDisplay(index);
             activeModule = modules[index];
             activeListener = moduleListeners[index];
             activeModule.redraw();
             redraw();
-        }
-    }
-
-    private void selectDisplay(int index) {
-        for (int i = 0; i < displays.length; i++) {
-            if (i == index) {
-                displays[i].setEnabled(true);
-            } else {
-                displays[i].setEnabled(false);
-            }
         }
     }
 
@@ -111,7 +105,6 @@ public class HachiDeviceManager implements GridListener {
 //        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE && button.getIndex() < modules.length) {
             // top row used for module switching
-            int index = button.getIndex();
             selectModule(button.getIndex());
 
         } else if (button.equals(PLAY_BUTTON)) {

@@ -38,6 +38,7 @@ public class HachiController implements Clockable, Receiver {
     private Module[] modules = null;
     private GridDevice[] gridDevices;
     private HachiDeviceManager[] hachiDeviceManagers;
+    private MultiDisplay[] displays;
 
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
@@ -58,12 +59,7 @@ public class HachiController implements Clockable, Receiver {
 
     public HachiController(Module[] modules, GridDevice[] gridDevices) {
 
-        this.gridDevices = gridDevices;
-        hachiDeviceManagers = new HachiDeviceManager[gridDevices.length];
-        for (int i = 0; i < gridDevices.length; i++) {
-            HachiDeviceManager hachiDeviceManager = new HachiDeviceManager(gridDevices[i], modules, this);
-            hachiDeviceManagers[i] = hachiDeviceManager;
-        }
+        displays = new MultiDisplay[modules.length];
 
         this.modules = modules;
         for (int i = 0; i < modules.length; i++) {
@@ -80,9 +76,18 @@ public class HachiController implements Clockable, Receiver {
             if (shihaiModule == null && modules[i] instanceof ShihaiModule) {
                 shihaiModule = (ShihaiModule)modules[i];
             }
+
+            displays[i] = new MultiDisplay(gridDevices);
         }
 
         chordReceiver = new ChordReceiver(chordables);
+
+        this.gridDevices = gridDevices;
+        hachiDeviceManagers = new HachiDeviceManager[gridDevices.length];
+        for (int i = 0; i < gridDevices.length; i++) {
+            HachiDeviceManager hachiDeviceManager = new HachiDeviceManager(gridDevices[i], modules, this);
+            hachiDeviceManagers[i] = hachiDeviceManager;
+        }
 
     }
 
@@ -110,11 +115,27 @@ public class HachiController implements Clockable, Receiver {
     }
 
     public void pressPlay() {
-
+        clockRunning = !clockRunning;
+        if (clockRunning) {
+            start(true);
+            for (Clockable clockable: clockables) {
+                clockable.start(true);
+            }
+        } else {
+            stop();
+            for (Clockable clockable: clockables) {
+                clockable.stop();
+            }
+        }
+        redraw();
     }
 
     public void pressExit() {
+        shutdown();
+    }
 
+    public MultiDisplay getDisplay(int index) {
+        return displays[index];
     }
 
     /***** private implementation ***************/
