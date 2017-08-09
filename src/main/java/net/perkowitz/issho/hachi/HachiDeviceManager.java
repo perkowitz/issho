@@ -113,7 +113,6 @@ public class HachiDeviceManager implements GridListener {
 
         } else if (button.equals(EXIT_BUTTON) && HachiController.DEBUG_MODE) {
             hachiController.pressExit();
-            //shutdown();
 
         } else {
             // everything else passed through to active module

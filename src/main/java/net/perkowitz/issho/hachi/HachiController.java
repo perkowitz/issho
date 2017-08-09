@@ -147,6 +147,9 @@ public class HachiController implements Clockable, Receiver {
         for (HachiDeviceManager hachiDeviceManager : hachiDeviceManagers) {
             hachiDeviceManager.shutdown();
         }
+        for (GridDevice gridDevice : gridDevices) {
+            gridDevice.initialize();
+        }
         System.exit(0);
     }
 
