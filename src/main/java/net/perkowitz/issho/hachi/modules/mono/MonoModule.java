@@ -523,6 +523,10 @@ public class MonoModule extends ChordModule implements Module, Clockable, GridLi
         }
     }
 
+    public void onKnobChanged(GridKnob knob, int delta) {}
+    public void onKnobSet(GridKnob knob, int value) {}
+
+
 
     /***** Clockable implementation ****************************************/
 

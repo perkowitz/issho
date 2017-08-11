@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
 
@@ -17,14 +16,13 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 import static javax.sound.midi.ShortMessage.*;
-import static net.perkowitz.issho.hachi.HachiUtil.*;
 
 /**
  * Created by optic on 9/12/16.
  */
-public class HachiController implements GridListener, Clockable, Receiver {
+public class HachiController implements Clockable, Receiver {
 
-    private static boolean DEBUG_MODE = true;
+    public static boolean DEBUG_MODE = true;
 
     private static int STEP_MIN = 0;
     private static int STEP_MAX = 110;
@@ -38,11 +36,9 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private int midiClockCount = 0;
 
     private Module[] modules = null;
-    private Module activeModule;
-    private GridListener[] moduleListeners = null;
-    private GridListener activeListener = null;
-    private GridDisplay display;
-    private ModuleDisplay[] displays;
+    private GridDevice[] gridDevices;
+    private HachiDeviceManager[] hachiDeviceManagers;
+    private MultiDisplay[] displays;
 
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
@@ -52,7 +48,7 @@ public class HachiController implements GridListener, Clockable, Receiver {
 
     private static CountDownLatch stop = new CountDownLatch(1);
     private static Timer timer = null;
-    private boolean clockRunning = false;
+    @Getter private boolean clockRunning = false;
     private boolean midiClockRunning = false;
     private int tickCount = 0;
     @Setter private boolean midiContinueAsStart = true;
@@ -61,111 +57,106 @@ public class HachiController implements GridListener, Clockable, Receiver {
     private int tempoIntervalInMillis = 125 * 120 / tempo;
 
 
-    public HachiController(Module[] modules, GridDisplay display) {
+    public HachiController(Module[] modules, GridDevice[] gridDevices) {
+
+        displays = new MultiDisplay[modules.length];
 
         this.modules = modules;
-        moduleListeners = new GridListener[modules.length];
-        this.display = display;
-        displays = new ModuleDisplay[modules.length];
         for (int i = 0; i < modules.length; i++) {
             System.out.printf("Loading module: %s\n", modules[i]);
-            moduleListeners[i] = modules[i].getGridListener();
-            ModuleDisplay moduleDisplay = new ModuleDisplay(display);
-            displays[i] = moduleDisplay;
-            modules[i].setDisplay(moduleDisplay);
-
             if (modules[i] instanceof Clockable) {
                 clockables.add((Clockable)modules[i]);
             }
-
             if (modules[i] instanceof Triggerable) {
                 triggerables.add((Triggerable) modules[i]);
             }
-
             if (modules[i] instanceof Chordable) {
                 chordables.add((Chordable) modules[i]);
             }
-
             if (shihaiModule == null && modules[i] instanceof ShihaiModule) {
                 shihaiModule = (ShihaiModule)modules[i];
             }
+
+            displays[i] = new MultiDisplay(gridDevices);
         }
 
         chordReceiver = new ChordReceiver(chordables);
+
+        this.gridDevices = gridDevices;
+        hachiDeviceManagers = new HachiDeviceManager[gridDevices.length];
+        for (int i = 0; i < gridDevices.length; i++) {
+            HachiDeviceManager hachiDeviceManager = new HachiDeviceManager(gridDevices[i], modules, this);
+            hachiDeviceManagers[i] = hachiDeviceManager;
+        }
 
     }
 
     public void run() {
         System.out.printf("Controller run...\n");
-        display.initialize();
+        for (GridDevice gridDevice : gridDevices) {
+            gridDevice.initialize();
+        }
         redraw();
-        Graphics.setPads(display, Graphics.issho, Color.WHITE);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {}
-        System.out.printf("Displaying logo...\n");
-        Graphics.setPads(display, Graphics.issho, Color.OFF);
-        Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
-        selectModule(0);
+//        Graphics.setPads(display, Graphics.issho, Color.WHITE);
+//        try {
+//            Thread.sleep(500);
+//        } catch (InterruptedException e) {}
+//        System.out.printf("Displaying logo...\n");
+//        Graphics.setPads(display, Graphics.issho, Color.OFF);
+//        Graphics.setPads(display, Graphics.hachi, Color.BRIGHT_ORANGE);
+
+        for (HachiDeviceManager hachiDeviceManager : hachiDeviceManagers) {
+            hachiDeviceManager.selectModule(0);
+        }
 
         System.out.printf("Starting timer...\n");
         startTimer();
 
     }
 
-    /***** private implementation ***************/
-
-    private void selectModule(int index) {
-        if (index < modules.length && modules[index] != null) {
-            selectDisplay(index);
-            display.initialize();
-            activeModule = modules[index];
-            activeListener = moduleListeners[index];
-            activeModule.redraw();
-            redraw();
-        }
-    }
-
-    private void selectDisplay(int index) {
-        for (int i = 0; i < displays.length; i++) {
-            if (i == index) {
-                displays[i].setEnabled(true);
-            } else {
-                displays[i].setEnabled(false);
+    public void pressPlay() {
+        clockRunning = !clockRunning;
+        if (clockRunning) {
+            start(true);
+            for (Clockable clockable: clockables) {
+                clockable.start(true);
+            }
+        } else {
+            stop();
+            for (Clockable clockable: clockables) {
+                clockable.stop();
             }
         }
+        redraw();
     }
+
+    public void pressExit() {
+        shutdown();
+    }
+
+    public MultiDisplay getDisplay(int index) {
+        return displays[index];
+    }
+
+    /***** private implementation ***************/
 
     private void shutdown() {
         for (Module module : modules) {
             module.shutdown();
         }
-        display.initialize();
+        for (HachiDeviceManager hachiDeviceManager : hachiDeviceManagers) {
+            hachiDeviceManager.shutdown();
+        }
+        for (GridDevice gridDevice : gridDevices) {
+            gridDevice.initialize();
+        }
         System.exit(0);
     }
 
     private void redraw() {
-
-        // modules
-        for (int index = 0; index < modules.length; index++) {
-            GridButton button = GridButton.at(HachiUtil.MODULE_BUTTON_SIDE, index);
-            if (modules[index] == activeModule) {
-                display.setButton(button, COLOR_SELECTED);
-            } else {
-                display.setButton(button, COLOR_UNSELECTED);
-            }
+        for (HachiDeviceManager hachiDeviceManager : hachiDeviceManagers) {
+            hachiDeviceManager.redraw();
         }
-
-        if (clockRunning) {
-            display.setButton(PLAY_BUTTON, COLOR_SELECTED);
-        } else {
-            display.setButton(PLAY_BUTTON, COLOR_UNSELECTED);
-        }
-
-        if (DEBUG_MODE) {
-            display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
-        }
-
     }
 
     public void startTimer() {
@@ -207,71 +198,6 @@ public class HachiController implements GridListener, Clockable, Receiver {
         }
 
         System.out.print("> ");
-    }
-
-
-
-    /***** GridListener implementation ***************/
-
-    public void onPadPressed(GridPad pad, int velocity) {
-//        System.out.printf("Hachi padPressed: %s, %d\n", pad, velocity);
-        if (activeListener != null) {
-            activeListener.onPadPressed(pad, velocity);
-        }
-    }
-
-    public void onPadReleased(GridPad pad) {
-//        System.out.printf("Hachi padRelease: %s\n", pad);
-        if (activeListener != null) {
-            activeListener.onPadReleased(pad);
-        }
-    }
-
-    public void onButtonPressed(GridButton button, int velocity) {
-//        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
-        if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE && button.getIndex() < modules.length) {
-            // top row used for module switching
-            int index = button.getIndex();
-            selectModule(button.getIndex());
-
-        } else if (button.equals(PLAY_BUTTON)) {
-            clockRunning = !clockRunning;
-            if (clockRunning) {
-                start(true);
-                for (Clockable clockable: clockables) {
-                    clockable.start(true);
-                }
-            } else {
-                stop();
-                for (Clockable clockable: clockables) {
-                    clockable.stop();
-                }
-            }
-            redraw();
-
-        } else if (button.equals(EXIT_BUTTON) && DEBUG_MODE) {
-            shutdown();
-
-        } else {
-            // everything else passed through to active module
-            if (activeListener != null) {
-                activeListener.onButtonPressed(button, velocity);
-            }
-        }
-    }
-
-    public void onButtonReleased(GridButton button) {
-//        System.out.printf("Hachi buttonReleased: %s\n", button);
-        if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
-            // top row used for module switching
-        } else if (button.equals(PLAY_BUTTON)) {
-        } else if (button.equals(EXIT_BUTTON)) {
-        } else {
-            // everything else passed through to active module
-            if (activeListener != null) {
-                activeListener.onButtonReleased(button);
-            }
-        }
     }
 
 
@@ -347,10 +273,10 @@ public class HachiController implements GridListener, Clockable, Receiver {
             } else {
                 switch (command) {
                     case NOTE_ON:
-                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+//                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         break;
                     case NOTE_OFF:
-                        System.out.println("NOTE OFF");
+//                        System.out.println("NOTE OFF");
                         break;
                     case CONTROL_CHANGE:
 //                        System.out.println("MIDI CC");

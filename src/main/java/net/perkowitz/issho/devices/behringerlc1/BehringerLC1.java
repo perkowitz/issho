@@ -1,31 +1,40 @@
-package net.perkowitz.issho.devices.launchpadpro;
+package net.perkowitz.issho.devices.behringerlc1;
 
 
 import com.google.common.collect.Sets;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
+import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import javax.sound.midi.*;
-
 import java.util.Set;
 
 import static javax.sound.midi.ShortMessage.*;
 import static net.perkowitz.issho.devices.GridButton.Side.*;
-import static net.perkowitz.issho.devices.GridButton.Side.Top;
 
 /**
  * Created by optic on 9/3/16.
  */
-public class LaunchpadPro implements GridDevice {
+public class BehringerLC1 implements GridDevice {
+
+    public static final int ROW_COUNT = 8;
+    public static final int COLUMN_COUNT = 4;
+    public static final int BUTTON_COUNT = 8;
+    public static final int KNOB_COUNT = 8;
+
+    private static final int PAD_NOTE_MIN = 32;
+    private static final int BUTTON_TOP_NOTE_MIN = 16;
+    private static final int BUTTON_RIGHT_NOTE_MIN = 64;
+    private static final int BUTTON_BOTTOM_NOTE_MIN = 72;
 
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
-    private static int CHANNEL = 0;
+    private static int CHANNEL = 7;
 
     private Receiver receiver;
     @Setter private GridListener listener;
 
-    public LaunchpadPro(Receiver receiver, GridListener listener) {
+    public BehringerLC1(Receiver receiver, GridListener listener) {
         this.receiver = receiver;
         this.listener = listener;
     }
@@ -34,17 +43,28 @@ public class LaunchpadPro implements GridDevice {
     /****** public logical implementation ***********************************************************/
 
     public void initialize(boolean pads, Set<GridButton.Side> buttonSides) {
-        for (int y = 0; y < 8; y++) {
+
+        System.out.println("Initializing pads...");
+        for (int y = 0; y < ROW_COUNT; y++) {
             if (pads) {
-                for (int x = 0; x < 8; x++) {
-                    setPad(GridPad.at(x, y), Color.OFF);
+                for (int x = 0; x < COLUMN_COUNT; x++) {
+                    setPad(GridPad.at(x, y), Color.fromIndex(127));
                 }
             }
+        }
+
+        System.out.println("Initializing buttons...");
+        for (int index = 0; index < BUTTON_COUNT; index++) {
             if (buttonSides != null) {
                 for (GridButton.Side side : buttonSides) {
-                    setButton(GridButton.at(side, y), Color.OFF);
+                    setButton(GridButton.at(side, index), Color.fromIndex(1));
                 }
             }
+        }
+
+        System.out.println("Initializing knobs...");
+        for (int index = 0; index < KNOB_COUNT; index++) {
+            setKnob(GridKnob.at(GridKnob.Side.Top, index), 8);
         }
     }
 
@@ -59,17 +79,34 @@ public class LaunchpadPro implements GridDevice {
     }
 
     public void setPad(GridPad pad, GridColor color) {
-        note(CHANNEL, padToNote(pad), color.getIndex());
+
+        if (pad.getX() < 0 || pad.getX() >= COLUMN_COUNT ||
+                pad.getY() < 0 || pad.getY() >= ROW_COUNT) {
+            return;
+        }
+
+        int note = 32 + pad.getY()*4 + pad.getX();
+        note(CHANNEL, note, color.getIndex());
     }
 
     public void setButton(GridButton button, GridColor color) {
-        cc(CHANNEL, buttonToCc(button), color.getIndex());
+
+        if (button.getSide() == Top) {
+            int note = 16 + button.getIndex();
+            note(CHANNEL, note, color.getIndex());
+        } else if (button.getSide() == Right) {
+            int note = 64 + button.getIndex();
+            note(CHANNEL, note, color.getIndex());
+        } else if (button.getSide() == Bottom) {
+            if (button.getIndex() < 4) {
+                int note = 72 + button.getIndex();
+                note(CHANNEL, note, color.getIndex());
+            }
+        }
     }
 
-    public void setKnob(GridKnob knob, int value) {}
-
-    public void setSide() {
-        sysex();
+    public void setKnob(GridKnob knob, int value) {
+        cc(CHANNEL, knob.getIndex() + 16, value);
     }
 
 
@@ -103,34 +140,39 @@ public class LaunchpadPro implements GridDevice {
                 switch (command) {
                     case NOTE_ON:
 //                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            GridPad pad = noteToPad(shortMessage.getData1());
-                            int velocity = shortMessage.getData2();
+                        int velocity = shortMessage.getData2();
+                        GridControl control = noteToControl(shortMessage.getData1());
+                        if (control != null && control.getPad() != null) {
                             if (velocity == 0) {
-                                listener.onPadReleased(pad);
+                                listener.onPadReleased(control.getPad());
                             } else {
-                                listener.onPadPressed(pad, velocity);
+                                listener.onPadPressed(control.getPad(), velocity);
+                            }
+                        } else if (control != null && control.getButton() != null) {
+                            if (velocity == 0) {
+                                listener.onButtonReleased(control.getButton());
+                            } else {
+                                listener.onButtonPressed(control.getButton(), velocity);
                             }
                         }
                         break;
+
                     case NOTE_OFF:
 //                        System.out.printf("NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            GridPad pad = noteToPad(shortMessage.getData1());
-                            listener.onPadReleased(pad);
+                        control = noteToControl(shortMessage.getData1());
+                        if (control != null && control.getPad() != null) {
+                            listener.onPadReleased(control.getPad());
+                        } else if (control != null && control.getButton() != null) {
+                            listener.onButtonReleased(control.getButton());
                         }
                         break;
+
                     case CONTROL_CHANGE:
 //                        System.out.printf("MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            GridButton button = ccToButton(shortMessage.getData1());
-                            int velocity = shortMessage.getData2();
-                            if (velocity == 0) {
-                                listener.onButtonReleased(button);
-                            } else {
-                                listener.onButtonPressed(button, velocity);
-                            }
-                        }
+                        int cc = shortMessage.getData1();
+                        int value = shortMessage.getData2();
+                        GridKnob knob = ccToKnob(cc);
+                        listener.onKnobChanged(knob, value - 64);  // 65 = +1, 63 = -1; no other values are transmitted
                         break;
                     default:
                 }
@@ -171,30 +213,40 @@ public class LaunchpadPro implements GridDevice {
 
     }
 
-    // sysex via javax classes doesn't seem to work on osx
-    private void sysex() {
+    private GridControl noteToControl(int note) {
 
-        byte[] testMsg = {(byte) 0xf0, 0x00, 0x20, 0x29, 0x02, 0x10, 0x0b, 0x63, 0x00, 0x00, 0x3f, (byte) 0xf7 };
-
-        try {
-            SysexMessage message = new SysexMessage();
-            message.setMessage(testMsg, testMsg.length);
-
-            receiver.send(message, -1);
-
-        } catch (InvalidMidiDataException e) {
-            System.err.println(e);
+        if (note < BUTTON_TOP_NOTE_MIN) {
+            // nope
+        } else if (note < PAD_NOTE_MIN) {
+            int index = note - BUTTON_TOP_NOTE_MIN;
+            return new GridControl(GridButton.at(Top, index), index);
+        } else if (note < BUTTON_RIGHT_NOTE_MIN) {
+            int index = note - PAD_NOTE_MIN;
+            int x = index % 4;
+            int y = index / 4;
+            return new GridControl(GridPad.at(x, y), index);
+        } else if (note < BUTTON_BOTTOM_NOTE_MIN) {
+            int index = note - BUTTON_RIGHT_NOTE_MIN;
+            return new GridControl(GridButton.at(Right, index), index);
+        } else if (note < BUTTON_BOTTOM_NOTE_MIN + BUTTON_COUNT) {
+            int index = note - BUTTON_BOTTOM_NOTE_MIN;
+            return new GridControl(GridButton.at(Bottom, index), index);
         }
 
+        return null;
+    }
+
+    private GridKnob ccToKnob(int cc) {
+        return GridKnob.at(GridKnob.Side.Top, cc - 16);
     }
 
     private int padToNote(GridPad pad) {
-        return (7-pad.getY()) * 10 + pad.getX() + 11;
+        return (pad.getY()) * 16 + pad.getX();
     }
 
     private GridPad noteToPad(int note) {
-        int x = note % 10 - 1;
-        int y = 7 - (note / 10 - 1);
+        int x = note % 16;
+        int y = (note / 16);
         return GridPad.at(x, y);
 
     }
@@ -234,6 +286,7 @@ public class LaunchpadPro implements GridDevice {
 
         return GridButton.at(side, index);
     }
+
 
 
 

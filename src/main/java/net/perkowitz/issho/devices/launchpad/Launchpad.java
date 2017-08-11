@@ -1,22 +1,21 @@
-package net.perkowitz.issho.devices.launchpadpro;
+package net.perkowitz.issho.devices.launchpad;
 
 
 import com.google.common.collect.Sets;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
+import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import javax.sound.midi.*;
-
 import java.util.Set;
 
 import static javax.sound.midi.ShortMessage.*;
 import static net.perkowitz.issho.devices.GridButton.Side.*;
-import static net.perkowitz.issho.devices.GridButton.Side.Top;
 
 /**
  * Created by optic on 9/3/16.
  */
-public class LaunchpadPro implements GridDevice {
+public class Launchpad implements GridDevice {
 
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
@@ -25,7 +24,7 @@ public class LaunchpadPro implements GridDevice {
     private Receiver receiver;
     @Setter private GridListener listener;
 
-    public LaunchpadPro(Receiver receiver, GridListener listener) {
+    public Launchpad(Receiver receiver, GridListener listener) {
         this.receiver = receiver;
         this.listener = listener;
     }
@@ -63,7 +62,18 @@ public class LaunchpadPro implements GridDevice {
     }
 
     public void setButton(GridButton button, GridColor color) {
-        cc(CHANNEL, buttonToCc(button), color.getIndex());
+        if (button.getSide() == GridButton.Side.Left) {
+            // nope
+        } else if (button.getSide() == GridButton.Side.Bottom) {
+            // nope
+        } else if (button.getSide() == GridButton.Side.Right) {
+            // right side uses notes, as though they were a 9th column of the grid pad
+            int note = (button.getIndex()) * 16 + 8;
+            note(CHANNEL, note, color.getIndex());
+        } else if (button.getSide() == GridButton.Side.Top) {
+            int cc = 104 + button.getIndex();
+            cc(CHANNEL, cc, color.getIndex());
+        }
     }
 
     public void setKnob(GridKnob knob, int value) {}
@@ -104,20 +114,37 @@ public class LaunchpadPro implements GridDevice {
                     case NOTE_ON:
 //                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         if (listener != null) {
-                            GridPad pad = noteToPad(shortMessage.getData1());
+                            int note = shortMessage.getData1();
                             int velocity = shortMessage.getData2();
-                            if (velocity == 0) {
-                                listener.onPadReleased(pad);
+                            boolean isRelease = velocity == 0;
+                            GridButton button = noteToButton(note);
+                            if (button != null) {
+                                if (isRelease) {
+                                    listener.onButtonReleased(button);
+                                } else {
+                                    listener.onButtonPressed(button, velocity);
+                                }
                             } else {
-                                listener.onPadPressed(pad, velocity);
+                                GridPad pad = noteToPad(shortMessage.getData1());
+                                if (isRelease) {
+                                    listener.onPadReleased(pad);
+                                } else {
+                                    listener.onPadPressed(pad, velocity);
+                                }
                             }
                         }
                         break;
                     case NOTE_OFF:
 //                        System.out.printf("NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         if (listener != null) {
-                            GridPad pad = noteToPad(shortMessage.getData1());
-                            listener.onPadReleased(pad);
+                            int note = shortMessage.getData1();
+                            GridButton button = noteToButton(note);
+                            if (button != null) {
+                                listener.onButtonReleased(button);
+                            } else {
+                                GridPad pad = noteToPad(shortMessage.getData1());
+                                listener.onPadReleased(pad);
+                            }
                         }
                         break;
                     case CONTROL_CHANGE:
@@ -189,49 +216,28 @@ public class LaunchpadPro implements GridDevice {
     }
 
     private int padToNote(GridPad pad) {
-        return (7-pad.getY()) * 10 + pad.getX() + 11;
+        return (pad.getY()) * 16 + pad.getX();
     }
 
-    private GridPad noteToPad(int note) {
-        int x = note % 10 - 1;
-        int y = 7 - (note / 10 - 1);
+    private static GridPad noteToPad(int note) {
+        int x = note % 16;
+        int y = (note / 16);
         return GridPad.at(x, y);
 
     }
 
-    private int buttonToCc(GridButton button) {
-
-        GridButton.Side side = button.getSide();
-        int index = button.getIndex();
-        int flippedIndex = 7 - index;
-        switch (side) {
-            case Top:
-                return 90 + index + 1;
-            case Bottom:
-                return index + 1;
-            case Left:
-                return 10 + flippedIndex * 10;
-            case Right:
-                return 19 + flippedIndex * 10;
-            default:
-                return 100;
+    private static GridButton noteToButton(int note) {
+        int x = note % 16;
+        int y = (note / 16);
+        if (x == 8) {
+            return GridButton.at(Right, y);
         }
-
+        return null;
     }
 
     public static GridButton ccToButton(int cc) {
-
         GridButton.Side side = Top;
-        int index = 0;
-
-        if (cc >= 10 && cc <= 89) {
-            index = 7 - (cc / 10 - 1);
-            side = (cc % 10 == 0) ? Left : Right;
-        } else {
-            index = cc % 10 - 1;
-            side = (cc < 10) ? Bottom : Top;
-        }
-
+        int index = cc - 104;
         return GridButton.at(side, index);
     }
 

@@ -11,5 +11,6 @@ public interface GridDisplay {
     public void initialize(boolean pads, Set<GridButton.Side> buttonSides);
     public void setPad(GridPad pad, GridColor color);
     public void setButton(GridButton button, GridColor color);
+    public void setKnob(GridKnob knob, int value);
 
 }

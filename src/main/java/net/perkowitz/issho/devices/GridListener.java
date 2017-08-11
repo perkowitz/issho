@@ -9,5 +9,7 @@ public interface GridListener {
     public void onPadReleased(GridPad pad);
     public void onButtonPressed(GridButton button, int velocity);
     public void onButtonReleased(GridButton button);
+    public void onKnobChanged(GridKnob knob, int delta);
+    public void onKnobSet(GridKnob knob, int value);
 
 }

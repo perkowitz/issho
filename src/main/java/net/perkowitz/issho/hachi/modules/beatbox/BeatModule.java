@@ -4,12 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import lombok.Setter;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridColor;
-import net.perkowitz.issho.devices.GridControl;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridListener;
-import net.perkowitz.issho.devices.GridPad;
+import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Multitrack;
@@ -488,6 +483,11 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         }
 
     }
+
+    public void onKnobChanged(GridKnob knob, int delta) {}
+    public void onKnobSet(GridKnob knob, int value) {}
+
+
 
     /***** Clockable implementation ***************************************
      *

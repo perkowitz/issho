@@ -2,6 +2,7 @@ package net.perkowitz.issho.devices.launchpadpro;
 
 import com.google.common.collect.Sets;
 import net.perkowitz.issho.devices.GridButton;
+import net.perkowitz.issho.devices.GridKnob;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
@@ -223,6 +224,11 @@ public class LppRhythmController implements GridListener, RhythmController {
         }
 
     }
+
+
+    public void onKnobChanged(GridKnob knob, int delta) {}
+    public void onKnobSet(GridKnob knob, int value) {}
+
 
 
 }

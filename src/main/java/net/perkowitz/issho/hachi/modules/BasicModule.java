@@ -2,10 +2,7 @@ package net.perkowitz.issho.hachi.modules;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridListener;
-import net.perkowitz.issho.devices.GridPad;
+import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
 /**
@@ -45,5 +42,9 @@ public class BasicModule implements Module, GridListener {
     public void onButtonReleased(GridButton button) {
 
     }
+
+    public void onKnobChanged(GridKnob knob, int delta) {}
+    public void onKnobSet(GridKnob knob, int value) {}
+
 
 }
