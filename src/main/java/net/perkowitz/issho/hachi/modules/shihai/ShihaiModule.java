@@ -52,7 +52,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
     public ShihaiModule(Transmitter inputTransmitter, Receiver outputReceiver) {
         super(inputTransmitter, outputReceiver);
         this.shihaiDisplay = new ShihaiDisplay(display);
-        this.settingsModule = new SettingsSubmodule(true, false, false);
+        this.settingsModule = new SettingsSubmodule(true, false, false, false);
     }
 
 
@@ -269,6 +269,12 @@ public class ShihaiModule extends MidiModule implements Clockable {
         tickCount++;
     }
 
+    public void clock(int measure, int beat, int pulse) {
+        // imitate old "tick" system of sending a tick per 16th note, and a reset on each measure
+        if (pulse % 6 == 0) {
+            tick(beat == 0 && pulse == 0);
+        }
+    }
 
 
 }

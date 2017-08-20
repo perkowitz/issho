@@ -19,6 +19,7 @@ public class BeatSession {
     @Getter private int chainStartIndex = 0;
     @Getter private int chainEndIndex = 0;
     @Getter @Setter private int selectedTrackIndex = 8;
+    @Getter @Setter private int swingOffset = 0;
 
 
     public BeatSession() {}

@@ -45,6 +45,7 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
     private boolean randomOrder = false;
     private boolean displayAltControls = false;
     private boolean savingPattern = false;
+    int swingOffset = 0;
 
 
     /***** Constructor ****************************************/
@@ -55,7 +56,7 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         this.filePrefix = filePrefix;
         load(0);
         currentSteps = currentStage().getSteps();
-        this.settingsModule = new SettingsSubmodule();
+        this.settingsModule = new SettingsSubmodule(true, true, true, true);
         currentMarker = Note;
         stepDisplay.setCurrentMarker(currentMarker);
     }
@@ -359,6 +360,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
                 notesOff();
                 memory.setMidiChannel(settingsModule.getMidiChannel());
                 break;
+            case SET_SWING:
+                swingOffset = settingsModule.getSwingOffset();
+                break;
         }
     }
 
@@ -403,6 +407,11 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         advance(andReset);
     }
 
+    public void clock(int measure, int beat, int pulse) {
+        if (pulse == 0 || pulse == 6 + swingOffset || pulse == 12 || pulse == 18 + swingOffset) {
+            advance(beat == 0 && pulse == 0);
+        }
+    }
 
     /***** Saveable implementation ****************************************/
 

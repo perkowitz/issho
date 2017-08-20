@@ -2,12 +2,15 @@
   "filePrefix": "project1/",
   "midiContinueAsStart": true,
   "devices": {
-    "controller": {
-      "names": [
-        "Launchpad",
-        ",0,1"
+    "controllers": [
+      {
+        "type": "launchpadpro",
+        "names": [
+          "Launchpad",
+          ",0,1"
         ]
-    },
+      }
+    ],
     "midi": {
       "names":[
         "Launchpad Pro",

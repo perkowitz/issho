@@ -17,7 +17,7 @@ import java.util.Map;
 public class SettingsUtil {
 
     public enum SettingsChanged {
-        NONE, SELECT_SESSION, LOAD_FILE, SAVE_FILE, SET_MIDI_CHANNEL
+        NONE, SELECT_SESSION, LOAD_FILE, SAVE_FILE, SET_MIDI_CHANNEL, SET_SWING
     }
 
     /***** locations of various controls on the grid ************************/
@@ -25,6 +25,7 @@ public class SettingsUtil {
     public static int SESSION_MAX_ROW = 1;
     public static int FILE_LOAD_ROW = 2;
     public static int FILE_SAVE_ROW = 3;
+    public static int SWING_ROW = 5;
     public static int MIDI_CHANNEL_MIN_ROW = 6;
     public static int MIDI_CHANNEL_MAX_ROW = 7;
 
@@ -35,6 +36,7 @@ public class SettingsUtil {
     public static GridControlSet loadControls = GridControlSet.padRows(SettingsUtil.FILE_LOAD_ROW, SettingsUtil.FILE_LOAD_ROW);
     public static GridControlSet saveControls = GridControlSet.padRows(SettingsUtil.FILE_SAVE_ROW, SettingsUtil.FILE_SAVE_ROW);
     public static GridControlSet midiChannelControls = GridControlSet.padRows(SettingsUtil.MIDI_CHANNEL_MIN_ROW, SettingsUtil.MIDI_CHANNEL_MAX_ROW);
+    public static GridControlSet swingControls = GridControlSet.padRows(SettingsUtil.SWING_ROW, SettingsUtil.SWING_ROW);
 
 
     /***** color palettes **********************************************************/
@@ -49,6 +51,8 @@ public class SettingsUtil {
     public static Integer COLOR_FILE_ACTIVE = 22;
     public static Integer COLOR_MIDI_CHANNEL = 23;
     public static Integer COLOR_MIDI_CHANNEL_ACTIVE = 24;
+    public static Integer COLOR_SWING = 25;
+    public static Integer COLOR_SWING_ACTIVE = 26;
 
     public static Map<Integer, Color> PALETTE = Maps.newHashMap();
     static {
@@ -62,6 +66,8 @@ public class SettingsUtil {
         PALETTE.put(COLOR_FILE_ACTIVE, Color.WHITE);
         PALETTE.put(COLOR_MIDI_CHANNEL, Color.DIM_BLUE);
         PALETTE.put(COLOR_MIDI_CHANNEL_ACTIVE, Color.WHITE);
+        PALETTE.put(COLOR_SWING, Color.DIM_PINK);
+        PALETTE.put(COLOR_SWING_ACTIVE, Color.WHITE);
     }
 
 

@@ -544,6 +544,13 @@ public class MonoModule extends ChordModule implements Module, Clockable, GridLi
         advance(andReset);
     }
 
+    public void clock(int measure, int beat, int pulse) {
+        // imitate old "tick" system of sending a tick per 16th note, and a reset on each measure
+        if (pulse % 6 == 0) {
+            tick(beat == 0 && pulse == 0);
+        }
+    }
+
 
     /***** Saveable implementation ****************************************/
 

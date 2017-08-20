@@ -34,6 +34,11 @@ public class HachiController implements Clockable, Receiver {
     private int stepNote = 65;//36;
     private int midiClockDivider = 6;
     private int midiClockCount = 0;
+    private int clockMeasure = 0;
+    private int clockBeat = 0;
+    private int clockPulse = 0;
+    private int clockPulsesPerBeat = 24;
+    private int clockBeatsPerMeasure = 4;
 
     private Module[] modules = null;
     private GridDevice[] gridDevices;
@@ -228,6 +233,15 @@ public class HachiController implements Clockable, Receiver {
         }
     }
 
+    public void clock(int measure, int beat, int pulse) {
+        if (midiClockRunning) {
+            for (Clockable clockable : clockables) {
+                clockable.clock(measure, beat, pulse);
+            }
+        }
+
+    }
+
 
     /***** Receiver implementation ***************/
 
@@ -258,11 +272,31 @@ public class HachiController implements Clockable, Receiver {
                         break;
                     case TIMING_CLOCK:
 //                        System.out.println("TICK");
+//                        System.out.printf("  Tick: %d, %d\n", midiClockCount, tickCount);
                         if (midiClockCount % midiClockDivider == 0) {
                             boolean andReset = (tickCount % 16 == 0);
-                            this.tick(andReset);
+//                            this.tick(andReset);
+//                            System.out.printf("  Sending tick, reset=%s\n", andReset);
                             tickCount++;
                         }
+
+                        this.clock(clockMeasure, clockBeat, clockPulse);
+//                        if (clockPulse == 0) {
+//                            System.out.printf("  Clock: %04d:%02d:%02d\n", clockMeasure, clockBeat, clockPulse);
+//                        }
+                        clockPulse++;
+                        if (clockPulse % clockPulsesPerBeat == 0 && clockPulse > 0) {
+                            clockPulse = 0;
+                            clockBeat++;
+//                            System.out.println("  Incrementing clockBeat");
+                        }
+                        if (clockBeat % clockBeatsPerMeasure == 0 && clockBeat > 0) {
+                            clockBeat = 0;
+                            clockMeasure++;
+//                            System.out.println("  Incrementing clockMeasure");
+                        }
+
+
                         midiClockCount++;
                         break;
                     default:

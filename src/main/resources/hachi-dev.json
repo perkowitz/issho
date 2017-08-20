@@ -9,12 +9,6 @@
           "Launchpad",
           "Standalone"
         ]
-      },
-      {
-        "type": "launchpad",
-        "names": [
-          "Launchpad"
-        ]
       }
     ],
     "midi": {
@@ -34,41 +28,14 @@
   },
   "modules": [
     {
-      "class": "ShihaiModule",
-      "panicExclude": [14, 15]
-    },
-    {
       "class": "BeatModule",
       "palette": "Blue",
       "filePrefix": "beat0"
     },
     {
-      "class": "BeatModule",
-      "palette": "Pink",
-      "midiNoteOffset": 24,
-      "filePrefix": "beat1"
-    },
-    {
-      "class": "BeatModule",
-      "palette": "Green",
-      "filePrefix": "beat2"
-    },
-    {
-      "class": "ParaModule",
-      "palette": "pink",
-      "filePrefix": "para1",
-      "monophonic": true
-    },
-    {
       "class": "ParaModule",
       "palette": "yellow",
       "filePrefix": "para0",
-      "monophonic": false
-    },
-    {
-      "class": "ParaModule",
-      "palette": "blue",
-      "filePrefix": "para1",
       "monophonic": false
     },
     {
