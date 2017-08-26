@@ -8,5 +8,6 @@ public interface Clockable {
     public void start(boolean restart);
     public void stop();
     public void tick(boolean andReset);
+    public void clock(int measure, int beat, int pulse);
 
 }

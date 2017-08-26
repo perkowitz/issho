@@ -42,12 +42,18 @@ public class MidiUtil {
             System.out.printf("MIDI not available: %s\n", e);
         }
 
-        // if device not found, print out a list of devices
+        return null;
+    }
+
+    public static void printMidiDevices() {
+        if (midiDeviceInfos == null) {
+            System.out.println("Loading device info..");
+            midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
+        }
+
         for (int i = 0; i < midiDeviceInfos.length; i++) {
             System.out.printf("Found midi device: %s, %s\n", midiDeviceInfos[i].getName(), midiDeviceInfos[i].getDescription());
         }
-
-        return null;
     }
 
 }

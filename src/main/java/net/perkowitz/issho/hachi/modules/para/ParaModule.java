@@ -46,6 +46,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     private int currentKeyboardOctave = 5;
     @Setter private boolean monophonic = false;
     @Setter int controlA = 1;
+    private int swingOffset = 0;
 
     private String filePrefix = "polymodule";
     private int currentFileIndex = 0;
@@ -61,7 +62,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         paraDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
         load(0);
-        this.settingsModule = new SettingsSubmodule();
+        this.settingsModule = new SettingsSubmodule(true, true, true, true);
     }
 
 
@@ -475,6 +476,9 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             case SET_MIDI_CHANNEL:
                 memory.setMidiChannel(settingsModule.getMidiChannel());
                 break;
+            case SET_SWING:
+                swingOffset = settingsModule.getSwingOffset();
+                break;
         }
     }
 
@@ -559,6 +563,12 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     public void tick(boolean andReset) {
         advance(andReset);
+    }
+
+    public void clock(int measure, int beat, int pulse) {
+        if (pulse == 0 || pulse == 6 + swingOffset || pulse == 12 || pulse == 18 + swingOffset) {
+            advance(beat == 0 && pulse == 0);
+        }
     }
 
 

@@ -20,6 +20,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     @Getter @Setter private int nextSessionIndex = 0;
     @Getter @Setter private int currentFileIndex = 0;
     @Getter @Setter private int midiChannel = 0;
+    @Getter @Setter private int swingOffset = 0;
     @Getter private SettingsUtil.SettingsChanged settingsChanged = SettingsUtil.SettingsChanged.NONE;
 
     private Map<Integer, Color> palette = SettingsUtil.PALETTE;
@@ -27,16 +28,18 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     private boolean includeSessions = true;
     private boolean includeFiles = true;
     private boolean includeMidiChannel = true;
+    private boolean includeSwing = false;
 
 
     /***** constructor ***********************************/
 
     public SettingsSubmodule() {}
 
-    public SettingsSubmodule(boolean includeSessions, boolean includeFiles, boolean includeMidiChannel) {
+    public SettingsSubmodule(boolean includeSessions, boolean includeFiles, boolean includeMidiChannel, boolean includeSwing) {
         this.includeSessions = includeSessions;
         this.includeFiles = includeFiles;
         this.includeMidiChannel = includeMidiChannel;
+        this.includeSwing = includeSwing;
     }
 
     /***** Module implementation ***********************************/
@@ -48,6 +51,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
         drawSessions();
         drawFiles();
         drawMidiChannel();
+        drawSwing();
         settingsChanged = SettingsUtil.SettingsChanged.NONE;
     }
 
@@ -85,6 +89,11 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
             midiChannel = SettingsUtil.midiChannelControls.getIndex(control);
             drawMidiChannel();
             return SettingsUtil.SettingsChanged.SET_MIDI_CHANNEL;
+
+        } else if (SettingsUtil.swingControls.contains(control)) {
+            swingOffset = SettingsUtil.swingControls.getIndex(control) - 3;
+            drawSwing();
+            return SettingsChanged.SET_SWING;
         }
 
         return SettingsUtil.SettingsChanged.NONE;
@@ -130,6 +139,17 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
             Color color = palette.get(COLOR_MIDI_CHANNEL);
             if (control.getIndex() == midiChannel) {
                 color = palette.get(COLOR_MIDI_CHANNEL_ACTIVE);
+            }
+            control.draw(display, color);
+        }
+    }
+
+    public void drawSwing() {
+        if (!includeSwing) return;
+        for (GridControl control : swingControls.getControls()) {
+            Color color = palette.get(COLOR_SWING);
+            if (control.getIndex() == swingOffset + 3) {
+                color = palette.get(COLOR_SWING_ACTIVE);
             }
             control.draw(display, color);
         }

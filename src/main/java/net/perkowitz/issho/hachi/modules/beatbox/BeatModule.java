@@ -65,7 +65,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         this.beatDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
         load(0);
-        this.settingsModule = new SettingsSubmodule();
+        this.settingsModule = new SettingsSubmodule(true, true, true, true);
     }
 
 
@@ -90,6 +90,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             if (nextSessionIndex != null && nextSessionIndex != memory.getCurrentSessionIndex()) {
                 memory.selectSession(nextSessionIndex);
                 settingsModule.setCurrentSessionIndex(nextSessionIndex);
+                settingsModule.setSwingOffset(memory.getCurrentSession().getSwingOffset());
                 nextSessionIndex = null;
             }
 
@@ -414,6 +415,9 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             case SET_MIDI_CHANNEL:
                 memory.setMidiChannel(settingsModule.getMidiChannel());
                 break;
+            case SET_SWING:
+                memory.getCurrentSession().setSwingOffset(settingsModule.getSwingOffset());
+                break;
         }
     }
 
@@ -508,6 +512,11 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         }
     }
 
+    public void clock(int measure, int beat, int pulse) {
+        if ((pulse == 0 || pulse == 6 + memory.getCurrentSession().getSwingOffset() || pulse == 12 || pulse == 18 + memory.getCurrentSession().getSwingOffset()) && playing) {
+            advance(beat == 0 && pulse == 0);
+        }
+    }
 
 
     /************************************************************************
