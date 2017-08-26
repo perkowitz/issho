@@ -49,6 +49,7 @@ public class HachiController implements Clockable, Receiver {
     private List<Triggerable> triggerables = Lists.newArrayList();
     private List<Chordable> chordables = Lists.newArrayList();
     private ShihaiModule shihaiModule = null;
+    private Receiver midiReceiver;
     @Getter private ChordReceiver chordReceiver;
 
     private static CountDownLatch stop = new CountDownLatch(1);
@@ -62,8 +63,9 @@ public class HachiController implements Clockable, Receiver {
     private int tempoIntervalInMillis = 125 * 120 / tempo;
 
 
-    public HachiController(Module[] modules, GridDevice[] gridDevices) {
+    public HachiController(Module[] modules, GridDevice[] gridDevices, Receiver midiReceiver) {
 
+        this.midiReceiver = midiReceiver;
         displays = new MultiDisplay[modules.length];
 
         this.modules = modules;
@@ -255,49 +257,51 @@ public class HachiController implements Clockable, Receiver {
             int command = shortMessage.getCommand();
             int status = shortMessage.getStatus();
 
+            byte[] emptyData = new byte[0];
+
             if (command == MIDI_REALTIME_COMMAND) {
                 switch (status) {
                     case START:
-//                        System.out.println("START");
+                        System.out.println("START");
+                        try {
+//                            ShortMessage clockMessage = new ShortMessage();
+//                            clockMessage.setMessage(0xfe);
+//                            midiReceiver.send(clockMessage, -1); // pass clock through to midi out
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         midiClockCount = 0;
                         this.start(true);
                         break;
                     case STOP:
-//                        System.out.println("STOP");
+                        System.out.println("STOP");
+//                        midiReceiver.send(message, timeStamp); // pass clock through to midi out
                         this.stop();
                         break;
                     case CONTINUE:
-//                        System.out.println("CONTINUE");
+                        System.out.println("CONTINUE");
+//                        midiReceiver.send(message, timeStamp); // pass clock through to midi out
                         this.start(midiContinueAsStart);
                         break;
                     case TIMING_CLOCK:
-//                        System.out.println("TICK");
-//                        System.out.printf("  Tick: %d, %d\n", midiClockCount, tickCount);
-                        if (midiClockCount % midiClockDivider == 0) {
-                            boolean andReset = (tickCount % 16 == 0);
-//                            this.tick(andReset);
-//                            System.out.printf("  Sending tick, reset=%s\n", andReset);
-                            tickCount++;
-                        }
+//                        midiReceiver.send(message, timeStamp); // pass clock through to midi out
+//                        if (midiClockCount % midiClockDivider == 0) {
+//                            boolean andReset = (tickCount % 16 == 0);
+////                            this.tick(andReset);
+//                            tickCount++;
+//                        }
+//                        midiClockCount++;
 
                         this.clock(clockMeasure, clockBeat, clockPulse);
-//                        if (clockPulse == 0) {
-//                            System.out.printf("  Clock: %04d:%02d:%02d\n", clockMeasure, clockBeat, clockPulse);
-//                        }
                         clockPulse++;
                         if (clockPulse % clockPulsesPerBeat == 0 && clockPulse > 0) {
                             clockPulse = 0;
                             clockBeat++;
-//                            System.out.println("  Incrementing clockBeat");
                         }
                         if (clockBeat % clockBeatsPerMeasure == 0 && clockBeat > 0) {
                             clockBeat = 0;
                             clockMeasure++;
-//                            System.out.println("  Incrementing clockMeasure");
                         }
-
-
-                        midiClockCount++;
                         break;
                     default:
 //                        System.out.printf("REALTIME: %d\n", status);
@@ -307,7 +311,7 @@ public class HachiController implements Clockable, Receiver {
             } else {
                 switch (command) {
                     case NOTE_ON:
-//                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         break;
                     case NOTE_OFF:
 //                        System.out.println("NOTE OFF");
