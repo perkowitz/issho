@@ -45,7 +45,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     private boolean stepEditing = false;
     private int currentKeyboardOctave = 5;
     @Setter private boolean monophonic = false;
-    @Setter int controlA = 1;
+    @Setter int controlA = 15;
     private int swingOffset = 0;
 
     private String filePrefix = "polymodule";
@@ -114,7 +114,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
         // if controller is set and step enabled, send controller (even if step is a TIE or no notes programmed)
         if (step.isEnabled() && step.getControlA() != null) {
-            sendMidiCC(memory.getMidiChannel(), controlA, step.getControlA());
+            // TODO enable this when we make control editable
+//            sendMidiCC(memory.getMidiChannel(), controlA, step.getControlA());
         }
 
         // send notes
