@@ -1,13 +1,17 @@
 package net.perkowitz.issho.hachi.modules;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Sessionizeable;
 
+import java.util.List;
 import java.util.Map;
 
+import static net.perkowitz.issho.hachi.modules.SettingsSubmodule.Operation.CLEAR;
+import static net.perkowitz.issho.hachi.modules.SettingsSubmodule.Operation.COPY;
 import static net.perkowitz.issho.hachi.modules.SettingsUtil.*;
 
 
@@ -16,12 +20,27 @@ import static net.perkowitz.issho.hachi.modules.SettingsUtil.*;
  */
 public class SettingsSubmodule extends BasicModule implements Module, Sessionizeable {
 
-    @Getter @Setter private int currentSessionIndex = 0;
-    @Getter @Setter private int nextSessionIndex = 0;
-    @Getter @Setter private int currentFileIndex = 0;
-    @Getter @Setter private int midiChannel = 0;
-    @Getter @Setter private int swingOffset = 0;
-    @Getter private SettingsUtil.SettingsChanged settingsChanged = SettingsUtil.SettingsChanged.NONE;
+    public enum Operation {
+        COPY, CLEAR
+    }
+
+    @Getter
+    @Setter
+    private int currentSessionIndex = 0;
+    @Getter
+    @Setter
+    private int nextSessionIndex = 0;
+    @Getter
+    @Setter
+    private int currentFileIndex = 0;
+    @Getter
+    @Setter
+    private int midiChannel = 0;
+    @Getter
+    @Setter
+    private int swingOffset = 0;
+    @Getter
+    private SettingsUtil.SettingsChanged settingsChanged = SettingsUtil.SettingsChanged.NONE;
 
     private Map<Integer, Color> palette = SettingsUtil.PALETTE;
 
@@ -30,10 +49,15 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     private boolean includeMidiChannel = true;
     private boolean includeSwing = false;
 
+    private boolean performingOperation = false;
+    private Operation operationPerformed = null;
+    private List<GridControl> operationTargets = Lists.newArrayList();
+
 
     /***** constructor ***********************************/
 
-    public SettingsSubmodule() {}
+    public SettingsSubmodule() {
+    }
 
     public SettingsSubmodule(boolean includeSessions, boolean includeFiles, boolean includeMidiChannel, boolean includeSwing) {
         this.includeSessions = includeSessions;
@@ -44,7 +68,9 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
 
     /***** Module implementation ***********************************/
 
-    public GridListener getGridListener() { return null; }
+    public GridListener getGridListener() {
+        return null;
+    }
 
     public void redraw() {
         display.initialize();
@@ -55,7 +81,8 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
         settingsChanged = SettingsUtil.SettingsChanged.NONE;
     }
 
-    public void shutdown() {}
+    public void shutdown() {
+    }
 
 
     /***** Sessionizeable implementation *************************************/
@@ -66,7 +93,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     public void selectPatterns(int firstIndex, int lastIndex) {
     }
 
-    
+
     /***** listener implementation ***********************************/
 
     public SettingsUtil.SettingsChanged controlPressed(GridControl control, int velocity) {
@@ -94,6 +121,66 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
             swingOffset = SettingsUtil.swingControls.getIndex(control) - 3;
             drawSwing();
             return SettingsChanged.SET_SWING;
+
+        } else if (SettingsUtil.operationControls.contains(control)) {
+
+            // if we hit another operation button in the midst of an operation, the old one is canceled
+            performingOperation = true;
+            if (control.equals(copyControl)) {
+                operationPerformed = COPY;
+            } else if (control.equals(clearControl)) {
+                operationPerformed = CLEAR;
+            } else {
+                operationPerformed = null;
+            }
+            operationTargets.clear();
+
+            return SettingsChanged.OPERATION_STARTED;
+        }
+
+        return SettingsUtil.SettingsChanged.NONE;
+    }
+
+    public SettingsUtil.SettingsChanged controlReleased(GridControl control, int velocity) {
+
+        if (control.equals(clearControl)) {
+            // for a CLEAR to happen, you must press CLEAR, press exactly one session, then release CLEAR
+            if (performingOperation == true && operationPerformed == CLEAR
+                    && operationTargets.size() == 1
+                    && sessionControls.contains(operationTargets.get(0))) {
+                int clearSessionIndex = operationTargets.get(0).getIndex();
+                System.out.printf("Clearing session %d\n", clearSessionIndex);
+                // clear it
+                return SettingsChanged.CLEAR_OPERATION_COMPLETED;
+            }
+
+        } else if (control.equals(copyControl)) {
+            // for a COPY to happen, you must press COPY, press exactly two sessions, then release COPY
+            if (performingOperation == true && operationPerformed == COPY
+                    && operationTargets.size() == 2
+                    && sessionControls.contains(operationTargets.get(0))
+                    && sessionControls.contains(operationTargets.get(1))) {
+                int copyFromSessionIndex = operationTargets.get(0).getIndex();
+                int copyToSessionIndex = operationTargets.get(1).getIndex();
+                System.out.printf("Copy from session %d to session %d\n", copyFromSessionIndex, copyToSessionIndex);
+                // copy it
+                return SettingsChanged.COPY_OPERATION_COMPLETED;
+
+            } else if (performingOperation == true && operationPerformed == COPY
+                    // OR you press COPY, press a session, then a file save, then another session, then release COPY
+                    && operationTargets.size() == 3
+                    && sessionControls.contains(operationTargets.get(0))
+                    && saveControls.contains(operationTargets.get(1))
+                    && sessionControls.contains(operationTargets.get(2))) {
+                int copyFromSessionIndex = operationTargets.get(0).getIndex();
+                int copyToFileIndex = operationTargets.get(1).getIndex();
+                int copyToSessionIndex = operationTargets.get(2).getIndex();
+                System.out.printf("Copy from session %d to session %d in file %d\n", copyFromSessionIndex, copyToSessionIndex, copyToFileIndex);
+                // copy it
+                return SettingsChanged.COPY_OPERATION_COMPLETED;
+
+            }
+
         }
 
         return SettingsUtil.SettingsChanged.NONE;

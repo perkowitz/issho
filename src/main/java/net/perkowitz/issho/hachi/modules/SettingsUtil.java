@@ -5,11 +5,11 @@ import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
-import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
-import java.util.List;
 import java.util.Map;
+
+import static net.perkowitz.issho.devices.GridButton.Side.Left;
 
 /**
  * Created by optic on 10/24/16.
@@ -17,7 +17,8 @@ import java.util.Map;
 public class SettingsUtil {
 
     public enum SettingsChanged {
-        NONE, SELECT_SESSION, LOAD_FILE, SAVE_FILE, SET_MIDI_CHANNEL, SET_SWING
+        NONE, SELECT_SESSION, LOAD_FILE, SAVE_FILE, SET_MIDI_CHANNEL, SET_SWING,
+        OPERATION_STARTED, COPY_OPERATION_COMPLETED, CLEAR_OPERATION_COMPLETED
     }
 
     /***** locations of various controls on the grid ************************/
@@ -38,6 +39,9 @@ public class SettingsUtil {
     public static GridControlSet midiChannelControls = GridControlSet.padRows(SettingsUtil.MIDI_CHANNEL_MIN_ROW, SettingsUtil.MIDI_CHANNEL_MAX_ROW);
     public static GridControlSet swingControls = GridControlSet.padRows(SettingsUtil.SWING_ROW, SettingsUtil.SWING_ROW);
 
+    public static GridControl copyControl = new GridControl(GridButton.at(Left, 2), 0);
+    public static GridControl clearControl = new GridControl(GridButton.at(Left, 3), 0);
+    public static GridControlSet operationControls = new GridControlSet(Lists.<GridControl>newArrayList(copyControl, clearControl));
 
     /***** color palettes **********************************************************/
 
