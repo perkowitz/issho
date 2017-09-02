@@ -24,23 +24,12 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
         COPY, CLEAR
     }
 
-    @Getter
-    @Setter
-    private int currentSessionIndex = 0;
-    @Getter
-    @Setter
-    private int nextSessionIndex = 0;
-    @Getter
-    @Setter
-    private int currentFileIndex = 0;
-    @Getter
-    @Setter
-    private int midiChannel = 0;
-    @Getter
-    @Setter
-    private int swingOffset = 0;
-    @Getter
-    private SettingsUtil.SettingsChanged settingsChanged = SettingsUtil.SettingsChanged.NONE;
+    @Getter @Setter private int currentSessionIndex = 0;
+    @Getter @Setter private int nextSessionIndex = 0;
+    @Getter @Setter private int currentFileIndex = 0;
+    @Getter @Setter private int midiChannel = 0;
+    @Getter @Setter private int swingOffset = 0;
+    @Getter private SettingsUtil.SettingsChanged settingsChanged = SettingsUtil.SettingsChanged.NONE;
 
     private Map<Integer, Color> palette = SettingsUtil.PALETTE;
 
@@ -50,8 +39,8 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     private boolean includeSwing = false;
 
     private boolean performingOperation = false;
-    private Operation operationPerformed = null;
-    private List<GridControl> operationTargets = Lists.newArrayList();
+    @Getter private Operation operationPerformed = null;
+    @Getter private List<GridControl> operationTargets = Lists.newArrayList();
 
 
     /***** constructor ***********************************/
@@ -97,7 +86,15 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     /***** listener implementation ***********************************/
 
     public SettingsUtil.SettingsChanged controlPressed(GridControl control, int velocity) {
-        if (SettingsUtil.sessionControls.contains(control)) {
+
+        if (performingOperation && !operationControls.contains(control)) {
+            // needs to be first because it redefines the meaning of other control presses
+            if (sessionControls.contains(control) || saveControls.contains(control)) {
+                operationTargets.add(control);
+            }
+            return SettingsChanged.NONE;
+
+        } else if (SettingsUtil.sessionControls.contains(control)) {
             nextSessionIndex = SettingsUtil.sessionControls.getIndex(control);
             drawSessions();
             return SettingsUtil.SettingsChanged.SELECT_SESSION;
@@ -124,7 +121,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
 
         } else if (SettingsUtil.operationControls.contains(control)) {
 
-            // if we hit another operation button in the midst of an operation, the old one is canceled
+            // if we hit another operation button in the midst of an operation, the old one is replaced
             performingOperation = true;
             if (control.equals(copyControl)) {
                 operationPerformed = COPY;
@@ -141,7 +138,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
         return SettingsUtil.SettingsChanged.NONE;
     }
 
-    public SettingsUtil.SettingsChanged controlReleased(GridControl control, int velocity) {
+    public SettingsUtil.SettingsChanged controlReleased(GridControl control) {
 
         if (control.equals(clearControl)) {
             // for a CLEAR to happen, you must press CLEAR, press exactly one session, then release CLEAR

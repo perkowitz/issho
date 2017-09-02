@@ -391,46 +391,18 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     /**
-     * when settings view is active, the user input should be passed to the SettingsSubmodule
-     * but then the module must check with the SettingsSubmodule to see what was changed and
-     * follow up accordingly. settings being similar for many modules, this still saves
-     * some implementation effort
-     *
-     * @param control
-     * @param velocity
-     */
-    private void onControlPressedSettings(GridControl control, int velocity) {
-
-        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
-        switch (settingsChanged) {
-            case SELECT_SESSION:
-                selectSession(settingsModule.getNextSessionIndex());
-                break;
-            case LOAD_FILE:
-                load(settingsModule.getCurrentFileIndex());
-                break;
-            case SAVE_FILE:
-                save(settingsModule.getCurrentFileIndex());
-                break;
-            case SET_MIDI_CHANNEL:
-                memory.setMidiChannel(settingsModule.getMidiChannel());
-                break;
-            case SET_SWING:
-                memory.getCurrentSession().setSwingOffset(settingsModule.getSwingOffset());
-                break;
-        }
-    }
-
-    /**
      * any momentary controls may need to be lit on press and unlit on release
      *
      * @param control
      */
     private void onControlReleased(GridControl control) {
-        if (settingsView) return;
 
         if (control.equals(saveControl)) {
             beatDisplay.drawControl(control, false);
+
+        } else if (settingsView) {
+            // now check if we're in settings view and then process the input accordingly
+            onControlReleasedSettings(control);
 
         } else if (control.equals(copyControl)) {
             if (patternEditIndexBuffer.size() >= 2) {
@@ -487,6 +459,59 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         }
 
     }
+
+    /**
+     * when settings view is active, the user input should be passed to the SettingsSubmodule
+     * but then the module must check with the SettingsSubmodule to see what was changed and
+     * follow up accordingly. settings being similar for many modules, this still saves
+     * some implementation effort
+     *
+     * @param control
+     * @param velocity
+     */
+    private void onControlPressedSettings(GridControl control, int velocity) {
+
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
+        switch (settingsChanged) {
+            case SELECT_SESSION:
+                selectSession(settingsModule.getNextSessionIndex());
+                break;
+            case LOAD_FILE:
+                load(settingsModule.getCurrentFileIndex());
+                break;
+            case SAVE_FILE:
+                save(settingsModule.getCurrentFileIndex());
+                break;
+            case SET_MIDI_CHANNEL:
+                memory.setMidiChannel(settingsModule.getMidiChannel());
+                break;
+            case SET_SWING:
+                memory.getCurrentSession().setSwingOffset(settingsModule.getSwingOffset());
+                break;
+        }
+    }
+
+    /**
+     * when settings view is active, the user input should be passed to the SettingsSubmodule
+     * but then the module must check with the SettingsSubmodule to see what was changed and
+     * follow up accordingly. settings being similar for many modules, this still saves
+     * some implementation effort
+     *
+     * @param control
+     */
+    private void onControlReleasedSettings(GridControl control) {
+
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlReleased(control);
+        switch (settingsChanged) {
+            case COPY_OPERATION_COMPLETED:
+                System.out.printf("Completed copy: \n");
+                break;
+            case CLEAR_OPERATION_COMPLETED:
+                System.out.printf("Completed clear: \n");
+                break;
+        }
+    }
+
 
     public void onKnobChanged(GridKnob knob, int delta) {}
     public void onKnobSet(GridKnob knob, int value) {}
