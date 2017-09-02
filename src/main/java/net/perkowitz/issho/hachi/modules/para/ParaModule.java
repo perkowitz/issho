@@ -461,32 +461,13 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     }
 
-    private void onControlPressedSettings(GridControl control, int velocity) {
-
-        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
-        switch (settingsChanged) {
-            case SELECT_SESSION:
-                selectSession(settingsModule.getNextSessionIndex());
-                break;
-            case LOAD_FILE:
-                load(settingsModule.getCurrentFileIndex());
-                break;
-            case SAVE_FILE:
-                save(settingsModule.getCurrentFileIndex());
-                break;
-            case SET_MIDI_CHANNEL:
-                memory.setMidiChannel(settingsModule.getMidiChannel());
-                break;
-            case SET_SWING:
-                swingOffset = settingsModule.getSwingOffset();
-                break;
-        }
-    }
-
     private void onControlReleased(GridControl control) {
 
-        if (ParaUtil.patternControls.contains(control)) {
+        if (paraDisplay.isSettingsMode()) {
+            // now check if we're in settings view and then process the input accordingly
+            onControlReleasedSettings(control);
 
+        } else if (ParaUtil.patternControls.contains(control)) {
             if (!patternEditing) {
                 // releasing a pattern pad
                 // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
@@ -545,6 +526,69 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         }
     }
 
+    private void onControlPressedSettings(GridControl control, int velocity) {
+
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
+        switch (settingsChanged) {
+            case SELECT_SESSION:
+                selectSession(settingsModule.getNextSessionIndex());
+                break;
+            case LOAD_FILE:
+                load(settingsModule.getCurrentFileIndex());
+                break;
+            case SAVE_FILE:
+                save(settingsModule.getCurrentFileIndex());
+                break;
+            case SET_MIDI_CHANNEL:
+                memory.setMidiChannel(settingsModule.getMidiChannel());
+                break;
+            case SET_SWING:
+                swingOffset = settingsModule.getSwingOffset();
+                break;
+        }
+    }
+
+    private void onControlReleasedSettings(GridControl control) {
+
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlReleased(control);
+        switch (settingsChanged) {
+            case COPY_SESSION:
+                if (settingsModule.getCopyFromSessionIndex() != null && settingsModule.getCopyToSessionIndex() != null) {
+                    ParaSession fromSession = memory.getSessions()[settingsModule.getCopyFromSessionIndex()];
+                    int toSessionIndex = settingsModule.getCopyToSessionIndex();
+                    memory.getSessions()[toSessionIndex] = ParaSession.copy(fromSession, toSessionIndex);
+                    System.out.printf("Completed copy: %d -> %d\n", settingsModule.getCopyFromSessionIndex(), settingsModule.getCopyToSessionIndex());
+                }
+                break;
+
+            case COPY_SESSION_TO_FILE:
+                if (settingsModule.getCopyFromSessionIndex() != null && settingsModule.getCopyToSessionIndex() != null &&
+                        settingsModule.getCopyToFileIndex() != null) {
+                    ParaSession fromSession = memory.getSessions()[settingsModule.getCopyFromSessionIndex()];
+                    int toSessionIndex = settingsModule.getCopyToSessionIndex();
+                    int toFileIndex = settingsModule.getCopyToFileIndex();
+                    ParaMemory toMemory = loadMemory(toFileIndex);
+                    toMemory.setMidiChannel(memory.getMidiChannel());  // midi channel is per memory, which is kind of weird, but ok
+                    toMemory.setPatternChainMin(memory.getPatternChainMin()); // same with these
+                    toMemory.setPatternChainMax(memory.getPatternChainMax());
+                    toMemory.setCurrentPatternIndex(memory.getCurrentPatternIndex());
+                    toMemory.getSessions()[toSessionIndex] =ParaSession.copy(fromSession, toSessionIndex);
+                    saveMemory(toFileIndex, toMemory);
+                    System.out.printf("Completed copy to file: %d -> %d, f=%d\n",
+                            settingsModule.getCopyFromSessionIndex(), settingsModule.getCopyToSessionIndex(), settingsModule.getCopyToFileIndex());
+                }
+                break;
+
+            case CLEAR_SESSION:
+                Integer sessionIndex = settingsModule.getClearSessionIndex();
+                if (sessionIndex != null) {
+                    memory.getSessions()[sessionIndex] = new ParaSession(sessionIndex);
+                    System.out.printf("Completed clear session %d\n", sessionIndex);
+                }
+                break;
+        }
+    }
+
     public void onKnobChanged(GridKnob knob, int delta) {}
     public void onKnobSet(GridKnob knob, int value) {}
 
@@ -584,6 +628,10 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     }
 
     public void save(int index) {
+        saveMemory(index, memory);
+    }
+
+    public void saveMemory(int index, ParaMemory saveMemory) {
         try {
             String filename = filename(index);
             File file = new File(filename);
@@ -591,24 +639,28 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 // make a backup, but will overwrite any previous backups
                 Files.copy(file, new File(filename + ".backup"));
             }
-            objectMapper.writeValue(file, memory);
+            objectMapper.writeValue(file, saveMemory);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void load(int index) {
+        memory = loadMemory(index);
+    }
+
+    public ParaMemory loadMemory(int index) {
         try {
             String filename = filename(index);
             File file = new File(filename);
             if (file.exists()) {
-                memory = objectMapper.readValue(file, ParaMemory.class);
-            } else {
-                memory = new ParaMemory();
+                return objectMapper.readValue(file, ParaMemory.class);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return new ParaMemory();
     }
 
     private String filename(int index) {

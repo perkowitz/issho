@@ -141,6 +141,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
             }
             operationTargets.clear();
             copyFromSessionIndex = copyToSessionIndex = copyToFileIndex = clearSessionIndex = null;
+            drawOperationsControls(operationPerformed);
 
             return SettingsChanged.OPERATION_STARTED;
         }
@@ -159,8 +160,11 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
                     && sessionControls.contains(operationTargets.get(0))) {
                 clearSessionIndex = operationTargets.get(0).getIndex();
                 performingOperation = false;
+                drawOperationsControls(null);
                 return SettingsChanged.CLEAR_SESSION;
             }
+            performingOperation = false;
+            drawOperationsControls(null);
 
         } else if (control.equals(copyControl)) {
             // for a COPY to happen, you must press COPY, press exactly two sessions, then release COPY
@@ -171,8 +175,8 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
                 copyFromSessionIndex = operationTargets.get(0).getIndex();
                 copyToSessionIndex = operationTargets.get(1).getIndex();
                 performingOperation = false;
+                drawOperationsControls(null);
                 return SettingsChanged.COPY_SESSION;
-
             } else if (performingOperation == true && operationPerformed == COPY
                     // OR you press COPY, press a session, then a file save, then another session, then release COPY
                     && operationTargets.size() == 3
@@ -183,10 +187,11 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
                 copyToFileIndex = operationTargets.get(1).getIndex();
                 copyToSessionIndex = operationTargets.get(2).getIndex();
                 performingOperation = false;
+                drawOperationsControls(null);
                 return SettingsChanged.COPY_SESSION_TO_FILE;
-
             }
-
+            performingOperation = false;
+            drawOperationsControls(null);
         }
 
         return SettingsUtil.SettingsChanged.NONE;
@@ -223,6 +228,20 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
                 color = palette.get(COLOR_SESSION_NEXT);
             }
             control.draw(display, color);
+        }
+        drawOperationsControls(null);
+    }
+
+    public void drawOperationsControls(Operation operation) {
+        if (!includeSessions) return;
+        for (GridControl control : operationControls.getControls()) {
+            if (control.equals(copyControl) && operation == COPY) {
+                control.draw(display, palette.get(COLOR_ON));
+            } else if (control.equals(clearControl) && operation == CLEAR){
+                control.draw(display, palette.get(COLOR_ON));
+            } else {
+                control.draw(display, palette.get(COLOR_OFF));
+            }
         }
     }
 
