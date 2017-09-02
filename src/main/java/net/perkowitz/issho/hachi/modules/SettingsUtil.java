@@ -18,7 +18,7 @@ public class SettingsUtil {
 
     public enum SettingsChanged {
         NONE, SELECT_SESSION, LOAD_FILE, SAVE_FILE, SET_MIDI_CHANNEL, SET_SWING,
-        OPERATION_STARTED, COPY_OPERATION_COMPLETED, CLEAR_OPERATION_COMPLETED
+        OPERATION_STARTED, COPY_SESSION, COPY_SESSION_TO_FILE, CLEAR_SESSION
     }
 
     /***** locations of various controls on the grid ************************/

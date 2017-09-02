@@ -40,7 +40,11 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
 
     private boolean performingOperation = false;
     @Getter private Operation operationPerformed = null;
-    @Getter private List<GridControl> operationTargets = Lists.newArrayList();
+    private List<GridControl> operationTargets = Lists.newArrayList();
+    @Getter private Integer copyFromSessionIndex = null;
+    @Getter private Integer copyToSessionIndex = null;
+    @Getter private Integer copyToFileIndex = null;
+    @Getter private Integer clearSessionIndex = null;
 
 
     /***** constructor ***********************************/
@@ -89,8 +93,13 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
 
         if (performingOperation && !operationControls.contains(control)) {
             // needs to be first because it redefines the meaning of other control presses
-            if (sessionControls.contains(control) || saveControls.contains(control)) {
-                operationTargets.add(control);
+            if (sessionControls.contains(control)) {
+                int index = sessionControls.getIndex(control);
+                operationTargets.add(new GridControl(control, index));
+            }
+            if (saveControls.contains(control)) {
+                int index = saveControls.getIndex(control);
+                operationTargets.add(new GridControl(control, index));
             }
             return SettingsChanged.NONE;
 
@@ -131,6 +140,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
                 operationPerformed = null;
             }
             operationTargets.clear();
+            copyFromSessionIndex = copyToSessionIndex = copyToFileIndex = clearSessionIndex = null;
 
             return SettingsChanged.OPERATION_STARTED;
         }
@@ -140,15 +150,16 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
 
     public SettingsUtil.SettingsChanged controlReleased(GridControl control) {
 
+        copyFromSessionIndex = copyToSessionIndex = copyToFileIndex = clearSessionIndex = null;
+
         if (control.equals(clearControl)) {
             // for a CLEAR to happen, you must press CLEAR, press exactly one session, then release CLEAR
             if (performingOperation == true && operationPerformed == CLEAR
                     && operationTargets.size() == 1
                     && sessionControls.contains(operationTargets.get(0))) {
-                int clearSessionIndex = operationTargets.get(0).getIndex();
-                System.out.printf("Clearing session %d\n", clearSessionIndex);
-                // clear it
-                return SettingsChanged.CLEAR_OPERATION_COMPLETED;
+                clearSessionIndex = operationTargets.get(0).getIndex();
+                performingOperation = false;
+                return SettingsChanged.CLEAR_SESSION;
             }
 
         } else if (control.equals(copyControl)) {
@@ -157,11 +168,10 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
                     && operationTargets.size() == 2
                     && sessionControls.contains(operationTargets.get(0))
                     && sessionControls.contains(operationTargets.get(1))) {
-                int copyFromSessionIndex = operationTargets.get(0).getIndex();
-                int copyToSessionIndex = operationTargets.get(1).getIndex();
-                System.out.printf("Copy from session %d to session %d\n", copyFromSessionIndex, copyToSessionIndex);
-                // copy it
-                return SettingsChanged.COPY_OPERATION_COMPLETED;
+                copyFromSessionIndex = operationTargets.get(0).getIndex();
+                copyToSessionIndex = operationTargets.get(1).getIndex();
+                performingOperation = false;
+                return SettingsChanged.COPY_SESSION;
 
             } else if (performingOperation == true && operationPerformed == COPY
                     // OR you press COPY, press a session, then a file save, then another session, then release COPY
@@ -169,12 +179,11 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
                     && sessionControls.contains(operationTargets.get(0))
                     && saveControls.contains(operationTargets.get(1))
                     && sessionControls.contains(operationTargets.get(2))) {
-                int copyFromSessionIndex = operationTargets.get(0).getIndex();
-                int copyToFileIndex = operationTargets.get(1).getIndex();
-                int copyToSessionIndex = operationTargets.get(2).getIndex();
-                System.out.printf("Copy from session %d to session %d in file %d\n", copyFromSessionIndex, copyToSessionIndex, copyToFileIndex);
-                // copy it
-                return SettingsChanged.COPY_OPERATION_COMPLETED;
+                copyFromSessionIndex = operationTargets.get(0).getIndex();
+                copyToFileIndex = operationTargets.get(1).getIndex();
+                copyToSessionIndex = operationTargets.get(2).getIndex();
+                performingOperation = false;
+                return SettingsChanged.COPY_SESSION_TO_FILE;
 
             }
 
