@@ -253,6 +253,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
             save(currentFileIndex);
             stepDisplay.drawControl(StepUtil.saveControl, true);
 
+        } else if (settingsView) {
+            onControlPressedSettings(control, velocity);
+
         } else if (control.equals(StepUtil.savePatternControl)) {
             savingPattern = true;
             stepDisplay.drawControl(StepUtil.savePatternControl, true);
@@ -266,9 +269,6 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
             stepDisplay.setDisplayAltControls(displayAltControls);
             stepDisplay.drawControl(StepUtil.altControlsControl, displayAltControls);
             stepDisplay.drawMarkers();
-
-        } else if (settingsView) {
-               onControlPressedSettings(control, velocity);
 
         } else if (markerControls.contains(control) && !displayAltControls) {
             Stage.Marker newMarker = markerPaletteMap.get(control);
@@ -343,6 +343,25 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
 
     }
 
+    private void onControlReleased(GridControl control) {
+        if (control.equals(StepUtil.saveControl)) {
+            stepDisplay.drawControl(StepUtil.saveControl, false);
+        } else if (settingsView) {
+            onControlReleasedSettings(control);
+        } else if (control.equals(StepUtil.shiftLeftControl) && displayAltControls) {
+            stepDisplay.drawControl(StepUtil.shiftLeftControl, false);
+        } else if (control.equals(StepUtil.shiftRightControl)  && displayAltControls) {
+            stepDisplay.drawControl(StepUtil.shiftRightControl, false);
+        } else if (control.equals(StepUtil.savePatternControl)) {
+            savingPattern = false;
+            stepDisplay.drawControl(StepUtil.savePatternControl, false);
+//        } else if (control.equals(StepUtil.panicControl)) {
+//            stepDisplay.drawControl(StepUtil.panicControl, false);
+        } else if (patternControls.contains(control)) {
+            stepDisplay.drawPatterns(memory);
+        }
+    }
+
     private void onControlPressedSettings(GridControl control, int velocity) {
 
         SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
@@ -366,22 +385,44 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         }
     }
 
-    private void onControlReleased(GridControl control) {
-        if (control.equals(StepUtil.saveControl)) {
-            stepDisplay.drawControl(StepUtil.saveControl, false);
-        } else if (control.equals(StepUtil.shiftLeftControl) && displayAltControls) {
-            stepDisplay.drawControl(StepUtil.shiftLeftControl, false);
-        } else if (control.equals(StepUtil.shiftRightControl)  && displayAltControls) {
-            stepDisplay.drawControl(StepUtil.shiftRightControl, false);
-        } else if (control.equals(StepUtil.savePatternControl)) {
-            savingPattern = false;
-            stepDisplay.drawControl(StepUtil.savePatternControl, false);
-//        } else if (control.equals(StepUtil.panicControl)) {
-//            stepDisplay.drawControl(StepUtil.panicControl, false);
-        } else if (patternControls.contains(control)) {
-            stepDisplay.drawPatterns(memory);
+    private void onControlReleasedSettings(GridControl control) {
+
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlReleased(control);
+        switch (settingsChanged) {
+            case COPY_SESSION:
+                if (settingsModule.getCopyFromSessionIndex() != null && settingsModule.getCopyToSessionIndex() != null) {
+                    StepSession fromSession = memory.getSessions()[settingsModule.getCopyFromSessionIndex()];
+                    int toSessionIndex = settingsModule.getCopyToSessionIndex();
+                    memory.getSessions()[toSessionIndex] =  StepSession.copy(fromSession, toSessionIndex);
+                    System.out.printf("Completed copy: %d -> %d\n", settingsModule.getCopyFromSessionIndex(), settingsModule.getCopyToSessionIndex());
+                }
+                break;
+
+            case COPY_SESSION_TO_FILE:
+                if (settingsModule.getCopyFromSessionIndex() != null && settingsModule.getCopyToSessionIndex() != null &&
+                        settingsModule.getCopyToFileIndex() != null) {
+                    StepSession fromSession = memory.getSessions()[settingsModule.getCopyFromSessionIndex()];
+                    int toSessionIndex = settingsModule.getCopyToSessionIndex();
+                    int toFileIndex = settingsModule.getCopyToFileIndex();
+                    StepMemory toMemory = loadMemory(toFileIndex);
+                    toMemory.setMidiChannel(memory.getMidiChannel());  // midi channel is per memory, which is kind of weird, but ok
+                    toMemory.getSessions()[toSessionIndex] = StepSession.copy(fromSession, toSessionIndex);
+                    saveMemory(toFileIndex, toMemory);
+                    System.out.printf("Completed copy to file: %d -> %d, f=%d\n",
+                            settingsModule.getCopyFromSessionIndex(), settingsModule.getCopyToSessionIndex(), settingsModule.getCopyToFileIndex());
+                }
+                break;
+
+            case CLEAR_SESSION:
+                Integer sessionIndex = settingsModule.getClearSessionIndex();
+                if (sessionIndex != null) {
+                    memory.getSessions()[sessionIndex] = new StepSession(sessionIndex);
+                    System.out.printf("Completed clear session %d\n", sessionIndex);
+                }
+                break;
         }
     }
+
 
     public void onKnobChanged(GridKnob knob, int delta) {}
     public void onKnobSet(GridKnob knob, int value) {}
@@ -424,6 +465,10 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
     }
 
     public void save(int index) {
+        saveMemory(index, memory);
+    }
+
+    public void saveMemory(int index, StepMemory saveMemory) {
         try {
             String filename = filename(index);
             File file = new File(filename);
@@ -431,24 +476,28 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
                 // make a backup, but will overwrite any previous backups
                 Files.copy(file, new File(filename + ".backup"));
             }
-            objectMapper.writeValue(file, memory);
+            objectMapper.writeValue(file, saveMemory);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void load(int index) {
+        memory = loadMemory(index);
+    }
+
+    public StepMemory loadMemory(int index) {
         try {
             String filename = filename(index);
             File file = new File(filename);
             if (file.exists()) {
-                memory = objectMapper.readValue(file, StepMemory.class);
-            } else {
-                memory = new StepMemory();
+                return objectMapper.readValue(file, StepMemory.class);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return new StepMemory();
     }
 
     private String filename(int index) {
