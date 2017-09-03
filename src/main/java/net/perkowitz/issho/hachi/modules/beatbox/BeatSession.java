@@ -51,4 +51,29 @@ public class BeatSession {
         this.chainEndIndex = chainEndIndex;
     }
 
+    /***** static methods **************************/
+
+    public static BeatSession copy(BeatSession session, int newIndex) {
+        BeatSession newSession = new BeatSession(newIndex);
+        try {
+
+            for (int i = 0; i < session.patterns.size(); i++) {
+                newSession.patterns.set(i, BeatPattern.copy(session.patterns.get(i), i));
+            }
+
+            for (Boolean trackEnabled : session.tracksEnabled) {
+                newSession.tracksEnabled.add(trackEnabled);
+            }
+
+            newSession.chainStartIndex = session.chainStartIndex;
+            newSession.chainEndIndex = session.chainEndIndex;
+            newSession.selectedTrackIndex = session.selectedTrackIndex;
+            newSession.swingOffset = session.swingOffset;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newSession;
+    }
+
 }

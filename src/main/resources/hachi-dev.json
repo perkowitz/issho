@@ -33,14 +33,14 @@
       "filePrefix": "beat0"
     },
     {
-      "class": "ParaModule",
+      "class": "ParaModulexx",
       "palette": "yellow",
       "filePrefix": "para0",
       "monophonic": false
     },
     {
-      "class": "StepModule",
-      "filePrefix": "step1"
+      "class": "StepModulexx",
+      "filePrefix": "step0 "
     }
   ]
 }

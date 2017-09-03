@@ -30,6 +30,13 @@ public class GridControl {
         this.index = index;
     }
 
+    public GridControl(GridControl control, Integer index) {
+        this.pad = control.pad;
+        this.button = control.button;
+        this.knob = control.knob;
+        this.index = index;
+    }
+
 
     /***** public methods ****************************************/
 

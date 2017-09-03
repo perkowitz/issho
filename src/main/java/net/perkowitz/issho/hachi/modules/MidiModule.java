@@ -11,7 +11,9 @@ import static javax.sound.midi.ShortMessage.NOTE_OFF;
  */
 public class MidiModule extends BasicModule implements Receiver {
 
-    public static int MIDI_ALL_NOTES_OFF_CC = 123;
+    //    public static int MIDI_ALL_NOTES_OFF_CC = 123;
+    public static int MIDI_ALL_NOTES_OFF_CC = 120;
+    public static int MIDI_RESET_ALL_CONTROLLERS = 121;
     public static int MIDI_REALTIME_COMMAND = 0xF0;
 
     protected Transmitter inputTransmitter;
@@ -45,6 +47,7 @@ public class MidiModule extends BasicModule implements Receiver {
 
     protected void sendAllNotesOff(int channel) {
         sendMidiCC(channel, MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
+        sendMidiCC(channel, MidiModule.MIDI_RESET_ALL_CONTROLLERS, 0);
     }
 
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {

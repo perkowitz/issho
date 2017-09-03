@@ -93,26 +93,7 @@ of the keyboard.
 
 ## Settings View
 
-<img width="600px" src="para-settings.png"/>
-
-### Sessions
-
-Tap a session pad to select that session from memory. The current session is lit.
-
-### Files
-
-Tap a load pad to load the file with the corresponding number. For example,
-if Para is configured to use "para" as a file prefix, pressing the first
-pad will load "para-0.json" into memory. Similarly, tap a save pad to save 
-the current memory to the corresponding file. The previous file will be moved
-to a backup (but only the most recent backup will be retained). The most recently
-saved or loaded file will be lit; this is the file that will be written when
-tapping the save button in the main view.
-
-### MIDI Channel
-
-These 16 pads correspond to the 16 MIDI channels. Tap one to send the sequencer's
-notes on that channel.
+Para uses the standard [Settings Module](settings.md) for all settings.
 
 
 # Configuration

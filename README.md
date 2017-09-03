@@ -26,6 +26,14 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 
 # Release notes
 
+## 2017-09-02 v1.0.2
+- Session copy/clear from settings screen for Beatbox & Para
+- Follow 24ppqn MIDI clock, enable swing by MIDI pulse
+- Allow multiple devices to control Hachi simultaneously
+- Beatbox replaces Rhythm
+- Minibeat module
+- Memory management app
+
 ## 2017-01-29: v1.0.1
 
 - Add configurable keyboard device

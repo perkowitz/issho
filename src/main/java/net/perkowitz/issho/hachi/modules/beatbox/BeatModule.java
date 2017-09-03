@@ -391,46 +391,18 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     /**
-     * when settings view is active, the user input should be passed to the SettingsSubmodule
-     * but then the module must check with the SettingsSubmodule to see what was changed and
-     * follow up accordingly. settings being similar for many modules, this still saves
-     * some implementation effort
-     *
-     * @param control
-     * @param velocity
-     */
-    private void onControlPressedSettings(GridControl control, int velocity) {
-
-        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
-        switch (settingsChanged) {
-            case SELECT_SESSION:
-                selectSession(settingsModule.getNextSessionIndex());
-                break;
-            case LOAD_FILE:
-                load(settingsModule.getCurrentFileIndex());
-                break;
-            case SAVE_FILE:
-                save(settingsModule.getCurrentFileIndex());
-                break;
-            case SET_MIDI_CHANNEL:
-                memory.setMidiChannel(settingsModule.getMidiChannel());
-                break;
-            case SET_SWING:
-                memory.getCurrentSession().setSwingOffset(settingsModule.getSwingOffset());
-                break;
-        }
-    }
-
-    /**
      * any momentary controls may need to be lit on press and unlit on release
      *
      * @param control
      */
     private void onControlReleased(GridControl control) {
-        if (settingsView) return;
 
         if (control.equals(saveControl)) {
             beatDisplay.drawControl(control, false);
+
+        } else if (settingsView) {
+            // now check if we're in settings view and then process the input accordingly
+            onControlReleasedSettings(control);
 
         } else if (control.equals(copyControl)) {
             if (patternEditIndexBuffer.size() >= 2) {
@@ -488,6 +460,84 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
     }
 
+    /**
+     * when settings view is active, the user input should be passed to the SettingsSubmodule
+     * but then the module must check with the SettingsSubmodule to see what was changed and
+     * follow up accordingly. settings being similar for many modules, this still saves
+     * some implementation effort
+     *
+     * @param control
+     * @param velocity
+     */
+    private void onControlPressedSettings(GridControl control, int velocity) {
+
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlPressed(control, velocity);
+        switch (settingsChanged) {
+            case SELECT_SESSION:
+                selectSession(settingsModule.getNextSessionIndex());
+                break;
+            case LOAD_FILE:
+                load(settingsModule.getCurrentFileIndex());
+                break;
+            case SAVE_FILE:
+                save(settingsModule.getCurrentFileIndex());
+                break;
+            case SET_MIDI_CHANNEL:
+                memory.setMidiChannel(settingsModule.getMidiChannel());
+                break;
+            case SET_SWING:
+                memory.getCurrentSession().setSwingOffset(settingsModule.getSwingOffset());
+                break;
+        }
+    }
+
+    /**
+     * when settings view is active, the user input should be passed to the SettingsSubmodule
+     * but then the module must check with the SettingsSubmodule to see what was changed and
+     * follow up accordingly. settings being similar for many modules, this still saves
+     * some implementation effort
+     *
+     * @param control
+     */
+    private void onControlReleasedSettings(GridControl control) {
+
+        SettingsUtil.SettingsChanged settingsChanged = settingsModule.controlReleased(control);
+        switch (settingsChanged) {
+            case COPY_SESSION:
+                if (settingsModule.getCopyFromSessionIndex() != null && settingsModule.getCopyToSessionIndex() != null) {
+                    BeatSession fromSession = memory.getSessions().get(settingsModule.getCopyFromSessionIndex());
+                    int toSessionIndex = settingsModule.getCopyToSessionIndex();
+                    memory.getSessions().set(toSessionIndex, BeatSession.copy(fromSession, toSessionIndex));
+                    System.out.printf("Completed copy: %d -> %d\n", settingsModule.getCopyFromSessionIndex(), settingsModule.getCopyToSessionIndex());
+                }
+                break;
+
+            case COPY_SESSION_TO_FILE:
+                if (settingsModule.getCopyFromSessionIndex() != null && settingsModule.getCopyToSessionIndex() != null &&
+                        settingsModule.getCopyToFileIndex() != null) {
+                    BeatSession fromSession = memory.getSessions().get(settingsModule.getCopyFromSessionIndex());
+                    int toSessionIndex = settingsModule.getCopyToSessionIndex();
+                    int toFileIndex = settingsModule.getCopyToFileIndex();
+                    BeatMemory toMemory = loadMemory(toFileIndex);
+                    toMemory.setMidiChannel(memory.getMidiChannel());  // midi channel is per memory, which is kind of weird, but ok
+                    toMemory.getSessions().set(toSessionIndex, BeatSession.copy(fromSession, toSessionIndex));
+                    saveMemory(toFileIndex, toMemory);
+                    System.out.printf("Completed copy to file: %d -> %d, f=%d\n",
+                            settingsModule.getCopyFromSessionIndex(), settingsModule.getCopyToSessionIndex(), settingsModule.getCopyToFileIndex());
+                }
+                break;
+
+            case CLEAR_SESSION:
+                Integer sessionIndex = settingsModule.getClearSessionIndex();
+                if (sessionIndex != null) {
+                    memory.getSessions().set(sessionIndex, new BeatSession(sessionIndex));
+                    System.out.printf("Completed clear session %d\n", sessionIndex);
+                }
+                break;
+        }
+    }
+
+
     public void onKnobChanged(GridKnob knob, int delta) {}
     public void onKnobSet(GridKnob knob, int value) {}
 
@@ -544,6 +594,10 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     public void save(int index) {
+        saveMemory(index, memory);
+    }
+
+    public void saveMemory(int index, BeatMemory saveMemory) {
         try {
             String filename = filename(index);
             File file = new File(filename);
@@ -551,24 +605,28 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 // make a backup, but will overwrite any previous backups
                 Files.copy(file, new File(filename + ".backup"));
             }
-            objectMapper.writeValue(file, memory);
+            objectMapper.writeValue(file, saveMemory);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void load(int index) {
+        memory = loadMemory(index);
+    }
+
+    public BeatMemory loadMemory(int index) {
         try {
             String filename = filename(index);
             File file = new File(filename);
             if (file.exists()) {
-                memory = objectMapper.readValue(file, BeatMemory.class);
-            } else {
-                memory = new BeatMemory();
+                return objectMapper.readValue(file, BeatMemory.class);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return new BeatMemory();
     }
 
     private String filename(int index) {

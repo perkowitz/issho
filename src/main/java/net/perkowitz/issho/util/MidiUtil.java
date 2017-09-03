@@ -9,6 +9,8 @@ import javax.sound.midi.MidiUnavailableException;
  */
 public class MidiUtil {
 
+    public static int MIDI_REALTIME_COMMAND = 0xF0;
+
     public static MidiDevice.Info[] midiDeviceInfos = null;
 
     public static MidiDevice findMidiDevice(String[] deviceNames, boolean receive, boolean transmit) {

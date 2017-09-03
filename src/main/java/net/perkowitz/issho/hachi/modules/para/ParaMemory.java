@@ -18,14 +18,14 @@ public class ParaMemory implements MemoryObject {
 
     @Getter private ParaSession[] sessions = new ParaSession[SESSION_COUNT];
     @Getter @Setter private int currentSessionIndex = 0;
-    @Getter private int currentPatternIndex = 0;
+    @Getter @Setter private int currentPatternIndex = 0;
     @Getter private int currentStepIndex = 0;
     @Getter private int selectedStepIndex = 0;
     @Getter @Setter private int keyboardOctave;
 
     @Getter private int playingPatternIndex;// the currently playing pattern (which might not be in the chain, if a new one has been selected)
-    @Getter private int patternChainMin;    // the index of the first of the playing pattern chain
-    @Getter private int patternChainMax;    // the index of the last of the pattern chain
+    @Getter @Setter private int patternChainMin;    // the index of the first of the playing pattern chain
+    @Getter @Setter private int patternChainMax;    // the index of the last of the pattern chain
     @Getter private int patternChainNextIndex;  // the index of the NEXT pattern to play
 
     @Getter @Setter private Integer nextSessionIndex = null;
