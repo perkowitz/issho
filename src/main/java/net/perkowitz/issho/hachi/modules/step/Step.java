@@ -7,6 +7,9 @@ import lombok.Setter;
 import java.util.List;
 
 import static net.perkowitz.issho.hachi.modules.step.Step.Mode.*;
+import static net.perkowitz.issho.hachi.modules.step.Step.MultiNoteMode.CHOOSE_HIGH;
+import static net.perkowitz.issho.hachi.modules.step.Step.MultiNoteMode.CHOOSE_LOW;
+import static net.perkowitz.issho.hachi.modules.step.Step.MultiNoteMode.ORDER_HIGH_TO_LOW;
 
 /**
  * Created by optic on 12/2/16.
@@ -17,10 +20,17 @@ public class Step {
         Play, Tie, Rest, Slide
     }
 
+    public enum MultiNoteMode {
+        CHOOSE_HIGH, CHOOSE_LOW, CHOOSE_RANDOM,
+        ORDER_LOW_TO_HIGH, ORDER_HIGH_TO_LOW, ORDER_RANDOM
+    }
+
     public static int DEFAULT_OCTAVE = 5;
     public static int DEFAULT_VELOCITY = 80;
     public static int VELOCITY_INCREMENT = 16;
     public static int[] DEFAULT_SCALE = { 0, 2, 4, 5, 7, 9, 11, 12 };   // C major scale
+
+    public static MultiNoteMode multiNoteMode = ORDER_HIGH_TO_LOW;
 
     @Setter private static int[] scale = DEFAULT_SCALE;
 
@@ -54,7 +64,7 @@ public class Step {
 
         Mode mode = Rest;
         int velocity = DEFAULT_VELOCITY;
-        int baseNote = 0;
+        List<Integer> baseNotes = Lists.newArrayList();
         int octave = DEFAULT_OCTAVE;
         int sharps = 0;
         boolean slide = false;
@@ -65,7 +75,7 @@ public class Step {
         for (int i = 0; i < markers.length; i++) {
             switch (markers[i]) {
                 case Note:
-                    baseNote = scale[i];
+                    baseNotes.add(scale[i]);
                     mode = Play;
                     break;
                 case Sharp:
@@ -103,17 +113,50 @@ public class Step {
             }
         }
 
-        int note = octave * 12 + baseNote + sharps;
-        if (ties > 0) {
-            mode = Tie;
-        } else if (mode == Play && slide) {
-            mode = Slide;
-        }
+//        Integer chosenNote = null;
+//        if (baseNotes.size() > 0) {
+//            switch (multiNoteMode) {
+//                case CHOOSE_LOW:
+//                    chosenNote = baseNotes.get(0);  // basenotes are added low-to-high
+//                    break;
+//                case CHOOSE_HIGH:
+//                    chosenNote = baseNotes.get(baseNotes.size() - 1);  // basenotes are added low-to-high
+//                    break;
+//                case CHOOSE_RANDOM:
+//                    int r = (int) (Math.random() * baseNotes.size());
+//                    chosenNote = baseNotes.get(r);
+//                    break;
+//            }
+//        }
+//
+////        if (chosenNote != null) {
+////            baseNotes.clear();
+////            baseNotes.add(chosenNote);
+////        }
 
-        for (int r = 0; r < repeats; r ++) {
-            steps.add(new Step(mode, note, velocity));
-            for (int t = 0; t < longer; t ++) {
-                steps.add(new Step(Tie, note, velocity));
+        if (mode == Rest) {
+            for (int r = 0; r < repeats; r++) {
+                steps.add(new Step(mode, 0, velocity));
+                for (int t = 0; t < longer; t++) {
+                    steps.add(new Step(Tie, 0, velocity));
+                }
+            }
+
+        } else {
+            for (Integer bNote : baseNotes) {
+                int note = octave * 12 + bNote + sharps;
+                if (ties > 0) {
+                    mode = Tie;
+                } else if (mode == Play && slide) {
+                    mode = Slide;
+                }
+
+                for (int r = 0; r < repeats; r++) {
+                    steps.add(new Step(mode, note, velocity));
+                    for (int t = 0; t < longer; t++) {
+                        steps.add(new Step(Tie, note, velocity));
+                    }
+                }
             }
         }
 
