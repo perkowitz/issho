@@ -1,4 +1,4 @@
 #!/bin/sh
 
-java -cp target/issho-1.0.1-shaded.jar net.perkowitz.issho.hachi.MemoryApp $1 $2
+java -cp target/issho-1.0.2-shaded.jar net.perkowitz.issho.hachi.MemoryApp $1 $2
 

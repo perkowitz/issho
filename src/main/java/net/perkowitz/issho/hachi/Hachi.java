@@ -84,7 +84,7 @@ public class Hachi {
         }
         if (settingsFile == null) {
             System.out.println("Getting app settings..");
-            settings = SettingsUtil.getSettings("settings.json");
+            settings = SettingsUtil.getSettings("hachi-mac.json");
         } else {
             System.out.printf("Getting app settings from %s..\n", settingsFile);
             settings = SettingsUtil.getSettings(settingsFile);
