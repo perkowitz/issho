@@ -260,6 +260,7 @@ public class HachiController implements Clockable, Receiver {
                     case START:
 //                        System.out.println("START");
                         midiClockCount = 0;
+                        clockMeasure = clockBeat = clockPulse = 0;
                         this.start(true);
                         break;
                     case STOP:
@@ -268,6 +269,8 @@ public class HachiController implements Clockable, Receiver {
                         break;
                     case CONTINUE:
 //                        System.out.println("CONTINUE");
+                        midiClockCount = 0;
+                        clockMeasure = clockBeat = clockPulse = 0;
                         this.start(midiContinueAsStart);
                         break;
                     case TIMING_CLOCK:
