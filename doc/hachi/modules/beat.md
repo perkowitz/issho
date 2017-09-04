@@ -16,7 +16,7 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 ## Main View
 
-<!--<img width="600px" src="beat.png"/>-->
+<!--<img width="960px" src="beat.png"/>-->
 
 ### Standard Controls
 
