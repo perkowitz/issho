@@ -6,7 +6,7 @@ will toggle between the main view and the settings view.
 
 ## Settings View
 
-<!--<img width="600px" src="settings.png"/>-->
+<!--<img width="960px" src="settings.png"/>-->
 
 ### Sessions
 
@@ -38,12 +38,12 @@ tapping the save button in the main view.
 
 ### Swing
 
-This row of buttons set the swing amount, if supported by the module. Even numbered 16th notes
+This row of buttons sets the swing amount, if supported by the module. Even-numbered 16th notes
 will be played earlier or later depending on this setting. The 4th pad from the left corresponds
 to a swing of 0 -- the notes will be played at the usual time. The pads to the left will
-move those up notes earlier by 1, 2, or 3 MIDI pulses, while the ones to the right will move
+move those notes earlier by 1, 2, or 3 MIDI pulses, while the ones to the right will move
 the notes later by 1, 2, 3, or 4 MIDI pulses. These pulses are the standard MIDI 24 pulses
-per quarter. Because it depends on the MIDI clock, swing is only available when Hachi
+per quarter note. Because it depends on the MIDI clock, swing is only available when Hachi
 is synced to an external clock.
 
 ### MIDI Channel
