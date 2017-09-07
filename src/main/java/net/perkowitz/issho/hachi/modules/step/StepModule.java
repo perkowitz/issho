@@ -97,11 +97,14 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
 
     private void playStep(Step step) {
 
+        // there may be multiple markers to highlight in the step
         List<Integer> noteIndices = Lists.newArrayList();
         switch (step.getMode()) {
             case Play:
             case Slide:
-                noteIndices = currentStage().findMarker(Stage.Marker.Note);
+                if (step.getHighlightedIndex() != null) {
+                    noteIndices.add(step.getHighlightedIndex());
+                }
                 break;
             case Tie:
                 noteIndices = currentStage().findMarker(Stage.Marker.Tie);
@@ -112,16 +115,18 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
             case Rest:
                 break;
         }
-
         for (Integer index : noteIndices) {
-            stepDisplay.drawActiveNote(GridPad.at(currentStageIndex, 7 - index));
+            if (index.equals(step.getHighlightedIndex()) || step.getMode() == Step.Mode.Tie) {
+                stepDisplay.drawActiveNote(GridPad.at(currentStageIndex, 7 - index));
+            }
         }
 
         switch (step.getMode()) {
             case Play:
                 notesOff();
-                onNotes.add(step.getNote());
-                sendMidiNote(memory.getMidiChannel(), step.getNote(), step.getVelocity());
+                int note = step.getNote();
+                onNotes.add(note);
+                sendMidiNote(memory.getMidiChannel(), note, step.getVelocity());
                 break;
             case Tie:
                 break;
@@ -129,14 +134,15 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
                 notesOff();
                 break;
             case Slide:
-                sendMidiNote(memory.getMidiChannel(), step.getNote(), step.getVelocity());
+                note = step.getNote();
+                sendMidiNote(memory.getMidiChannel(), note, step.getVelocity());
 //                if (!onNotes.contains(step.getNote())) {
 //                    notesOff();
 //                }
                 // NOTE: the Sub 37 requires you to send a note off for every note on, even if you send 2 note ons for the same note
                 // not sure if other synths do this; if others do not, should remove this notesOff() and uncomment above if()
                 notesOff();
-                onNotes.add(step.getNote());
+                onNotes.add(note);
                 break;
         }
     }

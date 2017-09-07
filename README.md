@@ -26,6 +26,10 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 
 # Release notes
 
+## 2017-09-06 v1.0.3
+- In Step, if multiple note modifiers are added to a stage, play the notes one at a time, from low to high
+- Added framework for different multi-note modes, but implemented only low-to-high
+
 ## 2017-09-02 v1.0.2
 - Session copy/clear from settings screen for Beatbox & Para
 - Follow 24ppqn MIDI clock, enable swing by MIDI pulse

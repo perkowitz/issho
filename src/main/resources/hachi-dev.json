@@ -18,6 +18,11 @@
         "Midi Port"
       ]
     },
+    "knobby": {
+      "names":[
+        "nanokontrol"
+      ]
+    },
     "xxxkeyboard": {
       "names": [
         "LPK25"
@@ -28,7 +33,7 @@
   },
   "modules": [
     {
-      "class": "BeatModule",
+      "class": "BeatModulexx",
       "palette": "Blue",
       "filePrefix": "beat0"
     },
@@ -39,7 +44,7 @@
       "monophonic": false
     },
     {
-      "class": "StepModulexx",
+      "class": "StepModule",
       "filePrefix": "step0 "
     }
   ]

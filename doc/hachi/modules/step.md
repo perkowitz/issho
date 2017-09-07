@@ -57,7 +57,10 @@ the first, and tap it again for the second.
 
 The available modifiers are:
 
-- Note: indicates which note to play. By default, the note scale is C Major, though others are possible. Although it's possible to set more than one note modifier per stage, only one note is currently played. If no Note or Tie modifier is present, the stage becomes a rest.
+- Note: indicates which note to play. By default, the note scale is C Major, though others are possible. If multiple note modifiers
+are added to the stage, they will be played in turn, from low to high. Each note will be played as a separate step, but all
+modifiers will be applied to each note.
+If no Note or Tie modifier is present, the stage becomes a rest.
 
 - Sharp/Flat: raises (or lowers) the stage's note by a semitone.
 - Octave Up/Down: raises (or lowers) the stage's note by an octave.
@@ -110,9 +113,6 @@ chords by filtering output MIDI notes to the closest Chord note.
 Step has only one defined palette. 
 
 - On most controls, dark blue indicates off/inactive, and orange indicates on/active.
-- Sessions are light blue, with the current session highlighted white.
-- Load and save files are green and red respectively, with the current file white.
-- MIDI channel is blue, with the selected channel white.
 - Modifier colors are as follows:
   - Note: blue
   - Sharp: blue-green
@@ -126,4 +126,8 @@ Step has only one defined palette.
   - Repeat: pink
   - Skip: red
   - Slide: gray
+- In the settings view:
+  - Sessions are light blue, with the current session highlighted white.
+  - Load and save files are green and red respectively, with the current file white.
+  - MIDI channel is blue, with the selected channel white.
 
