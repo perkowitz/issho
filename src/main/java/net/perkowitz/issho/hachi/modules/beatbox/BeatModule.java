@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static net.perkowitz.issho.hachi.modules.beatbox.BeatStep.GateMode.PLAY;
+import static net.perkowitz.issho.hachi.modules.beatbox.BeatStep.GateMode.REST;
+import static net.perkowitz.issho.hachi.modules.beatbox.BeatStep.GateMode.TIE;
 import static net.perkowitz.issho.hachi.modules.beatbox.BeatUtil.*;
 
 
@@ -41,6 +44,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
     private String filePrefix = "beat";
     @Setter private int midiNoteOffset = 0;
+    @Setter private boolean tiesEnabled = false;
 
     private int nextStepIndex = 0;
     private Integer nextSessionIndex = null;
@@ -55,6 +59,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private boolean patternEditing = false;
     private boolean patternSelecting = false;
     private EditMode editMode = EditMode.ENABLE;
+    private List<Integer> onNotes = Lists.newArrayList();
 
 
     /***** Constructor ****************************************/
@@ -113,20 +118,26 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         }
 
         // send the midi notes
+//        notesOff();
         for (BeatTrack track : memory.getPlayingPattern().getTracks()) {
 
             // when the selected track isn't the one currently being played (when there's a chain)
             // get the selected track so we can highlight the playing tracks as the notes hit
             BeatTrack playingTrack = memory.getSelectedPattern().getTrack(track.getIndex());
 
-
             BeatStep step = track.getStep(nextStepIndex);
-            if (step.isEnabled()) {
-//                track.setPlaying(true);
+            if (step.getGateMode() == PLAY) {
+                // if it's a PLAY step, stop any previous notes and then play (if track enabled)
+                noteOff(track.getNoteNumber());
                 playingTrack.setPlaying(true);
                 if (memory.getCurrentSession().trackIsEnabled(track.getIndex())) {
                     sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
                 }
+            } else if (step.getGateMode() == REST) {
+                // if it's a REST step, stop any previous notes
+                noteOff(track.getNoteNumber());
+            } else if (step.getGateMode() == TIE) {
+                // if it's a TIE, you just let it keep going
             }
         }
 
@@ -177,7 +188,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      * anything the module should do when Hachi is turned off (e.g. turn off any lingering midi notes)
      */
     public void shutdown() {
-
+        notesOff();
     }
 
 
@@ -355,6 +366,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             switch (editMode) {
                 case ENABLE:
                     step.toggleEnabled();
+                    step.advanceGateMode(tiesEnabled);
                     selectedStep = index;
                     beatDisplay.drawSteps(memory);
                     beatDisplay.drawValue(step.getVelocity(), 127);
@@ -554,6 +566,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
     public void stop() {
         playing = false;
+        notesOff();
     }
 
     public void tick(boolean andReset) {
@@ -574,9 +587,29 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      *
      */
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
+        if (velocity != 0) {
+            onNotes.add(noteNumber);
+        }
         int offsetNoteNumber = midiNoteOffset + noteNumber;
         super.sendMidiNote(channel, offsetNoteNumber, velocity);
     }
+
+    private void notesOff() {
+        for (Integer note : onNotes) {
+            sendMidiNote(memory.getMidiChannel(), note, 0);
+
+        }
+        onNotes.clear();
+    }
+
+    private void noteOff(Integer note) {
+        if (onNotes.contains(note)) {
+            sendMidiNote(memory.getMidiChannel(), note, 0);
+            onNotes.remove(note);
+        }
+    }
+
+
 
     /***** Saveable implementation ***************************************
      *
