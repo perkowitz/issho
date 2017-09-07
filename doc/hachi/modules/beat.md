@@ -47,20 +47,27 @@ config file will move the whole drumkit up two octaves.
 
 ### Steps
 
-Steps occupy the 7th and 8th rows of the grid. Step editing has four modes, selected by the step mode pads: mute, velocity, jump, and play. 
-In mute mode, tapping a step button toggles that step in the track and selects it for velocity editing. In velocity mode, tapping a step 
-selects it for velocity editing without toggling the step's mute state. When a step is selected, the value buttons will display the velocity, 
+Steps occupy the 7th and 8th rows of the grid. Step editing has four modes, selected by the step mode pads: gate, velocity, jump, and play. 
+In gate mode, tapping a step button toggles that step in the track between PLAY and REST, and selects it for velocity editing. 
+If the ```tiesEnabled``` configuration option is set, then tapping a step cycles through PLAY, TIE, and REST. PLAY means that the
+note will be played and any previous notes will be stopped. REST means that any previous notes will be stopped without a new note
+being played. TIE means that any previous note will continue. Enabling TIE allows Beatbox to be used for triggering beat loops,
+samples, notes, gated cymbals, etc.
+
+In velocity mode, tapping a step 
+selects it for velocity editing without changing the step's gate mode. When a step is selected, the value buttons will display the velocity, 
 and pressing a button will set a new value. Eight velocity values are available, ranging from 15 to 127 in increments of 16.
 
 In jump mode, the sequencer will play that step on its next clock tick, advancing normally from there. The sequence will reset to the first 
 step at the next reset. In play mode, the corresponding sound will be played immediately (not quantized). 
 
 
+
 ### Value buttons
 
 These buttons can be used to select from a range of values; the purpose varies depending on the context. 
 The eight buttons represent eight values in the relevant numeric range, with the lowest value at the bottom and highest value at the top. 
-When a step is selected (by tapping it in either mute mode or velocity mode), the value buttons set the velocity of that step. After
+When a step is selected (by tapping it in either gate mode or velocity mode), the value buttons set the velocity of that step. After
 selecting a fill pattern for editing, the value buttons set the fill probability.
 
 
@@ -74,7 +81,8 @@ Beat has a configuration option for the file prefix, used to specify filenames f
 Beat can also be set to use a blue, green, or pink color palette. Beat uses a default set of
 midi notes for its various tracks, corresponding to standard MIDI drum mappings. The ```midiNoteOffset```
 setting can be used to transpose all of the tracks by a number of semitones. For example, setting this
-value to 24 will transpose all note numbers by two octaves. 
+value to 24 will transpose all note numbers by two octaves. The ```tiesEnabled``` setting can be used
+to allow notes longer than a single step to be played by Beatbox.
 
 ```
   "modules": [
@@ -94,7 +102,7 @@ Rhythm has three defined palettes: blue, green, and pink. Each uses yellow as a 
  and the pattern currently being edited in the highlight color (yellow). 
 - Track mute pads are in gray, with muted tracks being off. Whenever a track plays a note, it will light in yellow.
 - Track mute pads are in the main color (e.g. blue), with the selected track being white. Whenever a track plays a note, it will light in yellow.
-- Step pads are gray when that step will be played, and off otherwise.
+- Step pads are white when that step is set to PLAY, gray for TIE, and off for REST.
 - Function buttons on the left and bottom are gray when off, white when on.
 - The value buttons show the value in the main color (e.g. blue).
 - The settings view uses the standard settings palette.
