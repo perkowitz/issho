@@ -29,7 +29,7 @@ public class Step {
     public static int VELOCITY_INCREMENT = 16;
     public static int[] DEFAULT_SCALE = { 0, 2, 4, 5, 7, 9, 11, 12 };   // C major scale
 
-    public static MultiNoteMode multiNoteMode = ORDER_LOW_TO_HIGH;
+    public static MultiNoteMode multiNoteMode = ORDER_LOW_TO_HIGH; // TODO: fully implement other modes, make them settable
 
     @Getter @Setter private static int[] scale = DEFAULT_SCALE;
 
