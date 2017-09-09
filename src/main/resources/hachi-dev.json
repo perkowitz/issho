@@ -33,8 +33,9 @@
   },
   "modules": [
     {
-      "class": "BeatModulexx",
+      "class": "BeatModule",
       "palette": "Blue",
+      "tiesEnabled": true,
       "filePrefix": "beat0"
     },
     {
@@ -44,7 +45,7 @@
       "monophonic": false
     },
     {
-      "class": "StepModule",
+      "class": "StepModulexx",
       "filePrefix": "step0 "
     }
   ]
