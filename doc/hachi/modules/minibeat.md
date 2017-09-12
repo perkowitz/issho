@@ -28,7 +28,7 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 Patterns occupy the first four rows of the grid in drum view. The top two rows are for selecting the playing patterns,
 including selecting a range of patterns to be chained. The next two rows are for selecting the pattern for editing. 
-Whenever a pattern or chain of patterns is selected for play, the first pattern will be selected for edting, but another pattern can be edited by taooi=
+Whenever a pattern or chain of patterns is selected for play, the first pattern will be selected for editing, but another pattern can be edited by taooi=
 
 
 ### Tracks

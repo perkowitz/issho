@@ -361,6 +361,12 @@ public class Hachi {
                         beatModule.setMidiNoteOffset(offset);
                     }
                 }
+                if (moduleSettings.get("tiesEnabled") != null) {
+                    Boolean tiesEnabled = (Boolean)moduleSettings.get("tiesEnabled");
+                    if (tiesEnabled != null) {
+                        beatModule.setTiesEnabled(tiesEnabled);
+                    }
+                }
                 module = beatModule;
 
             } else if (className.equals("MinibeatModule")) {

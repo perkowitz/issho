@@ -16,7 +16,7 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 ## Main View
 
-<!--<img width="960px" src="beat.png"/>-->
+<img width="960px" src="beat.png"/>
 
 ### Standard Controls
 
@@ -26,32 +26,48 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 ### Patterns
 
-Patterns occupy the first four rows of the grid in drum view. The top two rows are for selecting the playing patterns,
-including selecting a range of patterns to be chained. The next two rows are for selecting the pattern for editing. 
-Whenever a pattern or chain of patterns is selected for play, the first pattern will be selected for edting, but another pattern can be edited by taooi=
+The first two rows of the grid in drum view are for selecting the playing patterns,
+including selecting a range of patterns to be chained. To chain a set of patterns, hold down the first pattern in the
+chain and then press the last pattern in the chain. Those patterns and all those in between will be played in order.
+Whenever a pattern or chain of patterns is selected for play, the first pattern will be selected for editing, but another pattern can be edited by 
+holding down the pattern edit button (along the left side) and tapping the pattern to edit.
 
 
 ### Tracks
 
-Tracks occupy the 5th and 6th rows of the grid. The 5th row is for muting and unmuting the available tracks. The 6th row
-selects the track for editing using the step pads.
+Tracks occupy the 3rd, 4th, 5th, and 6th rows of the grid. The 3rd and 4th row are for muting and unmuting the available tracks. The 5th and 6th rows
+select the track for editing using the step pads.
 
-Each track corresponds to a single note value sent on a certain MIDI channel. At present, the channel for all tracks is hard-coded to 10. The note numbers are arranged as a keyboard, with the white keys in row 6 and the black keys (and a few extras) in row 5. The note numbers for row 6 are: 36, 38, 40, 41, 43, 45, 47, and 48. The note numbers for row 5 are: 49, 37, 39, 51, 42, 44, 46, and 50. Rhythm has a configuration option to offset 
+Each track corresponds to a single note value sent on a certain MIDI channel. The MIDI channel can be set in the Settings view.
+The note numbers are arranged as a keyboard, with the white keys in row 6 and the black keys (and a few extras) in row 5. 
+The note numbers for row 6 are: 36, 38, 40, 41, 43, 45, 47, and 48. The note numbers for row 5 are: 49, 37, 39, 51, 42, 44, 46, and 50. 
+Beat has a configuration option to offset 
 these note numbers by a certain amount; the offset is applied to all note values. For example, including `"midiNoteOffset": 24` in the
 config file will move the whole drumkit up two octaves.
 
 ### Steps
 
-Steps occupy the 7th and 8th rows of the grid. Step editing has four modes, selected by the step mode pads: mute, velocity, jump, and play. In mute mode, tapping a step button toggles that step in the track and selects it for velocity editing. In velocity mode, tapping a step selects it for velocity editing without toggling the step's mute state. When a step is selected, the value buttons will display the velocity, and pressing a button will set a new value. Eight velocity values are available, ranging from 15 to 127 in increments of 16.
+Steps occupy the 7th and 8th rows of the grid. Step editing has four modes, selected by the step mode pads: gate, velocity, jump, and play. 
+In gate mode, tapping a step button toggles that step in the track between PLAY and REST, and selects it for velocity editing. 
+If the ```tiesEnabled``` configuration option is set, then tapping a step cycles through PLAY, TIE, and REST. PLAY means that the
+note will be played and any previous notes will be stopped. REST means that any previous notes will be stopped without a new note
+being played. TIE means that any previous note will continue. Enabling TIE allows Beatbox to be used for triggering beat loops,
+samples, notes, gated cymbals, etc.
 
-In jump mode, the sequencer will play that step on its next clock tick, advancing normally from there. The sequence will reset to the first step at the next reset. In play mode, the corresponding sound will be played immediately (not quantized). 
+In velocity mode, tapping a step 
+selects it for velocity editing without changing the step's gate mode. When a step is selected, the value buttons will display the velocity, 
+and pressing a button will set a new value. Eight velocity values are available, ranging from 15 to 127 in increments of 16.
+
+In jump mode, the sequencer will play that step on its next clock tick, advancing normally from there. The sequence will reset to the first 
+step at the next reset. In play mode, the corresponding sound will be played immediately (not quantized). 
+
 
 
 ### Value buttons
 
 These buttons can be used to select from a range of values; the purpose varies depending on the context. 
 The eight buttons represent eight values in the relevant numeric range, with the lowest value at the bottom and highest value at the top. 
-When a step is selected (by tapping it in either mute mode or velocity mode), the value buttons set the velocity of that step. After
+When a step is selected (by tapping it in either gate mode or velocity mode), the value buttons set the velocity of that step. After
 selecting a fill pattern for editing, the value buttons set the fill probability.
 
 
@@ -62,10 +78,11 @@ Beat uses the standard [Settings Module](settings.md) for all settings.
 # Configuration
 
 Beat has a configuration option for the file prefix, used to specify filenames for saving data. 
-Beat can also be set to use a green or blue color palette. Beat uses a default set of
+Beat can also be set to use a blue, green, or pink color palette. Beat uses a default set of
 midi notes for its various tracks, corresponding to standard MIDI drum mappings. The ```midiNoteOffset```
 setting can be used to transpose all of the tracks by a number of semitones. For example, setting this
-value to 24 will transpose all note numbers by two octaves. 
+value to 24 will transpose all note numbers by two octaves. The ```tiesEnabled``` setting can be used
+to allow notes longer than a single step to be played by Beatbox.
 
 ```
   "modules": [
@@ -80,5 +97,16 @@ value to 24 will transpose all note numbers by two octaves.
 
 # Color Palette
 
-Rhythm has two defined palettes: green and blue. 
+Rhythm has three defined palettes: blue, green, and pink. Each uses yellow as a color, as well as white and gray.
+- The pattern selection pads are in the main color (e.g. blue), with the currently playing pattern in white, other chained patterns in gray,
+ and the pattern currently being edited in the highlight color (yellow). 
+- Track mute pads are in gray, with muted tracks being off. Whenever a track plays a note, it will light in yellow.
+- Track mute pads are in the main color (e.g. blue), with the selected track being white. Whenever a track plays a note, it will light in yellow.
+- Step pads are white when that step is set to PLAY, gray for TIE, and off for REST.
+- Function buttons on the left and bottom are gray when off, white when on.
+- The value buttons show the value in the main color (e.g. blue).
+- The settings view uses the standard settings palette.
+
+
+  
 

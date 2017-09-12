@@ -65,8 +65,9 @@ public class BeatUtil {
     public static Integer COLOR_TRACK_MUTED = 23;
     public static Integer COLOR_TRACK_PLAYING = 24;
     public static Integer COLOR_TRACK_PLAYING_MUTED = 25;
-    public static Integer COLOR_STEP_OFF = 30;
-    public static Integer COLOR_STEP_ON = 31;
+    public static Integer COLOR_STEP_REST = 30;
+    public static Integer COLOR_STEP_PLAY = 31;
+    public static Integer COLOR_STEP_TIE = 32;
     public static Integer COLOR_VALUE_OFF = 40;
     public static Integer COLOR_VALUE_ON = 41;
 
@@ -90,8 +91,9 @@ public class BeatUtil {
         PALETTE_PINK.put(COLOR_TRACK_SELECTED, Color.WHITE);
         PALETTE_PINK.put(COLOR_TRACK_PLAYING, highlightColor);
         PALETTE_PINK.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
-        PALETTE_PINK.put(COLOR_STEP_OFF, Color.OFF);
-        PALETTE_PINK.put(COLOR_STEP_ON, selectColor);
+        PALETTE_PINK.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE_PINK.put(COLOR_STEP_PLAY, Color.WHITE);
+        PALETTE_PINK.put(COLOR_STEP_TIE, Color.DARK_GRAY);
         PALETTE_PINK.put(COLOR_VALUE_OFF, Color.OFF);
         PALETTE_PINK.put(COLOR_VALUE_ON, playColor);
     }
@@ -116,8 +118,9 @@ public class BeatUtil {
         PALETTE_BLUE.put(COLOR_TRACK_SELECTED, Color.WHITE);
         PALETTE_BLUE.put(COLOR_TRACK_PLAYING, highlightColor);
         PALETTE_BLUE.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
-        PALETTE_BLUE.put(COLOR_STEP_OFF, Color.OFF);
-        PALETTE_BLUE.put(COLOR_STEP_ON, selectColor);
+        PALETTE_BLUE.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE_BLUE.put(COLOR_STEP_PLAY, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_STEP_TIE, Color.DARK_GRAY);
         PALETTE_BLUE.put(COLOR_VALUE_OFF, Color.OFF);
         PALETTE_BLUE.put(COLOR_VALUE_ON, playColor);
     }
@@ -142,8 +145,9 @@ public class BeatUtil {
         PALETTE_GREEN.put(COLOR_TRACK_SELECTED, Color.WHITE);
         PALETTE_GREEN.put(COLOR_TRACK_PLAYING, highlightColor);
         PALETTE_GREEN.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
-        PALETTE_GREEN.put(COLOR_STEP_OFF, Color.OFF);
-        PALETTE_GREEN.put(COLOR_STEP_ON, selectColor);
+        PALETTE_GREEN.put(COLOR_STEP_REST, Color.OFF);
+        PALETTE_GREEN.put(COLOR_STEP_PLAY, Color.WHITE);
+        PALETTE_GREEN.put(COLOR_STEP_TIE, Color.DARK_GRAY);
         PALETTE_GREEN.put(COLOR_VALUE_OFF, Color.OFF);
         PALETTE_GREEN.put(COLOR_VALUE_ON, playColor);
     }
