@@ -15,6 +15,7 @@ import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.Muteable;
 import net.perkowitz.issho.hachi.modules.SettingsSubmodule;
 import net.perkowitz.issho.hachi.modules.SettingsUtil;
+import net.perkowitz.issho.util.MidiUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -53,6 +54,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private boolean playing = false;
 
     private int selectedStep = 0;
+    private int selectedControlStep = 0;
     private int patternsReleasedCount = 0;
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
@@ -97,6 +99,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 settingsModule.setSwingOffset(memory.getCurrentSession().getSwingOffset());
                 nextSessionIndex = null;
+                sendMidiPitchBendZero(memory.getMidiChannel()); // reset for new session
             }
 
             if (nextChainStart != null && nextChainEnd != null) {
@@ -106,6 +109,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 nextChainEnd = null;
                 beatDisplay.setNextChainStart(null);
                 beatDisplay.setNextChainEnd(null);
+                sendMidiPitchBendZero(memory.getMidiChannel()); // reset when playing new patterns
             } else {
                 // otherwise advance pattern
                 memory.advancePattern();
@@ -115,10 +119,17 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 beatDisplay.drawPatterns(memory);
                 beatDisplay.drawSteps(memory);
             }
+
+
+        }
+
+        // send controllers before notes
+        BeatControlStep controlStep = memory.getPlayingPattern().getControlTrack().getStep(nextStepIndex);
+        if (controlStep.isEnabled()) {
+            sendMidiPitchBend(memory.getMidiChannel(), controlStep.getPitchBend());
         }
 
         // send the midi notes
-//        notesOff();
         for (BeatTrack track : memory.getPlayingPattern().getTracks()) {
 
             // when the selected track isn't the one currently being played (when there's a chain)
@@ -383,6 +394,13 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                     BeatTrack track = memory.getSelectedPattern().getTrack(index);
                     sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
                     break;
+                case PITCH:
+                    selectedControlStep = index;
+                    BeatControlStep controlStep = memory.getSelectedPattern().getControlTrack().getStep(selectedControlStep);
+                    controlStep.toggleEnabled();
+                    beatDisplay.drawSteps(memory);
+                    beatDisplay.drawValue(controlStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
+                    break;
             }
 
         } else if (editModeControls.contains(control)) {
@@ -390,12 +408,23 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             editMode = EditMode.values()[index];
             beatDisplay.setEditMode(editMode);
             beatDisplay.drawEditMode();
+            beatDisplay.drawSteps(memory);
 
         } else if (valueControls.contains(control)) {
             BeatStep step = memory.getSelectedTrack().getStep(selectedStep);
             Integer index = valueControls.getIndex(control);
-            step.setVelocity((8 - index) * 16 - 1);
-            beatDisplay.drawValue(step.getVelocity(), 127);
+            switch (editMode) {
+                case ENABLE:
+                case VELOCITY:
+                    step.setVelocity((8 - index) * 16 - 1);
+                    beatDisplay.drawValue(step.getVelocity(), 127);
+                    break;
+                case PITCH:
+                    BeatControlStep controlStep = memory.getSelectedPattern().getControlTrack().getStep(selectedControlStep);
+                    controlStep.setPitchBendByIndex(7 - index);
+                    beatDisplay.drawValue(controlStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
+                    break;
+            }
 
         }
 

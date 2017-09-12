@@ -35,7 +35,7 @@
     {
       "class": "BeatModule",
       "palette": "Blue",
-      "tiesEnabled": true,
+      "tiesEnabled": false,
       "filePrefix": "beat0"
     },
     {

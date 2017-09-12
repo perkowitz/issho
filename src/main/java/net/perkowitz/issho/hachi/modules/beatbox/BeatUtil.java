@@ -22,7 +22,7 @@ public class BeatUtil {
 
 
     public enum EditMode {
-        ENABLE, VELOCITY, JUMP, PLAY
+        ENABLE, VELOCITY, JUMP, PLAY, PITCH
     }
 
 
@@ -45,7 +45,7 @@ public class BeatUtil {
     public static GridControl patternSelectControl = new GridControl(GridButton.at(Left, 3), null);
 
     // edit mode controls
-    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 3);
+    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 4);
 
 
     /***** colors **********************************************************/

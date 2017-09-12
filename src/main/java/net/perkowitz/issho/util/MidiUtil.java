@@ -10,6 +10,9 @@ import javax.sound.midi.MidiUnavailableException;
 public class MidiUtil {
 
     public static int MIDI_REALTIME_COMMAND = 0xF0;
+    public static int MIDI_PITCH_BEND_ZERO = 8192;
+    public static int MIDI_PITCH_BEND_MAX = 16383;
+    public static int MIDI_PITCH_BEND_MIN = 0;
 
     public static MidiDevice.Info[] midiDeviceInfos = null;
 

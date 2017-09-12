@@ -5,6 +5,9 @@ import javax.sound.midi.*;
 import static javax.sound.midi.ShortMessage.*;
 import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
+import static net.perkowitz.issho.util.MidiUtil.MIDI_PITCH_BEND_MAX;
+import static net.perkowitz.issho.util.MidiUtil.MIDI_PITCH_BEND_MIN;
+import static net.perkowitz.issho.util.MidiUtil.MIDI_PITCH_BEND_ZERO;
 
 /**
  * Created by optic on 10/24/16.
@@ -78,6 +81,34 @@ public class MidiModule extends BasicModule implements Receiver {
         } catch (InvalidMidiDataException e) {
             System.err.println(e);
         }
+    }
+
+    protected void sendMidiPitchBend(int channel, int value) {
+
+        if (isMuted && value != MIDI_PITCH_BEND_ZERO) return;
+
+        try {
+
+            if (value < MIDI_PITCH_BEND_MIN) {
+                value = MIDI_PITCH_BEND_MIN;
+            }
+            if (value > MIDI_PITCH_BEND_MAX) {
+                value = MIDI_PITCH_BEND_MAX;
+            }
+
+            int data1 = value & 0x7F;           // lower 7 bits
+            int data2 = (value & 0x3F80) >> 7;  // upper 7 bits (out of 14, not out of 16)
+            ShortMessage message = new ShortMessage();
+            message.setMessage(ShortMessage.PITCH_BEND, channel, data1, data2);  // for midi pitch bend, LSB precedes MSB
+            outputReceiver.send(message, -1);
+
+        } catch (InvalidMidiDataException e) {
+            System.err.println(e);
+        }
+    }
+
+    protected void sendMidiPitchBendZero(int channel) {
+        sendMidiPitchBend(channel, MIDI_PITCH_BEND_ZERO);
     }
 
     public void send(MidiMessage message, long timeStamp) {

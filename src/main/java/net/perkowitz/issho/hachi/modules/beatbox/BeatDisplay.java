@@ -129,13 +129,19 @@ public class BeatDisplay {
         for (int index = 0; index < BeatUtil.STEP_COUNT; index++) {
             GridControl control = BeatUtil.stepControls.get(index);
             Color color = palette.get(BeatUtil.COLOR_STEP_REST);
-            switch (track.getStep(index).getGateMode()) {
-                case PLAY:
+            if (editMode == EditMode.ENABLE || editMode == EditMode.VELOCITY) {
+                switch (track.getStep(index).getGateMode()) {
+                    case PLAY:
+                        color = palette.get(BeatUtil.COLOR_STEP_PLAY);
+                        break;
+                    case TIE:
+                        color = palette.get(BeatUtil.COLOR_STEP_TIE);
+                        break;
+                }
+            } else if (editMode == EditMode.PITCH) {
+                if (memory.getSelectedPattern().getControlTrack().getStep(index).isEnabled()) {
                     color = palette.get(BeatUtil.COLOR_STEP_PLAY);
-                    break;
-                case TIE:
-                    color = palette.get(BeatUtil.COLOR_STEP_TIE);
-                    break;
+                }
             }
             control.draw(display, color);
         }
