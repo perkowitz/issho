@@ -171,6 +171,15 @@ public class BeatDisplay {
             }
             editModeControls.get(i).draw(display, color);
         }
+        drawFillControl(false);
+    }
+
+    public void drawFillControl(boolean isOn) {
+        Color color = palette.get(COLOR_OFF);
+        if (isOn) {
+            color = palette.get(COLOR_HIGHLIGHT);
+        }
+        fillControl.draw(display, color);
     }
 
     public void drawValue(int value, int maxValue) {

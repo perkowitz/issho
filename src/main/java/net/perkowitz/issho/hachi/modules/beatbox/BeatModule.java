@@ -53,6 +53,12 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private Integer nextChainEnd = null;
     private boolean playing = false;
 
+    private int currentMeasure = 0;
+    private int currentBeat = 0;
+    private int currentPulse = 0;
+
+    private BeatPatternFill patternFill = null;
+
     private int selectedStep = 0;
     private int selectedControlStep = 0;
     private int patternsReleasedCount = 0;
@@ -90,7 +96,6 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         }
 
         if (nextStepIndex == 0) {
-
             int currentPatternIndex = memory.getPlayingPatternIndex();
 
             // check for new session
@@ -119,8 +124,24 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 beatDisplay.drawPatterns(memory);
                 beatDisplay.drawSteps(memory);
             }
+        }
 
+        BeatPattern playingPattern = memory.getPlayingPattern();
 
+//        if (currentBeat == 0 && currentPulse == 0 ) {
+//            if (currentMeasure % 4 == 3) {
+//                patternFill = BeatPatternFill.chooseRandom(playingPattern);
+////            } else if (currentMeasure % 16 == 11) {
+////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.backward2);
+////            } else if (currentMeasure % 4 == 3) {
+////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.cut1);
+//            } else {
+//                patternFill = null;
+//            }
+//        }
+
+        if (patternFill != null) {
+            playingPattern = patternFill;
         }
 
         // send controllers before notes
@@ -130,13 +151,15 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         }
 
         // send the midi notes
-        for (BeatTrack track : memory.getPlayingPattern().getTracks()) {
+        for (int trackIndex = 0; trackIndex < BeatUtil.TRACK_COUNT; trackIndex++) {
+
+            BeatTrack track = playingPattern.getTrack(trackIndex);
 
             // when the selected track isn't the one currently being played (when there's a chain)
             // get the selected track so we can highlight the playing tracks as the notes hit
             BeatTrack playingTrack = memory.getSelectedPattern().getTrack(track.getIndex());
 
-            BeatStep step = track.getStep(nextStepIndex);
+            BeatStep step = playingPattern.getStep(trackIndex, nextStepIndex);
             if (step.getGateMode() == PLAY) {
                 // if it's a PLAY step, stop any previous notes and then play (if track enabled)
                 noteOff(track.getNoteNumber());
@@ -410,6 +433,10 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             beatDisplay.drawEditMode();
             beatDisplay.drawSteps(memory);
 
+        } else if (fillControl.equals(control)) {
+            patternFill = BeatPatternFill.chooseRandom(memory.getPlayingPattern());
+            beatDisplay.drawFillControl(true);
+
         } else if (valueControls.contains(control)) {
             BeatStep step = memory.getSelectedTrack().getStep(selectedStep);
             Integer index = valueControls.getIndex(control);
@@ -497,6 +524,11 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                     beatDisplay.drawPatterns(memory);
                 }
             }
+
+        } else if (fillControl.equals(control)) {
+            patternFill = null;
+            beatDisplay.drawFillControl(false);
+
         }
 
     }
@@ -590,6 +622,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      */
 
     public void start(boolean restart) {
+        memory.resetChain();
         playing = true;
     }
 
@@ -605,6 +638,9 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     public void clock(int measure, int beat, int pulse) {
+        currentMeasure = measure;
+        currentBeat = beat;
+        currentPulse = pulse;
         if ((pulse == 0 || pulse == 6 + memory.getCurrentSession().getSwingOffset() || pulse == 12 || pulse == 18 + memory.getCurrentSession().getSwingOffset()) && playing) {
             advance(beat == 0 && pulse == 0);
         }

@@ -32,6 +32,14 @@ public class BeatPattern {
         return tracks.get(index);
     }
 
+    public BeatStep getStep(int trackIndex, int stepIndex) {
+        return getTrack(trackIndex).getStep(stepIndex);
+    }
+
+    public BeatControlStep getControlStep(int stepIndex) {
+        return getControlTrack().getStep(stepIndex);
+    }
+
 
     /***** static methods **************************/
 
