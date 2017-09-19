@@ -48,7 +48,7 @@ config file will move the whole drumkit up two octaves.
 
 ### Steps
 
-Steps occupy the 7th and 8th rows of the grid. Step editing has five modes, selected by the edit mode pads: gate, velocity, jump, play, and pitch. 
+Steps occupy the 7th and 8th rows of the grid. Step editing has five modes, selected by the edit mode pads: gate, velocity, pitch, and jump. 
 In gate mode, tapping a step button toggles that step in the track between PLAY and REST, and selects it for velocity editing. 
 If the ```tiesEnabled``` configuration option is set, then tapping a step cycles through PLAY, TIE, and REST. PLAY means that the
 note will be played and any previous notes will be stopped. REST means that any previous notes will be stopped without a new note
@@ -59,15 +59,18 @@ In velocity mode, tapping a step
 selects it for velocity editing without changing the step's gate mode. When a step is selected, the value buttons will display the velocity, 
 and pressing a button will set a new value. Eight velocity values are available, ranging from 15 to 127 in increments of 16.
 
-In jump mode, the sequencer will play that step on its next clock tick, advancing normally from there. The sequence will reset to the first 
-step at the next reset. In play mode, the corresponding sound will be played immediately (not quantized). 
-
 In pitch mode, pitch bend settings can be edited for each step. Tapping a step will toggle between enabling and disabling pitch bend for that
 step. When a step is tapped, its pitch bend value can be set with the value buttons. The middle two buttons correspond to normal pitch. 
 If the receiving module has the pitch bend range set to 12 semitones, than the next button up will bend the pitch up one semitone. The
 next button will be up two semitones, and then the highest button will bend an octave up. The buttons below middle send corresponding
 pitches down. Beatbox will send pitch bend signals on its set MIDI channel for each enabled step. Pitch bend applies to the entire channel,
 so is not programmable per track; think of each pattern as having a single pitch track.
+
+Jump mode is more of a "performance" mode. In jump mode, tapping any of the step controls will play that step on the next clock tick,
+advancing normally from there. The sequence will reset to the first step at the next reset. Tapping any of the track select controls
+will play the corresponding sound rather than selecting the track. Also in jump mode, Beatbox will display a clock, where the current
+step being played will be lit up, and a counter will keep track of the measure count up to 8. This is useful for knowing when
+to trigger fills and watching what steps play during jumps and fills.
 
 
 ### Fill
