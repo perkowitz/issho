@@ -15,7 +15,7 @@ public class BeatControlTrack {
     @Getter private int index;
     @Getter @Setter private boolean playing = false;
     @Getter private List<BeatControlStep> steps = Lists.newArrayList();
-    @Getter private BeatControlStep clearStep = new BeatControlStep();
+    @Getter private BeatControlStep clearStep = new BeatControlStep(0);
 
 
     public BeatControlTrack() {}
@@ -25,11 +25,6 @@ public class BeatControlTrack {
         for (int i = 0; i < BeatUtil.STEP_COUNT; i++) {
             steps.add(new BeatControlStep(i));
         }
-        steps.get(0).setEnabled(true);
-        steps.get(8).setEnabled(true);
-        steps.get(8).setPitchBend(0);
-        steps.get(12).setEnabled(true);
-        steps.get(12).setPitchBend(MidiUtil.MIDI_PITCH_BEND_MAX);
     }
 
     public BeatControlStep getStep(int index) {

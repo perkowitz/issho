@@ -25,7 +25,7 @@ public class BeatDisplay {
     @Setter private boolean isMuted = false;
     @Setter private Integer nextChainStart = null;
     @Setter private Integer nextChainEnd = null;
-    @Setter private EditMode editMode = EditMode.ENABLE;
+    @Setter private EditMode editMode = EditMode.GATE;
 
 
     public BeatDisplay(GridDisplay display) {
@@ -110,14 +110,18 @@ public class BeatDisplay {
         GridControl muteControl = BeatUtil.trackMuteControls.get(index);
         muteControl.draw(display, color);
 
-        GridControl selectControl = BeatUtil.trackSelectControls.get(index);
-        color = palette.get(BeatUtil.COLOR_TRACK_SELECTION);
-        if (track.isPlaying()) {
-            color = palette.get(BeatUtil.COLOR_TRACK_PLAYING);
-        } else if (index == memory.getSelectedTrackIndex()) {
-            color = palette.get(BeatUtil.COLOR_TRACK_SELECTED);
+        if (editMode == EditMode.GATE || editMode == EditMode.VELOCITY) {
+            GridControl selectControl = BeatUtil.trackSelectControls.get(index);
+            color = palette.get(BeatUtil.COLOR_TRACK_SELECTION);
+            if (track.isPlaying()) {
+                color = palette.get(BeatUtil.COLOR_TRACK_PLAYING);
+            } else if (index == memory.getSelectedTrackIndex()) {
+                color = palette.get(BeatUtil.COLOR_TRACK_SELECTED);
+            }
+            selectControl.draw(display, color);
+        } else {
+//            trackSelectControls.draw(display, Color.OFF);
         }
-        selectControl.draw(display, color);
     }
 
     public void drawSteps(BeatMemory memory) {
@@ -129,7 +133,7 @@ public class BeatDisplay {
         for (int index = 0; index < BeatUtil.STEP_COUNT; index++) {
             GridControl control = BeatUtil.stepControls.get(index);
             Color color = palette.get(BeatUtil.COLOR_STEP_REST);
-            if (editMode == EditMode.ENABLE || editMode == EditMode.VELOCITY) {
+            if (editMode == EditMode.GATE || editMode == EditMode.VELOCITY) {
                 switch (track.getStep(index).getGateMode()) {
                     case PLAY:
                         color = palette.get(BeatUtil.COLOR_STEP_PLAY);
@@ -144,6 +148,24 @@ public class BeatDisplay {
                 }
             }
             control.draw(display, color);
+        }
+
+    }
+
+    public void drawStepsClock(Integer playingStepIndex, int measure, boolean drawMeasure) {
+        if (editMode == EditMode.JUMP || editMode == EditMode.PLAY) {
+            stepControls.draw(display, Color.OFF);
+            if (playingStepIndex != null && playingStepIndex >= 0 && playingStepIndex < BeatUtil.STEP_COUNT) {
+                GridControl control = stepControls.get(playingStepIndex);
+                control.draw(display, palette.get(COLOR_HIGHLIGHT));
+            }
+            if (drawMeasure) {
+                trackSelectControls.draw(display, Color.OFF);
+                GridControl control = trackSelectControls.get(measure % 8 + 8);
+                control.draw(display, palette.get(COLOR_HIGHLIGHT));
+            } else {
+                trackSelectControls.draw(display, Color.OFF);
+            }
         }
     }
 

@@ -66,7 +66,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
     private boolean patternSelecting = false;
-    private EditMode editMode = EditMode.ENABLE;
+    private EditMode editMode = EditMode.GATE;
     private List<Integer> onNotes = Lists.newArrayList();
 
 
@@ -149,6 +149,12 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         if (controlStep.isEnabled()) {
             sendMidiPitchBend(memory.getMidiChannel(), controlStep.getPitchBend());
         }
+
+        // if a fill is playing that shuffles the steps, this will figure out which step is actually playing
+        int actualStep = playingPattern.getStep(0, nextStepIndex).getIndex();
+        boolean drawMeasure = currentPulse < 12;
+        beatDisplay.drawStepsClock(actualStep, currentMeasure, drawMeasure);
+
 
         // send the midi notes
         for (int trackIndex = 0; trackIndex < BeatUtil.TRACK_COUNT; trackIndex++) {
@@ -398,7 +404,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             int index = stepControls.getIndex(control);
             BeatStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
-                case ENABLE:
+                case GATE:
                     step.toggleEnabled();
                     step.advanceGateMode(tiesEnabled);
                     selectedStep = index;
@@ -441,7 +447,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             BeatStep step = memory.getSelectedTrack().getStep(selectedStep);
             Integer index = valueControls.getIndex(control);
             switch (editMode) {
-                case ENABLE:
+                case GATE:
                 case VELOCITY:
                     step.setVelocity((8 - index) * 16 - 1);
                     beatDisplay.drawValue(step.getVelocity(), 127);

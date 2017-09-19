@@ -20,7 +20,7 @@ public class BeatPatternFill extends BeatPattern {
 
     public static Integer[][] mapPool = { stutter1, stutter2, half, cut1, cut2, backward1, backward2, drop4, drop8, dropBeat, onlyBeat };
 
-    private static BeatStep emptyStep = new BeatStep(0);
+    private static BeatStep emptyStep = new BeatStep(-1);
 
     private BeatPattern basePattern;
     private Integer[] stepMap = noFill;

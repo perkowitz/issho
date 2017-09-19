@@ -22,7 +22,7 @@ public class BeatUtil {
 
 
     public enum EditMode {
-        ENABLE, VELOCITY, JUMP, PLAY, PITCH
+        GATE, VELOCITY, JUMP, PLAY, PITCH
     }
 
 
