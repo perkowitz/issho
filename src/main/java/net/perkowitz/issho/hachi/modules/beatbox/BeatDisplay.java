@@ -11,6 +11,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.beatbox.BeatUtil.*;
+import static net.perkowitz.issho.hachi.modules.beatbox.BeatUtil.EditMode.JUMP;
 
 
 /**
@@ -18,14 +19,24 @@ import static net.perkowitz.issho.hachi.modules.beatbox.BeatUtil.*;
  */
 public class BeatDisplay {
 
-    @Setter private GridDisplay display;
-    @Getter @Setter private Map<Integer, Color> palette = BeatUtil.PALETTE_PINK;
-    @Getter @Setter private int currentFileIndex = 0;
-    @Setter private boolean settingsView = false;
-    @Setter private boolean isMuted = false;
-    @Setter private Integer nextChainStart = null;
-    @Setter private Integer nextChainEnd = null;
-    @Setter private EditMode editMode = EditMode.GATE;
+    @Setter
+    private GridDisplay display;
+    @Getter
+    @Setter
+    private Map<Integer, Color> palette = BeatUtil.PALETTE_PINK;
+    @Getter
+    @Setter
+    private int currentFileIndex = 0;
+    @Setter
+    private boolean settingsView = false;
+    @Setter
+    private boolean isMuted = false;
+    @Setter
+    private Integer nextChainStart = null;
+    @Setter
+    private Integer nextChainEnd = null;
+    @Setter
+    private EditMode editMode = EditMode.GATE;
 
 
     public BeatDisplay(GridDisplay display) {
@@ -86,8 +97,19 @@ public class BeatDisplay {
     }
 
     public void drawTracks(BeatMemory memory) {
-        for (int index = 0; index < BeatUtil.TRACK_COUNT; index++) {
-              drawTrack(memory, index);
+        drawTracks(memory, false);
+    }
+
+    public void drawTracks(BeatMemory memory, boolean clear) {
+
+        if (settingsView) return;
+
+        if (clear) {
+            trackSelectControls.draw(display, Color.OFF);
+        } else {
+            for (int index = 0; index < BeatUtil.TRACK_COUNT; index++) {
+                drawTrack(memory, index);
+            }
         }
     }
 
@@ -119,8 +141,6 @@ public class BeatDisplay {
                 color = palette.get(BeatUtil.COLOR_TRACK_SELECTED);
             }
             selectControl.draw(display, color);
-        } else {
-//            trackSelectControls.draw(display, Color.OFF);
         }
     }
 
@@ -153,14 +173,17 @@ public class BeatDisplay {
     }
 
     public void drawStepsClock(Integer playingStepIndex, int measure, boolean drawMeasure) {
-        if (editMode == EditMode.JUMP || editMode == EditMode.PLAY) {
+
+        if (settingsView) return;
+
+        if (editMode == JUMP) {
             stepControls.draw(display, Color.OFF);
             if (playingStepIndex != null && playingStepIndex >= 0 && playingStepIndex < BeatUtil.STEP_COUNT) {
                 GridControl control = stepControls.get(playingStepIndex);
                 control.draw(display, palette.get(COLOR_HIGHLIGHT));
             }
             if (drawMeasure) {
-                trackSelectControls.draw(display, Color.OFF);
+//                trackSelectControls.draw(display, Color.OFF);
                 GridControl control = trackSelectControls.get(measure % 8 + 8);
                 control.draw(display, palette.get(COLOR_HIGHLIGHT));
             } else {
@@ -185,14 +208,32 @@ public class BeatDisplay {
         }
     }
 
+    public void drawControlHighlight(GridControl control, boolean isOn) {
+        if (isOn) {
+            control.draw(display, palette.get(COLOR_HIGHLIGHT));
+        } else {
+            control.draw(display, Color.OFF);
+        }
+    }
+
     public void drawEditMode() {
-        for (int i = 0; i < EditMode.values().length; i++) {
+
+        // draw the regular edit controls
+        for (GridControl control : editModeControls.getControls()) {
             Color color = palette.get(COLOR_OFF);
-            if (i == editMode.ordinal()) {
+            if (control.getIndex() == editMode.ordinal()) {
                 color = palette.get(COLOR_ON);
             }
-            editModeControls.get(i).draw(display, color);
+            control.draw(display, color);
         }
+
+        // jump mode is elsewhere and uses highlight colors
+        Color color = palette.get(COLOR_OFF);
+        if (editMode == JUMP) {
+            color = palette.get(COLOR_HIGHLIGHT);
+        }
+        jumpControl.draw(display, color);
+
         drawFillControl(false);
     }
 
