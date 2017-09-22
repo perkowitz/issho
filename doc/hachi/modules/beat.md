@@ -70,7 +70,9 @@ Jump mode is more of a "performance" mode. In jump mode, tapping any of the step
 advancing normally from there. The sequence will reset to the first step at the next reset. Tapping any of the track select controls
 will play the corresponding sound rather than selecting the track. Also in jump mode, Beatbox will display a clock, where the current
 step being played will be lit up, and a counter will keep track of the measure count up to 8. This is useful for knowing when
-to trigger fills and watching what steps play during jumps and fills.
+to trigger fills and watching what steps play during jumps and fills. Jump mode also allows "momentary pitch" control. Holding down
+the value buttons will send a midi pitch bend value just as in pitch mode, but pitch bend will be reset to zero when you release
+the button.
 
 
 ### Fill

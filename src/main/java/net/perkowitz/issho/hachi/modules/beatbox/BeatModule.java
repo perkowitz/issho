@@ -458,6 +458,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             beatDisplay.drawEditMode();
             beatDisplay.drawSteps(memory);
             beatDisplay.drawTracks(memory, true);
+            beatDisplay.drawValue(7, 7, BeatDisplay.ValueMode.HIGHLIGHT);
 
         } else if (fillControl.equals(control)) {
             patternFill = BeatPatternFill.chooseRandom(memory.getPlayingPattern());
@@ -476,6 +477,11 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                     BeatControlStep controlStep = memory.getSelectedPattern().getControlTrack().getStep(selectedControlStep);
                     controlStep.setPitchBendByIndex(7 - index);
                     beatDisplay.drawValue(controlStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
+                    break;
+                case JUMP:
+                    int pitchBend = BeatControlStep.pitchBendByIndex(7 - index);
+                    sendMidiPitchBend(memory.getMidiChannel(), pitchBend);
+                    beatDisplay.drawValue(7 - index, 7, BeatDisplay.ValueMode.HIGHLIGHT);
                     break;
             }
 
@@ -566,6 +572,14 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         } else if (fillControl.equals(control)) {
             patternFill = null;
             beatDisplay.drawFillControl(false);
+
+        } else if (valueControls.contains(control)) {
+            switch (editMode) {
+                case JUMP:
+                    sendMidiPitchBendZero(memory.getMidiChannel());
+                    beatDisplay.drawValue(7, 7, BeatDisplay.ValueMode.HIGHLIGHT);
+                    break;
+            }
 
         }
 

@@ -19,24 +19,18 @@ import static net.perkowitz.issho.hachi.modules.beatbox.BeatUtil.EditMode.JUMP;
  */
 public class BeatDisplay {
 
-    @Setter
-    private GridDisplay display;
-    @Getter
-    @Setter
-    private Map<Integer, Color> palette = BeatUtil.PALETTE_PINK;
-    @Getter
-    @Setter
-    private int currentFileIndex = 0;
-    @Setter
-    private boolean settingsView = false;
-    @Setter
-    private boolean isMuted = false;
-    @Setter
-    private Integer nextChainStart = null;
-    @Setter
-    private Integer nextChainEnd = null;
-    @Setter
-    private EditMode editMode = EditMode.GATE;
+    public enum ValueMode {
+        DEFAULT, HIGHLIGHT
+    }
+
+    @Setter private GridDisplay display;
+    @Getter @Setter private Map<Integer, Color> palette = BeatUtil.PALETTE_PINK;
+    @Getter @Setter private int currentFileIndex = 0;
+    @Setter private boolean settingsView = false;
+    @Setter private boolean isMuted = false;
+    @Setter private Integer nextChainStart = null;
+    @Setter private Integer nextChainEnd = null;
+    @Setter private EditMode editMode = EditMode.GATE;
 
 
     public BeatDisplay(GridDisplay display) {
@@ -246,11 +240,19 @@ public class BeatDisplay {
     }
 
     public void drawValue(int value, int maxValue) {
+        drawValue(value, maxValue, ValueMode.DEFAULT);
+    }
+
+    public void drawValue(int value, int maxValue, ValueMode valueMode) {
         int valueAsEight = (value * 8) / maxValue;
         for (int index = 0; index < 8; index++) {
             GridControl control = BeatUtil.valueControls.get(index);
             if ((7 - index) <= valueAsEight) {
-                control.draw(display, palette.get(BeatUtil.COLOR_VALUE_ON));
+                Color color = palette.get(BeatUtil.COLOR_VALUE_ON);
+                if (valueMode == ValueMode.HIGHLIGHT) {
+                    color = palette.get(BeatUtil.COLOR_HIGHLIGHT);
+                }
+                control.draw(display, color);
             } else {
                 control.draw(display, palette.get(BeatUtil.COLOR_VALUE_OFF));
             }

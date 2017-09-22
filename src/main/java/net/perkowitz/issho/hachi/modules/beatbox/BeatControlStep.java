@@ -39,9 +39,7 @@ public class BeatControlStep {
     }
 
     public void setPitchBendByIndex(int index) {
-        if (index < 0) { index = 0; }
-        if (index >= CONTROL_VALUES.length) { index = CONTROL_VALUES.length - 1; }
-        pitchBend = CONTROL_VALUES[index];
+        pitchBend = pitchBendByIndex(index);
     }
 
     /***** static methods **************************/
@@ -51,6 +49,12 @@ public class BeatControlStep {
         newStep.enabled = step.enabled;
         newStep.pitchBend = step.pitchBend;
         return newStep;
+    }
+
+    public static int pitchBendByIndex(int index) {
+        if (index < 0) { index = 0; }
+        if (index >= CONTROL_VALUES.length) { index = CONTROL_VALUES.length - 1; }
+        return CONTROL_VALUES[index];
     }
 
 }

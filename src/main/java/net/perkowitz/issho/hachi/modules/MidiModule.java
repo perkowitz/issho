@@ -22,6 +22,7 @@ public class MidiModule extends BasicModule implements Receiver {
     protected Transmitter inputTransmitter;
     protected Receiver outputReceiver;
     protected boolean isMuted;
+    protected int velocityVariability = 10;
 
 
     public MidiModule(Transmitter inputTransmitter, Receiver outputReceiver) {
@@ -54,13 +55,18 @@ public class MidiModule extends BasicModule implements Receiver {
     }
 
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
-//        System.out.printf("MidiModule Note: ch=%d, note=%d, vel=%d\n", channel, noteNumber, velocity);
 
         if (isMuted && velocity > 0) return;
 
+        int v = velocity;
+        if (velocityVariability > 0 && velocity != 0) {
+            v = velocity + (int)(Math.random() * 2 * velocityVariability) - velocityVariability;
+            v = Math.min(127, Math.max(0, v));
+        }
+
         try {
             ShortMessage noteMessage = new ShortMessage();
-            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
+            noteMessage.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, v);
             outputReceiver.send(noteMessage, -1);
 
         } catch (InvalidMidiDataException e) {
