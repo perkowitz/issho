@@ -6,7 +6,7 @@ will toggle between the main view and the settings view.
 
 ## Settings View
 
-<!--<img width="960px" src="settings.png"/>-->
+<img width="960px" src="settings.png"/>
 
 ### Sessions
 
