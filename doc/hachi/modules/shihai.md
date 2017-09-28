@@ -15,16 +15,19 @@ and knows what it can tell the modules to do. These capabilities include:
 
 # Examples and Uses
 
-- **Song transitions**. Organize your set so that, in each sequencer module, each session is a separate song. Transition to a new song by selecting the session in Shihai, forcing all sequencers to transition together.
-- **Song sections**. Similarly, arrange the sections of songs to use the same pattern numbers in each sequencer, and use Shihai to load those patterns simultaneously.
-- **Mix and arrange**. Use Shihai's module mutes and pattern controls to bring tracks in and out of the mix and select different beats. The measure clock can help time changes and transitions.
+- **Song transitions**. Organize your set so that, in each sequencer module, each session is a separate song. 
+Transition to a new song by selecting the session in Shihai, forcing all sequencers to transition together.
+- **Song sections**. Similarly, arrange the sections of songs to use the same pattern numbers in each sequencer, 
+and use Shihai to load those patterns simultaneously.
+- **Mix and arrange**. Use Shihai's module mutes and pattern controls to bring tracks in and out of the 
+mix and select different beats. The measure clock can help time changes and transitions.
 
 
 # Layout and Controls
 
 ## Main View
 
-<img width="600px" src="shihai.png"/>
+<img width="960px" src="shihai.png"/>
 
 ### Patterns
 
@@ -49,17 +52,29 @@ The 8 buttons on the right are used to select Hachi's clock tempo. Tempo values 
 These buttons can be used to mute the 8 modules loaded into Hachi. Positions correspond to
 the module select buttons in the top row. Only muteable modules will be lit.
 
-### Save
+### Beatbox Mutes
+
+Hachi can be used to mute and unmute tracks in up to three [Beat](beat.md) modules loaded in Hachi. 
+The first module loaded will be controlled by pad rows 3 and 4, the second by rows 5 and 6, and
+the third by rows 7 and 8. The colors Shihai uses will be based on the color palette used by
+each Beat instance.
+
+<!--### Save
 
 Pressing the save button will tell every module that can save data to save its 
 current data to its current file, similar to pressing the save button on those
 individual modules.
-
+-->
 
 ### Panic
 
 Press this button to send an "all notes off" message on all MIDI channels,
 in case of any stuck notes.
+
+### Fill
+
+Press this button to trigger a fill pattern in any module that supports fills. Releasing the button
+will end the fill.
 
 ### Settings
 

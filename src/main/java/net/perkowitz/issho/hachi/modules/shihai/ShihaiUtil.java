@@ -54,6 +54,7 @@ public class ShihaiUtil {
     // left controls
     public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
     public static GridControl panicControl = new GridControl(GridButton.at(Left, 4), null);
+    public static GridControl fillControl = new GridControl(GridButton.at(Left, 7), null);
 
 
 }
