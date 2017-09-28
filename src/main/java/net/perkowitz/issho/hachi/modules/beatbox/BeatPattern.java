@@ -15,6 +15,7 @@ public class BeatPattern {
 
     @Getter private int index;
     @Getter private List<BeatTrack> tracks = Lists.newArrayList();
+    @Getter private BeatControlTrack controlTrack = new BeatControlTrack(0);
 
 
     public BeatPattern() {}
@@ -31,6 +32,14 @@ public class BeatPattern {
         return tracks.get(index);
     }
 
+    public BeatStep getStep(int trackIndex, int stepIndex) {
+        return getTrack(trackIndex).getStep(stepIndex);
+    }
+
+    public BeatControlStep getControlStep(int stepIndex) {
+        return getControlTrack().getStep(stepIndex);
+    }
+
 
     /***** static methods **************************/
 
@@ -40,6 +49,7 @@ public class BeatPattern {
             for (int i = 0; i < BeatUtil.TRACK_COUNT; i++) {
                 newPattern.tracks.set(i, BeatTrack.copy(pattern.tracks.get(i), i));
             }
+            newPattern.controlTrack = BeatControlTrack.copy(pattern.controlTrack, pattern.controlTrack.getIndex());
         } catch (Exception e) {
             e.printStackTrace();
         }

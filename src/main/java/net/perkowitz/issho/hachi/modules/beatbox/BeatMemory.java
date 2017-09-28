@@ -83,6 +83,10 @@ public class BeatMemory {
         playingPatternIndex = startIndex;
     }
 
+    public void resetChain() {
+        playingPatternIndex = getCurrentSession().getChainEndIndex(); // set it to end so it will restart on next advance
+    }
+
     public void selectTrack(int index) {
         getCurrentSession().setSelectedTrackIndex(index);
     }

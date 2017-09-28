@@ -22,7 +22,7 @@ public class BeatUtil {
 
 
     public enum EditMode {
-        ENABLE, VELOCITY, JUMP, PLAY
+        GATE, VELOCITY, PITCH, JUMP
     }
 
 
@@ -45,7 +45,9 @@ public class BeatUtil {
     public static GridControl patternSelectControl = new GridControl(GridButton.at(Left, 3), null);
 
     // edit mode controls
-    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 3);
+    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 2);
+    public static GridControl jumpControl = new GridControl(GridButton.at(Bottom, 6), null);
+    public static GridControl fillControl = new GridControl(GridButton.at(Bottom, 7), null);
 
 
     /***** colors **********************************************************/
@@ -53,6 +55,7 @@ public class BeatUtil {
     // give color indices some easy names to refer to
     public static Integer COLOR_OFF = 0;
     public static Integer COLOR_ON = 1;
+    public static Integer COLOR_HIGHLIGHT = 2;
     public static Integer COLOR_PATTERN = 10;
     public static Integer COLOR_PATTERN_PLAYING = 11;
     public static Integer COLOR_PATTERN_CHAINED = 12;
@@ -79,6 +82,7 @@ public class BeatUtil {
         Color highlightColor = Color.BRIGHT_YELLOW;
         PALETTE_PINK.put(COLOR_OFF, playColorDim);
         PALETTE_PINK.put(COLOR_ON, Color.WHITE);
+        PALETTE_PINK.put(COLOR_HIGHLIGHT, highlightColor);
         PALETTE_PINK.put(COLOR_PATTERN, playColor);
         PALETTE_PINK.put(COLOR_PATTERN_PLAYING, Color.WHITE);
         PALETTE_PINK.put(COLOR_PATTERN_CHAINED, playColorDim);
@@ -106,6 +110,7 @@ public class BeatUtil {
         Color highlightColor = Color.BRIGHT_YELLOW;
         PALETTE_BLUE.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE_BLUE.put(COLOR_ON, Color.WHITE);
+        PALETTE_BLUE.put(COLOR_HIGHLIGHT, highlightColor);
         PALETTE_BLUE.put(COLOR_PATTERN, playColor);
         PALETTE_BLUE.put(COLOR_PATTERN_PLAYING, Color.WHITE);
         PALETTE_BLUE.put(COLOR_PATTERN_CHAINED, playColorDim);
@@ -133,6 +138,7 @@ public class BeatUtil {
         Color highlightColor = Color.BRIGHT_YELLOW;
         PALETTE_GREEN.put(COLOR_OFF, Color.DARK_GRAY);
         PALETTE_GREEN.put(COLOR_ON, Color.WHITE);
+        PALETTE_GREEN.put(COLOR_HIGHLIGHT, highlightColor);
         PALETTE_GREEN.put(COLOR_PATTERN, playColor);
         PALETTE_GREEN.put(COLOR_PATTERN_PLAYING, Color.WHITE);
         PALETTE_GREEN.put(COLOR_PATTERN_CHAINED, playColorDim);

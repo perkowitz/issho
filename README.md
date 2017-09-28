@@ -26,6 +26,11 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 
 # Release notes
 
+## 2017-09-13 v1.0.4
+- In Beatbox, add auto-generated fill patterns that are played when holding down the fill button
+- In Beatbox, add sequencing of pitch bend per pattern step
+- In Beatbox, fix bug where chain wouldn't reset on stop/start
+
 ## 2017-09-06 v1.0.3
 - In Step, if multiple note modifiers are added to a stage, play the notes one at a time, from low to high
 - Added framework for different multi-note modes, but implemented only low-to-high

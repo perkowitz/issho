@@ -15,6 +15,7 @@ import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.Muteable;
 import net.perkowitz.issho.hachi.modules.SettingsSubmodule;
 import net.perkowitz.issho.hachi.modules.SettingsUtil;
+import net.perkowitz.issho.util.MidiUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
@@ -52,13 +53,20 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private Integer nextChainEnd = null;
     private boolean playing = false;
 
+    private int currentMeasure = 0;
+    private int currentBeat = 0;
+    private int currentPulse = 0;
+
+    private BeatPatternFill patternFill = null;
+
     private int selectedStep = 0;
+    private int selectedControlStep = 0;
     private int patternsReleasedCount = 0;
     private Set<Integer> patternsPressed = Sets.newHashSet();
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
     private boolean patternSelecting = false;
-    private EditMode editMode = EditMode.ENABLE;
+    private EditMode editMode = EditMode.GATE;
     private List<Integer> onNotes = Lists.newArrayList();
 
 
@@ -88,7 +96,6 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         }
 
         if (nextStepIndex == 0) {
-
             int currentPatternIndex = memory.getPlayingPatternIndex();
 
             // check for new session
@@ -97,6 +104,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 settingsModule.setSwingOffset(memory.getCurrentSession().getSwingOffset());
                 nextSessionIndex = null;
+                sendMidiPitchBendZero(memory.getMidiChannel()); // reset for new session
             }
 
             if (nextChainStart != null && nextChainEnd != null) {
@@ -106,6 +114,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 nextChainEnd = null;
                 beatDisplay.setNextChainStart(null);
                 beatDisplay.setNextChainEnd(null);
+                sendMidiPitchBendZero(memory.getMidiChannel()); // reset when playing new patterns
             } else {
                 // otherwise advance pattern
                 memory.advancePattern();
@@ -117,15 +126,46 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             }
         }
 
+        BeatPattern playingPattern = memory.getPlayingPattern();
+
+//        if (currentBeat == 0 && currentPulse == 0 ) {
+//            if (currentMeasure % 4 == 3) {
+//                patternFill = BeatPatternFill.chooseRandom(playingPattern);
+////            } else if (currentMeasure % 16 == 11) {
+////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.backward2);
+////            } else if (currentMeasure % 4 == 3) {
+////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.cut1);
+//            } else {
+//                patternFill = null;
+//            }
+//        }
+
+        if (patternFill != null) {
+            playingPattern = patternFill;
+        }
+
+        // send controllers before notes
+        BeatControlStep controlStep = memory.getPlayingPattern().getControlTrack().getStep(nextStepIndex);
+        if (controlStep.isEnabled()) {
+            sendMidiPitchBend(memory.getMidiChannel(), controlStep.getPitchBend());
+        }
+
+        // if a fill is playing that shuffles the steps, this will figure out which step is actually playing
+        int actualStep = playingPattern.getStep(0, nextStepIndex).getIndex();
+        boolean drawMeasure = currentPulse < 12;
+        beatDisplay.drawStepsClock(actualStep, currentMeasure, drawMeasure);
+
+
         // send the midi notes
-//        notesOff();
-        for (BeatTrack track : memory.getPlayingPattern().getTracks()) {
+        for (int trackIndex = 0; trackIndex < BeatUtil.TRACK_COUNT; trackIndex++) {
+
+            BeatTrack track = playingPattern.getTrack(trackIndex);
 
             // when the selected track isn't the one currently being played (when there's a chain)
             // get the selected track so we can highlight the playing tracks as the notes hit
             BeatTrack playingTrack = memory.getSelectedPattern().getTrack(track.getIndex());
 
-            BeatStep step = track.getStep(nextStepIndex);
+            BeatStep step = playingPattern.getStep(trackIndex, nextStepIndex);
             if (step.getGateMode() == PLAY) {
                 // if it's a PLAY step, stop any previous notes and then play (if track enabled)
                 noteOff(track.getNoteNumber());
@@ -356,15 +396,27 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
         } else if (trackSelectControls.contains(control)) {
             int index = trackSelectControls.getIndex(control);
-            memory.selectTrack(index);
-            beatDisplay.drawTracks(memory);
-            beatDisplay.drawSteps(memory);
+            switch (editMode) {
+                case GATE:
+                case VELOCITY:
+                    memory.selectTrack(index);
+                    beatDisplay.drawTracks(memory);
+                    beatDisplay.drawSteps(memory);
+                    break;
+                case JUMP:
+                    BeatTrack track = memory.getSelectedPattern().getTrack(index);
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
+                    beatDisplay.drawControlHighlight(control, true);
+                    break;
+                case PITCH:
+                    break;
+            }
 
         } else if (stepControls.contains(control)) {
             int index = stepControls.getIndex(control);
             BeatStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
-                case ENABLE:
+                case GATE:
                     step.toggleEnabled();
                     step.advanceGateMode(tiesEnabled);
                     selectedStep = index;
@@ -379,9 +431,12 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 case JUMP:
                     nextStepIndex = index;
                     break;
-                case PLAY:
-                    BeatTrack track = memory.getSelectedPattern().getTrack(index);
-                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
+                case PITCH:
+                    selectedControlStep = index;
+                    BeatControlStep controlStep = memory.getSelectedPattern().getControlTrack().getStep(selectedControlStep);
+                    controlStep.toggleEnabled();
+                    beatDisplay.drawSteps(memory);
+                    beatDisplay.drawValue(controlStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
                     break;
             }
 
@@ -390,12 +445,45 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             editMode = EditMode.values()[index];
             beatDisplay.setEditMode(editMode);
             beatDisplay.drawEditMode();
+            beatDisplay.drawSteps(memory);
+            switch (editMode) {
+                case PITCH:
+                    beatDisplay.drawTracks(memory, true);
+                    break;
+            }
+
+        } else if (jumpControl.equals(control)) {
+            editMode = EditMode.JUMP;
+            beatDisplay.setEditMode(editMode);
+            beatDisplay.drawEditMode();
+            beatDisplay.drawSteps(memory);
+            beatDisplay.drawTracks(memory, true);
+            beatDisplay.drawValue(7, 7, BeatDisplay.ValueMode.HIGHLIGHT);
+
+        } else if (fillControl.equals(control)) {
+            patternFill = BeatPatternFill.chooseRandom(memory.getPlayingPattern());
+            beatDisplay.drawFillControl(true);
 
         } else if (valueControls.contains(control)) {
             BeatStep step = memory.getSelectedTrack().getStep(selectedStep);
             Integer index = valueControls.getIndex(control);
-            step.setVelocity((8 - index) * 16 - 1);
-            beatDisplay.drawValue(step.getVelocity(), 127);
+            switch (editMode) {
+                case GATE:
+                case VELOCITY:
+                    step.setVelocity((8 - index) * 16 - 1);
+                    beatDisplay.drawValue(step.getVelocity(), 127);
+                    break;
+                case PITCH:
+                    BeatControlStep controlStep = memory.getSelectedPattern().getControlTrack().getStep(selectedControlStep);
+                    controlStep.setPitchBendByIndex(7 - index);
+                    beatDisplay.drawValue(controlStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
+                    break;
+                case JUMP:
+                    int pitchBend = BeatControlStep.pitchBendByIndex(7 - index);
+                    sendMidiPitchBend(memory.getMidiChannel(), pitchBend);
+                    beatDisplay.drawValue(7 - index, 7, BeatDisplay.ValueMode.HIGHLIGHT);
+                    break;
+            }
 
         }
 
@@ -468,6 +556,31 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                     beatDisplay.drawPatterns(memory);
                 }
             }
+
+        } else if (trackSelectControls.contains(control)) {
+            int index = trackSelectControls.getIndex(control);
+            switch (editMode) {
+                case JUMP:
+                    BeatTrack track = memory.getSelectedPattern().getTrack(index);
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), 0);
+                    beatDisplay.drawControlHighlight(control, false);
+                    break;
+                case PITCH:
+                    break;
+            }
+
+        } else if (fillControl.equals(control)) {
+            patternFill = null;
+            beatDisplay.drawFillControl(false);
+
+        } else if (valueControls.contains(control)) {
+            switch (editMode) {
+                case JUMP:
+                    sendMidiPitchBendZero(memory.getMidiChannel());
+                    beatDisplay.drawValue(7, 7, BeatDisplay.ValueMode.HIGHLIGHT);
+                    break;
+            }
+
         }
 
     }
@@ -561,6 +674,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      */
 
     public void start(boolean restart) {
+        memory.resetChain();
         playing = true;
     }
 
@@ -576,6 +690,9 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     }
 
     public void clock(int measure, int beat, int pulse) {
+        currentMeasure = measure;
+        currentBeat = beat;
+        currentPulse = pulse;
         if ((pulse == 0 || pulse == 6 + memory.getCurrentSession().getSwingOffset() || pulse == 12 || pulse == 18 + memory.getCurrentSession().getSwingOffset()) && playing) {
             advance(beat == 0 && pulse == 0);
         }
