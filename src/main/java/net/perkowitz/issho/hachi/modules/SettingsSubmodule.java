@@ -86,6 +86,10 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     public void selectPatterns(int firstIndex, int lastIndex) {
     }
 
+    public void fillOn(Integer fillIndex) {}
+
+    public void fillOff() {}
+
 
     /***** listener implementation ***********************************/
 

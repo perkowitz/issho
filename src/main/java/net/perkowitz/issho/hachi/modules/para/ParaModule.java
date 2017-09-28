@@ -269,6 +269,10 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         paraDisplay.drawPatterns(memory);
     }
 
+    public void fillOn(Integer fillIndex) {}
+
+    public void fillOff() {}
+
 
     /***** GridListener interface ****************************************/
 

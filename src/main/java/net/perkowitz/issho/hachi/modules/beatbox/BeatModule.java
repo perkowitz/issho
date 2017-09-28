@@ -317,6 +317,15 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         memory.selectChain(firstIndex, lastIndex);
     }
 
+    public void fillOn(Integer fillIndex) {
+        // TODO: choose random when fillIndex is null or out of range, otherwise choose specific fill
+        patternFill = BeatPatternFill.chooseRandom(memory.getPlayingPattern());
+    }
+
+    public void fillOff() {
+        patternFill = null;
+    }
+
 
     /***** GridListener interface ***************************************
      *
@@ -461,7 +470,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             beatDisplay.drawValue(7, 7, BeatDisplay.ValueMode.HIGHLIGHT);
 
         } else if (fillControl.equals(control)) {
-            patternFill = BeatPatternFill.chooseRandom(memory.getPlayingPattern());
+            fillOn(null);
             beatDisplay.drawFillControl(true);
 
         } else if (valueControls.contains(control)) {
@@ -570,7 +579,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             }
 
         } else if (fillControl.equals(control)) {
-            patternFill = null;
+            fillOff();
             beatDisplay.drawFillControl(false);
 
         } else if (valueControls.contains(control)) {

@@ -165,6 +165,10 @@ public class ExampleModule extends MidiModule implements Module, Clockable, Grid
         exampleDisplay.drawPads(memory);
     }
 
+    public void fillOn(Integer fillIndex) {}
+
+    public void fillOff() {}
+
 
     /***** GridListener interface ***************************************
      * 

@@ -158,6 +158,9 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
 
     }
 
+
+    /***** Sessionizeable implementation *************************************/
+
     public void selectPatterns(int minIndex, int maxIndex) {
 
 //        System.out.printf("selectPatterns: %d - %d\n", minIndex, maxIndex);
@@ -221,6 +224,10 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
             rhythmDisplay.displayFill(fill);
         }
     }
+
+    public void fillOn(Integer fillIndex) {}
+
+    public void fillOff() {}
 
 
     public void selectTrack(int index) {

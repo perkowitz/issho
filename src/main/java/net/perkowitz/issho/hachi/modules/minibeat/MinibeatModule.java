@@ -231,6 +231,10 @@ public class MinibeatModule extends MidiModule implements Module, Clockable, Gri
 //        memory.selectChain(firstIndex, lastIndex);
     }
 
+    public void fillOn(Integer fillIndex) {}
+
+    public void fillOff() {}
+
 
     /***** GridListener interface ***************************************
      * 
