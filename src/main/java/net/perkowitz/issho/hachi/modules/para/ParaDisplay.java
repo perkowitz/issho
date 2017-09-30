@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.*;
+import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepSelectMode.CONTROL;
+import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepSelectMode.SELECT;
+import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepSelectMode.TOGGLE;
 
 
 /**
@@ -35,7 +38,7 @@ public class ParaDisplay {
         if (settingsMode) return;
         drawPatterns(memory);
         drawPatternEditControls(false, false);
-        drawKeyboard();
+        drawKeyboard(memory);
         drawSteps(memory, memory.currentPattern().getSteps());
         drawStepEditControls(memory.getStepSelectMode());
     }
@@ -81,56 +84,78 @@ public class ParaDisplay {
         control.draw(display, color);
     }
 
-    public void drawKeyboard() {
+    public void drawKeyboard(ParaMemory memory) {
 
         if (settingsMode) return;
 
-        for (GridControl control : keyboardControls.getControls()) {
-            Color color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
-            if (control.getPad().getY() == KEYBOARD_UPPER_BLACK || control.getPad().getY() == KEYBOARD_LOWER_BLACK) {
-                color = palette.get(COLOR_KEYBOARD_BLACK_KEY);
-            }
-            control.draw(display, color);
-        }
+        switch (memory.getStepSelectMode()) {
+            case TOGGLE:
+            case SELECT:
+                for (GridControl control : keyboardControls.getControls()) {
+                    Color color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
+                    if (control.getPad().getY() == KEYBOARD_UPPER_BLACK || control.getPad().getY() == KEYBOARD_LOWER_BLACK) {
+                        color = palette.get(COLOR_KEYBOARD_BLACK_KEY);
+                    }
+                    control.draw(display, color);
+                }
 
-        octaveDownControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_DOWN));
-        octaveUpControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_UP));
-        transposeDownControl.draw(display, palette.get(COLOR_KEYBOARD_TRANSPOSE_DOWN));
-        transposeUpControl.draw(display, palette.get(COLOR_KEYBOARD_TRANSPOSE_DOWN));
+                keyboardGapControls.draw(display, Color.OFF);
+                octaveDownControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_DOWN));
+                octaveUpControl.draw(display, palette.get(COLOR_KEYBOARD_OCTAVE_UP));
+                transposeDownControl.draw(display, palette.get(COLOR_KEYBOARD_TRANSPOSE_DOWN));
+                transposeUpControl.draw(display, palette.get(COLOR_KEYBOARD_TRANSPOSE_DOWN));
+                break;
+
+            case CONTROL:
+                keyboardControls.draw(display, Color.OFF);
+                keyboardGapControls.draw(display, Color.OFF);
+                octaveDownControl.draw(display, Color.OFF);
+                octaveUpControl.draw(display, Color.OFF);
+                transposeDownControl.draw(display, Color.OFF);
+                transposeUpControl.draw(display, Color.OFF);
+                drawControllerSelect(memory);
+
+        }
     }
 
-    public void drawKeyboardNotes(Set<Integer> notes, boolean undraw, boolean stepEditing) {
+    public void drawKeyboardNotes(Set<Integer> notes, boolean undraw, boolean stepEditing, StepSelectMode stepSelectMode) {
 
         if (settingsMode) return;
 
-        Color color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
-        Color octaveDownColor = palette.get(COLOR_KEYBOARD_OCTAVE_DOWN);
-        Color octaveUpColor = palette.get(COLOR_KEYBOARD_OCTAVE_UP);
-        if (stepEditing) {
-            color = palette.get(COLOR_KEYBOARD_SELECTED);
-        }
-        if (undraw) {
-            color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
-        }
+        switch (stepSelectMode) {
+            case TOGGLE:
+            case SELECT:
+                Color color = palette.get(COLOR_KEYBOARD_HIGHLIGHT);
+                Color octaveDownColor = palette.get(COLOR_KEYBOARD_OCTAVE_DOWN);
+                Color octaveUpColor = palette.get(COLOR_KEYBOARD_OCTAVE_UP);
+                if (stepEditing) {
+                    color = palette.get(COLOR_KEYBOARD_SELECTED);
+                }
+                if (undraw) {
+                    color = palette.get(COLOR_KEYBOARD_WHITE_KEY);
+                }
 
-        int noteRangeLower = currentKeyboardOctave * 12;
-        int noteRangeUpper = noteRangeLower + 23;
-        for (int note : notes) {
-            if (note >= noteRangeLower && note <= noteRangeUpper) {
-                int octaveNote = note - noteRangeLower;
-                GridControl key = keyboardControls.get(octaveNote);
-                key.draw(display, color);
-            }
-            if (note < noteRangeLower) {
-                octaveDownColor = color;
-            }
-            if (note > noteRangeUpper) {
-                octaveUpColor = color;
-            }
-        }
+                int noteRangeLower = currentKeyboardOctave * 12;
+                int noteRangeUpper = noteRangeLower + 23;
+                for (int note : notes) {
+                    if (note >= noteRangeLower && note <= noteRangeUpper) {
+                        int octaveNote = note - noteRangeLower;
+                        GridControl key = keyboardControls.get(octaveNote);
+                        key.draw(display, color);
+                    }
+                    if (note < noteRangeLower) {
+                        octaveDownColor = color;
+                    }
+                    if (note > noteRangeUpper) {
+                        octaveUpColor = color;
+                    }
+                }
 
-        octaveDownControl.draw(display, octaveDownColor);
-        octaveUpControl.draw(display, octaveUpColor);
+                octaveDownControl.draw(display, octaveDownColor);
+                octaveUpControl.draw(display, octaveUpColor);
+                break;
+
+        }
 
     }
 
@@ -156,23 +181,37 @@ public class ParaDisplay {
         int x = step.getIndex() % 8;
         int y = step.getIndex() / 8 + ParaUtil.STEP_MIN_ROW;
         Color stepColor = palette.get(ParaUtil.COLOR_STEP_OFF);
-        if (highlight) {
-            stepColor = palette.get(ParaUtil.COLOR_STEP_HIGHLIGHT);
-        } else if (step.isEnabled()) {
-            switch (step.getGate()) {
-                case PLAY:
-                    stepColor = palette.get(ParaUtil.COLOR_STEP_PLAY);
-                    break;
-                case TIE:
-                    stepColor = palette.get(ParaUtil.COLOR_STEP_TIE);
-                    break;
-            }
+
+        switch (memory.getStepSelectMode()) {
+            case TOGGLE:
+            case SELECT:
+                if (highlight) {
+                    stepColor = palette.get(ParaUtil.COLOR_STEP_HIGHLIGHT);
+                } else if (step.isEnabled()) {
+                    switch (step.getGate()) {
+                        case PLAY:
+                            stepColor = palette.get(ParaUtil.COLOR_STEP_PLAY);
+                            break;
+                        case TIE:
+                            stepColor = palette.get(ParaUtil.COLOR_STEP_TIE);
+                            break;
+                    }
+                }
+                break;
+
+            case CONTROL:
+                if (step.getControllerEnabled(memory.getSelectedController())) {
+                    stepColor = palette.get(ParaUtil.COLOR_STEP_CONTROL_ENABLED);
+                }
+                break;
+
         }
+
         display.setPad(GridPad.at(x, y), stepColor);
 
     }
 
-    public void drawStepEditControls(StepSelectMode currentState) {
+    public void drawStepEditControls(StepSelectMode stepSelectMode) {
 
         if (settingsMode) return;
 
@@ -182,7 +221,7 @@ public class ParaDisplay {
             GridControl control = stepSelectModeControls.get(i);
             StepSelectMode state = states[i];
             Color color = palette.get(COLOR_MODE_INACTIVE);
-            if (state == currentState) {
+            if (state == stepSelectMode) {
                 color = palette.get(ParaUtil.COLOR_MODE_ACTIVE);
             }
             control.draw(display, color);
@@ -198,9 +237,42 @@ public class ParaDisplay {
 
     }
 
-    public void drawValue(int count, Color color) {
-        for (int index = 0; index < count; index++) {
-            display.setButton(GridButton.at(GridButton.Side.Right, index), color);
+    public void drawControllerSelect(ParaMemory memory) {
+        for (GridControl control : controllerSelectControls.getControls()) {
+            Color color = palette.get(COLOR_MODE_INACTIVE);
+            if (control.getIndex() == memory.getSelectedController()) {
+                color = palette.get(COLOR_STEP_CONTROL_ENABLED);
+            }
+            control.draw(display, color);
+        }
+    }
+
+    public void drawValue(int count, ValueState valueState) {
+
+        Color color = Color.OFF;
+        switch (valueState) {
+            case VELOCITY:
+                color = palette.get(COLOR_STEP_PLAY);
+                break;
+            case CONTROL:
+                color = palette.get(COLOR_STEP_CONTROL_ENABLED);
+                break;
+        }
+
+        for (GridControl control : valueControls.getControls()) {
+            Color controlColor = Color.OFF;
+            if (control.getIndex() <= count) {
+                controlColor = color;
+            }
+            control.draw(display, controlColor);
+        }
+
+    }
+
+    public void drawControllers(ParaMemory memory) {
+        if (memory.getStepSelectMode() == CONTROL) {
+            controllerSelectControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
+
         }
     }
 

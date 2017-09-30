@@ -1,10 +1,12 @@
 package net.perkowitz.issho.hachi.modules.para;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
@@ -29,6 +31,9 @@ public class ParaStep {
     @Getter @Setter private ParaUtil.Gate gate;
     @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean selected = false;
+    @Getter @Setter private int[] controllerValues = new int[ParaMemory.CONTROLLER_COUNT];
+    @Getter @Setter private boolean[] controllerEnabled = new boolean[ParaMemory.CONTROLLER_COUNT];
+//    @Getter @Setter private ParaControllerStep[] controllerSteps = new ParaControllerStep[ParaMemory.CONTROLLER_COUNT];
 
 
     public ParaStep() {}
@@ -40,6 +45,11 @@ public class ParaStep {
         this.controlA = DEFAULT_CONTROL;
         this.enabled = false;
         this.selected = false;
+        this.controllerValues = new int[ParaMemory.CONTROLLER_COUNT];
+        this.controllerEnabled = new boolean[ParaMemory.CONTROLLER_COUNT];
+//        for (int i = 0; i < controllerSteps.length; i++) {
+//            controllerSteps[i] = new ParaControllerStep();
+//        }
     }
 
     public void addNote(Integer note) {
@@ -71,6 +81,39 @@ public class ParaStep {
 
     public void clearNotes() {
         notes.clear();
+    }
+
+    public int getControllerValue(int index) {
+        if (index >=0 && index < controllerValues.length && controllerEnabled[index]) {
+            return controllerValues[index];
+        } else {
+            return 0;
+        }
+    }
+
+    public void setControllerValue(int index, Integer value) {
+        if (index >=0 && index < controllerValues.length) {
+            controllerValues[index] = value;
+        }
+    }
+
+    public boolean getControllerEnabled(int index) {
+        if (index >=0 && index < controllerValues.length) {
+            return controllerEnabled[index];
+        }
+        return false;
+    }
+
+    public void setControllerEnabled(int index, boolean enabled) {
+        if (index >=0 && index < controllerValues.length) {
+            controllerEnabled[index] = enabled;
+        }
+    }
+
+    public void toggleControllerEnabled(int index) {
+        if (index >=0 && index < controllerValues.length) {
+            controllerEnabled[index] = !controllerEnabled[index];
+        }
     }
 
     public void transpose(int steps) {
@@ -114,5 +157,6 @@ public class ParaStep {
         newStep.enabled = step.enabled;
         newStep.selected = step.selected;
         return newStep;
+        // TODO needs to include copying controller settings
     }
 }

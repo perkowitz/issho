@@ -128,18 +128,6 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
         BeatPattern playingPattern = memory.getPlayingPattern();
 
-//        if (currentBeat == 0 && currentPulse == 0 ) {
-//            if (currentMeasure % 4 == 3) {
-//                patternFill = BeatPatternFill.chooseRandom(playingPattern);
-////            } else if (currentMeasure % 16 == 11) {
-////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.backward2);
-////            } else if (currentMeasure % 4 == 3) {
-////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.cut1);
-//            } else {
-//                patternFill = null;
-//            }
-//        }
-
         if (patternFill != null) {
             playingPattern = patternFill;
         }

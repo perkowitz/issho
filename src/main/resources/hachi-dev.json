@@ -33,14 +33,14 @@
   },
   "modules": [
     {
-      "class": "BeatModule",
+      "class": "BeatModulexx",
       "palette": "Blue",
       "tiesEnabled": false,
       "filePrefix": "beat0"
     },
     {
       "class": "ParaModule",
-      "palette": "yellow",
+      "palette": "blue",
       "filePrefix": "para0",
       "monophonic": false
     },

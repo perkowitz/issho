@@ -2,6 +2,7 @@ package net.perkowitz.issho.hachi.modules.para;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
@@ -10,6 +11,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by optic on 10/24/16.
@@ -23,7 +25,7 @@ public class ParaUtil {
 
     public enum StepSelectMode {
         // in button layout order
-        TOGGLE, SELECT
+        TOGGLE, SELECT, CONTROL
     }
 
     public enum Function {
@@ -31,7 +33,7 @@ public class ParaUtil {
     }
 
     public enum ValueState {
-        STEP_OCTAVE, VELOCITY, KEYBOARD_OCTAVE, NONE
+        STEP_OCTAVE, VELOCITY, KEYBOARD_OCTAVE, CONTROL, NONE
     }
 
     public enum View {
@@ -91,6 +93,13 @@ public class ParaUtil {
         keyboardList.add(new GridControl(GridPad.at(6, KEYBOARD_UPPER_WHITE), 23));
     }
 
+    public static Set<GridControl> keyboardGaps = Sets.newHashSet(
+            new GridControl(GridPad.at(0, KEYBOARD_UPPER_BLACK), 0),
+            new GridControl(GridPad.at(3, KEYBOARD_UPPER_BLACK), 0),
+            new GridControl(GridPad.at(0, KEYBOARD_LOWER_BLACK), 0),
+            new GridControl(GridPad.at(3, KEYBOARD_LOWER_BLACK), 0)
+    );
+
 
     /***** control sets for each function group *****************************/
 
@@ -102,10 +111,14 @@ public class ParaUtil {
     public static GridControlSet patternControls = GridControlSet.padRows(ParaUtil.PATTERN_MIN_ROW, ParaUtil.PATTERN_MAX_ROW);
     public static GridControlSet stepControls = GridControlSet.padRows(ParaUtil.STEP_MIN_ROW, ParaUtil.STEP_MAX_ROW);
     public static GridControlSet keyboardControls = new GridControlSet(ParaUtil.keyboardList);
-    public static GridControlSet stepSelectModeControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 1);
-    public static GridControlSet stepGateControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 2, 3);
+    public static GridControlSet keyboardGapControls = new GridControlSet(keyboardGaps);
+
+    public static GridControlSet stepSelectModeControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 0, 2);
+    public static GridControlSet stepGateControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 3, 4);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
+    public static GridControlSet controllerSelectControls = GridControlSet.pads(ParaUtil.KEYBOARD_LOWER_WHITE, ParaUtil.KEYBOARD_LOWER_WHITE, 0, 3);
+
     public static GridControl patternCopyControl = new GridControl(GridButton.at(GridButton.Side.Left, 2), 0);
     public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
     public static GridControl octaveDownControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_WHITE), 0);
@@ -120,6 +133,7 @@ public class ParaUtil {
     public static Integer COLOR_STEP_TIE = 2;
     public static Integer COLOR_STEP_REST = 3;
     public static Integer COLOR_STEP_HIGHLIGHT = 4;
+    public static Integer COLOR_STEP_CONTROL_ENABLED = 5;
 
     public static Integer COLOR_KEYBOARD_WHITE_KEY = 10;
     public static Integer COLOR_KEYBOARD_BLACK_KEY = 11;
@@ -165,7 +179,8 @@ public class ParaUtil {
         PALETTE_YELLOW.put(COLOR_STEP_TIE, mainColorDim);
         PALETTE_YELLOW.put(COLOR_STEP_REST, Color.OFF);
         PALETTE_YELLOW.put(COLOR_STEP_HIGHLIGHT, selectColor);
-        PALETTE_YELLOW.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);//Color.fromIndex(2));
+        PALETTE_YELLOW.put(COLOR_STEP_CONTROL_ENABLED, highlightColor);
+        PALETTE_YELLOW.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);
         PALETTE_YELLOW.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
         PALETTE_YELLOW.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
         PALETTE_YELLOW.put(COLOR_KEYBOARD_SELECTED, highlightColor);
@@ -205,6 +220,7 @@ public class ParaUtil {
         PALETTE_ORANGE.put(COLOR_STEP_TIE, mainColorDim);
         PALETTE_ORANGE.put(COLOR_STEP_REST, Color.OFF);
         PALETTE_ORANGE.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE_ORANGE.put(COLOR_STEP_CONTROL_ENABLED, highlightColor);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
@@ -245,6 +261,7 @@ public class ParaUtil {
         PALETTE_BLUE.put(COLOR_STEP_TIE, mainColorDim);
         PALETTE_BLUE.put(COLOR_STEP_REST, Color.OFF);
         PALETTE_BLUE.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE_BLUE.put(COLOR_STEP_CONTROL_ENABLED, highlightColor);
         PALETTE_BLUE.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);
         PALETTE_BLUE.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
         PALETTE_BLUE.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
@@ -285,6 +302,7 @@ public class ParaUtil {
         PALETTE_PINK.put(COLOR_STEP_TIE, mainColorDim);
         PALETTE_PINK.put(COLOR_STEP_REST, Color.OFF);
         PALETTE_PINK.put(COLOR_STEP_HIGHLIGHT, selectColor);
+        PALETTE_PINK.put(COLOR_STEP_CONTROL_ENABLED, highlightColor);
         PALETTE_PINK.put(COLOR_KEYBOARD_WHITE_KEY, Color.DARK_GRAY);
         PALETTE_PINK.put(COLOR_KEYBOARD_BLACK_KEY, Color.DARK_GRAY);
         PALETTE_PINK.put(COLOR_KEYBOARD_HIGHLIGHT, mainColor);
