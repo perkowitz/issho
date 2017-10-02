@@ -32,7 +32,6 @@ public class ParaMemory implements MemoryObject {
     @Getter @Setter private Integer nextSessionIndex = null;
 
     @Getter @Setter private int midiChannel = 0;
-    @Getter @Setter private Integer[] controllerNumbers = { 1, 16, 17, 18 };
 
     @Getter @Setter private ParaUtil.StepSelectMode stepSelectMode = TOGGLE;
     @Getter @Setter private ParaUtil.ValueState valueState = ParaUtil.ValueState.VELOCITY;
@@ -74,13 +73,6 @@ public class ParaMemory implements MemoryObject {
         return "ParaMemory";
     }
 
-    public Integer getControllerNumber(int index) {
-        if (index >= 0 && index < CONTROLLER_COUNT) {
-            return controllerNumbers[index];
-        } else {
-            return null;
-        }
-    }
 
     /***** select *******************************************************/
 

@@ -42,7 +42,8 @@
       "class": "ParaModule",
       "palette": "blue",
       "filePrefix": "para0",
-      "monophonic": false
+      "monophonic": false,
+      "controllers": [1, 16, 17, 18]
     },
     {
       "class": "StepModulexx",

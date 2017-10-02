@@ -49,6 +49,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     @Setter private boolean monophonic = false;
     @Setter int controlA = 15;
     private int swingOffset = 0;
+    @Setter private Integer[] controllerNumbers = { 1, 16, 17, 18 };
 
     private String filePrefix = "polymodule";
     private int currentFileIndex = 0;
@@ -117,8 +118,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         // send controllers before sending notes
         // if controller is enabled for step, send controller value (even if step is a TIE or no notes programmed)
         for (int index = 0; index < ParaMemory.CONTROLLER_COUNT; index++) {
-            if (memory.getControllerNumber(index) != null && step.getControllerEnabled(index)) {
-                sendMidiCC(memory.getMidiChannel(), memory.getControllerNumber(index), step.getControllerValue(index));
+            if (controllerNumbers[index] != null && step.getControllerEnabled(index)) {
+                sendMidiCC(memory.getMidiChannel(), controllerNumbers[index], step.getControllerValue(index));
             }
         }
 
@@ -350,7 +351,6 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                     int count = step.getVelocity() / 16 + 1;
                     memory.setValueState(ValueState.VELOCITY);
                     paraDisplay.drawValue(count, ValueState.VELOCITY);
-                    System.out.printf("Step vel=%d, c=%d\n", step.getVelocity(), count);
                     break;
                 case CONTROL:
                     int controller = memory.getSelectedController();
