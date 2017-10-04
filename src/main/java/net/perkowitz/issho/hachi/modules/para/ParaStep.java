@@ -31,7 +31,7 @@ public class ParaStep {
     @Getter @Setter private ParaUtil.Gate gate;
     @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean selected = false;
-    @Getter @Setter private ParaControllerStep[] controllerSteps = new ParaControllerStep[ParaMemory.CONTROLLER_COUNT];
+    @Getter private ParaControllerStep[] controllerSteps = new ParaControllerStep[ParaMemory.CONTROLLER_COUNT];
 
 
     public ParaStep() {}
@@ -60,6 +60,22 @@ public class ParaStep {
     public void addNotes(Collection<Integer> notes) {
         for (Integer note : notes) {
             this.notes.add(note);
+        }
+    }
+
+    // this is to load saved files with fewer controllers; may not be necessary (go back to @Setter)
+    public void setControllerSteps(ParaControllerStep[] controllerSteps) {
+        if (controllerSteps.length < ParaMemory.CONTROLLER_COUNT) {
+            this.controllerSteps = new ParaControllerStep[ParaMemory.CONTROLLER_COUNT];
+            for (int i = 0; i < ParaMemory.CONTROLLER_COUNT; i++) {
+                if (i < controllerSteps.length) {
+                    this.controllerSteps[i] = ParaControllerStep.copy(controllerSteps[i]);
+                } else {
+                    this.controllerSteps[i] = new ParaControllerStep();
+                }
+            }
+        } else {
+            this.controllerSteps = controllerSteps;
         }
     }
 

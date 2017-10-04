@@ -117,7 +117,7 @@ public class ParaUtil {
     public static GridControlSet stepGateControls = GridControlSet.buttonSide(GridButton.Side.Bottom, 3, 4);
     public static GridControlSet valueControls = GridControlSet.buttonSideInverted(GridButton.Side.Right);
     public static GridControlSet functionControls = GridControlSet.buttonSide(GridButton.Side.Left, FUNCTION_SAVE_INDEX, FUNCTION_MUTE_INDEX);
-    public static GridControlSet controllerSelectControls = GridControlSet.pads(ParaUtil.KEYBOARD_LOWER_WHITE, ParaUtil.KEYBOARD_LOWER_WHITE, 0, 3);
+    public static GridControlSet controllerSelectControls = GridControlSet.pads(ParaUtil.KEYBOARD_LOWER_WHITE, ParaUtil.KEYBOARD_LOWER_WHITE, 0, ParaMemory.CONTROLLER_COUNT - 1);
 
     public static GridControl patternCopyControl = new GridControl(GridButton.at(GridButton.Side.Left, 2), 0);
     public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);

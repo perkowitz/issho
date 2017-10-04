@@ -15,7 +15,7 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepSelectMode.TOG
 public class ParaMemory implements MemoryObject {
 
     private static int SESSION_COUNT = 16;
-    public static int CONTROLLER_COUNT = 4;
+    public static int CONTROLLER_COUNT = 8;
 
     @Getter private ParaSession[] sessions = new ParaSession[SESSION_COUNT];
     @Getter @Setter private int currentSessionIndex = 0;
