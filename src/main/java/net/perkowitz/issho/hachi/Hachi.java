@@ -344,7 +344,6 @@ public class Hachi {
                     List<Integer> controllers = (List<Integer>)moduleSettings.get("controllers");
                     Integer[] controllersArray = new Integer[4];
                     paraModule.setControllerNumbers(controllers.toArray(controllersArray));  // jumping thru hoops to get a list as an array
-                    System.out.printf("controllers: %s\n", controllers);
                 }
                 module = paraModule;
 

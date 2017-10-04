@@ -102,6 +102,11 @@ public class ParaMemory implements MemoryObject {
 
     }
 
+    public void resetChain() {
+        playingPatternIndex = patternChainMax;
+        patternChainNextIndex = patternChainMin;
+    }
+
 
     /***** MemoryObject implementation ***********************/
 

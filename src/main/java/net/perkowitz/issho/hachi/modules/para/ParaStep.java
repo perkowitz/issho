@@ -80,7 +80,7 @@ public class ParaStep {
     }
 
     public int getControllerValue(int index) {
-        if (index >=0 && index < controllerSteps.length) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
             return controllerSteps[index].getValue();
         } else {
             return 0;
@@ -88,32 +88,32 @@ public class ParaStep {
     }
 
     public void setControllerValue(int index, Integer value) {
-        if (index >=0 && index < controllerSteps.length) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
             controllerSteps[index].setValue(value);
         }
     }
 
     public void setControllerValue(int index, Integer low, Integer high) {
-        if (index >=0 && index < controllerSteps.length) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
             controllerSteps[index].setValue(low, high);
         }
     }
 
     public boolean getControllerEnabled(int index) {
-        if (index >=0 && index < controllerSteps.length) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
             return controllerSteps[index].isEnabled();
         }
         return false;
     }
 
     public void setControllerEnabled(int index, boolean enabled) {
-        if (index >=0 && index < controllerSteps.length) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
             controllerSteps[index].setEnabled(enabled);
         }
     }
 
     public void toggleControllerEnabled(int index) {
-        if (index >=0 && index < controllerSteps.length) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
             controllerSteps[index].setEnabled(!getControllerEnabled(index));
         }
     }
@@ -158,7 +158,13 @@ public class ParaStep {
         newStep.gate = step.gate;
         newStep.enabled = step.enabled;
         newStep.selected = step.selected;
+
+        ParaControllerStep[] newControllerSteps = new ParaControllerStep[step.controllerSteps.length];
+        for (int i = 0; i < step.controllerSteps.length; i++) {
+            newControllerSteps[i] = ParaControllerStep.copy(step.controllerSteps[i]);
+        }
+        newStep.controllerSteps = newControllerSteps;
+
         return newStep;
-        // TODO needs to include copying controller settings
     }
 }

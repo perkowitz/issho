@@ -628,6 +628,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     /***** Clockable implementation ****************************************/
 
     public void start(boolean restart) {
+        memory.resetChain();
         if (restart) {
             nextStepIndex = 0;
         }
