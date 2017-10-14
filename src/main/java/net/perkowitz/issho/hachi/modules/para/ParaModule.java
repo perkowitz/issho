@@ -9,6 +9,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
+import net.perkowitz.issho.hachi.ValueSettable;
 import net.perkowitz.issho.hachi.modules.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -27,7 +28,7 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepSelectMode.TOG
 /**
  * Created by optic on 10/24/16.
  */
-public class ParaModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
+public class ParaModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable, ValueSettable {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -247,6 +248,39 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         return isMuted;
     }
 
+    /***** ValueSettable implementation ***********************************/
+
+    public void setValue(int value) {
+
+        Integer valueIndex = null;
+        ParaStep step = memory.selectedStep();
+
+        if (step != null) {
+            switch (memory.getValueState()) {
+                case STEP_OCTAVE:
+                    break;
+                case VELOCITY:
+                    step.setVelocity(value);
+                    valueIndex = (int) (8 * value / 127);
+                    break;
+                case KEYBOARD_OCTAVE:
+                    break;
+                case CONTROL:
+                    step.setControllerValue(memory.getSelectedController(), value);
+                    valueIndex = (int) (8 * value / 127);
+                    break;
+                case NONE:
+                    break;
+            }
+
+            if (valueIndex != null) {
+                paraDisplay.drawValue(valueIndex, memory.getValueState());
+            }
+        }
+
+    }
+
+
     /***** Sessionizeable implementation *************************************/
 
     public void selectSession(int index) {
@@ -458,26 +492,9 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             paraDisplay.drawStep(memory, memory.selectedStep(), false);
 
         } else if (ParaUtil.valueControls.contains(control)) {
-            ParaStep step = memory.selectedStep();
-            if (step != null) {
-                Integer index = ParaUtil.valueControls.getIndex(control);
-                int value = (index + 1) * 16 - 1;
-                paraDisplay.drawValue(index, memory.getValueState());
-                switch (memory.getValueState()) {
-                    case STEP_OCTAVE:
-                        break;
-                    case VELOCITY:
-                        step.setVelocity(value);
-                        break;
-                    case KEYBOARD_OCTAVE:
-                        break;
-                    case CONTROL:
-                        step.setControllerValue(memory.getSelectedController(), value);
-                        break;
-                    case NONE:
-                        break;
-                }
-            }
+            Integer index = ParaUtil.valueControls.getIndex(control);
+            int value = (index + 1) * 16 - 1;
+            setValue(value);
 
         }
 

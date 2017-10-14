@@ -20,7 +20,7 @@ import static javax.sound.midi.ShortMessage.*;
 /**
  * Created by optic on 9/12/16.
  */
-public class HachiController implements Clockable, Receiver {
+public class HachiController implements Clockable, Receiver, ValueSettable {
 
     public static boolean DEBUG_MODE = true;
 
@@ -240,6 +240,19 @@ public class HachiController implements Clockable, Receiver {
             }
         }
 
+    }
+
+
+    /***** ValueSettable implementation ***********************************/
+
+    public void setValue(int value) {
+        // will send value to any ValueSettable module that's active for some grid device
+        for (HachiDeviceManager hachiDeviceManager : hachiDeviceManagers) {
+            Module module = hachiDeviceManager.getActiveModule();
+            if (module instanceof ValueSettable) {
+                ((ValueSettable)module).setValue(value);
+            }
+        }
     }
 
 

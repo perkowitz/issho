@@ -102,8 +102,6 @@ public class Hachi {
 ////        GridDevice gridDevice = new MultiDevice(Lists.<GridDevice>newArrayList(mainDevice, mirrorDevice));
 //        GridDevice gridDevice = mainDevice;
 
-        createKnobby();
-
         System.out.println("Creating modules...");
         Module[] modules;
         if (settings.get("modules") != null) {
@@ -118,11 +116,15 @@ public class Hachi {
             gridDevicesArray[i] = gridDevices.get(i);
         }
 
+        // create the HachiController
         controller = new HachiController(modules, gridDevicesArray);
         Boolean midiContinueAsStart = (Boolean)settings.get("midiContinueAsStart");
         if (midiContinueAsStart != null) {
             controller.setMidiContinueAsStart(midiContinueAsStart);
         }
+
+        // if specified, create a knobby device and make the value control settings
+        Knobby knobby = createKnobby();
 
         // make the HachiController receive external midi
         midiInput.getTransmitter().setReceiver(controller);
@@ -441,7 +443,7 @@ public class Hachi {
         return modules;
     }
 
-    private static void createKnobby() {
+    private static Knobby createKnobby() {
 
         // get the device configs from the settings
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
@@ -455,18 +457,25 @@ public class Hachi {
             knobOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
             if (knobInput == null || knobOutput == null) {
                 System.out.printf("Unable to find knobby device matching name: %s\n", names);
-                return;
+                return null;
             }
 
             try {
                 knobInput.open();
                 knobOutput.open();
                 Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
+                if (config.get("valueControlChannel") != null && config.get("valueControlController") != null) {
+                    System.out.printf("ValueControl: %d, %d\n", (Integer)config.get("valueControlChannel"), (Integer)config.get("valueControlController"));
+                    knobby.setValueControl((Integer)config.get("valueControlChannel"), (Integer)config.get("valueControlController"), controller);
+                }
+                return knobby;
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
         }
+
+        return null;
     }
 
     private static class CommandLine implements Runnable {

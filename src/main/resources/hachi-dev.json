@@ -21,7 +21,9 @@
     "knobby": {
       "names":[
         "nanokontrol"
-      ]
+      ],
+      "valueControlChannel": 14,
+      "valueControlController": 16
     },
     "xxxkeyboard": {
       "names": [
