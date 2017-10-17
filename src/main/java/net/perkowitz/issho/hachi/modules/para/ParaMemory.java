@@ -15,6 +15,7 @@ import static net.perkowitz.issho.hachi.modules.para.ParaUtil.StepSelectMode.TOG
 public class ParaMemory implements MemoryObject {
 
     private static int SESSION_COUNT = 16;
+    public static int CONTROLLER_COUNT = 8;
 
     @Getter private ParaSession[] sessions = new ParaSession[SESSION_COUNT];
     @Getter @Setter private int currentSessionIndex = 0;
@@ -32,9 +33,9 @@ public class ParaMemory implements MemoryObject {
 
     @Getter @Setter private int midiChannel = 0;
 
-    @Getter @Setter
-    ParaUtil.StepSelectMode stepSelectMode = TOGGLE;
-    @Getter @Setter ParaUtil.ValueState valueState = ParaUtil.ValueState.VELOCITY;
+    @Getter @Setter private ParaUtil.StepSelectMode stepSelectMode = TOGGLE;
+    @Getter @Setter private ParaUtil.ValueState valueState = ParaUtil.ValueState.VELOCITY;
+    @Getter @Setter private int selectedController = 0;
 
 
     public ParaMemory() {
@@ -68,7 +69,6 @@ public class ParaMemory implements MemoryObject {
 
     public ParaStep getStep(int index) { return currentPattern().getStep(index); }
 
-
     public String toString() {
         return "ParaMemory";
     }
@@ -100,6 +100,11 @@ public class ParaMemory implements MemoryObject {
         patternChainMin = minIndex;
         patternChainMax = maxIndex;
 
+    }
+
+    public void resetChain() {
+        playingPatternIndex = patternChainMax;
+        patternChainNextIndex = patternChainMin;
     }
 
 

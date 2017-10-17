@@ -128,18 +128,6 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
         BeatPattern playingPattern = memory.getPlayingPattern();
 
-//        if (currentBeat == 0 && currentPulse == 0 ) {
-//            if (currentMeasure % 4 == 3) {
-//                patternFill = BeatPatternFill.chooseRandom(playingPattern);
-////            } else if (currentMeasure % 16 == 11) {
-////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.backward2);
-////            } else if (currentMeasure % 4 == 3) {
-////                patternFill = new BeatPatternFill(playingPattern, BeatPatternFill.cut1);
-//            } else {
-//                patternFill = null;
-//            }
-//        }
-
         if (patternFill != null) {
             playingPattern = patternFill;
         }
@@ -317,6 +305,15 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         memory.selectChain(firstIndex, lastIndex);
     }
 
+    public void fillOn(Integer fillIndex) {
+        // TODO: choose random when fillIndex is null or out of range, otherwise choose specific fill
+        patternFill = BeatPatternFill.chooseRandom(memory.getPlayingPattern());
+    }
+
+    public void fillOff() {
+        patternFill = null;
+    }
+
 
     /***** GridListener interface ***************************************
      *
@@ -461,7 +458,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             beatDisplay.drawValue(7, 7, BeatDisplay.ValueMode.HIGHLIGHT);
 
         } else if (fillControl.equals(control)) {
-            patternFill = BeatPatternFill.chooseRandom(memory.getPlayingPattern());
+            fillOn(null);
             beatDisplay.drawFillControl(true);
 
         } else if (valueControls.contains(control)) {
@@ -570,7 +567,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
             }
 
         } else if (fillControl.equals(control)) {
-            patternFill = null;
+            fillOff();
             beatDisplay.drawFillControl(false);
 
         } else if (valueControls.contains(control)) {

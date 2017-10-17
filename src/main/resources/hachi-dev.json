@@ -21,7 +21,9 @@
     "knobby": {
       "names":[
         "nanokontrol"
-      ]
+      ],
+      "valueControlChannel": 14,
+      "valueControlController": 16
     },
     "xxxkeyboard": {
       "names": [
@@ -33,16 +35,17 @@
   },
   "modules": [
     {
-      "class": "BeatModule",
+      "class": "BeatModulexx",
       "palette": "Blue",
       "tiesEnabled": false,
       "filePrefix": "beat0"
     },
     {
-      "class": "ParaModulexx",
-      "palette": "yellow",
+      "class": "ParaModule",
+      "palette": "blue",
       "filePrefix": "para0",
-      "monophonic": false
+      "monophonic": false,
+      "controllers": [1, 16, 17, 18]
     },
     {
       "class": "StepModulexx",

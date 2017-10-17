@@ -1,10 +1,12 @@
 package net.perkowitz.issho.hachi.modules.para;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.para.ParaUtil.Gate.PLAY;
@@ -29,6 +31,7 @@ public class ParaStep {
     @Getter @Setter private ParaUtil.Gate gate;
     @Getter @Setter private boolean enabled = true;
     @Getter @Setter private boolean selected = false;
+    @Getter private ParaControllerStep[] controllerSteps = new ParaControllerStep[ParaMemory.CONTROLLER_COUNT];
 
 
     public ParaStep() {}
@@ -40,6 +43,9 @@ public class ParaStep {
         this.controlA = DEFAULT_CONTROL;
         this.enabled = false;
         this.selected = false;
+        for (int i = 0; i < controllerSteps.length; i++) {
+            controllerSteps[i] = new ParaControllerStep();
+        }
     }
 
     public void addNote(Integer note) {
@@ -57,6 +63,22 @@ public class ParaStep {
         }
     }
 
+    // this is to load saved files with fewer controllers; may not be necessary (go back to @Setter)
+    public void setControllerSteps(ParaControllerStep[] controllerSteps) {
+        if (controllerSteps.length < ParaMemory.CONTROLLER_COUNT) {
+            this.controllerSteps = new ParaControllerStep[ParaMemory.CONTROLLER_COUNT];
+            for (int i = 0; i < ParaMemory.CONTROLLER_COUNT; i++) {
+                if (i < controllerSteps.length) {
+                    this.controllerSteps[i] = ParaControllerStep.copy(controllerSteps[i]);
+                } else {
+                    this.controllerSteps[i] = new ParaControllerStep();
+                }
+            }
+        } else {
+            this.controllerSteps = controllerSteps;
+        }
+    }
+
     public void removeNote(Integer note) {
         notes.remove(note);
     }
@@ -71,6 +93,45 @@ public class ParaStep {
 
     public void clearNotes() {
         notes.clear();
+    }
+
+    public int getControllerValue(int index) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
+            return controllerSteps[index].getValue();
+        } else {
+            return 0;
+        }
+    }
+
+    public void setControllerValue(int index, Integer value) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
+            controllerSteps[index].setValue(value);
+        }
+    }
+
+    public void setControllerValue(int index, Integer low, Integer high) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
+            controllerSteps[index].setValue(low, high);
+        }
+    }
+
+    public boolean getControllerEnabled(int index) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
+            return controllerSteps[index].isEnabled();
+        }
+        return false;
+    }
+
+    public void setControllerEnabled(int index, boolean enabled) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
+            controllerSteps[index].setEnabled(enabled);
+        }
+    }
+
+    public void toggleControllerEnabled(int index) {
+        if (index >=0 && index < controllerSteps.length && controllerSteps[index] != null) {
+            controllerSteps[index].setEnabled(!getControllerEnabled(index));
+        }
     }
 
     public void transpose(int steps) {
@@ -113,6 +174,13 @@ public class ParaStep {
         newStep.gate = step.gate;
         newStep.enabled = step.enabled;
         newStep.selected = step.selected;
+
+        ParaControllerStep[] newControllerSteps = new ParaControllerStep[step.controllerSteps.length];
+        for (int i = 0; i < step.controllerSteps.length; i++) {
+            newControllerSteps[i] = ParaControllerStep.copy(step.controllerSteps[i]);
+        }
+        newStep.controllerSteps = newControllerSteps;
+
         return newStep;
     }
 }

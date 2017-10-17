@@ -16,6 +16,10 @@ public class Knobby implements Receiver {
     private Transmitter inputTransmitter;
     private Receiver outputReceiver;
 
+    private int valueControlChannel = 15;
+    private int valueControlController = 16;
+    private ValueSettable valueSettable = null;
+
 
     public Knobby(Transmitter inputTransmitter, Receiver outputReceiver) {
         this.inputTransmitter = inputTransmitter;
@@ -37,6 +41,11 @@ public class Knobby implements Receiver {
         }
     }
 
+    public void setValueControl(Integer valueControlChannel, Integer valueControlController, ValueSettable valueSettable) {
+        this.valueControlChannel = valueControlChannel;
+        this.valueControlController = valueControlController;
+        this.valueSettable = valueSettable;
+    }
 
     /***** midi receiver implementation **************************************************************/
 
@@ -74,7 +83,11 @@ public class Knobby implements Receiver {
                         break;
                     case CONTROL_CHANGE:
 //                        System.out.printf("MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        outputReceiver.send(message, timeStamp);
+                        if (valueSettable != null && shortMessage.getChannel() == valueControlChannel && shortMessage.getData1() == valueControlController) {
+                            valueSettable.setValue(shortMessage.getData2());
+                        } else {
+                            outputReceiver.send(message, timeStamp);
+                        }
                         break;
                     default:
                 }

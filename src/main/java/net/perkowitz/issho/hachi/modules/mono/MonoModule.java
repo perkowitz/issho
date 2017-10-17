@@ -241,6 +241,10 @@ public class MonoModule extends ChordModule implements Module, Clockable, GridLi
         monoDisplay.drawPatterns(memory);
     }
 
+    public void fillOn(Integer fillIndex) {}
+
+    public void fillOff() {}
+
 
     /***** GridListener interface ****************************************/
 

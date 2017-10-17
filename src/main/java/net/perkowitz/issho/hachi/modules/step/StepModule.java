@@ -224,6 +224,10 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         stepDisplay.drawStages(memory);
     }
 
+    public void fillOn(Integer fillIndex) {}
+
+    public void fillOff() {}
+
 
     /***** GridListener interface ****************************************/
 

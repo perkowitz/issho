@@ -10,5 +10,7 @@ public interface Sessionizeable extends Module {
 
     public void selectSession(int index);
     public void selectPatterns(int firstIndex, int lastIndex);
+    public void fillOn(Integer fillIndex);
+    public void fillOff();
 
 }

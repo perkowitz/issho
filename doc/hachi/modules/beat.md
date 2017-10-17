@@ -66,6 +66,8 @@ next button will be up two semitones, and then the highest button will bend an o
 pitches down. Beatbox will send pitch bend signals on its set MIDI channel for each enabled step. Pitch bend applies to the entire channel,
 so is not programmable per track; think of each pattern as having a single pitch track.
 
+<img width="480px" src="beat-control.png"/>
+
 Jump mode is more of a "performance" mode. In jump mode, tapping any of the step controls will play that step on the next clock tick,
 advancing normally from there. The sequence will reset to the first step at the next reset. Tapping any of the track select controls
 will play the corresponding sound rather than selecting the track. Also in jump mode, Beatbox will display a clock, where the current
@@ -73,6 +75,8 @@ step being played will be lit up, and a counter will keep track of the measure c
 to trigger fills and watching what steps play during jumps and fills. Jump mode also allows "momentary pitch" control. Holding down
 the value buttons will send a midi pitch bend value just as in pitch mode, but pitch bend will be reset to zero when you release
 the button.
+
+<img width="480px" src="beat-jump.png"/>
 
 
 ### Fill

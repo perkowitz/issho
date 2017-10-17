@@ -20,7 +20,10 @@
     "knobbyx": {
       "names":[
         "nanokontrol"
-      ]
+      ],
+      "valueControlChannel": 14,
+      "valueControlController": 16
+
     },
     "keyboard": {
       "names": [

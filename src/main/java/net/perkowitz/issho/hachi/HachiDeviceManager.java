@@ -1,5 +1,6 @@
 package net.perkowitz.issho.hachi;
 
+import lombok.Getter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.hachi.modules.Module;
 
@@ -11,7 +12,7 @@ import static net.perkowitz.issho.hachi.HachiUtil.*;
 public class HachiDeviceManager implements GridListener {
 
     private Module[] modules = null;
-    private Module activeModule;
+    @Getter private Module activeModule;
     private GridListener[] moduleListeners = null;
     private GridListener activeListener = null;
     private GridDisplay display;
