@@ -65,8 +65,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         paraDisplay = new ParaDisplay(this.display);
         paraDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
-        load(0);
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
+        load(0);
     }
 
 
@@ -588,6 +588,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 save(settingsModule.getCurrentFileIndex());
                 break;
             case SET_MIDI_CHANNEL:
+                notesOff();
                 memory.setMidiChannel(settingsModule.getMidiChannel());
                 break;
             case SET_SWING:
@@ -696,6 +697,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     public void load(int index) {
         memory = loadMemory(index);
+        settingsModule.setMidiChannel(memory.getMidiChannel());
     }
 
     public ParaMemory loadMemory(int index) {

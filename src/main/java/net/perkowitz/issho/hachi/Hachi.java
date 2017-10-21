@@ -465,7 +465,6 @@ public class Hachi {
                 knobOutput.open();
                 Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
                 if (config.get("valueControlChannel") != null && config.get("valueControlController") != null) {
-                    System.out.printf("ValueControl: %d, %d\n", (Integer)config.get("valueControlChannel"), (Integer)config.get("valueControlController"));
                     knobby.setValueControl((Integer)config.get("valueControlChannel"), (Integer)config.get("valueControlController"), controller);
                 }
                 return knobby;

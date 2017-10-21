@@ -77,8 +77,8 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         this.beatDisplay = new BeatDisplay(this.display);
         this.beatDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
-        load(0);
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
+        load(0);
     }
 
 
@@ -760,6 +760,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
     public void load(int index) {
         memory = loadMemory(index);
+        settingsModule.setMidiChannel(memory.getMidiChannel());
     }
 
     public BeatMemory loadMemory(int index) {
