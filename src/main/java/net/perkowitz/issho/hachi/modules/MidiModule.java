@@ -91,6 +91,21 @@ public class MidiModule extends BasicModule implements Receiver {
         }
     }
 
+    protected void sendMidiProgramChange(int channel, int value) {
+//        System.out.printf("Prog: %d, %d\n", channel, value);
+
+        if (isMuted && value > 0) return;
+
+        try {
+            ShortMessage message = new ShortMessage();
+            message.setMessage(ShortMessage.PROGRAM_CHANGE, channel, value, 0);
+            outputReceiver.send(message, -1);
+
+        } catch (InvalidMidiDataException e) {
+            System.err.println(e);
+        }
+    }
+
     protected void sendMidiPitchBend(int channel, int value) {
 
         if (isMuted && value != MIDI_PITCH_BEND_ZERO) return;
