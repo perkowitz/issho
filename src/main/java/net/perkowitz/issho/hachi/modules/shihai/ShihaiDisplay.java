@@ -136,6 +136,7 @@ public class ShihaiDisplay {
     public void drawLeftControls() {
         drawControl(ShihaiUtil.settingsControl, settingsView);
         drawControl(ShihaiUtil.panicControl, false);
+        drawControl(ShihaiUtil.clockResetControl, false);
         drawControl(ShihaiUtil.fillControl, false);
     }
 

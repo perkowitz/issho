@@ -89,13 +89,19 @@ it to tweak the Shruthi's sounds.
 A "knobby" device can be added for sending MIDI controllers to downstream MIDI modules. Adding the device to the config will tell
 Hachi to route the controller's output to the Launchpad Pro's MIDI out, so that control messages can be sent to any devices
 on the MIDI chain. The controller must be set up to send the desired messages; Hachi will not remap the MIDI messages in any way.
+The knobby device can also define a value controller, by specifying a ```valueControlChannel``` and
+```valueControlController```. These are the channel and controller number for a controller that, rather than being passed to the
+MIDI out, will be used to edit values within any modules that can accept value input. This allows a knob on an external 
+controller to set values like note velocity, pitch bend amount, and sequenced controller data.
 
 ```
   "devices": {
     "knobby": {
       "names":[
         "nanokontrol"
-      ]
+      ],
+      "valueControlChannel": 14,
+      "valueControlController": 16
     }
   }
 ```

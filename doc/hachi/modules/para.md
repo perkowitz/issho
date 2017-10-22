@@ -80,6 +80,20 @@ In TIE, it will simply hold any previously-played notes but will not play its ow
 that a REST can be created by disabling the step, or by setting it to PLAY with no
 notes selected.
 
+#### Control Edit Mode 
+ 
+<img width="480px" src="para-control.png"/>
+
+Para allows up to eight MIDI controllers to be sequenced in each pattern. The controller numbers used
+are set in the module config, and the values can be edited in control edit mode. Tapping the Control
+mode button will put Para in control edit mode. Row 6 is used to select one of the 8 controllers, 
+and rows 7 and 8 are used to edit the value at each step. Tap a control select button to select the controller,
+tap a step button, and then tap a value button to set a value for that controller on that step. Tapping
+the step buttons toggles them on and off. 
+
+ 
+
+
 #### Transpose Controls
 
 Next to the upper octave of the keyboard are the transpose up and transpose down controls.
@@ -87,9 +101,15 @@ These will transpose all notes on the current step up or down an octave. Note th
 change the selected notes, while the octave up and down controls change the visible range
 of the keyboard.
 
-### Value Buttons
+### Value Buttons and the Value Control
 
-(not implemented)
+These buttons can be used to select from a range of values; the purpose varies depending on the context, as described
+elsewhere in this manual. 
+The eight value buttons represent eight values in the relevant numeric range, with the lowest value at the bottom and highest value at the top.
+Hachi can also be configured to accept a MIDI controller (a specified controller number on a specified channel)as the value controller. 
+When the value buttons are active, a value received for this MIDI controller will set that value as if a value button had been pressed.
+Of course, the value controller has the full range of 128 values, instead of just eight with the buttons.
+
 
 ## Settings View
 
@@ -101,9 +121,15 @@ Para uses the standard [Settings Module](settings.md) for all settings.
 Para has a configuration option for the file prefix, used
 to specify filenames for saving data. Mono can also be
 set to use a yellow, orange, blue, or pink color palette.
-Finally monophonic can be set to true or false; when true, it will allow only one note
+The ```monophonic``` setting can be true or false; when true, it will allow only one note
 to be set on each pattern step (though it will not automatically alter previously-saved sequences
 with multiple notes).
+The ```sessionPrograms``` setting
+can be used to set midi program change values for each session. When the session is loaded, a program change 
+message will be sent with the provided value; a missing value or value of ```-1``` will result in no 
+message being sent.
+The ```controllers``` setting will specify the MIDI controller numbers assigned to each of the
+eight programmable controllers available. 
 
 
 ```

@@ -66,6 +66,12 @@ current data to its current file, similar to pressing the save button on those
 individual modules.
 -->
 
+### Clock Reset
+
+Press this button to reset each clockable module to the start of its pattern chain. Useful
+if the chains get out of sync for any reason. Should not reset the clock position within the measure,
+just cause the next pattern to be the first in the chain. 
+
 ### Panic
 
 Press this button to send an "all notes off" message on all MIDI channels,

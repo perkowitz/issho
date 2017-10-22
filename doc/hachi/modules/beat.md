@@ -86,12 +86,14 @@ as long as the button is held down. Beatbox's fill patterns aren't actually pres
 pattern in various ways to produce a fill. 
 
 
-### Value buttons
+### Value Buttons and the Value Control
 
-These buttons can be used to select from a range of values; the purpose varies depending on the context. 
-The eight buttons represent eight values in the relevant numeric range, with the lowest value at the bottom and highest value at the top. 
-When a step is selected (by tapping it in either gate mode or velocity mode), the value buttons set the velocity of that step. After
-selecting a fill pattern for editing, the value buttons set the fill probability.
+These buttons can be used to select from a range of values; the purpose varies depending on the context, as described
+elsewhere in this manual. 
+The eight value buttons represent eight values in the relevant numeric range, with the lowest value at the bottom and highest value at the top.
+Hachi can also be configured to accept a MIDI controller (a specified controller number on a specified channel)as the value controller. 
+When the value buttons are active, a value received for this MIDI controller will set that value as if a value button had been pressed.
+Of course, the value controller has the full range of 128 values, instead of just eight with the buttons.
 
 
 ## Settings View
@@ -105,7 +107,10 @@ Beat can also be set to use a blue, green, or pink color palette. Beat uses a de
 midi notes for its various tracks, corresponding to standard MIDI drum mappings. The ```midiNoteOffset```
 setting can be used to transpose all of the tracks by a number of semitones. For example, setting this
 value to 24 will transpose all note numbers by two octaves. The ```tiesEnabled``` setting can be used
-to allow notes longer than a single step to be played by Beatbox.
+to allow notes longer than a single step to be played by Beatbox. The ```sessionPrograms``` setting
+can be used to set midi program change values for each session. When the session is loaded, a program change 
+message will be sent with the provided value; a missing value or value of ```-1``` will result in no 
+message being sent.
 
 ```
   "modules": [
@@ -113,7 +118,8 @@ to allow notes longer than a single step to be played by Beatbox.
       "class": "BeatModule",
       "filePrefix": "beat0",
       "palette": "green",
-      "midiNoteOffset": 24
+      "midiNoteOffset": 24,
+      "sessionPrograms": [ 16, 17, 8, 13]
     }
   ]
 ```
