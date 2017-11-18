@@ -347,6 +347,10 @@ public class Hachi {
                     Integer[] controllersArray = new Integer[4];
                     paraModule.setControllerNumbers(controllers.toArray(controllersArray));  // jumping thru hoops to get a list as an array
                 }
+                if (moduleSettings.get("sessionPrograms") != null) {
+                    List<Integer> sessionPrograms= (List<Integer>)moduleSettings.get("sessionPrograms");
+                    paraModule.setSessionPrograms(sessionPrograms);
+                }
                 module = paraModule;
 
             } else if (className.equals("StepModule")) {
@@ -373,6 +377,10 @@ public class Hachi {
                     if (tiesEnabled != null) {
                         beatModule.setTiesEnabled(tiesEnabled);
                     }
+                }
+                if (moduleSettings.get("sessionPrograms") != null) {
+                    List<Integer> sessionPrograms= (List<Integer>)moduleSettings.get("sessionPrograms");
+                    beatModule.setSessionPrograms(sessionPrograms);
                 }
                 module = beatModule;
 
@@ -465,7 +473,6 @@ public class Hachi {
                 knobOutput.open();
                 Knobby knobby = new Knobby(knobInput.getTransmitter(), midiReceiver);
                 if (config.get("valueControlChannel") != null && config.get("valueControlController") != null) {
-                    System.out.printf("ValueControl: %d, %d\n", (Integer)config.get("valueControlChannel"), (Integer)config.get("valueControlController"));
                     knobby.setValueControl((Integer)config.get("valueControlChannel"), (Integer)config.get("valueControlController"), controller);
                 }
                 return knobby;

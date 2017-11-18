@@ -56,6 +56,8 @@ public class MidiModule extends BasicModule implements Receiver {
 
     protected void sendMidiNote(int channel, int noteNumber, int velocity) {
 
+//        System.out.printf("sendMidiNote: %s, %d, %d, %d\n", this.toString(), channel, noteNumber, velocity);
+
         if (isMuted && velocity > 0) return;
 
         int v = velocity;
@@ -82,6 +84,19 @@ public class MidiModule extends BasicModule implements Receiver {
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.CONTROL_CHANGE, channel, ccNumber, value);
+            outputReceiver.send(message, -1);
+
+        } catch (InvalidMidiDataException e) {
+            System.err.println(e);
+        }
+    }
+
+    protected void sendMidiProgramChange(int channel, int value) {
+//        System.out.printf("Prog: %d, %d\n", channel, value);
+
+        try {
+            ShortMessage message = new ShortMessage();
+            message.setMessage(ShortMessage.PROGRAM_CHANGE, channel, value, 0);
             outputReceiver.send(message, -1);
 
         } catch (InvalidMidiDataException e) {

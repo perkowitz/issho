@@ -51,6 +51,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     @Setter int controlA = 15;
     private int swingOffset = 0;
     @Setter private Integer[] controllerNumbers = { 1, 16, 17, 18, 19, 20, 21, 22 };
+    @Setter private List<Integer> sessionPrograms = Lists.newArrayList();
 
     private String filePrefix = "polymodule";
     private int currentFileIndex = 0;
@@ -65,8 +66,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         paraDisplay = new ParaDisplay(this.display);
         paraDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
-        load(0);
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
+        load(0);
     }
 
 
@@ -91,6 +92,9 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 memory.setCurrentSessionIndex(nextSessionIndex);
                 settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 drawSessions = true;
+                if (sessionPrograms != null && sessionPrograms.get(nextSessionIndex) != null && sessionPrograms.get(nextSessionIndex) >= 0) {
+                    sendMidiProgramChange(memory.getMidiChannel(), sessionPrograms.get(nextSessionIndex));
+                }
             }
             int currentPatternIndex = memory.getCurrentPatternIndex();
             memory.selectNextPattern();
@@ -588,6 +592,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 save(settingsModule.getCurrentFileIndex());
                 break;
             case SET_MIDI_CHANNEL:
+                notesOff();
                 memory.setMidiChannel(settingsModule.getMidiChannel());
                 break;
             case SET_SWING:
@@ -696,6 +701,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
     public void load(int index) {
         memory = loadMemory(index);
+        settingsModule.setMidiChannel(memory.getMidiChannel());
     }
 
     public ParaMemory loadMemory(int index) {

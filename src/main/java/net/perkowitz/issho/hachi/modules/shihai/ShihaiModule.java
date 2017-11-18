@@ -130,6 +130,15 @@ public class ShihaiModule extends MidiModule implements Clockable {
                 }
             }
 
+        } else if (control.equals(ShihaiUtil.clockResetControl)) {
+            shihaiDisplay.drawControl(ShihaiUtil.clockResetControl, true);
+            for (Module module : modules) {
+                if (module instanceof Clockable) {
+                    Clockable clockable = (Clockable) module;
+                    clockable.start(false);
+                }
+            }
+
         } else if (control.equals(ShihaiUtil.fillControl)) {
             for (Module module : modules) {
                 if (module instanceof Sessionizeable) {
@@ -219,6 +228,9 @@ public class ShihaiModule extends MidiModule implements Clockable {
 
         } else if (control.equals(ShihaiUtil.panicControl)) {
             shihaiDisplay.drawControl(ShihaiUtil.panicControl, false);
+
+        } else if (control.equals(ShihaiUtil.clockResetControl)) {
+            shihaiDisplay.drawControl(ShihaiUtil.clockResetControl, false);
 
         } else if (control.equals(ShihaiUtil.fillControl)) {
             for (Module module : modules) {

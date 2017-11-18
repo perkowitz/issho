@@ -68,6 +68,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
     private boolean patternSelecting = false;
     private EditMode editMode = EditMode.GATE;
     private List<Integer> onNotes = Lists.newArrayList();
+    @Setter private List<Integer> sessionPrograms = Lists.newArrayList();
 
 
     /***** Constructor ****************************************/
@@ -77,8 +78,8 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
         this.beatDisplay = new BeatDisplay(this.display);
         this.beatDisplay.setPalette(palette);
         this.filePrefix = filePrefix;
-        load(0);
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
+        load(0);
     }
 
 
@@ -103,8 +104,11 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 memory.selectSession(nextSessionIndex);
                 settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 settingsModule.setSwingOffset(memory.getCurrentSession().getSwingOffset());
-                nextSessionIndex = null;
                 sendMidiPitchBendZero(memory.getMidiChannel()); // reset for new session
+                if (sessionPrograms != null && sessionPrograms.get(nextSessionIndex) != null && sessionPrograms.get(nextSessionIndex) >= 0) {
+                    sendMidiProgramChange(memory.getMidiChannel(), sessionPrograms.get(nextSessionIndex));
+                }
+                nextSessionIndex = null;
             }
 
             if (nextChainStart != null && nextChainEnd != null) {
@@ -285,13 +289,8 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      * @param index
      */
     public void selectSession(int index) {
-        if (playing) {
-            nextSessionIndex = index;
-        } else {
-            memory.selectSession(index);
-            settingsModule.setCurrentSessionIndex(index);
-            redraw();
-        }
+        nextSessionIndex = index;
+        // TODO: won't show any change if it's not playing
     }
 
     /**
@@ -302,7 +301,10 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
      * @param lastIndex
      */
     public void selectPatterns(int firstIndex, int lastIndex) {
-        memory.selectChain(firstIndex, lastIndex);
+        nextChainStart = firstIndex;
+        nextChainEnd = lastIndex;
+        beatDisplay.setNextChainStart(nextChainStart);
+        beatDisplay.setNextChainEnd(nextChainEnd);
     }
 
     public void fillOn(Integer fillIndex) {
@@ -760,6 +762,7 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
 
     public void load(int index) {
         memory = loadMemory(index);
+        settingsModule.setMidiChannel(memory.getMidiChannel());
     }
 
     public BeatMemory loadMemory(int index) {
