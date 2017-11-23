@@ -98,7 +98,8 @@ mode button will put Para in control edit mode. Row 6 is used to select one of t
 and rows 7 and 8 are used to edit the value at each step. Tap a control select button to select the controller,
 tap a step button, and then tap a value button to set a value for that controller on that step. Tapping
 the step buttons toggles them on and off. Each of the eight controllers can be set to active or 
-inactive, by tapping the corresponding pad in row 5.
+inactive, by tapping the corresponding pad in row 5; inactive controllers can be edited, but no MIDI messages
+will be sent.
 
  
 
