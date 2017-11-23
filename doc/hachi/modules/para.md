@@ -41,11 +41,19 @@ Tapping a pattern pad will switch to that pattern on the next measure.
 Multiple patterns can be chained by holding down the first pattern's pad
 and then tapping the last pattern's pad. 
 
-#### Copy and Clear
+#### Edit Select and Copy
 
-On the left side above Save, these controls can be used to clear a pattern or copy a pattern to
-another pattern slot. For copy, hold down the copy button, tap the pattern to copy, and then
-the desired destinaton. For clear, hold down the clear button and tap the pattern to clear.
+On the left side above Save, these controls can be used to select a pattern for editing
+or copy a pattern to another pattern slot. 
+
+When a pattern chain (or single pattern)is selected, the first pattern in the chain
+will be selected for editing; all edits described below will apply to that pattern.
+To select another pattern for editing, hold down the Edit Select control, and then
+tap the pattern to edit. This pattern will remain selected until a new pattern
+chain is selected, even while the current chain cycles through patterns.
+
+To copy a pattern, hold down the copy button, tap the pattern to copy, and then
+the desired destinaton. 
 
 ### Keyboard
 
