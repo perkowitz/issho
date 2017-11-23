@@ -119,6 +119,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
 
         // advance to the next step and play notes
         ParaStep step = memory.currentPattern().getStep(nextStepIndex);
+        ParaStep editStep = memory.selectedPattern().getStep(nextStepIndex);
 
         // send controllers before sending notes
         // if controller is enabled for step, send controller value (even if step is a TIE or no notes programmed)
@@ -148,7 +149,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         // now redraw what needs to be redrawn
         if (paraDisplay.isSettingsMode() && drawSessions) { settingsModule.drawSessions(); }
         if (drawPatterns) { paraDisplay.drawPatterns(memory); }
-        if (drawSteps) { paraDisplay.drawSteps(memory, memory.currentPattern().getSteps()); }
+//        if (drawSteps) { paraDisplay.drawSteps(memory, memory.selectedPattern().getSteps()); }
 //        if (drawKeyboardNotes) {
 ////            paraDisplay.drawKeyboard();
 //            if (lastStep != null) {
@@ -167,9 +168,9 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         }
 
         // always draw the step itself
-        paraDisplay.drawStep(memory, step, true);
+        paraDisplay.drawStep(memory, editStep, true);
 
-        lastStep = step;
+        lastStep = editStep;
         nextStepIndex = (nextStepIndex + 1) % ParaPattern.STEP_COUNT;
     }
 
@@ -364,14 +365,19 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             patternEditing = true;
             paraDisplay.drawPatternEditControls(true, false);
 
-        } else if (patternClearControl.equals(control)) {
+        } else if (patternEditControl.equals(control)) {
             patternEditIndexBuffer.clear();
             patternEditing = true;
             paraDisplay.drawPatternEditControls(false, true);
 
+//        } else if (patternClearControl.equals(control)) {
+//            patternEditIndexBuffer.clear();
+//            patternEditing = true;
+//            paraDisplay.drawPatternEditControls(false, true);
+//
         } else if (ParaUtil.stepControls.contains(control)) {
             // unselect the current selected step and redraw it
-            ParaStep step = memory.currentStep();
+            ParaStep step = memory.selectedStep();
             step.setSelected(false);
             // find the control's index and get the corresponding step
             Integer index = ParaUtil.stepControls.getIndex(control);
@@ -422,7 +428,7 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             if (index != null) {
                 memory.setSelectedController(index);
                 paraDisplay.drawControllerSelect(memory);
-                paraDisplay.drawSteps(memory, memory.currentPattern().getSteps());
+                paraDisplay.drawSteps(memory, memory.selectedPattern().getSteps());
             }
 
         } else if (octaveDownControl.equals(control)) {
@@ -533,12 +539,13 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                         memory.selectPatternChain(min, max);
                     }
                     selectPatterns(min, max);
+                    paraDisplay.drawSteps(memory, memory.selectedPattern().getSteps());
                 }
             }
 
         } else if (ParaUtil.stepControls.contains(control)) {
             Integer index = ParaUtil.stepControls.getIndex(control);
-            ParaStep step = memory.currentPattern().getStep(index);
+            ParaStep step = memory.selectedPattern().getStep(index);
             switch (memory.getStepSelectMode()) {
                 case TOGGLE:
                 case SELECT:
@@ -565,16 +572,30 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
             patternEditing = false;
             paraDisplay.drawPatternEditControls(false, false);
 
-        } else if (patternClearControl.equals(control)) {
-            if (patternEditIndexBuffer.size() >= 0) {
-                for (Integer index : patternEditIndexBuffer) {
-                    memory.currentSession().getPatterns()[index] = new ParaPattern(index);
+        } else if (patternEditControl.equals(control)) {
+            // if multiple patterns were selected, just select the last one for editing
+            if (patternEditIndexBuffer.size() > 0) {
+                Integer index = patternEditIndexBuffer.get(patternEditIndexBuffer.size() - 1);
+                if (index != null) {
+                    memory.setSelectedPatternIndex(index);
+                    paraDisplay.drawSteps(memory, memory.selectedPattern().getSteps());
                 }
             }
             patternEditIndexBuffer.clear();
             patternEditing = false;
             paraDisplay.drawPatternEditControls(false, false);
 
+
+//        } else if (patternClearControl.equals(control)) {
+//            if (patternEditIndexBuffer.size() >= 0) {
+//                for (Integer index : patternEditIndexBuffer) {
+//                    memory.currentSession().getPatterns()[index] = new ParaPattern(index);
+//                }
+//            }
+//            patternEditIndexBuffer.clear();
+//            patternEditing = false;
+//            paraDisplay.drawPatternEditControls(false, false);
+//
         }
     }
 

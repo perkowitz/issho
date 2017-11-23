@@ -120,7 +120,8 @@ public class ParaUtil {
     public static GridControlSet controllerSelectControls = GridControlSet.pads(ParaUtil.KEYBOARD_LOWER_WHITE, ParaUtil.KEYBOARD_LOWER_WHITE, 0, ParaMemory.CONTROLLER_COUNT - 1);
 
     public static GridControl patternCopyControl = new GridControl(GridButton.at(GridButton.Side.Left, 2), 0);
-    public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
+//    public static GridControl patternClearControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
+    public static GridControl patternEditControl = new GridControl(GridButton.at(GridButton.Side.Left, 3), 0);
     public static GridControl octaveDownControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_WHITE), 0);
     public static GridControl octaveUpControl = new GridControl(GridPad.at(7, KEYBOARD_LOWER_BLACK), 0);
     public static GridControl transposeDownControl = new GridControl(GridPad.at(7, KEYBOARD_UPPER_WHITE), 0);
@@ -153,9 +154,9 @@ public class ParaUtil {
     public static Integer COLOR_PATTERN_SELECTED = 31;
     public static Integer COLOR_PATTERN_PLAYING = 32;
     public static Integer COLOR_PATTERN_CHAINED = 33;
-    public static Integer COLOR_PATTERN_SELECTED_PLAYING = 34;
     public static Integer COLOR_PATTERN_EDIT = 35;
     public static Integer COLOR_PATTERN_EDIT_SELECTED = 36;
+
 
     public static Integer COLOR_SESSION = 40;
     public static Integer COLOR_SESSION_ACTIVE = 41;
@@ -193,12 +194,11 @@ public class ParaUtil {
         PALETTE_YELLOW.put(COLOR_VALUE_OFF, Color.OFF);
         PALETTE_YELLOW.put(COLOR_VALUE_ON, mainColor);
         PALETTE_YELLOW.put(COLOR_PATTERN, mainColorDim);
-        PALETTE_YELLOW.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_YELLOW.put(COLOR_PATTERN_SELECTED, highlightColor);
         PALETTE_YELLOW.put(COLOR_PATTERN_PLAYING, selectColor);
         PALETTE_YELLOW.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
-        PALETTE_YELLOW.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
         PALETTE_YELLOW.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
-        PALETTE_YELLOW.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_YELLOW.put(COLOR_PATTERN_EDIT_SELECTED, Color.WHITE);
         PALETTE_YELLOW.put(COLOR_SESSION, Color.BRIGHT_BLUE);
         PALETTE_YELLOW.put(COLOR_SESSION_ACTIVE, Color.WHITE);
         PALETTE_YELLOW.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
@@ -234,12 +234,11 @@ public class ParaUtil {
         PALETTE_ORANGE.put(COLOR_VALUE_OFF, Color.OFF);
         PALETTE_ORANGE.put(COLOR_VALUE_ON, mainColor);
         PALETTE_ORANGE.put(COLOR_PATTERN, mainColorDim);
-        PALETTE_ORANGE.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_ORANGE.put(COLOR_PATTERN_SELECTED, highlightColor);
         PALETTE_ORANGE.put(COLOR_PATTERN_PLAYING, selectColor);
         PALETTE_ORANGE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
-        PALETTE_ORANGE.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
         PALETTE_ORANGE.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
-        PALETTE_ORANGE.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_ORANGE.put(COLOR_PATTERN_EDIT_SELECTED, Color.WHITE);
         PALETTE_ORANGE.put(COLOR_SESSION, Color.BRIGHT_BLUE);
         PALETTE_ORANGE.put(COLOR_SESSION_ACTIVE, Color.WHITE);
         PALETTE_ORANGE.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
@@ -275,12 +274,11 @@ public class ParaUtil {
         PALETTE_BLUE.put(COLOR_VALUE_OFF, Color.OFF);
         PALETTE_BLUE.put(COLOR_VALUE_ON, mainColor);
         PALETTE_BLUE.put(COLOR_PATTERN, mainColorDim);
-        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED, highlightColor);
         PALETTE_BLUE.put(COLOR_PATTERN_PLAYING, selectColor);
         PALETTE_BLUE.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
-        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
         PALETTE_BLUE.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
-        PALETTE_BLUE.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_BLUE.put(COLOR_PATTERN_EDIT_SELECTED, Color.WHITE);
         PALETTE_BLUE.put(COLOR_SESSION, Color.BRIGHT_BLUE);
         PALETTE_BLUE.put(COLOR_SESSION_ACTIVE, Color.WHITE);
         PALETTE_BLUE.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
@@ -316,12 +314,11 @@ public class ParaUtil {
         PALETTE_PINK.put(COLOR_VALUE_OFF, Color.OFF);
         PALETTE_PINK.put(COLOR_VALUE_ON, mainColor);
         PALETTE_PINK.put(COLOR_PATTERN, mainColorDim);
-        PALETTE_PINK.put(COLOR_PATTERN_SELECTED, selectColor);
+        PALETTE_PINK.put(COLOR_PATTERN_SELECTED, highlightColor);
         PALETTE_PINK.put(COLOR_PATTERN_PLAYING, selectColor);
         PALETTE_PINK.put(COLOR_PATTERN_CHAINED, Color.DARK_GRAY);
-        PALETTE_PINK.put(COLOR_PATTERN_SELECTED_PLAYING, Color.DARK_GRAY);
         PALETTE_PINK.put(COLOR_PATTERN_EDIT, Color.DARK_GRAY);
-        PALETTE_PINK.put(COLOR_PATTERN_EDIT_SELECTED, Color.DARK_GRAY);
+        PALETTE_PINK.put(COLOR_PATTERN_EDIT_SELECTED, Color.WHITE);
         PALETTE_PINK.put(COLOR_SESSION, Color.BRIGHT_BLUE);
         PALETTE_PINK.put(COLOR_SESSION_ACTIVE, Color.WHITE);
         PALETTE_PINK.put(COLOR_SESSION_NEXT, Color.DARK_GRAY);
