@@ -37,6 +37,7 @@ public class ParaMemory implements MemoryObject {
     @Getter @Setter private ParaUtil.StepSelectMode stepSelectMode = TOGGLE;
     @Getter @Setter private ParaUtil.ValueState valueState = ParaUtil.ValueState.VELOCITY;
     @Getter @Setter private int selectedController = 0;
+    @Getter @Setter private boolean[] controllersActive = { true, true, true, true, true, true, true, true }; // todo limit to CONTROLLER_COUNT
 
 
     public ParaMemory() {
@@ -78,6 +79,18 @@ public class ParaMemory implements MemoryObject {
         return "ParaMemory";
     }
 
+    public boolean getControllerActive(int index) {
+        if (index >= 0 && index < CONTROLLER_COUNT){
+            return controllersActive[index];
+        }
+        return false;
+    }
+
+    public void toggleControllerActive(int index) {
+        if (index >= 0 && index < CONTROLLER_COUNT){
+            controllersActive[index] = !controllersActive[index];
+        }
+    }
 
     /***** select *******************************************************/
 

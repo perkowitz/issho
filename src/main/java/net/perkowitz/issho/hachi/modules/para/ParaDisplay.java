@@ -260,6 +260,13 @@ public class ParaDisplay {
             }
             control.draw(display, color);
         }
+        for (GridControl control : controllerActiveControls.getControls()) {
+            Color color = palette.get(COLOR_MODE_INACTIVE);
+            if (memory.getControllerActive(control.getIndex())) {
+                color = palette.get(COLOR_STEP_CONTROL_ENABLED);
+            }
+            control.draw(display, color);
+        }
     }
 
     public void drawValue(int count, ValueState valueState) {
@@ -287,7 +294,7 @@ public class ParaDisplay {
     public void drawControllers(ParaMemory memory) {
         if (memory.getStepSelectMode() == CONTROL) {
             controllerSelectControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
-
+            controllerActiveControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
         }
     }
 

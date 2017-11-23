@@ -124,7 +124,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
         // send controllers before sending notes
         // if controller is enabled for step, send controller value (even if step is a TIE or no notes programmed)
         for (int index = 0; index < ParaMemory.CONTROLLER_COUNT; index++) {
-            if (index < controllerNumbers.length && controllerNumbers[index] != null && step.getControllerEnabled(index)) {
+            if (memory.getControllerActive(index) && index < controllerNumbers.length &&
+                    controllerNumbers[index] != null && step.getControllerEnabled(index)) {
                 sendMidiCC(memory.getMidiChannel(), controllerNumbers[index], step.getControllerValue(index));
             }
         }
@@ -429,6 +430,15 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 memory.setSelectedController(index);
                 paraDisplay.drawControllerSelect(memory);
                 paraDisplay.drawSteps(memory, memory.selectedPattern().getSteps());
+            }
+
+        } else if (ParaUtil.controllerActiveControls.contains(control) &&
+                memory.getStepSelectMode() == CONTROL) {
+            // find the control's index, get the current step
+            Integer index = ParaUtil.controllerActiveControls.getIndex(control);
+            if (index != null) {
+                memory.toggleControllerActive(index);
+                paraDisplay.drawControllerSelect(memory);
             }
 
         } else if (octaveDownControl.equals(control)) {
