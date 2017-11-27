@@ -23,6 +23,7 @@ public class ParaMemory implements MemoryObject {
     @Getter private int currentStepIndex = 0;
     @Getter private int selectedStepIndex = 0;
     @Getter @Setter private int keyboardOctave;
+    @Getter @Setter private int selectedPatternIndex = 0;
 
     @Getter private int playingPatternIndex;// the currently playing pattern (which might not be in the chain, if a new one has been selected)
     @Getter @Setter private int patternChainMin;    // the index of the first of the playing pattern chain
@@ -36,6 +37,7 @@ public class ParaMemory implements MemoryObject {
     @Getter @Setter private ParaUtil.StepSelectMode stepSelectMode = TOGGLE;
     @Getter @Setter private ParaUtil.ValueState valueState = ParaUtil.ValueState.VELOCITY;
     @Getter @Setter private int selectedController = 0;
+    @Getter @Setter private boolean[] controllersActive = { true, true, true, true, true, true, true, true }; // todo limit to CONTROLLER_COUNT
 
 
     public ParaMemory() {
@@ -55,11 +57,15 @@ public class ParaMemory implements MemoryObject {
         return currentSession().getPattern(currentPatternIndex);
     }
 
-    public ParaStep currentStep() {
-        return currentPattern().getStep(currentStepIndex);
+    public ParaPattern selectedPattern() {
+        return currentSession().getPattern(selectedPatternIndex);
     }
 
-    public ParaStep selectedStep() { return currentPattern().getStep(selectedStepIndex); }
+//    public ParaStep currentStep() {
+//        return currentPattern().getStep(currentStepIndex);
+//    }
+
+    public ParaStep selectedStep() { return selectedPattern().getStep(selectedStepIndex); }
 
     public ParaSession getSession(int index) {
         return sessions[index];
@@ -67,12 +73,24 @@ public class ParaMemory implements MemoryObject {
 
     public ParaPattern getPattern(int index) { return currentSession().getPattern(index); }
 
-    public ParaStep getStep(int index) { return currentPattern().getStep(index); }
+//    public ParaStep getStep(int index) { return currentPattern().getStep(index); }
 
     public String toString() {
         return "ParaMemory";
     }
 
+    public boolean getControllerActive(int index) {
+        if (index >= 0 && index < CONTROLLER_COUNT){
+            return controllersActive[index];
+        }
+        return false;
+    }
+
+    public void toggleControllerActive(int index) {
+        if (index >= 0 && index < CONTROLLER_COUNT){
+            controllersActive[index] = !controllersActive[index];
+        }
+    }
 
     /***** select *******************************************************/
 
@@ -94,11 +112,11 @@ public class ParaMemory implements MemoryObject {
         }
     }
 
-    // TODO make this multiple
     public void selectPatternChain(int minIndex, int maxIndex) {
         patternChainNextIndex = minIndex;
         patternChainMin = minIndex;
         patternChainMax = maxIndex;
+        selectedPatternIndex = minIndex;
 
     }
 

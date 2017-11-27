@@ -41,11 +41,19 @@ Tapping a pattern pad will switch to that pattern on the next measure.
 Multiple patterns can be chained by holding down the first pattern's pad
 and then tapping the last pattern's pad. 
 
-#### Copy and Clear
+#### Edit Select and Copy
 
-On the left side above Save, these controls can be used to clear a pattern or copy a pattern to
-another pattern slot. For copy, hold down the copy button, tap the pattern to copy, and then
-the desired destinaton. For clear, hold down the clear button and tap the pattern to clear.
+On the left side above Save, these controls can be used to select a pattern for editing
+or copy a pattern to another pattern slot. 
+
+When a pattern chain (or single pattern)is selected, the first pattern in the chain
+will be selected for editing; all edits described below will apply to that pattern.
+To select another pattern for editing, hold down the Edit Select control, and then
+tap the pattern to edit. This pattern will remain selected until a new pattern
+chain is selected, even while the current chain cycles through patterns.
+
+To copy a pattern, hold down the copy button, tap the pattern to copy, and then
+the desired destinaton. 
 
 ### Keyboard
 
@@ -89,7 +97,9 @@ are set in the module config, and the values can be edited in control edit mode.
 mode button will put Para in control edit mode. Row 6 is used to select one of the 8 controllers, 
 and rows 7 and 8 are used to edit the value at each step. Tap a control select button to select the controller,
 tap a step button, and then tap a value button to set a value for that controller on that step. Tapping
-the step buttons toggles them on and off. 
+the step buttons toggles them on and off. Each of the eight controllers can be set to active or 
+inactive, by tapping the corresponding pad in row 5; inactive controllers can be edited, but no MIDI messages
+will be sent.
 
  
 

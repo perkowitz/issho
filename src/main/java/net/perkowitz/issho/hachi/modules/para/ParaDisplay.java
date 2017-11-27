@@ -39,7 +39,7 @@ public class ParaDisplay {
         drawPatterns(memory);
         drawPatternEditControls(false, false);
         drawKeyboard(memory);
-        drawSteps(memory, memory.currentPattern().getSteps());
+        drawSteps(memory, memory.selectedPattern().getSteps());
         drawStepEditControls(memory.getStepSelectMode());
     }
 
@@ -53,17 +53,22 @@ public class ParaDisplay {
 
     }
 
-    public void drawPatternEditControls(boolean copyActive, boolean clearActive) {
+    public void drawPatternEditControls(boolean copyActive, boolean selectActive) {
         if (settingsMode) return;
         if (copyActive) {
             patternCopyControl.draw(display, palette.get(COLOR_PATTERN_EDIT_SELECTED));
         } else {
             patternCopyControl.draw(display, palette.get(COLOR_PATTERN_EDIT));
         }
-        if (clearActive) {
-            patternClearControl.draw(display, palette.get(COLOR_PATTERN_EDIT_SELECTED));
+//        if (clearActive) {
+//            patternClearControl.draw(display, palette.get(COLOR_PATTERN_EDIT_SELECTED));
+//        } else {
+//            patternClearControl.draw(display, palette.get(COLOR_PATTERN_EDIT));
+//        }
+        if (selectActive) {
+            patternEditControl.draw(display, palette.get(COLOR_PATTERN_EDIT_SELECTED));
         } else {
-            patternClearControl.draw(display, palette.get(COLOR_PATTERN_EDIT));
+            patternEditControl.draw(display, palette.get(COLOR_PATTERN_EDIT));
         }
     }
 
@@ -75,6 +80,8 @@ public class ParaDisplay {
         Color color = palette.get(COLOR_PATTERN);
         if (memory.getCurrentPatternIndex() == index) {
             color = palette.get(COLOR_PATTERN_PLAYING);
+        } else if (index == memory.getSelectedPatternIndex()) {
+            color = palette.get(COLOR_PATTERN_SELECTED);
         } else if (index == memory.getPatternChainNextIndex()) {
             color = palette.get(COLOR_PATTERN_CHAINED);
         } else if (index >= memory.getPatternChainMin() && index <= memory.getPatternChainMax()) {
@@ -157,6 +164,14 @@ public class ParaDisplay {
 
         }
 
+    }
+
+    public void drawSelectedSteps(ParaMemory memory) {
+        if (settingsMode) return;
+        ParaPattern pattern = memory.selectedPattern();
+        for (ParaStep step : pattern.getSteps()) {
+            drawStep(memory, step, false);
+        }
     }
 
     public void drawSteps(ParaMemory memory, ParaStep[] steps) {
@@ -245,6 +260,13 @@ public class ParaDisplay {
             }
             control.draw(display, color);
         }
+        for (GridControl control : controllerActiveControls.getControls()) {
+            Color color = palette.get(COLOR_MODE_INACTIVE);
+            if (memory.getControllerActive(control.getIndex())) {
+                color = palette.get(COLOR_STEP_CONTROL_ENABLED);
+            }
+            control.draw(display, color);
+        }
     }
 
     public void drawValue(int count, ValueState valueState) {
@@ -272,7 +294,7 @@ public class ParaDisplay {
     public void drawControllers(ParaMemory memory) {
         if (memory.getStepSelectMode() == CONTROL) {
             controllerSelectControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
-
+            controllerActiveControls.draw(display, palette.get(COLOR_MODE_INACTIVE));
         }
     }
 
