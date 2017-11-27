@@ -26,6 +26,16 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 
 # Release notes
 
+## 2017-11-26 v1.0.5
+- In Beatbox, combine jump and play modes into a single mode. Add momentary pitch control and measure clock.
+- In Shihai, a fill button that tells all Sessionizeable modules to play a fill.
+- In Paraphonic, add controller sequencing.
+- Add ValueSettable, which allows an external midi controller to be used for setting values (in addition
+    to the array of 8 buttons).
+- Fix bug in displaying midi channel in Settings.
+- Send midi program change on session load; values set in config.
+- In Paraphonic, replace pattern clear with edit select, to allow editing of patterns that aren't currently playing.
+
 ## 2017-09-13 v1.0.4
 - In Beatbox, add auto-generated fill patterns that are played when holding down the fill button
 - In Beatbox, add sequencing of pitch bend per pattern step
