@@ -3,6 +3,7 @@ package net.perkowitz.issho.hachi.modules.beatbox;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.hachi.MemoryObject;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
@@ -10,12 +11,12 @@ import java.util.List;
 /**
  * Created by optic on 10/24/16.
  */
-public class BeatMemory {
+public class BeatMemory implements MemoryObject {
 
-    @Getter private int currentSessionIndex = 0;
-    @Getter private int nextSessionIndex = 0;
-    @Getter private int playingPatternIndex = 0;
-    @Getter private int selectedPatternIndex = 0;
+    @Getter @Setter private int currentSessionIndex = 0;
+    @Getter @Setter private int nextSessionIndex = 0;
+    @Getter @Setter private int playingPatternIndex = 0;
+    @Getter @Setter private int selectedPatternIndex = 0;
 
     @Getter @Setter private int midiChannel = 0;
 
@@ -26,6 +27,11 @@ public class BeatMemory {
         for (int i = 0; i < BeatUtil.SESSION_COUNT; i++) {
             sessions.add(new BeatSession(i));
         }
+    }
+
+
+    public String toString() {
+        return String.format("BeatMemory");
     }
 
 
@@ -68,6 +74,7 @@ public class BeatMemory {
 
 
 
+
     /***** make selections *************************************/
 
     public void selectSession(int index) {
@@ -104,6 +111,46 @@ public class BeatMemory {
     public boolean patternIsChained(int index) {
         return index >= getChainStartIndex() && index <= getChainEndIndex();
     }
+
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        List<MemoryObject> objects = Lists.newArrayList();
+        for (BeatSession session : sessions) {
+            objects.add(session);
+        }
+        return objects;
+    }
+
+    public void put(int index, MemoryObject memoryObject) {
+        if (memoryObject instanceof BeatSession) {
+            BeatSession session = (BeatSession) memoryObject;
+            session.setIndex(index);
+            sessions.set(index, session);
+        } else {
+            System.out.printf("Cannot put object %s of type %s in object %s\n", memoryObject, memoryObject.getClass().getSimpleName(), this);
+        }
+    }
+
+    public boolean nonEmpty() {
+        for (MemoryObject object : list()) {
+            if (object.nonEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getIndex() { return 0; }
+    public void setIndex(int index) {}
+
+    public MemoryObject clone() {
+        return null;
+    }
+
+    public String render() { return toString(); }
+
 
 
 }

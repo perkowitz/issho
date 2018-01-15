@@ -3,15 +3,17 @@ package net.perkowitz.issho.hachi.modules.beatbox;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
 /**
  * Created by optic on 2/25/17.
  */
-public class BeatSession {
+public class BeatSession implements MemoryObject {
 
-    @Getter private int index;
+    @Getter @Setter private int index;
     @Getter private List<BeatPattern> patterns = Lists.newArrayList();
 
     // sessions remember their state so you can load them to specific patterns and mutes
@@ -50,6 +52,49 @@ public class BeatSession {
         this.chainStartIndex = chainStartIndex;
         this.chainEndIndex = chainEndIndex;
     }
+
+    public String toString() {
+        return String.format("BeatSession:%02d", index);
+    }
+
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        List<MemoryObject> objects = Lists.newArrayList();
+        for (BeatPattern pattern : patterns) {
+            objects.add(pattern);
+        }
+        return objects;
+    }
+
+    public void put(int index, MemoryObject memoryObject) {
+        if (memoryObject instanceof BeatPattern) {
+            BeatPattern pattern = (BeatPattern) memoryObject;
+            pattern.setIndex(index);
+            patterns.set(index, pattern);
+        } else {
+            System.out.printf("Cannot put object %s of type %s in object %s\n", memoryObject, memoryObject.getClass().getSimpleName(), this);
+        }
+    }
+
+    public boolean nonEmpty() {
+        for (MemoryObject object : list()) {
+            if (object.nonEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public MemoryObject clone() {
+        return BeatSession.copy(this, this.getIndex());
+    }
+
+    public String render() {
+        return MemoryUtil.countRender(this);
+    }
+
 
     /***** static methods **************************/
 

@@ -105,7 +105,8 @@ public class BeatModule extends MidiModule implements Module, Clockable, GridLis
                 settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 settingsModule.setSwingOffset(memory.getCurrentSession().getSwingOffset());
                 sendMidiPitchBendZero(memory.getMidiChannel()); // reset for new session
-                if (sessionPrograms != null && sessionPrograms.get(nextSessionIndex) != null && sessionPrograms.get(nextSessionIndex) >= 0) {
+                if (sessionPrograms != null && nextSessionIndex < sessionPrograms.size() &&
+                        sessionPrograms.get(nextSessionIndex) != null && sessionPrograms.get(nextSessionIndex) >= 0) {
                     sendMidiProgramChange(memory.getMidiChannel(), sessionPrograms.get(nextSessionIndex));
                 }
                 nextSessionIndex = null;

@@ -3,15 +3,17 @@ package net.perkowitz.issho.hachi.modules.beatbox;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.hachi.MemoryObject;
+import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
 
 /**
  * Created by optic on 2/25/17.
  */
-public class BeatTrack {
+public class BeatTrack implements MemoryObject {
 
-    @Getter private int index;
+    @Getter @Setter int index;
     @Getter private int noteNumber;
     @Getter @Setter private boolean playing = false;
     @Getter private List<BeatStep> steps = Lists.newArrayList();
@@ -29,6 +31,50 @@ public class BeatTrack {
 
     public BeatStep getStep(int index) {
         return steps.get(index);
+    }
+
+    public String toString() {
+        return String.format("BeatTrack:%02d", index);
+    }
+
+
+    /***** MemoryObject implementation ***********************/
+
+    public List<MemoryObject> list() {
+        return Lists.newArrayList();
+    }
+
+    public void put(int index, MemoryObject memoryObject) {
+        System.out.printf("Cannot put object %s of type %s in object %s\n", memoryObject, memoryObject.getClass().getSimpleName(), this);
+    }
+
+
+    public boolean nonEmpty() {
+        for (BeatStep step : steps) {
+            if (step.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public MemoryObject clone() {
+        return BeatTrack.copy(this, this.index);
+    }
+
+    public String render() {
+
+        String string = "";
+
+        for (BeatStep step : steps) {
+            if (step.isEnabled()) {
+                string += "O";
+            } else {
+                string += ".";
+            }
+        }
+
+        return(MemoryUtil.countRender(this, string));
     }
 
 

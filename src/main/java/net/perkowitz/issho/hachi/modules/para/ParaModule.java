@@ -92,7 +92,8 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
                 memory.setCurrentSessionIndex(nextSessionIndex);
                 settingsModule.setCurrentSessionIndex(nextSessionIndex);
                 drawSessions = true;
-                if (sessionPrograms != null && sessionPrograms.get(nextSessionIndex) != null && sessionPrograms.get(nextSessionIndex) >= 0) {
+                if (sessionPrograms != null && nextSessionIndex < sessionPrograms.size() &&
+                        sessionPrograms.get(nextSessionIndex) != null && sessionPrograms.get(nextSessionIndex) >= 0) {
                     sendMidiProgramChange(memory.getMidiChannel(), sessionPrograms.get(nextSessionIndex));
                 }
             }
