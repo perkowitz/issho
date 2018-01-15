@@ -3,6 +3,7 @@ package net.perkowitz.issho.hachi;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import net.perkowitz.issho.hachi.modules.beatbox.BeatMemory;
 import net.perkowitz.issho.hachi.modules.mono.MonoMemory;
 import net.perkowitz.issho.hachi.modules.rhythm.models.Memory;
 import net.perkowitz.issho.hachi.modules.step.StepMemory;
@@ -267,8 +268,17 @@ public class MemoryApp {
                     return new Memory();
                 }
 
+            } else if (type.equals("beat")) {
+                if (file.exists()) {
+                    System.out.printf("Loading Beatbox from %s\n", filename);
+                    return objectMapper.readValue(file, BeatMemory.class);
+                } else {
+                    System.out.println("File not found. Initializing new MemoryObject.");
+                    return new Memory();
+                }
+
             } else {
-                System.out.printf("Type %s not recognized. Valid types: mono, step, rhythm.\n", type);
+                System.out.printf("Type %s not recognized. Valid types: beat, mono, step, rhythm.\n", type);
             }
 
         } catch (Exception e) {
