@@ -11,11 +11,18 @@
         ]
       }
     ],
-    "midi": {
+    "midiOutput": {
+      "type": "launchpadpro",
       "names":[
         "Launchpad Pro",
         ",0,2"
-        ]
+      ]
+    },
+    "midiInput": {
+      "names":[
+        "Launchpad Pro",
+        ",0,2"
+      ]
     },
     "knobby": {
       "names":[

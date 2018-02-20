@@ -11,8 +11,14 @@
         ]
       }
     ],
-    "midi": {
+    "midiOutput": {
       "type": "launchpadpro",
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+      ]
+    },
+    "midiInput": {
       "names":[
         "Launchpad Pro",
         "Midi Port"
@@ -35,13 +41,13 @@
   },
   "modules": [
     {
-      "class": "BeatModulexx",
+      "class": "BeatModule",
       "palette": "Blue",
       "tiesEnabled": false,
       "filePrefix": "beat0"
     },
     {
-      "class": "ParaModule",
+      "class": "ParaModulexxx",
       "palette": "blue",
       "filePrefix": "para0",
       "monophonic": false,

@@ -95,7 +95,7 @@ public class Hachi {
 
         List<GridDevice> gridDevices = getControllers();
 
-        getMidiDevice();
+        getMidiDevices();
 
 //        GridDevice mainDevice = getGridDevice();
 ////        GridDevice mirrorDevice = getMirrorGridDevice();
@@ -175,6 +175,10 @@ public class Hachi {
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
         List<Object> controllerConfigs = (List<Object>)deviceConfigs.get("controllers");
 
+        if (controllerConfigs == null || controllerConfigs.size() == 0) {
+            System.err.println("Unable to find config settings for controller devices.");
+        }
+
         List<GridDevice> gridDevices = Lists.newArrayList();
 
         for (Object controllerConfig : controllerConfigs) {
@@ -212,20 +216,34 @@ public class Hachi {
         return gridDevices;
     }
 
-    private static void getMidiDevice() {
+    private static void getMidiDevices() {
 
         // get the device configs from the settings
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
         List<String> names = null;
 
-        // find the midi device
-        Map<Object,Object> midiConfig = (Map<Object,Object>)deviceConfigs.get("midi");
+        // find the midi input device
+        Map<Object,Object> midiConfig = (Map<Object,Object>)deviceConfigs.get("midiInput");
         if (midiConfig != null) {
             names = (List<String>)midiConfig.get("names");
             midiInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
-            midiOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+        } else {
+            System.err.println("Unable to find config settings for midiInput device.");
         }
-        if (midiInput == null || midiOutput == null) {
+        if (midiInput == null) {
+            System.err.printf("Unable to find midi device matching name: %s\n", names);
+            System.exit(1);
+        }
+
+        // find the midi output device
+        midiConfig = (Map<Object,Object>)deviceConfigs.get("midiOutput");
+        if (midiConfig != null) {
+            names = (List<String>)midiConfig.get("names");
+            midiOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+        } else {
+            System.err.println("Unable to find config settings for midiOutput device.");
+        }
+        if (midiOutput == null) {
             System.err.printf("Unable to find midi device matching name: %s\n", names);
             System.exit(1);
         }
@@ -260,6 +278,8 @@ public class Hachi {
             names = (List<String>)controllerConfig.get("names");
             controllerInput = MidiUtil.findMidiDevice(names.toArray(new String[0]), false, true);
             controllerOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+        } else {
+            System.err.println("Unable to find config settings for controllerMirror device.");
         }
         if (controllerInput == null || controllerOutput == null) {
             System.err.printf("Unable to find controller device matching name: %s\n", names);
