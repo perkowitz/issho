@@ -11,11 +11,18 @@
         ]
       }
     ],
-    "midi": {
+    "midiOutput": {
+      "type": "launchpadpro",
       "names":[
         "Launchpad Pro",
         "Midi Port"
-        ]
+      ]
+    },
+    "midiInput": {
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+      ]
     },
     "knobbyx": {
       "names":[
@@ -46,7 +53,7 @@
     {
       "class": "BeatModule",
       "palette": "Pink",
-      "midiNoteOffset": 24,
+      "midiNoteOffset": 0,
       "filePrefix": "beat1"
     },
     {
