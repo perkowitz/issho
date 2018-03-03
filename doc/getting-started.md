@@ -2,7 +2,7 @@
 
 These are instructions for setting up Issho on a portable, headless Raspberry Pi. The same 
 instructions will also work for a Mac or other Unix machine; just skip the steps about 
-booting the Pi directly into Hachi. Hachi should also run on Windows, but it's untested.
+booting the Pi directly into Hachi. Hachi should also run on Windows, but it's mostly untested.
 
 For these instructions, I'll assume basic familiarity with Unix and the ability to find and 
 install standard tools.
@@ -47,12 +47,19 @@ sequence data in the directory you run it from, so always run it from here.
 
 On a Pi, run it with this command:
 
-`> java -cp issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json`
+`> java -cp issho-1.0.5-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json`
 
 On a Mac:
 
-`> java -cp issho-1.0-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-mac.json`
+`> java -cp issho-1.0-5-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-mac.json`
 
+On Windows:
+* running the app
+
+`> java -cp issho-1.0.5-shaded.jar net.perkowitz.issho.hachi.Hachi <your-json-config>` 
+* listing available midi devices:
+
+`> java -cp issho-1.0.5-shaded.jar net.perkowitz.issho.util.FindMidiDevices` 
 
 # Set up the Pi
 
