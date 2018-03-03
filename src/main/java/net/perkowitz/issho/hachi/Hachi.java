@@ -231,7 +231,8 @@ public class Hachi {
             System.err.println("Unable to find config settings for midiInput device.");
         }
         if (midiInput == null) {
-            System.err.printf("Unable to find midi device matching name: %s\n", names);
+            System.err.printf("Unable to find midi-in device matching name: %s\n", names);
+            MidiUtil.printMidiDevices();
             System.exit(1);
         }
 
@@ -244,7 +245,8 @@ public class Hachi {
             System.err.println("Unable to find config settings for midiOutput device.");
         }
         if (midiOutput == null) {
-            System.err.printf("Unable to find midi device matching name: %s\n", names);
+            System.err.printf("Unable to find midi-out device matching name: %s\n", names);
+            MidiUtil.printMidiDevices();
             System.exit(1);
         }
 
