@@ -8,7 +8,7 @@ node APCMini as apc
 node synth as synth2
 
 node RPI3 {
-component  "Hachi-clocksource" as hachic
+component  "Hachi=clocksource" as hachic
 }
 
 hachic <-up-> apc: midi
