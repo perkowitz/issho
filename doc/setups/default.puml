@@ -1,9 +1,9 @@
 @startuml
 title
-Hachi Connection Diagram: Default 0.0.1
+Hachi Connection Diagram: Default 0.0.2
 end title
 
-package current_setup {
+package default_setup {
 component "clocksource?" as clk
 control midicontroller as ctl
 node LaunchpadPro as lpp
