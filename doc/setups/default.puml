@@ -1,0 +1,23 @@
+@startuml
+title
+Hachi Connection Diagram: Default 0.0.1
+end title
+
+package current_setup {
+component "clocksource?" as clk
+control midicontroller as ctl
+node LaunchpadPro as lpp
+node synth
+
+node RPI {
+component  "Hachi" as hachi
+}
+
+clk --> lpp: midi
+ctl --> hachi: midi
+
+hachi <==> lpp: USB
+lpp --> synth: midi
+}
+
+@enduml
