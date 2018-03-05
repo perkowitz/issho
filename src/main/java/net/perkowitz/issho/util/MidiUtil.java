@@ -56,8 +56,10 @@ public class MidiUtil {
             midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
         }
 
+        System.out.println("\nBelow midi device names are available in the OS; the .json config should reference these: ");
         for (int i = 0; i < midiDeviceInfos.length; i++) {
-            System.out.printf("Found midi device: %s, %s\n", midiDeviceInfos[i].getName(), midiDeviceInfos[i].getDescription());
+            System.out.printf("midi device name: \"%s\" (vendor=%s, descr=%s)\n",
+                    midiDeviceInfos[i].getName(), midiDeviceInfos[i].getVendor(),midiDeviceInfos[i].getDescription());
         }
     }
 
