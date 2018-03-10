@@ -1,11 +1,11 @@
 @startuml
 title
-Hachi Connection Diagram: Default 0.0.2
+Hachi Connection Diagram: Default 0.0.4
 end title
 
 package default_setup {
-component "clocksource?" as clk
-control midicontroller as ctl
+component "clocksource" as clk
+component "midimerge" as mrg
 node LaunchpadPro as lpp
 node synth
 
@@ -13,11 +13,12 @@ node RPI {
 component  "Hachi" as hachi
 }
 
-clk --> lpp: midi
-ctl --> hachi: midi
+clk --> mrg: clock
+clk --> hachi: clock
 
-hachi <==> lpp: USB
-lpp --> synth: midi
+hachi ==> mrg: midi
+
+mrg --> lpp: midi+clock
+lpp --> synth: midi+clock
 }
-
 @enduml
