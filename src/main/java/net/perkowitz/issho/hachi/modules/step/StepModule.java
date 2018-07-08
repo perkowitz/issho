@@ -43,6 +43,7 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
     private Stage.Marker currentMarker = Note;
     private List<Integer> stagesToRedraw = Lists.newArrayList();
     private boolean randomOrder = false;
+    private boolean previousRandomOrder = false;
     private boolean displayAltControls = false;
     private boolean savingPattern = false;
     int swingOffset = 0;
@@ -224,9 +225,18 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         stepDisplay.drawStages(memory);
     }
 
-    public void fillOn(Integer fillIndex) {}
+    public void fillOn(Integer fillIndex) {
+        previousRandomOrder = randomOrder;
+        randomOrder = true;
+        stepDisplay.setRandomOrder(randomOrder);
+        stepDisplay.drawMarkers();
+    }
 
-    public void fillOff() {}
+    public void fillOff() {
+        randomOrder = previousRandomOrder;
+        stepDisplay.setRandomOrder(randomOrder);
+        stepDisplay.drawMarkers();
+    }
 
 
     /***** GridListener interface ****************************************/

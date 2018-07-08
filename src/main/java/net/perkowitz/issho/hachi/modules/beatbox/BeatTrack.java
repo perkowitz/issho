@@ -15,6 +15,7 @@ public class BeatTrack implements MemoryObject {
 
     @Getter @Setter int index;
     @Getter private int noteNumber;
+    @Getter private int midiChannel;
     @Getter @Setter private boolean playing = false;
     @Getter private List<BeatStep> steps = Lists.newArrayList();
 
