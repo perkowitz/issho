@@ -213,6 +213,7 @@ public class MonoModule extends ChordModule implements Module, Clockable, GridLi
 
     public void shutdown() {
         notesOff();
+        timer.cancel();
     }
 
 
