@@ -117,7 +117,7 @@ public class Hachi {
         }
 
         // create the HachiController
-        controller = new HachiController(modules, gridDevicesArray);
+        controller = new HachiController(modules, gridDevicesArray, stop);
         Boolean midiContinueAsStart = (Boolean)settings.get("midiContinueAsStart");
         if (midiContinueAsStart != null) {
             controller.setMidiContinueAsStart(midiContinueAsStart);
@@ -157,6 +157,9 @@ public class Hachi {
 
         System.out.printf("Awaiting...\n");
         stop.await();
+
+        System.out.printf("Exiting...\n");
+        System.exit(0);
 
     }
 

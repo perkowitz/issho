@@ -51,7 +51,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
     private ShihaiModule shihaiModule = null;
     @Getter private ChordReceiver chordReceiver;
 
-    private static CountDownLatch stop = new CountDownLatch(1);
+    private static CountDownLatch stop;
     private static Timer timer = null;
     @Getter private boolean clockRunning = false;
     private boolean midiClockRunning = false;
@@ -62,7 +62,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
     private int tempoIntervalInMillis = 125 * 120 / tempo;
 
 
-    public HachiController(Module[] modules, GridDevice[] gridDevices) {
+    public HachiController(Module[] modules, GridDevice[] gridDevices, CountDownLatch stop) {
 
         displays = new MultiDisplay[modules.length];
 
@@ -94,6 +94,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
             hachiDeviceManagers[i] = hachiDeviceManager;
         }
 
+        this.stop = stop;
     }
 
     public void run() {
@@ -155,7 +156,8 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
         for (GridDevice gridDevice : gridDevices) {
             gridDevice.initialize();
         }
-        System.exit(0);
+        timer.cancel();
+        stop.countDown();
     }
 
     private void redraw() {

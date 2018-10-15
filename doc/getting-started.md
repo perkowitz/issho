@@ -47,19 +47,19 @@ sequence data in the directory you run it from, so always run it from here.
 
 On a Pi, run it with this command:
 
-`> java -cp issho-1.0.5-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json`
+`> java -cp issho-1.0.6-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-pi.json`
 
 On a Mac:
 
-`> java -cp issho-1.0-5-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-mac.json`
+`> java -cp issho-1.0-6-shaded.jar net.perkowitz.issho.hachi.Hachi hachi-mac.json`
 
 On Windows:
 * running the app
 
-`> java -cp issho-1.0.5-shaded.jar net.perkowitz.issho.hachi.Hachi <your-json-config>` 
+`> java -cp issho-1.0.6-shaded.jar net.perkowitz.issho.hachi.Hachi <your-json-config>` 
 * listing available midi devices:
 
-`> java -cp issho-1.0.5-shaded.jar net.perkowitz.issho.util.FindMidiDevices` 
+`> java -cp issho-1.0.6-shaded.jar net.perkowitz.issho.util.FindMidiDevices` 
 
 # Set up the Pi
 
