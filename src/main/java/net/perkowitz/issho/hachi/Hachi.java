@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.GridDevice;
 import net.perkowitz.issho.devices.Keyboard;
 import net.perkowitz.issho.devices.launchpad.Launchpad;
@@ -18,6 +19,8 @@ import net.perkowitz.issho.hachi.modules.para.ParaUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
+import net.perkowitz.issho.hachi.modules.seq.SeqModule;
+import net.perkowitz.issho.hachi.modules.seq.SeqUtil;
 import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
 import net.perkowitz.issho.hachi.modules.step.StepModule;
 import net.perkowitz.issho.util.MidiUtil;
@@ -408,6 +411,45 @@ public class Hachi {
                     beatModule.setSessionPrograms(sessionPrograms);
                 }
                 module = beatModule;
+
+            } else if (className.equals("SeqModule")) {
+                Map<Integer, Color> palette = SeqUtil.PALETTE_PINK;
+                if (paletteName != null && paletteName.toUpperCase().equals("PINK")) {
+                    palette = SeqUtil.PALETTE_PINK;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("BLUE")) {
+                    palette = SeqUtil.PALETTE_BLUE;
+                } else if (paletteName != null && paletteName.toUpperCase().equals("GREEN")) {
+                    palette = SeqUtil.PALETTE_GREEN;
+                }
+                SeqModule seqModule = new SeqModule(midiTransmitter, midiReceiver, palette, filePrefix);
+                if (moduleSettings.get("midiNoteOffset") != null) {
+                    Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
+                    if (offset != null) {
+                        seqModule.setMidiNoteOffset(offset);
+                    }
+                }
+                if (moduleSettings.get("tiesEnabled") != null) {
+                    Boolean tiesEnabled = (Boolean)moduleSettings.get("tiesEnabled");
+                    if (tiesEnabled != null) {
+                        seqModule.setTiesEnabled(tiesEnabled);
+                    }
+                }
+                if (moduleSettings.get("sessionPrograms") != null) {
+                    List<Integer> sessionPrograms= (List<Integer>)moduleSettings.get("sessionPrograms");
+                    seqModule.setSessionPrograms(sessionPrograms);
+                }
+                if (moduleSettings.get("controllersDefault") != null) {
+                    List<Integer> controllersDefault = (List<Integer>)moduleSettings.get("controllersDefault");
+                    Map<Integer, List<Integer>> controllersByTrack
+                    if (moduleSettings.get("controllersDefault") != null) {
+                        controllersByTrack = (Map<Integer, List<Integer>>)moduleSettings.get("controllersByTrack");
+                    } else {
+                        controllersByTrack = Maps.newHashMap();
+                    }
+                    seqModule.setControllers(controllersDefault, controllersByTrack);
+                }
+
+                module = seqModule;
 
             } else if (className.equals("MinibeatModule")) {
                 Map<Integer, Color> palette = MinibeatUtil.PALETTE_GREEN;

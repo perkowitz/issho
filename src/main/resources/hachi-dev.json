@@ -41,7 +41,17 @@
   },
   "modules": [
     {
-      "class": "BeatModule",
+      "class": "SeqModule",
+      "palette": "Blue",
+      "tiesEnabled": false,
+      "filePrefix": "seq0",
+      "controllersDefault": [ 16, 17, 18, 19, 20, 21, 22, 23 ],
+      "controllersByTrack": {
+        "0": [ 81, 82, 83, 84, 85, 86, 87, 88 ]
+      }
+    },
+    {
+      "class": "BeatModulexxx",
       "palette": "Blue",
       "tiesEnabled": false,
       "filePrefix": "beat0"
