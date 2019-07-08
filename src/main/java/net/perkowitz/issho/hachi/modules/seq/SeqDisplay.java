@@ -157,7 +157,7 @@ public class SeqDisplay {
                         break;
                 }
             } else if (editMode == EditMode.PITCH) {
-                if (memory.getSelectedPattern().getControlTrack().getStep(index).isEnabled()) {
+                if (memory.getSelectedPattern().getPitchStep(index).isEnabled()) {
                     color = palette.get(SeqUtil.COLOR_STEP_PLAY);
                 }
             }

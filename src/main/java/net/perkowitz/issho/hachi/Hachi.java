@@ -439,14 +439,13 @@ public class Hachi {
                     seqModule.setSessionPrograms(sessionPrograms);
                 }
                 if (moduleSettings.get("controllersDefault") != null) {
-                    List<Integer> controllersDefault = (List<Integer>)moduleSettings.get("controllersDefault");
-                    Map<Integer, List<Integer>> controllersByTrack
-                    if (moduleSettings.get("controllersDefault") != null) {
-                        controllersByTrack = (Map<Integer, List<Integer>>)moduleSettings.get("controllersByTrack");
-                    } else {
-                        controllersByTrack = Maps.newHashMap();
-                    }
-                    seqModule.setControllers(controllersDefault, controllersByTrack);
+                    List<Integer> controllersDefault = (List<Integer>) moduleSettings.get("controllersDefault");
+                    seqModule.setControllersDefault(controllersDefault);
+                }
+                if (moduleSettings.get("controllersByTrack") != null) {
+                    Map<Integer, List<Integer>> controllersByTrack;
+                    controllersByTrack = (Map<Integer, List<Integer>>)moduleSettings.get("controllersByTrack");
+                    seqModule.setControllersByTrack(controllersByTrack);
                 }
 
                 module = seqModule;

@@ -18,18 +18,17 @@ public class SeqTrack implements MemoryObject {
     @Getter private int midiChannel;
     @Getter @Setter private boolean playing = false;
     @Getter private List<SeqStep> steps = Lists.newArrayList();
-    private List<SeqControlTrack> controlTracks = Lists.newArrayList();
+    @Getter @Setter private List<SeqControlTrack> controlTracks = Lists.newArrayList();
 
 
     public SeqTrack() {}
 
-    public SeqTrack(int index, int noteNumber, List<SeqControlTrack> controlTracks) {
+    public SeqTrack(int index, int noteNumber) {
         this.index = index;
         this.noteNumber = noteNumber;
         for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
             steps.add(new SeqStep(i));
         }
-        this.controlTracks = controlTracks;
     }
 
     public SeqStep getStep(int index) {
@@ -88,7 +87,8 @@ public class SeqTrack implements MemoryObject {
     /***** static methods **************************/
 
     public static SeqTrack copy(SeqTrack track, int newIndex) {
-        SeqTrack newTrack = new SeqTrack(newIndex, track.getNoteNumber(), track.controlTracks);
+        SeqTrack newTrack = new SeqTrack(newIndex, track.getNoteNumber());
+        newTrack.setControlTracks(track.controlTracks);
         for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
             newTrack.steps.set(i, SeqStep.copy(track.steps.get(i), i));
         }

@@ -47,8 +47,10 @@ public class SeqPatternFill extends SeqPattern {
         }
     }
 
-    public SeqControlStep getControlStep(int stepIndex) {
-        return basePattern.getControlStep(stepIndex);
+    // TODO need passthru for control steps as well
+
+    public SeqPitchStep getPitchStep(int stepIndex) {
+        return basePattern.getPitchStep(stepIndex);
     }
 
 

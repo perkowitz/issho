@@ -15,7 +15,7 @@ import static net.perkowitz.issho.devices.GridButton.Side.*;
  */
 public class SeqUtil {
 
-    public static int SESSION_COUNT = 16;
+    public static int SESSION_COUNT = 1;
     public static int PATTERN_COUNT = 16;
     public static int TRACK_COUNT = 16;
     public static int STEP_COUNT = 16;

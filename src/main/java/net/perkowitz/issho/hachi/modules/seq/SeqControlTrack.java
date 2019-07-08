@@ -30,8 +30,8 @@ public class SeqControlTrack {
         return steps.get(index);
     }
 
-    public String getControllerString() {
-        return getControllerString(controllerNumber);
+    public String controllerString() {
+        return controllerString(controllerNumber);
     }
 
 
@@ -45,7 +45,7 @@ public class SeqControlTrack {
         return newTrack;
     }
 
-    public static String getControllerString(int controllerNumber) {
+    public static String controllerString(int controllerNumber) {
         return CONTROL_PREFIX + String.format("%03d", controllerNumber);
     }
 }

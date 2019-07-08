@@ -24,7 +24,7 @@
         "Midi Port"
       ]
     },
-    "knobby": {
+    "kkkkkkknobby": {
       "names":[
         "nanokontrol"
       ],
@@ -47,7 +47,8 @@
       "filePrefix": "seq0",
       "controllersDefault": [ 16, 17, 18, 19, 20, 21, 22, 23 ],
       "controllersByTrack": {
-        "0": [ 81, 82, 83, 84, 85, 86, 87, 88 ]
+        "0": [ 81, 82, 83, 84, 85, 86, 87, 88 ],
+        "1": [ 91, 92, 93 ]
       }
     },
     {

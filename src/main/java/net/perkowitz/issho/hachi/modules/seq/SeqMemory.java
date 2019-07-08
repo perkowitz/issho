@@ -7,12 +7,14 @@ import net.perkowitz.issho.hachi.MemoryObject;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by optic on 10/24/16.
  */
 public class SeqMemory implements MemoryObject {
 
+    @Getter @Setter private int index = 0; // to implement MemoryObject
     @Getter @Setter private int currentSessionIndex = 0;
     @Getter @Setter private int nextSessionIndex = 0;
     @Getter @Setter private int playingPatternIndex = 0;
@@ -23,9 +25,11 @@ public class SeqMemory implements MemoryObject {
     @Getter private List<SeqSession> sessions = Lists.newArrayList();
 
 
-    public SeqMemory() {
+    public SeqMemory() {}
+
+    public SeqMemory(List<Integer> controllersDefault, Map<Integer, List<Integer>> controllersByTrack) {
         for (int i = 0; i < SeqUtil.SESSION_COUNT; i++) {
-            sessions.add(new SeqSession(i));
+            sessions.add(new SeqSession(i, controllersDefault, controllersByTrack));
         }
     }
 
@@ -141,9 +145,6 @@ public class SeqMemory implements MemoryObject {
         }
         return false;
     }
-
-    public int getIndex() { return 0; }
-    public void setIndex(int index) {}
 
     public MemoryObject clone() {
         return null;

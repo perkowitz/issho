@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi.modules.seq;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import lombok.Setter;
@@ -32,7 +33,9 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private SeqMemory memory = new SeqMemory();
+    private List<Integer> controllersDefault = Lists.newArrayList();
+    private Map<Integer, List<Integer>> controllersByTrack = Maps.newHashMap();
+    private SeqMemory memory = new SeqMemory(controllersDefault, controllersByTrack);
     private SeqDisplay beatDisplay;
     private SettingsSubmodule settingsModule;
     private boolean settingsView = false;
@@ -63,8 +66,6 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     private EditMode editMode = EditMode.GATE;
     private List<Integer> onNotes = Lists.newArrayList();
     @Setter private List<Integer> sessionPrograms = Lists.newArrayList();
-    private List<Integer> defaultControllers;
-    private Map<Integer, List<Integer>> controllersByTrack;
 
 
     /***** Constructor ****************************************/
@@ -76,12 +77,6 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         this.filePrefix = filePrefix;
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
         load(0);
-    }
-
-
-    public void setControllers(List<Integer> defaultControllers, Map<Integer, List<Integer>> controllersByTrack) {
-        this.defaultControllers = defaultControllers;
-        this.controllersByTrack = controllersByTrack;
     }
 
 
@@ -139,17 +134,22 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             playingPattern = patternFill;
         }
 
-        // send controllers before notes
-        SeqControlStep controlStep = memory.getPlayingPattern().getControlTrack().getStep(nextStepIndex);
-        if (controlStep.isEnabled()) {
-            sendMidiPitchBend(memory.getMidiChannel(), controlStep.getPitchBend());
-        }
-
         // if a fill is playing that shuffles the steps, this will figure out which step is actually playing
         int actualStep = playingPattern.getStep(0, nextStepIndex).getIndex();
         boolean drawMeasure = currentPulse < 12;
         beatDisplay.drawStepsClock(actualStep, currentMeasure, drawMeasure);
 
+        // send pitchbend and controllers before notes
+        SeqPitchStep pitchStep = memory.getSelectedPattern().getPitchStep(selectedControlStep);
+        if (pitchStep != null &&  pitchStep.isEnabled()) {
+            sendMidiPitchBend(memory.getMidiChannel(), pitchStep.getPitchBend());
+        }
+        for (SeqControlTrack controlTrack : memory.getPlayingPattern().getAllControlTracks()) {
+            SeqControlStep controlStep = controlTrack.getStep(nextStepIndex);
+            if (controlTrack.isPlaying() && controlStep.isEnabled()) {
+                sendMidiCC(memory.getMidiChannel(), controlTrack.getControllerNumber(), controlStep.getValue());
+            }
+        }
 
         // send the midi notes
         for (int trackIndex = 0; trackIndex < SeqUtil.TRACK_COUNT; trackIndex++) {
@@ -186,6 +186,15 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
 
         nextStepIndex = (nextStepIndex + 1) % SeqUtil.STEP_COUNT;
 
+    }
+
+    public void setControllersDefault(List<Integer> controllersDefault) {
+        this.controllersDefault = controllersDefault;
+        load(0);
+    }
+
+    public void setControllersByTrack(Map<Integer, List<Integer>> controllersByTrack) {
+        this.controllersByTrack = controllersByTrack;
     }
 
 
@@ -435,10 +444,10 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     break;
                 case PITCH:
                     selectedControlStep = index;
-                    SeqControlStep controlStep = memory.getSelectedPattern().getControlTrack().getStep(selectedControlStep);
-                    controlStep.toggleEnabled();
+                    SeqPitchStep pitchStep = memory.getSelectedPattern().getPitchStep(selectedControlStep);
+                    pitchStep.toggleEnabled();
                     beatDisplay.drawSteps(memory);
-                    beatDisplay.drawValue(controlStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
+                    beatDisplay.drawValue(pitchStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
                     break;
             }
 
@@ -476,12 +485,12 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     beatDisplay.drawValue(step.getVelocity(), 127);
                     break;
                 case PITCH:
-                    SeqControlStep controlStep = memory.getSelectedPattern().getControlTrack().getStep(selectedControlStep);
-                    controlStep.setPitchBendByIndex(7 - index);
-                    beatDisplay.drawValue(controlStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
+                    SeqPitchStep pitchStep = memory.getSelectedPattern().getPitchStep(selectedControlStep);
+                    pitchStep.setPitchBendByIndex(7 - index);
+                    beatDisplay.drawValue(pitchStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
                     break;
                 case JUMP:
-                    int pitchBend = SeqControlStep.pitchBendByIndex(7 - index);
+                    int pitchBend = SeqPitchStep.pitchBendByIndex(7 - index);
                     sendMidiPitchBend(memory.getMidiChannel(), pitchBend);
                     beatDisplay.drawValue(7 - index, 7, SeqDisplay.ValueMode.HIGHLIGHT);
                     break;
@@ -657,7 +666,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             case CLEAR_SESSION:
                 Integer sessionIndex = settingsModule.getClearSessionIndex();
                 if (sessionIndex != null) {
-                    memory.getSessions().set(sessionIndex, new SeqSession(sessionIndex));
+                    memory.getSessions().set(sessionIndex, new SeqSession(sessionIndex, controllersDefault, controllersByTrack));
                     System.out.printf("Completed clear session %d\n", sessionIndex);
                 }
                 break;
@@ -758,6 +767,15 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                 Files.copy(file, new File(filename + ".backup"));
             }
             objectMapper.writeValue(file, saveMemory);
+
+            String sessionFilename = filename + "-session.json";
+            file = new File(sessionFilename);
+            objectMapper.writeValue(file, saveMemory.getCurrentSession());
+
+            String patternFilename = filename + "-pattern.json";
+            file = new File(patternFilename);
+            objectMapper.writeValue(file, saveMemory.getCurrentSession().getPattern(0));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -772,6 +790,23 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         try {
             String filename = filename(index);
             File file = new File(filename);
+
+            String patternFilename = filename + "-pattern.json";
+            file = new File(patternFilename);
+            if (file.exists()) {
+                System.out.println("Trying to load pattern..");
+                SeqPattern pattern = objectMapper.readValue(file, SeqPattern.class);
+            }
+
+            String sessionFilename = filename + "-session.json";
+            file = new File(sessionFilename);
+            if (file.exists()) {
+                System.out.println("Trying to load session..");
+                SeqSession session = objectMapper.readValue(file, SeqSession.class);
+            }
+
+            System.out.println("Trying to load memory..");
+            file = new File(filename);
             if (file.exists()) {
                 return objectMapper.readValue(file, SeqMemory.class);
             }
@@ -779,7 +814,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             e.printStackTrace();
         }
 
-        return new SeqMemory();
+        return new SeqMemory(controllersDefault, controllersByTrack);
     }
 
     private String filename(int index) {
