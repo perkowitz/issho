@@ -15,14 +15,16 @@ import static net.perkowitz.issho.devices.GridButton.Side.*;
  */
 public class SeqUtil {
 
-    public static int SESSION_COUNT = 1;
+    public static int SESSION_COUNT = 16;
     public static int PATTERN_COUNT = 16;
     public static int TRACK_COUNT = 16;
     public static int STEP_COUNT = 16;
+    public static int CONTROL_TRACK_COUNT = 16;
+    public static int LONG_PRESS_IN_MILLIS = 500;
 
 
     public enum EditMode {
-        GATE, VELOCITY, PITCH, JUMP
+        GATE, VELOCITY, CONTROL, PITCH, JUMP
     }
 
 
@@ -36,6 +38,7 @@ public class SeqUtil {
     public static GridControlSet trackMuteControls = GridControlSet.padRows(2,3);
     public static GridControlSet trackSelectControls = GridControlSet.padRows(4,5);
     public static GridControlSet stepControls = GridControlSet.padRows(6, 7);
+    public static GridControlSet controlSelectControls = GridControlSet.padRow(5);
 
     // left controls
     public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
@@ -45,7 +48,7 @@ public class SeqUtil {
     public static GridControl patternSelectControl = new GridControl(GridButton.at(Left, 3), null);
 
     // edit mode controls
-    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 2);
+    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 3);
     public static GridControl jumpControl = new GridControl(GridButton.at(Bottom, 6), null);
     public static GridControl fillControl = new GridControl(GridButton.at(Bottom, 7), null);
 
@@ -74,89 +77,58 @@ public class SeqUtil {
     public static Integer COLOR_VALUE_OFF = 40;
     public static Integer COLOR_VALUE_ON = 41;
 
-    public static Map<Integer, Color> PALETTE_PINK = Maps.newHashMap();
-    static {
-        Color playColor = Color.DIM_PINK;
+    public static Map<Integer, Color> createPalette(Color playColor) {
+        Map<Integer, Color> palette = Maps.newHashMap();
         Color playColorDim = Color.DARK_GRAY;
         Color selectColor = Color.fromIndex(1);
         Color highlightColor = Color.BRIGHT_YELLOW;
-        PALETTE_PINK.put(COLOR_OFF, playColorDim);
-        PALETTE_PINK.put(COLOR_ON, Color.WHITE);
-        PALETTE_PINK.put(COLOR_HIGHLIGHT, highlightColor);
-        PALETTE_PINK.put(COLOR_PATTERN, playColor);
-        PALETTE_PINK.put(COLOR_PATTERN_PLAYING, Color.WHITE);
-        PALETTE_PINK.put(COLOR_PATTERN_CHAINED, playColorDim);
-        PALETTE_PINK.put(COLOR_PATTERN_SELECTION, selectColor);
-        PALETTE_PINK.put(COLOR_PATTERN_SELECTED, highlightColor);
-        PALETTE_PINK.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
-        PALETTE_PINK.put(COLOR_TRACK, selectColor);
-        PALETTE_PINK.put(COLOR_TRACK_SELECTION, playColor);
-        PALETTE_PINK.put(COLOR_TRACK_MUTED, Color.OFF);
-        PALETTE_PINK.put(COLOR_TRACK_SELECTED, Color.WHITE);
-        PALETTE_PINK.put(COLOR_TRACK_PLAYING, highlightColor);
-        PALETTE_PINK.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
-        PALETTE_PINK.put(COLOR_STEP_REST, Color.OFF);
-        PALETTE_PINK.put(COLOR_STEP_PLAY, Color.WHITE);
-        PALETTE_PINK.put(COLOR_STEP_TIE, Color.DARK_GRAY);
-        PALETTE_PINK.put(COLOR_VALUE_OFF, Color.OFF);
-        PALETTE_PINK.put(COLOR_VALUE_ON, playColor);
+        Color highlightColorDim = Color.DIM_YELLOW;
+        palette.put(COLOR_OFF, playColorDim);
+        palette.put(COLOR_ON, Color.WHITE);
+        palette.put(COLOR_HIGHLIGHT, highlightColor);
+        palette.put(COLOR_PATTERN, playColor);
+        palette.put(COLOR_PATTERN_PLAYING, Color.WHITE);
+        palette.put(COLOR_PATTERN_CHAINED, playColorDim);
+        palette.put(COLOR_PATTERN_SELECTION, selectColor);
+        palette.put(COLOR_PATTERN_SELECTED, highlightColor);
+        palette.put(COLOR_PATTERN_NEXT, highlightColorDim);
+        palette.put(COLOR_TRACK, selectColor);
+        palette.put(COLOR_TRACK_SELECTION, playColor);
+        palette.put(COLOR_TRACK_MUTED, Color.OFF);
+        palette.put(COLOR_TRACK_SELECTED, Color.WHITE);
+        palette.put(COLOR_TRACK_PLAYING, highlightColor);
+        palette.put(COLOR_TRACK_PLAYING_MUTED, highlightColorDim);
+        palette.put(COLOR_STEP_REST, Color.OFF);
+        palette.put(COLOR_STEP_PLAY, Color.WHITE);
+        palette.put(COLOR_STEP_TIE, Color.DARK_GRAY);
+        palette.put(COLOR_VALUE_OFF, Color.OFF);
+        palette.put(COLOR_VALUE_ON, playColor);
+        return palette;
     }
 
-    public static Map<Integer, Color> PALETTE_BLUE = Maps.newHashMap();
+    public static Map<String, Color> paletteMap = Maps.newHashMap();
     static {
-        Color playColor = Color.BRIGHT_BLUE;
-        Color playColorDim = Color.DARK_GRAY;
-        Color selectColor = Color.fromIndex(1);
-        Color highlightColor = Color.BRIGHT_YELLOW;
-        PALETTE_BLUE.put(COLOR_OFF, Color.DARK_GRAY);
-        PALETTE_BLUE.put(COLOR_ON, Color.WHITE);
-        PALETTE_BLUE.put(COLOR_HIGHLIGHT, highlightColor);
-        PALETTE_BLUE.put(COLOR_PATTERN, playColor);
-        PALETTE_BLUE.put(COLOR_PATTERN_PLAYING, Color.WHITE);
-        PALETTE_BLUE.put(COLOR_PATTERN_CHAINED, playColorDim);
-        PALETTE_BLUE.put(COLOR_PATTERN_SELECTION, selectColor);
-        PALETTE_BLUE.put(COLOR_PATTERN_SELECTED, highlightColor);
-        PALETTE_BLUE.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
-        PALETTE_BLUE.put(COLOR_TRACK, selectColor);
-        PALETTE_BLUE.put(COLOR_TRACK_SELECTION, playColor);
-        PALETTE_BLUE.put(COLOR_TRACK_MUTED, Color.OFF);
-        PALETTE_BLUE.put(COLOR_TRACK_SELECTED, Color.WHITE);
-        PALETTE_BLUE.put(COLOR_TRACK_PLAYING, highlightColor);
-        PALETTE_BLUE.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
-        PALETTE_BLUE.put(COLOR_STEP_REST, Color.OFF);
-        PALETTE_BLUE.put(COLOR_STEP_PLAY, Color.WHITE);
-        PALETTE_BLUE.put(COLOR_STEP_TIE, Color.DARK_GRAY);
-        PALETTE_BLUE.put(COLOR_VALUE_OFF, Color.OFF);
-        PALETTE_BLUE.put(COLOR_VALUE_ON, playColor);
+        // recommended palette colors
+        paletteMap.put("pink", Color.DIM_PINK);
+        paletteMap.put("blue", Color.BRIGHT_BLUE);
+        paletteMap.put("green", Color.DIM_GREEN);
+        paletteMap.put("red", Color.BRIGHT_RED);
+        paletteMap.put("orange", Color.BRIGHT_ORANGE);
     }
 
-    public static Map<Integer, Color> PALETTE_GREEN = Maps.newHashMap();
-    static {
-        Color playColor = Color.DIM_GREEN;
-        Color playColorDim = Color.DARK_GRAY;
-        Color selectColor = Color.fromIndex(1);
-        Color highlightColor = Color.BRIGHT_YELLOW;
-        PALETTE_GREEN.put(COLOR_OFF, Color.DARK_GRAY);
-        PALETTE_GREEN.put(COLOR_ON, Color.WHITE);
-        PALETTE_GREEN.put(COLOR_HIGHLIGHT, highlightColor);
-        PALETTE_GREEN.put(COLOR_PATTERN, playColor);
-        PALETTE_GREEN.put(COLOR_PATTERN_PLAYING, Color.WHITE);
-        PALETTE_GREEN.put(COLOR_PATTERN_CHAINED, playColorDim);
-        PALETTE_GREEN.put(COLOR_PATTERN_SELECTION, selectColor);
-        PALETTE_GREEN.put(COLOR_PATTERN_SELECTED, highlightColor);
-        PALETTE_GREEN.put(COLOR_PATTERN_NEXT, Color.DIM_YELLOW);
-        PALETTE_GREEN.put(COLOR_TRACK, selectColor);
-        PALETTE_GREEN.put(COLOR_TRACK_SELECTION, playColor);
-        PALETTE_GREEN.put(COLOR_TRACK_MUTED, Color.OFF);
-        PALETTE_GREEN.put(COLOR_TRACK_SELECTED, Color.WHITE);
-        PALETTE_GREEN.put(COLOR_TRACK_PLAYING, highlightColor);
-        PALETTE_GREEN.put(COLOR_TRACK_PLAYING_MUTED, Color.DIM_YELLOW);
-        PALETTE_GREEN.put(COLOR_STEP_REST, Color.OFF);
-        PALETTE_GREEN.put(COLOR_STEP_PLAY, Color.WHITE);
-        PALETTE_GREEN.put(COLOR_STEP_TIE, Color.DARK_GRAY);
-        PALETTE_GREEN.put(COLOR_VALUE_OFF, Color.OFF);
-        PALETTE_GREEN.put(COLOR_VALUE_ON, playColor);
+    public static Map<Integer, Color> getPalette(String colorName) {
+        Color color = paletteMap.get(colorName.toLowerCase());
+        if (color == null) {
+            color = Color.BRIGHT_BLUE;
+        }
+        return createPalette(color);
     }
 
+    // TODO get rid of
+    public static Map<Integer, Color> PALETTE_PINK = createPalette(Color.DIM_PINK);
+    public static Map<Integer, Color> PALETTE_BLUE = createPalette(Color.BRIGHT_BLUE);
+    public static Map<Integer, Color> PALETTE_GREEN = createPalette(Color.DIM_GREEN);
+    public static Map<Integer, Color> PALETTE_RED = createPalette(Color.BRIGHT_RED);
+    public static Map<Integer, Color> PALETTE_ORANGE = createPalette(Color.BRIGHT_ORANGE);
 
 }

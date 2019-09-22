@@ -19,6 +19,7 @@ public class SeqMemory implements MemoryObject {
     @Getter @Setter private int nextSessionIndex = 0;
     @Getter @Setter private int playingPatternIndex = 0;
     @Getter @Setter private int selectedPatternIndex = 0;
+    @Getter @Setter private int selectedControlTrackIndex = 0;
 
     @Getter @Setter private int midiChannel = 0;
 
@@ -29,7 +30,7 @@ public class SeqMemory implements MemoryObject {
 
     public SeqMemory(List<Integer> controllersDefault, Map<Integer, List<Integer>> controllersByTrack) {
         for (int i = 0; i < SeqUtil.SESSION_COUNT; i++) {
-            sessions.add(new SeqSession(i, controllersDefault, controllersByTrack));
+            sessions.add(new SeqSession(i));
         }
     }
 
@@ -76,6 +77,10 @@ public class SeqMemory implements MemoryObject {
         return getCurrentSession().getSelectedTrackIndex();
     }
 
+    @JsonIgnore
+    public SeqControlTrack getSelectedControlTrack() {
+        return getSelectedPattern().getControlTrack(selectedControlTrackIndex);
+    }
 
 
 
@@ -100,6 +105,10 @@ public class SeqMemory implements MemoryObject {
 
     public void selectTrack(int index) {
         getCurrentSession().setSelectedTrackIndex(index);
+    }
+
+    public void selectControlTrack(int index) {
+        selectedControlTrackIndex = index;
     }
 
 

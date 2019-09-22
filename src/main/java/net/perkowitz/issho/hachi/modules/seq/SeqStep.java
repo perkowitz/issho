@@ -50,6 +50,10 @@ public class SeqStep {
         }
     }
 
+    public String toString() {
+        return String.format("SeqStep:%02d", index);
+    }
+
     /***** static methods **************************/
 
     public static SeqStep copy(SeqStep step, int newIndex) {

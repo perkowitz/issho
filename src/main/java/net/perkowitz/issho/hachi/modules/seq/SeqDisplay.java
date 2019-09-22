@@ -11,7 +11,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.*;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.JUMP;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.*;
 
 
 /**
@@ -30,7 +30,7 @@ public class SeqDisplay {
     @Setter private boolean isMuted = false;
     @Setter private Integer nextChainStart = null;
     @Setter private Integer nextChainEnd = null;
-    @Setter private EditMode editMode = EditMode.GATE;
+    @Setter private EditMode editMode = GATE;
 
 
     public SeqDisplay(GridDisplay display) {
@@ -94,6 +94,7 @@ public class SeqDisplay {
         drawTracks(memory, false);
     }
 
+    // TODO: is clear=true being used?
     public void drawTracks(SeqMemory memory, boolean clear) {
 
         if (settingsView) return;
@@ -101,13 +102,53 @@ public class SeqDisplay {
         if (clear) {
             trackSelectControls.draw(display, Color.OFF);
         } else {
+            // mute buttons are displayed in all edit modes
             for (int index = 0; index < SeqUtil.TRACK_COUNT; index++) {
-                drawTrack(memory, index);
+                if (editMode == GATE || editMode == VELOCITY) {
+                    drawTrack(memory, index);
+                }
+                drawTrackMute(memory, index);
+            }
+            switch (editMode) {
+                case GATE:
+                case VELOCITY:
+                    // already did these above
+                    break;
+                case CONTROL:
+                    Color color = palette.get(SeqUtil.COLOR_TRACK);
+                    trackSelectControls.draw(display, palette.get(SeqUtil.COLOR_OFF));
+                    int i = memory.getSelectedControlTrackIndex();
+                    trackSelectControls.get(i).draw(display, palette.get(COLOR_HIGHLIGHT));
+                    break;
+                case PITCH:
+                    trackSelectControls.draw(display, Color.OFF);
+                    trackSelectControls.get(0).draw(display, palette.get(COLOR_HIGHLIGHT));
+                    break;
+                case JUMP:
+                    trackSelectControls.draw(display, Color.OFF);
+                    break;
             }
         }
     }
 
     public void drawTrack(SeqMemory memory, int index) {
+
+        if (settingsView) return;
+
+        SeqTrack track = memory.getSelectedPattern().getTrack(index);
+        if (editMode == GATE || editMode == EditMode.VELOCITY) {
+            GridControl selectControl = SeqUtil.trackSelectControls.get(index);
+            Color color = palette.get(SeqUtil.COLOR_TRACK_SELECTION);
+            if (track.isPlaying()) {
+                color = palette.get(SeqUtil.COLOR_TRACK_PLAYING);
+            } else if (index == memory.getSelectedTrackIndex()) {
+                color = palette.get(SeqUtil.COLOR_TRACK_SELECTED);
+            }
+            selectControl.draw(display, color);
+        }
+    }
+
+    public void drawTrackMute(SeqMemory memory, int index) {
 
         if (settingsView) return;
 
@@ -125,29 +166,23 @@ public class SeqDisplay {
         }
         GridControl muteControl = SeqUtil.trackMuteControls.get(index);
         muteControl.draw(display, color);
-
-        if (editMode == EditMode.GATE || editMode == EditMode.VELOCITY) {
-            GridControl selectControl = SeqUtil.trackSelectControls.get(index);
-            color = palette.get(SeqUtil.COLOR_TRACK_SELECTION);
-            if (track.isPlaying()) {
-                color = palette.get(SeqUtil.COLOR_TRACK_PLAYING);
-            } else if (index == memory.getSelectedTrackIndex()) {
-                color = palette.get(SeqUtil.COLOR_TRACK_SELECTED);
-            }
-            selectControl.draw(display, color);
-        }
     }
 
     public void drawSteps(SeqMemory memory) {
 
         if (settingsView) return;
 
+        if (editMode == CONTROL) {
+            drawControlSteps(memory);
+            return;
+        }
+
         SeqTrack track = memory.getSelectedTrack();
 
         for (int index = 0; index < SeqUtil.STEP_COUNT; index++) {
             GridControl control = SeqUtil.stepControls.get(index);
             Color color = palette.get(SeqUtil.COLOR_STEP_REST);
-            if (editMode == EditMode.GATE || editMode == EditMode.VELOCITY) {
+            if (editMode == GATE || editMode == EditMode.VELOCITY) {
                 switch (track.getStep(index).getGateMode()) {
                     case PLAY:
                         color = palette.get(SeqUtil.COLOR_STEP_PLAY);
@@ -163,7 +198,23 @@ public class SeqDisplay {
             }
             control.draw(display, color);
         }
+    }
 
+    public void drawControlSteps(SeqMemory memory) {
+
+        if (settingsView) return;
+
+        int trackIndex = memory.getSelectedControlTrackIndex();
+        SeqControlTrack track = memory.getPlayingPattern().getControlTrack(trackIndex);
+        for (int index = 0; index < CONTROL_TRACK_COUNT; index++) {
+            GridControl control = SeqUtil.stepControls.get(index);
+            Color color = palette.get(COLOR_STEP_REST);
+            SeqControlStep step = track.getStep(index);
+            if (step.isEnabled()) {
+                color = palette.get(COLOR_STEP_PLAY);
+            }
+            control.draw(display, color);
+        }
     }
 
     public void drawStepsClock(Integer playingStepIndex, int measure, boolean drawMeasure) {

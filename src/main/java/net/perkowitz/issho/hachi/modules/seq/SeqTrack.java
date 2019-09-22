@@ -39,10 +39,6 @@ public class SeqTrack implements MemoryObject {
         return String.format("SeqTrack:%02d", index);
     }
 
-    public SeqControlTrack getControlTrack(int index) {
-        return controlTracks.get(index);
-    }
-
 
     /***** MemoryObject implementation ***********************/
 

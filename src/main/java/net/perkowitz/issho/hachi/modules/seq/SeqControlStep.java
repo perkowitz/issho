@@ -29,6 +29,10 @@ public class SeqControlStep {
 
     public void reset() { value = RESET_VALUE; }
 
+    public String toString() {
+        return String.format("SeqCtrlStep:%02d", index);
+    }
+
 
     /***** static methods **************************/
 

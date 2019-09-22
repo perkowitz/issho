@@ -11,41 +11,37 @@ import java.util.List;
  */
 public class SeqControlTrack {
 
-    public static String CONTROL_PREFIX = "CC";
+    public static Integer[] controllersDefault = new Integer[]{ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 };
 
-    @Getter @Setter private boolean playing = false;
+    @Getter @Setter private int index;
+    @Getter @Setter private boolean playing = true;
     @Getter private List<SeqControlStep> steps = Lists.newArrayList();
-    @Getter private int controllerNumber;
 
     public SeqControlTrack() {}
 
-    public SeqControlTrack(int controllerNumber) {
+    public SeqControlTrack(int index) {
+        this.index = index;
         for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
             steps.add(new SeqControlStep(i));
         }
-        this.controllerNumber = controllerNumber;
     }
 
     public SeqControlStep getStep(int index) {
         return steps.get(index);
     }
 
-    public String controllerString() {
-        return controllerString(controllerNumber);
+    public String toString() {
+        return String.format("SeqCtrlTrack:%02d", index);
     }
-
 
     /***** static methods **************************/
 
-    public static SeqControlTrack copy(SeqControlTrack track) {
-        SeqControlTrack newTrack = new SeqControlTrack(track.controllerNumber);
+    public static SeqControlTrack copy(SeqControlTrack track, int newIndex) {
+        SeqControlTrack newTrack = new SeqControlTrack(newIndex);
         for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
             newTrack.steps.set(i, SeqControlStep.copy(track.steps.get(i), i));
         }
         return newTrack;
     }
 
-    public static String controllerString(int controllerNumber) {
-        return CONTROL_PREFIX + String.format("%03d", controllerNumber);
-    }
 }

@@ -1,6 +1,7 @@
 package net.perkowitz.issho.hachi.modules.seq;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
@@ -23,19 +24,14 @@ public class SeqSession implements MemoryObject {
     @Getter private int chainEndIndex = 0;
     @Getter @Setter private int selectedTrackIndex = 8;
     @Getter @Setter private int swingOffset = 0;
-    @Getter private List<Integer> controllersDefault;
-    @Getter private Map<Integer, List<Integer>> controllersByTrack;
 
 
     public SeqSession() {}
 
-    public SeqSession(int index, List<Integer> controllersDefault, Map<Integer, List<Integer>> controllersByTrack) {
-        System.out.printf("Session: ctrlDef=%s, ctrlTrk=%s\n", controllersDefault, controllersByTrack);
+    public SeqSession(int index) {
         this.index = index;
-        this.controllersDefault = controllersDefault;
-        this.controllersByTrack = controllersByTrack;
         for (int i = 0; i < SeqUtil.PATTERN_COUNT; i++) {
-            patterns.add(new SeqPattern(i, controllersDefault, controllersByTrack));
+            patterns.add(new SeqPattern(i));
         }
         for (int i = 0; i < SeqUtil.TRACK_COUNT; i++) {
             tracksEnabled.add(true);
@@ -105,7 +101,7 @@ public class SeqSession implements MemoryObject {
     /***** static methods **************************/
 
     public static SeqSession copy(SeqSession session, int newIndex) {
-        SeqSession newSession = new SeqSession(newIndex, session.controllersDefault, session.controllersByTrack);
+        SeqSession newSession = new SeqSession(newIndex);
         try {
 
             for (int i = 0; i < session.patterns.size(); i++) {

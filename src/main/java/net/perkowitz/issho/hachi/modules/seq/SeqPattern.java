@@ -1,16 +1,13 @@
 package net.perkowitz.issho.hachi.modules.seq;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.MemoryUtil;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by optic on 2/25/17.
@@ -22,14 +19,13 @@ public class SeqPattern implements MemoryObject {
 
     @Getter @Setter private int index;
     @Getter private List<SeqTrack> tracks = Lists.newArrayList();
-
-    @Getter private Map<String, SeqControlTrack> controlTracksMap = Maps.newHashMap();
+    @Getter private List<SeqControlTrack> controlTracks = Lists.newArrayList();
     @Getter private List<SeqPitchStep> pitchTrack = Lists.newArrayList();
 
 
     public SeqPattern() {}
 
-    public SeqPattern(int index, List<Integer> controllersDefault, Map<Integer, List<Integer>> controllersByTrack) {
+    public SeqPattern(int index) {
 
         this.index = index;
 
@@ -38,54 +34,18 @@ public class SeqPattern implements MemoryObject {
             tracks.add(new SeqTrack(i, notes[i]));
         }
 
+        // create the control tracks
+        for (int i = 0; i < SeqUtil.CONTROL_TRACK_COUNT; i++) {
+            controlTracks.add(new SeqControlTrack(i));
+        }
+
         // create the pitch track
         for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
             pitchTrack.add(new SeqPitchStep(i));
         }
 
-        // build the controller map and set each track's controllers
-        System.out.printf("Pattern: ctrlDef=%s, ctrlTrk=%s\n", controllersDefault, controllersByTrack);
-        createControllerMap(controllersDefault, controllersByTrack);
-
     }
 
-    public SeqPattern(int index, Map<String, SeqControlTrack> controlTracksMap) {
-        this.index = index;
-        this.controlTracksMap = controlTracksMap;
-    }
-
-
-    public void createControllerMap(List<Integer> controllersDefault, Map<Integer, List<Integer>> controllersByTrack) {
-
-        List<List<Integer>> trackControllerNumbers = Lists.newArrayList();
-        trackControllerNumbers.add(controllersDefault);
-        trackControllerNumbers.addAll(controllersByTrack.values());
-
-        for (List<Integer> controllerNumbers : trackControllerNumbers) {
-            for (Integer controllerNumber : controllerNumbers) {
-                String controlString = SeqControlTrack.controllerString(controllerNumber);
-//                System.out.printf("Ctrlmap: ctrlNum=%d, str=%s\n", controllerNumber, controlString);
-                if (controlTracksMap.get(controlString) == null) {
-                    controlTracksMap.put(controlString, new SeqControlTrack(controllerNumber));
-                }
-            }
-        }
-
-        for (int i = 0; i < SeqUtil.TRACK_COUNT; i++) {
-            List<Integer> trackControllers = controllersByTrack.get(i);
-            if (trackControllers == null) {
-                trackControllers = controllersDefault;
-            }
-            List<SeqControlTrack> controlTracks = Lists.newArrayList();
-            for (int controllerNumber : trackControllers) {
-                controlTracks.add(controlTracksMap.get(SeqControlTrack.controllerString(controllerNumber)));
-            }
-
-            tracks.get(i).setControlTracks(controlTracks);
-        }
-
-
-    }
 
     @JsonIgnore public SeqTrack getTrack(int index) {
         return tracks.get(index);
@@ -95,12 +55,10 @@ public class SeqPattern implements MemoryObject {
         return getTrack(trackIndex).getStep(stepIndex);
     }
 
+    @JsonIgnore public SeqControlTrack getControlTrack(int index) { return controlTracks.get(index); }
+
     public String toString() {
         return String.format("SeqPattern:%02d", index);
-    }
-
-    @JsonIgnore public Collection<SeqControlTrack> getAllControlTracks() {
-        return controlTracksMap.values();
     }
 
     public SeqPitchStep getPitchStep(int stepIndex) {
@@ -149,7 +107,8 @@ public class SeqPattern implements MemoryObject {
     /***** static methods **************************/
 
     public static SeqPattern copy(SeqPattern pattern, int newIndex) {
-        SeqPattern newPattern = new SeqPattern(newIndex, pattern.controlTracksMap);
+        SeqPattern newPattern = new SeqPattern();
+        newPattern.setIndex(newIndex);
         try {
             for (int i = 0; i < SeqUtil.TRACK_COUNT; i++) {
                 newPattern.tracks.add(SeqTrack.copy(pattern.tracks.get(i), i));

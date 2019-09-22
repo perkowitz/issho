@@ -1,7 +1,6 @@
 package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.GridDevice;
 import net.perkowitz.issho.devices.Keyboard;
 import net.perkowitz.issho.devices.launchpad.Launchpad;
@@ -413,14 +412,7 @@ public class Hachi {
                 module = beatModule;
 
             } else if (className.equals("SeqModule")) {
-                Map<Integer, Color> palette = SeqUtil.PALETTE_PINK;
-                if (paletteName != null && paletteName.toUpperCase().equals("PINK")) {
-                    palette = SeqUtil.PALETTE_PINK;
-                } else if (paletteName != null && paletteName.toUpperCase().equals("BLUE")) {
-                    palette = SeqUtil.PALETTE_BLUE;
-                } else if (paletteName != null && paletteName.toUpperCase().equals("GREEN")) {
-                    palette = SeqUtil.PALETTE_GREEN;
-                }
+                Map<Integer, Color> palette = SeqUtil.getPalette(paletteName.toLowerCase());
                 SeqModule seqModule = new SeqModule(midiTransmitter, midiReceiver, palette, filePrefix);
                 if (moduleSettings.get("midiNoteOffset") != null) {
                     Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
@@ -438,16 +430,10 @@ public class Hachi {
                     List<Integer> sessionPrograms= (List<Integer>)moduleSettings.get("sessionPrograms");
                     seqModule.setSessionPrograms(sessionPrograms);
                 }
-                if (moduleSettings.get("controllersDefault") != null) {
-                    List<Integer> controllersDefault = (List<Integer>) moduleSettings.get("controllersDefault");
-                    seqModule.setControllersDefault(controllersDefault);
+                if (moduleSettings.get("controllerNumbers") != null) {
+                    List<Integer> controllerNumbers = (List<Integer>) moduleSettings.get("controllerNumbers");
+                    seqModule.setControllerNumbers(controllerNumbers);
                 }
-                if (moduleSettings.get("controllersByTrack") != null) {
-                    Map<Integer, List<Integer>> controllersByTrack;
-                    controllersByTrack = (Map<Integer, List<Integer>>)moduleSettings.get("controllersByTrack");
-                    seqModule.setControllersByTrack(controllersByTrack);
-                }
-
                 module = seqModule;
 
             } else if (className.equals("MinibeatModule")) {

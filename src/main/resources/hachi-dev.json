@@ -45,11 +45,7 @@
       "palette": "Blue",
       "tiesEnabled": false,
       "filePrefix": "seq0",
-      "controllersDefault": [ 16, 17, 18, 19, 20, 21, 22, 23 ],
-      "controllersByTrack": {
-        "0": [ 81, 82, 83, 84, 85, 86, 87, 88 ],
-        "1": [ 91, 92, 93 ]
-      }
+      "controllerNumbers": [ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 ]
     },
     {
       "class": "BeatModulexxx",
@@ -65,7 +61,7 @@
       "controllers": [1, 16, 17, 18]
     },
     {
-      "class": "StepModulexx",
+      "class": "StepModule",
       "filePrefix": "step0 "
     }
   ]
