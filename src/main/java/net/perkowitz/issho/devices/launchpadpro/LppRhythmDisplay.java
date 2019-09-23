@@ -3,9 +3,9 @@ package net.perkowitz.issho.devices.launchpadpro;
 
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.hachi.modules.rhythm.models.*;
-import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
-import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
+import net.perkowitz.issho.hachi.modules.deprecated.rhythm.models.*;
+import net.perkowitz.issho.hachi.modules.deprecated.rhythm.RhythmDisplay;
+import net.perkowitz.issho.hachi.modules.deprecated.rhythm.RhythmInterface;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,8 +13,8 @@ import java.util.Map;
 
 import static net.perkowitz.issho.devices.GridButton.Side.Right;
 import static net.perkowitz.issho.devices.launchpadpro.LppRhythmUtil.*;
-import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.Mode.EXIT;
-import static net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface.SETTINGS_MODULE_MODES;
+import static net.perkowitz.issho.hachi.modules.deprecated.rhythm.RhythmInterface.Mode.EXIT;
+import static net.perkowitz.issho.hachi.modules.deprecated.rhythm.RhythmInterface.SETTINGS_MODULE_MODES;
 
 /**
  * Created by optic on 7/10/16.

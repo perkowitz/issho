@@ -3,7 +3,7 @@ package net.perkowitz.issho.devices.launchpadpro;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.*;
-import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
+import net.perkowitz.issho.hachi.modules.deprecated.rhythm.RhythmInterface;
 
 import java.util.List;
 import java.util.Map;
