@@ -1,6 +1,10 @@
 package net.perkowitz.issho.devices;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Map;
 
 /**
  * Created by optic on 10/27/16.
@@ -11,6 +15,11 @@ public class GridControl {
     @Getter private GridPad pad = null;
     @Getter private GridButton button = null;
     @Getter private GridKnob knob = null;
+
+    // Each control remembers when it was pressed so it can report hold time on release.
+    // However, since grid controls are created and destroyed all the time, maintain a static map
+    // keyed by the control's nice name.
+    static private Map<String,Long> pressMap = Maps.newHashMap();
 
 
     /***** constructors ****************************************/
@@ -48,6 +57,24 @@ public class GridControl {
         } else if (knob != null) {
             //TODO display.setKnob(knob, color);
         }
+    }
+
+    public void press() {
+        pressMap.put(this.toString(), System.currentTimeMillis());
+    }
+
+    public long release() {
+        long e = elapsed();
+        pressMap.remove(this.toString());
+        return e;
+    }
+
+    public long elapsed() {
+        Long pressTime = pressMap.get(this.toString());
+        if (pressTime == null) {
+            return System.currentTimeMillis();
+        }
+        return System.currentTimeMillis() - pressTime;
     }
 
 

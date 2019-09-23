@@ -18,6 +18,8 @@ import net.perkowitz.issho.hachi.modules.para.ParaUtil;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmModule;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
 import net.perkowitz.issho.hachi.modules.rhythm.RhythmDisplay;
+import net.perkowitz.issho.hachi.modules.seq.SeqModule;
+import net.perkowitz.issho.hachi.modules.seq.SeqUtil;
 import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
 import net.perkowitz.issho.hachi.modules.step.StepModule;
 import net.perkowitz.issho.util.MidiUtil;
@@ -408,6 +410,31 @@ public class Hachi {
                     beatModule.setSessionPrograms(sessionPrograms);
                 }
                 module = beatModule;
+
+            } else if (className.equals("SeqModule")) {
+                Map<Integer, Color> palette = SeqUtil.getPalette(paletteName.toLowerCase());
+                SeqModule seqModule = new SeqModule(midiTransmitter, midiReceiver, palette, filePrefix);
+                if (moduleSettings.get("midiNoteOffset") != null) {
+                    Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
+                    if (offset != null) {
+                        seqModule.setMidiNoteOffset(offset);
+                    }
+                }
+                if (moduleSettings.get("tiesEnabled") != null) {
+                    Boolean tiesEnabled = (Boolean)moduleSettings.get("tiesEnabled");
+                    if (tiesEnabled != null) {
+                        seqModule.setTiesEnabled(tiesEnabled);
+                    }
+                }
+                if (moduleSettings.get("sessionPrograms") != null) {
+                    List<Integer> sessionPrograms= (List<Integer>)moduleSettings.get("sessionPrograms");
+                    seqModule.setSessionPrograms(sessionPrograms);
+                }
+                if (moduleSettings.get("controllerNumbers") != null) {
+                    List<Integer> controllerNumbers = (List<Integer>) moduleSettings.get("controllerNumbers");
+                    seqModule.setControllerNumbers(controllerNumbers);
+                }
+                module = seqModule;
 
             } else if (className.equals("MinibeatModule")) {
                 Map<Integer, Color> palette = MinibeatUtil.PALETTE_GREEN;
