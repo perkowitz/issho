@@ -5,8 +5,8 @@ import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridKnob;
 import net.perkowitz.issho.devices.GridListener;
 import net.perkowitz.issho.devices.GridPad;
-import net.perkowitz.issho.hachi.modules.rhythm.RhythmController;
-import net.perkowitz.issho.hachi.modules.rhythm.RhythmInterface;
+import net.perkowitz.issho.hachi.modules.deprecated.rhythm.RhythmController;
+import net.perkowitz.issho.hachi.modules.deprecated.rhythm.RhythmInterface;
 
 import java.util.Set;
 

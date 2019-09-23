@@ -1,6 +1,5 @@
 package net.perkowitz.issho.util;
 
-import net.perkowitz.issho.hachi.modules.mono.MonoMemory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.*;

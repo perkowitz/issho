@@ -5,7 +5,7 @@ import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
 import net.perkowitz.issho.devices.launchpadpro.Color;
-import net.perkowitz.issho.hachi.modules.mono.MonoUtil;
+import net.perkowitz.issho.hachi.modules.deprecated.mono.MonoUtil;
 
 import java.util.Map;
 
