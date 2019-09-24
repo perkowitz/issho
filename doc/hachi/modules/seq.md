@@ -163,11 +163,12 @@ message being sent.
 
 # Color Palette
 
-Rhythm has five defined palettes: pink, blue, green, red, and orange. Each uses yellow as a color, as well as white and gray.
+Rhythm has five defined palettes: pink, blue, green, red, orange, purple, magenta, teal, yellow. Each uses white and gray, with yellow
+as a highlight color (accept for the yellow palette, which uses purple for highlight). 
 - The pattern selection pads are in the main color (e.g. blue), with the currently playing pattern in white, other chained patterns in gray,
- and the pattern currently being edited in the highlight color (yellow). 
-- Track mute pads are in gray, with muted tracks being off. Whenever a track plays a note, it will light in yellow.
-- Track mute pads are in the main color (e.g. blue), with the selected track being white. Whenever a track plays a note, it will light in yellow.
+ and the pattern currently being edited in the highlight color. 
+- Track mute pads are in gray, with muted tracks being off. Whenever a track plays a note, it will light in the highlight color.
+- Track mute pads are in the main color (e.g. blue), with the selected track being white. Whenever a track plays a note, it will light in the highlight color.
 - Step pads are white when that step is set to PLAY, gray for TIE, and off for REST.
 - Function buttons on the left and bottom are gray when off, white when on.
 - The value buttons show the value in the main color (e.g. blue).
