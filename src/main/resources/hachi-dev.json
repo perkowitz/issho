@@ -61,8 +61,8 @@
       "controllers": [1, 16, 17, 18]
     },
     {
-      "class": "StepModule",
-      "filePrefix": "step0 "
+      "class": "StepModulexxx",
+      "filePrefix": "step0"
     }
   ]
 }

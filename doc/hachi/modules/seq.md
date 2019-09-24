@@ -85,11 +85,14 @@ In velocity mode, tapping a step selects it for velocity editing without changin
 When a step is selected in either gate or velocity mode, the value buttons will display the velocity, 
 and pressing a button will set a new value. Eight velocity values are available, ranging from 15 to 127 in increments of 16.
 
-### Value Buttons and the Value Control
+### Value Buttons
 
 These buttons can be used to select from a range of values. In the main editing mode, the value buttons are used to
-edit the velocity value for each step.
-The eight value buttons represent eight values in the relevant numeric range, with the lowest value at the bottom and highest value at the top.
+edit the velocity value for each step. The eight value buttons represent eight values in the relevant numeric range, 
+with the lowest value at the bottom and highest value at the top; tap a button 
+to set the velocity to that value. For in-between values, press and hold a button to set the value, and then tap 
+a button below or above the held button to decrease or increase the value. Tapping a button right next to the held button
+will change the value by 1; tapping a button farther away will change the value by 5.   
 
 ## Control Mode
 
@@ -99,7 +102,7 @@ Each pattern includes 16 MIDI controller tracks. the MIDI CC numbers are set via
 setting in the config file. The 16 track select pads can be used to select a control track for editing. 
 In each control track, each step can be enabled and a value can be set using the value buttons.
 Tap a pad to toggle that step and select it for editing. To edit a step without toggling it, press and hold the pad for
-half a second. 
+half a second.  
 
 ## Pitch Mode
 

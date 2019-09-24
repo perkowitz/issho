@@ -15,9 +15,10 @@ public class SeqStep {
     }
 
     private int DEFAULT_VELOCITY = 80;
+    public static int MAX_VELOCITY = 127;
 
     @Getter private int index;
-    @Getter @Setter private int velocity;
+    @Getter private int velocity;
     @Getter @Setter private boolean enabled = false;
     @Getter @Setter private GateMode gateMode = GateMode.REST;
 
@@ -50,9 +51,36 @@ public class SeqStep {
         }
     }
 
+    public void setVelocity(int velocity) {
+        if (velocity < 1) {
+            this.velocity = 1;
+        } else if (velocity > MAX_VELOCITY) {
+            this.velocity = MAX_VELOCITY;
+        } else {
+            this.velocity = velocity;
+        }
+    }
+
+    public void incrementVelocity() {
+        setVelocity(velocity + 1);
+    }
+
+    public void incrementVelocityMore() {
+        setVelocity(velocity + 5);
+    }
+
+    public void decrementVelocity() {
+        setVelocity(velocity - 1);
+    }
+
+    public void decrementVelocityMore() {
+        setVelocity(velocity - 5);
+    }
+
     public String toString() {
         return String.format("SeqStep:%02d", index);
     }
+
 
     /***** static methods **************************/
 

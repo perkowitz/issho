@@ -24,8 +24,6 @@ import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.seq.SeqStep.GateMode.*;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.*;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.CONTROL;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.PITCH;
 
 
 /**
@@ -69,6 +67,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     private EditMode editMode = EditMode.GATE;
     private List<Integer> onNotes = Lists.newArrayList();
     @Setter private List<Integer> sessionPrograms = Lists.newArrayList();
+    private Integer valuePressed = null;
 
 
     /***** Constructor ****************************************/
@@ -442,14 +441,10 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     // changes gate setting and selects step
                     step.toggleEnabled();
                     step.advanceGateMode(tiesEnabled);
-                    selectedStep = index;
                     seqDisplay.drawSteps(memory);
-                    seqDisplay.drawValue(step.getVelocity(), 127);
-                    break;
                 case VELOCITY:
                     // just selects step
                     selectedStep = index;
-                    seqDisplay.drawSteps(memory);
                     seqDisplay.drawValue(step.getVelocity(), 127);
                     break;
                 case JUMP:
@@ -500,13 +495,36 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             switch (editMode) {
                 case GATE:
                 case VELOCITY:
-                    step.setVelocity((8 - index) * 16 - 1);
+                    if (valuePressed == null) {
+                        valuePressed = index;
+                        step.setVelocity(SeqUtil.baseToValue(7 - index));
+                    } else if (index == valuePressed-1) {
+                        step.incrementVelocity();
+                    } else if (index < valuePressed) {
+                        step.incrementVelocityMore();
+                    } else if (index == valuePressed+1) {
+                        step.decrementVelocity();
+                    } else if (index > valuePressed) {
+                        step.decrementVelocityMore();
+                    }
                     seqDisplay.drawValue(step.getVelocity(), 127);
                     break;
                 case CONTROL:
                     SeqControlTrack track = memory.getSelectedControlTrack();
                     SeqControlStep controlStep = track.getStep(selectedControlStep);
-                    controlStep.setValue((8 - index) * 16 - 1);
+                    // buttons are reversed top-to-bottom
+                    if (valuePressed == null) {
+                        valuePressed = index;
+                        controlStep.setValue(SeqUtil.baseToValue(7 - index));
+                    } else if (index == valuePressed-1) {
+                        controlStep.incrementValue();
+                    } else if (index < valuePressed) {
+                        controlStep.incrementValueMore();
+                    } else if (index == valuePressed+1) {
+                        controlStep.decrementValue();
+                    } else if (index > valuePressed) {
+                        controlStep.decrementValueMore();
+                    }
                     seqDisplay.drawValue(controlStep.getValue(), 127);
                     break;
                 case PITCH:
@@ -628,7 +646,15 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             seqDisplay.drawFillControl(false);
 
         } else if (valueControls.contains(control)) {
+            int index = valueControls.getIndex(control);
             switch (editMode) {
+                case GATE:
+                case VELOCITY:
+                case CONTROL:
+                    if (index == valuePressed) {
+                        valuePressed = null;
+                    }
+                    break;
                 case JUMP:
                     sendMidiPitchBendZero(memory.getMidiChannel());
                     seqDisplay.drawValue(7, 7, SeqDisplay.ValueMode.HIGHLIGHT);
