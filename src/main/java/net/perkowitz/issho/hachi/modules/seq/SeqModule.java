@@ -415,12 +415,6 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     seqDisplay.drawTracks(memory);
                     seqDisplay.drawSteps(memory);
                     break;
-                case JUMP:
-                    // track buttons play a sound in jump mode
-                    SeqTrack track = memory.getSelectedPattern().getTrack(index);
-                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
-                    seqDisplay.drawControlHighlight(control, true);
-                    break;
                 case CONTROL:
                     // track buttons select controller (but only second row)
                     // TODO: use track controls or actually use controller controls?
@@ -431,6 +425,12 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                 case PITCH:
                     // doesn't do anything in pitch mode
                     break;
+                case JUMP:
+                    // track buttons play a sound in jump mode
+                    SeqTrack track = memory.getSelectedPattern().getTrack(index);
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
+                    seqDisplay.drawControlHighlight(control, true);
+                    break;
             }
 
         } else if (stepControls.contains(control)) {
@@ -438,18 +438,11 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             SeqStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
                 case GATE:
-                    // changes gate setting and selects step
-                    step.toggleEnabled();
-                    step.advanceGateMode(tiesEnabled);
-                    seqDisplay.drawSteps(memory);
                 case VELOCITY:
-                    // just selects step
+                    // selects step for editing
                     selectedStep = index;
                     seqDisplay.drawValue(step.getVelocity(), 127);
-                    break;
-                case JUMP:
-                    // jumps to that step
-                    nextStepIndex = index;
+                    // we don't actually toggle the step until release
                     break;
                 case CONTROL:
                     // select that step for controller editing
@@ -466,6 +459,10 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     pitchStep.toggleEnabled();
                     seqDisplay.drawSteps(memory);
                     seqDisplay.drawValue(pitchStep.getPitchBend(), MidiUtil.MIDI_PITCH_BEND_MAX);
+                    break;
+                case JUMP:
+                    // jumps to that step
+                    nextStepIndex = index;
                     break;
             }
 
@@ -629,8 +626,17 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             int index = stepControls.getIndex(control);
             SeqStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
+                case GATE:
+                case VELOCITY:
+                    // step was selected and displayed on press; on release decide whether to toggle step and redraw
+                    if (elapsed < LONG_PRESS_IN_MILLIS) {
+                        step.toggleEnabled();
+                        step.advanceGateMode(tiesEnabled);
+                    }
+                    seqDisplay.drawSteps(memory);
+                    break;
                 case CONTROL:
-                    // track was selected and displayed on press; on release decide whether to toggle step and redraw
+                    // step was selected and displayed on press; on release decide whether to toggle step and redraw
                     selectedControlStep = index;
                     SeqControlTrack track = memory.getSelectedControlTrack();
                     SeqControlStep controlStep = track.getStep(index);

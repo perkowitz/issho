@@ -85,6 +85,10 @@ public class SeqUtil {
         Color selectColor = Color.fromIndex(1);
         Color highlightColor = Color.BRIGHT_YELLOW;
         Color highlightColorDim = Color.DIM_YELLOW;
+        if (playColor == Color.BRIGHT_YELLOW) {
+            highlightColor = Color.BRIGHT_PURPLE;
+            highlightColorDim = Color.DIM_PURPLE;
+        }
         palette.put(COLOR_OFF, playColorDim);
         palette.put(COLOR_ON, Color.WHITE);
         palette.put(COLOR_HIGHLIGHT, highlightColor);
@@ -117,6 +121,10 @@ public class SeqUtil {
         paletteMap.put("green", Color.DIM_GREEN);
         paletteMap.put("red", Color.BRIGHT_RED);
         paletteMap.put("orange", Color.BRIGHT_ORANGE);
+        paletteMap.put("purple", Color.BRIGHT_PURPLE);
+        paletteMap.put("magenta", Color.BRIGHT_PINK_PURPLE);
+        paletteMap.put("teal", Color.BRIGHT_BLUE_GREEN);
+        paletteMap.put("yellow", Color.BRIGHT_YELLOW);
     }
 
     public static Map<Integer, Color> getPalette(String colorName) {
