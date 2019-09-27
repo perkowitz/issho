@@ -10,10 +10,11 @@ import net.perkowitz.issho.util.MidiUtil;
 public class SeqControlStep {
 
     public static int RESET_VALUE = 0;
+    public static int MAX_VALUE = 127;
 
     @Getter private int index;
     @Getter @Setter private boolean enabled = false;
-    @Getter @Setter private int value;
+    @Getter private int value;
 
     public SeqControlStep() {}
 
@@ -33,6 +34,31 @@ public class SeqControlStep {
         return String.format("SeqCtrlStep:%02d", index);
     }
 
+    public void setValue(int value) {
+        if (value < 0) {
+            this.value = 0;
+        } else if (value > MAX_VALUE) {
+            this.value = MAX_VALUE;
+        } else {
+            this.value = value;
+        }
+    }
+
+    public void incrementValue() {
+        setValue(value + 1);
+    }
+
+    public void incrementValueMore() {
+        setValue(value + 5);
+    }
+
+    public void decrementValue() {
+        setValue(value - 1);
+    }
+
+    public void decrementValueMore() {
+        setValue(value - 5);
+    }
 
     /***** static methods **************************/
 

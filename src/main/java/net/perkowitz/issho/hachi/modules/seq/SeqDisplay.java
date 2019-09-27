@@ -24,7 +24,7 @@ public class SeqDisplay {
     }
 
     @Setter private GridDisplay display;
-    @Getter @Setter private Map<Integer, Color> palette = SeqUtil.PALETTE_PINK;
+    @Getter @Setter private Map<Integer, Color> palette = SeqUtil.getPalette("pink");
     @Getter @Setter private int currentFileIndex = 0;
     @Setter private boolean settingsView = false;
     @Setter private boolean isMuted = false;
@@ -295,6 +295,10 @@ public class SeqDisplay {
     }
 
     public void drawValue(int value, int maxValue, ValueMode valueMode) {
+        if (maxValue == 127) {
+            drawValue127(value);
+            return;
+        }
         int valueAsEight = (value * 8) / maxValue;
         for (int index = 0; index < 8; index++) {
             GridControl control = SeqUtil.valueControls.get(index);
@@ -308,6 +312,27 @@ public class SeqDisplay {
                 control.draw(display, palette.get(SeqUtil.COLOR_VALUE_OFF));
             }
         }
+    }
+
+    private void drawValue127(int value) {
+
+        int base = valueToBase(value);
+        int accent = base;
+        int v = baseToValue(base);
+        if (value > v) {
+            accent = base + 1;
+        } else if (value < v) {
+            accent = base - 1;
+        }
+
+        valueControls.draw(display, Color.OFF);
+        GridControl baseControl = valueControls.get(7 - base);
+        baseControl.draw(display, palette.get(COLOR_VALUE_ON));
+        if (accent != base && accent >= 0 && accent < 8) {
+            GridControl accentControl = valueControls.get(7 - accent);
+            accentControl.draw(display, palette.get(COLOR_VALUE_ACCENT));
+        }
+
     }
 
 

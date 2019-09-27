@@ -22,6 +22,7 @@ public class SeqUtil {
     public static int CONTROL_TRACK_COUNT = 16;
     public static int LONG_PRESS_IN_MILLIS = 500;
 
+    public static float VALUE_FACTOR_127 = 128 / 7;
 
     public enum EditMode {
         GATE, VELOCITY, CONTROL, PITCH, JUMP
@@ -76,6 +77,7 @@ public class SeqUtil {
     public static Integer COLOR_STEP_TIE = 32;
     public static Integer COLOR_VALUE_OFF = 40;
     public static Integer COLOR_VALUE_ON = 41;
+    public static Integer COLOR_VALUE_ACCENT = 42;
 
     public static Map<Integer, Color> createPalette(Color playColor) {
         Map<Integer, Color> palette = Maps.newHashMap();
@@ -83,6 +85,10 @@ public class SeqUtil {
         Color selectColor = Color.fromIndex(1);
         Color highlightColor = Color.BRIGHT_YELLOW;
         Color highlightColorDim = Color.DIM_YELLOW;
+        if (playColor == Color.BRIGHT_YELLOW) {
+            highlightColor = Color.BRIGHT_PURPLE;
+            highlightColorDim = Color.DIM_PURPLE;
+        }
         palette.put(COLOR_OFF, playColorDim);
         palette.put(COLOR_ON, Color.WHITE);
         palette.put(COLOR_HIGHLIGHT, highlightColor);
@@ -103,6 +109,7 @@ public class SeqUtil {
         palette.put(COLOR_STEP_TIE, Color.DARK_GRAY);
         palette.put(COLOR_VALUE_OFF, Color.OFF);
         palette.put(COLOR_VALUE_ON, playColor);
+        palette.put(COLOR_VALUE_ACCENT, playColorDim);
         return palette;
     }
 
@@ -114,6 +121,10 @@ public class SeqUtil {
         paletteMap.put("green", Color.DIM_GREEN);
         paletteMap.put("red", Color.BRIGHT_RED);
         paletteMap.put("orange", Color.BRIGHT_ORANGE);
+        paletteMap.put("purple", Color.BRIGHT_PURPLE);
+        paletteMap.put("magenta", Color.BRIGHT_PINK_PURPLE);
+        paletteMap.put("teal", Color.BRIGHT_BLUE_GREEN);
+        paletteMap.put("yellow", Color.BRIGHT_YELLOW);
     }
 
     public static Map<Integer, Color> getPalette(String colorName) {
@@ -124,11 +135,12 @@ public class SeqUtil {
         return createPalette(color);
     }
 
-    // TODO get rid of
-    public static Map<Integer, Color> PALETTE_PINK = createPalette(Color.DIM_PINK);
-    public static Map<Integer, Color> PALETTE_BLUE = createPalette(Color.BRIGHT_BLUE);
-    public static Map<Integer, Color> PALETTE_GREEN = createPalette(Color.DIM_GREEN);
-    public static Map<Integer, Color> PALETTE_RED = createPalette(Color.BRIGHT_RED);
-    public static Map<Integer, Color> PALETTE_ORANGE = createPalette(Color.BRIGHT_ORANGE);
+    public static int valueToBase(int value) {
+        return Math.min(Math.round(value / VALUE_FACTOR_127), 127);
+    }
+
+    public static int baseToValue(int base) {
+        return Math.min(Math.round(base * VALUE_FACTOR_127), 127);
+    }
 
 }

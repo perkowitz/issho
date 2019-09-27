@@ -48,21 +48,15 @@
       "controllerNumbers": [ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 ]
     },
     {
-      "class": "BeatModulexxx",
-      "palette": "Blue",
-      "tiesEnabled": false,
-      "filePrefix": "beat0"
+      "class": "SeqModulexxx",
+      "palette": "Purple",
+      "tiesEnabled": true,
+      "filePrefix": "seq1",
+      "controllerNumbers": [ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 ]
     },
     {
-      "class": "ParaModulexxx",
-      "palette": "blue",
-      "filePrefix": "para0",
-      "monophonic": false,
-      "controllers": [1, 16, 17, 18]
-    },
-    {
-      "class": "StepModule",
-      "filePrefix": "step0 "
+      "class": "StepModulexxx",
+      "filePrefix": "step0"
     }
   ]
 }
