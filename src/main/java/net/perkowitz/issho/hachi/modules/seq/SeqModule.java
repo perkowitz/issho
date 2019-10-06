@@ -24,6 +24,10 @@ import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.seq.SeqStep.GateMode.*;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.*;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.CONTROL;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.GATE;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
 
 
 /**
@@ -35,11 +39,12 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
 
     @Setter private List<Integer> controllerNumbers = Lists.newArrayList(SeqControlTrack.controllersDefault);
     private Map<Integer, List<Integer>> controllersByTrack = Maps.newHashMap();
-    private SeqMemory memory = new SeqMemory(controllerNumbers, controllersByTrack);
+    private SeqMemory memory = new SeqMemory();
     private SeqDisplay seqDisplay;
     private SettingsSubmodule settingsModule;
     private boolean settingsView = false;
 
+    private SeqMode mode;
     private String filePrefix = "beat";
     @Setter private int midiNoteOffset = 0;
     @Setter private boolean tiesEnabled = false;
@@ -64,18 +69,20 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
     private boolean patternSelecting = false;
-    private EditMode editMode = EditMode.GATE;
-    private List<Integer> onNotes = Lists.newArrayList();
+    private EditMode editMode = GATE;
+    private List<Integer> onNotes = Lists.newArrayList(); // TODO: list or Set?
     @Setter private List<Integer> sessionPrograms = Lists.newArrayList();
     private Integer valuePressed = null;
 
 
     /***** Constructor ****************************************/
 
-    public SeqModule(Transmitter inputTransmitter, Receiver outputReceiver, Map<Integer, Color> palette, String filePrefix) {
+    public SeqModule(Transmitter inputTransmitter, Receiver outputReceiver, Map<Integer, Color> palette, String filePrefix, SeqMode mode) {
         super(inputTransmitter, outputReceiver);
+        this.mode = mode;
         this.seqDisplay = new SeqDisplay(this.display);
         this.seqDisplay.setPalette(palette);
+        this.seqDisplay.setMode(mode);
         this.filePrefix = filePrefix;
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
         load(0);
@@ -138,9 +145,9 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         }
 
         // if a fill is playing that shuffles the steps, this will figure out which step is actually playing
-        int actualStep = playingPattern.getStep(0, nextStepIndex).getIndex();
+        int actualStepIndex = playingPattern.getStep(0, nextStepIndex).getIndex();
         boolean drawMeasure = currentPulse < 12;
-        seqDisplay.drawStepsClock(actualStep, currentMeasure, drawMeasure);
+        seqDisplay.drawStepsClock(actualStepIndex, currentMeasure, drawMeasure);
 
         // send pitchbend and controllers before notes
         SeqPitchStep pitchStep = memory.getSelectedPattern().getPitchStep(selectedPitchStep);
@@ -148,36 +155,47 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             sendMidiPitchBend(memory.getMidiChannel(), pitchStep.getPitchBend());
         }
         for (SeqControlTrack controlTrack : memory.getPlayingPattern().getControlTracks()) {
-            SeqControlStep controlStep = controlTrack.getStep(nextStepIndex);
-            Integer controlNumber = controllerNumbers.get(controlTrack.getIndex());
-//            System.out.printf("Advance ctrl: trk=%s, step=%s, ctrlr=%d, playing=%b, enabled=%b\n",
-//                    controlTrack, controlStep, controlNumber, controlTrack.isPlaying(), controlStep.isEnabled());
-//            if (controlNumber != null && controlTrack.isPlaying() && controlStep.isEnabled()) {
-            if (controlNumber != null && controlStep.isEnabled()) {
-                sendMidiCC(memory.getMidiChannel(), controlNumber, controlStep.getValue());
+            if (memory.getCurrentSession().controlTrackIsEnabled(controlTrack.getIndex())) {
+                SeqControlStep controlStep = controlTrack.getStep(nextStepIndex);
+                Integer controlNumber = controllerNumbers.get(controlTrack.getIndex());
+                if (controlNumber != null && controlStep.isEnabled()) {
+                    sendMidiCC(memory.getMidiChannel(), controlNumber, controlStep.getValue());
+                    controlTrack.setPlaying(true);
+                }
             }
         }
 
         // send the midi notes
-        for (int trackIndex = 0; trackIndex < SeqUtil.TRACK_COUNT; trackIndex++) {
-
-            SeqTrack track = playingPattern.getTrack(trackIndex);
-
+        for (SeqTrack track : playingPattern.getTracks()) {
             // when the selected track isn't the one currently being played (when there's a chain)
             // get the selected track so we can highlight the playing tracks as the notes hit
             SeqTrack playingTrack = memory.getSelectedPattern().getTrack(track.getIndex());
 
-            SeqStep step = playingPattern.getStep(trackIndex, nextStepIndex);
+            SeqStep step = playingPattern.getStep(track.getIndex(), actualStepIndex);
             if (step.getGateMode() == PLAY) {
                 // if it's a PLAY step, stop any previous notes and then play (if track enabled)
-                noteOff(track.getNoteNumber());
+                if (track.getNoteNumber() != null) {
+                    noteOff(track.getNoteNumber());
+                } else {
+                    notesOff();
+                }
                 playingTrack.setPlaying(true);
+                seqDisplay.setPlayingStep(step);
                 if (memory.getCurrentSession().trackIsEnabled(track.getIndex())) {
-                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), step.getVelocity());
+                    // TODO embed this in a track function that will use the track note or step note as needed
+                    Integer note = track.getNoteNumber();
+                    if (note == null) {
+                        note = step.getNote();
+                    }
+                    sendMidiNote(memory.getMidiChannel(), note, step.getVelocity());
                 }
             } else if (step.getGateMode() == REST) {
                 // if it's a REST step, stop any previous notes
-                noteOff(track.getNoteNumber());
+                if (track.getNoteNumber() != null) {
+                    noteOff(track.getNoteNumber());
+                } else {
+                    notesOff();
+                }
             } else if (step.getGateMode() == TIE) {
                 // if it's a TIE, you just let it keep going
             }
@@ -185,11 +203,20 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
 
         // THEN update track displays
         for (SeqTrack track : memory.getPlayingPattern().getTracks()) {
+            // if the playing pattern is different from the currently selected pattern, get the equivalent track from the playing pattern
+            if (mode == BEAT) {
+                seqDisplay.drawTrack(memory, track.getIndex());
+                seqDisplay.drawTrackMute(memory, track.getIndex());
+            } else if (mode == MONO) {
+                seqDisplay.drawKeyboard(memory);
+                seqDisplay.drawModifiers(memory);
+            }
             SeqTrack playingTrack = memory.getSelectedPattern().getTrack(track.getIndex());
-            seqDisplay.drawTrack(memory, track.getIndex());
-            seqDisplay.drawTrackMute(memory, track.getIndex());
-//            track.setPlaying(false);
             playingTrack.setPlaying(false);
+            seqDisplay.setPlayingStep(null);
+        }
+        for (SeqControlTrack controlTrack : memory.getPlayingPattern().getControlTracks()) {
+            controlTrack.setPlaying(false);
         }
 
         nextStepIndex = (nextStepIndex + 1) % SeqUtil.STEP_COUNT;
@@ -263,7 +290,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     /***** Multitrack implementation ************************************/
 
     public int trackCount() {
-        return SeqUtil.TRACK_COUNT;
+        return SeqUtil.BEAT_TRACK_COUNT;
     }
 
     public boolean getTrackEnabled(int index) {
@@ -277,6 +304,16 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
 
     public void toggleTrackEnabled(int index) {
         memory.getCurrentSession().toggleTrackEnabled(index);
+        seqDisplay.drawTracks(memory);
+    }
+
+    public void setControlTrackEnabled(int index, boolean enabled) {
+        memory.getCurrentSession().setControlTrackEnabled(index, enabled);
+        seqDisplay.drawTracks(memory);
+    }
+
+    public void toggleControlTrackEnabled(int index) {
+        memory.getCurrentSession().toggleControlTrackEnabled(index);
         seqDisplay.drawTracks(memory);
     }
 
@@ -400,24 +437,65 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                 patternsPressed.add(index);
             }
 
-        } else if (trackMuteControls.contains(control)) {
+        } else if (mode == BEAT && editMode == GATE && trackMuteControls.contains(control)) {
             int index = trackMuteControls.getIndex(control);
             memory.getCurrentSession().toggleTrackEnabled(index);
             seqDisplay.drawTracks(memory);
+
+        } else if (editMode == CONTROL && trackMuteControls.contains(control)) {
+            int index = trackMuteControls.getIndex(control);
+            memory.getCurrentSession().toggleControlTrackEnabled(index);
+            seqDisplay.drawTracks(memory);
+
+        } else if (mode == MONO && editMode == GATE && keyboardControls.contains(control)) {
+            // have to check this before trackSelectControls
+            int index = keyboardControls.getIndex(control);
+            SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
+            step.setSemitone(index);
+            seqDisplay.drawKeyboard(memory);
 
         } else if (trackSelectControls.contains(control)) {
             int index = trackSelectControls.getIndex(control);
             switch (editMode) {
                 case GATE:
-                case VELOCITY:
-                    // in both edit modes, select the track for editing
-                    memory.selectTrack(index);
-                    seqDisplay.drawTracks(memory);
-                    seqDisplay.drawSteps(memory);
+                    if (mode == BEAT) {
+                        memory.selectTrack(index);
+                        seqDisplay.drawTracks(memory);
+                        seqDisplay.drawSteps(memory);
+                    }
+                    // took care of MONO mode above
                     break;
                 case CONTROL:
-                    // track buttons select controller (but only second row)
-                    // TODO: use track controls or actually use controller controls?
+                    memory.selectControlTrack(index);
+                    seqDisplay.drawTracks(memory);
+                    seqDisplay.drawControlSteps(memory);
+                    break;
+                case PITCH:
+                    // doesn't do anything in pitch mode
+                    break;
+                case JUMP:
+                    // track buttons play a sound in jump mode
+                    SeqTrack track = memory.getSelectedPattern().getTrack(index);
+                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
+                    seqDisplay.drawControlHighlight(control, true);
+                    break;
+            }
+
+        } else if (mode == MONO && octaveControls.contains(control)) {
+            int index = octaveControls.getIndex(control);
+            SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
+            step.setOctave(index);
+            seqDisplay.drawModifiers(memory);
+
+        } else if (mode == MONO && keyboardControls.contains(control)) {
+            int index = keyboardControls.getIndex(control);
+            switch (editMode) {
+                case GATE:
+                    SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
+                    step.setSemitone(index);
+                    seqDisplay.drawKeyboard(memory);
+                    break;
+                case CONTROL:
                     memory.selectControlTrack(index);
                     seqDisplay.drawTracks(memory);
                     seqDisplay.drawControlSteps(memory);
@@ -438,10 +516,14 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             SeqStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
                 case GATE:
-                case VELOCITY:
                     // selects step for editing
-                    selectedStep = index;
+                    selectedStep = index;  // TODO replace this with references to memory.getSelectedStep()
+                    memory.selectStep(index);
                     seqDisplay.drawValue(step.getVelocity(), 127);
+                    if (mode == MONO) {
+                        seqDisplay.drawKeyboard(memory);
+                        seqDisplay.drawModifiers(memory);
+                    }
                     // we don't actually toggle the step until release
                     break;
                 case CONTROL:
@@ -472,14 +554,14 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             seqDisplay.setEditMode(editMode);
             seqDisplay.drawEditMode();
             seqDisplay.drawSteps(memory);
-            seqDisplay.drawTracks(memory, false);  // TODO: can skip this if switching between GATE and VELOCITY modes
+            seqDisplay.drawTracks(memory);
 
         } else if (jumpControl.equals(control)) {
             editMode = EditMode.JUMP;
             seqDisplay.setEditMode(editMode);
             seqDisplay.drawEditMode();
             seqDisplay.drawSteps(memory);
-            seqDisplay.drawTracks(memory, false);
+            seqDisplay.drawTracks(memory);
             seqDisplay.drawValue(7, 7, SeqDisplay.ValueMode.HIGHLIGHT);
 
         } else if (fillControl.equals(control)) {
@@ -491,7 +573,6 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             Integer index = valueControls.getIndex(control);
             switch (editMode) {
                 case GATE:
-                case VELOCITY:
                     if (valuePressed == null) {
                         valuePressed = index;
                         step.setVelocity(SeqUtil.baseToValue(7 - index));
@@ -627,7 +708,6 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             SeqStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
                 case GATE:
-                case VELOCITY:
                     // step was selected and displayed on press; on release decide whether to toggle step and redraw
                     if (elapsed < LONG_PRESS_IN_MILLIS) {
                         step.toggleEnabled();
@@ -655,7 +735,6 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             int index = valueControls.getIndex(control);
             switch (editMode) {
                 case GATE:
-                case VELOCITY:
                 case CONTROL:
                     if (index == valuePressed) {
                         valuePressed = null;
@@ -741,7 +820,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             case CLEAR_SESSION:
                 Integer sessionIndex = settingsModule.getClearSessionIndex();
                 if (sessionIndex != null) {
-                    memory.getSessions().set(sessionIndex, new SeqSession(sessionIndex));
+                    memory.getSessions().set(sessionIndex, new SeqSession(sessionIndex, mode));
                     System.out.printf("Completed clear session %d\n", sessionIndex);
                 }
                 break;
@@ -889,7 +968,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             e.printStackTrace();
         }
 
-        return new SeqMemory(controllerNumbers, controllersByTrack);
+        return new SeqMemory(mode);
     }
 
     private String filename(int index) {

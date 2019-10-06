@@ -1,14 +1,12 @@
 package net.perkowitz.issho.hachi.modules.seq;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by optic on 2/25/17.
@@ -17,37 +15,75 @@ public class SeqSession implements MemoryObject {
 
     @Getter @Setter private int index;
     @Getter private List<SeqPattern> patterns = Lists.newArrayList();
+    private SeqUtil.SeqMode mode; // need to remember this for session copy
 
     // sessions remember their state so you can load them to specific patterns and mutes
     @Getter private List<Boolean> tracksEnabled = Lists.newArrayList();
+    @Getter private List<Boolean> controlTracksEnabled = Lists.newArrayList();
     @Getter private int chainStartIndex = 0;
     @Getter private int chainEndIndex = 0;
-    @Getter @Setter private int selectedTrackIndex = 8;
+    @Getter @Setter private int selectedTrackIndex = 0;
+    @Getter @Setter private int selectedStepIndex = 0;
     @Getter @Setter private int swingOffset = 0;
 
 
     public SeqSession() {}
 
-    public SeqSession(int index) {
+    public SeqSession(int index, SeqUtil.SeqMode mode) {
         this.index = index;
+        this.mode = mode;
         for (int i = 0; i < SeqUtil.PATTERN_COUNT; i++) {
-            patterns.add(new SeqPattern(i));
+            patterns.add(new SeqPattern(i, mode));
         }
-        for (int i = 0; i < SeqUtil.TRACK_COUNT; i++) {
+
+        // in beat mode, we have multiple tracks; in other modes, just one
+        if (mode == SeqUtil.SeqMode.BEAT) {
+            for (int i = 0; i < SeqUtil.BEAT_TRACK_COUNT; i++) {
+                tracksEnabled.add(true);
+            }
+        } else {
             tracksEnabled.add(true);
         }
+        for (int i = 0; i < SeqUtil.CONTROL_TRACK_COUNT; i++) {
+            controlTracksEnabled.add(true);
+        }
+
     }
 
     public SeqPattern getPattern(int index) {
         return patterns.get(index);
     }
 
-    public Boolean trackIsEnabled(int index) { return tracksEnabled.get(index); }
+    public Boolean trackIsEnabled(int index) {
+        if (index >= 0 && index < tracksEnabled.size()) {
+            return tracksEnabled.get(index);
+        }
+        return false;
+    }
+
+    public Boolean controlTrackIsEnabled(int index) {
+        if (index >= 0 && index < controlTracksEnabled.size()) {
+            return controlTracksEnabled.get(index);
+        }
+        return false;
+    }
 
     public void setTrackEnabled(int index, boolean isEnabled) { tracksEnabled.set(index, isEnabled); }
 
     public void toggleTrackEnabled(int index) {
         tracksEnabled.set(index, !tracksEnabled.get(index));
+    }
+
+    public void setControlTrackEnabled(int index, boolean isEnabled) { controlTracksEnabled.set(index, isEnabled); }
+
+    public void toggleControlTrackEnabled(int index) {
+        // TODO: this shouldn't be needed; however, find a way to fill out empty Seq objects on the fly in general
+        if (controlTracksEnabled.size() == 0) {
+            for (int i = 0; i < SeqUtil.CONTROL_TRACK_COUNT; i++) {
+                controlTracksEnabled.add(false);
+            }
+        }
+        controlTracksEnabled.set(index, !controlTracksEnabled.get(index));
     }
 
     public void selectChain(int chainStartIndex, int chainEndIndex) {
@@ -101,15 +137,19 @@ public class SeqSession implements MemoryObject {
     /***** static methods **************************/
 
     public static SeqSession copy(SeqSession session, int newIndex) {
-        SeqSession newSession = new SeqSession(newIndex);
+        SeqSession newSession = new SeqSession(newIndex, session.mode);
         try {
 
             for (int i = 0; i < session.patterns.size(); i++) {
                 newSession.patterns.set(i, SeqPattern.copy(session.patterns.get(i), i));
             }
 
-            for (Boolean trackEnabled : session.tracksEnabled) {
-                newSession.tracksEnabled.add(trackEnabled);
+            for (Boolean enabled : session.tracksEnabled) {
+                newSession.tracksEnabled.add(enabled);
+            }
+
+            for (Boolean enabled : session.controlTracksEnabled) {
+                newSession.controlTracksEnabled.add(enabled);
             }
 
             newSession.chainStartIndex = session.chainStartIndex;

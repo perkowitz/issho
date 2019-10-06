@@ -9,13 +9,12 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
 
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
+
 /**
  * Created by optic on 2/25/17.
  */
 public class SeqPattern implements MemoryObject {
-
-    private static int[] notes = new int[] { 49, 37, 39, 51, 42, 44, 46, 50,
-            36, 38, 40, 41, 43, 45, 47, 48 };
 
     @Getter @Setter private int index;
     @Getter private List<SeqTrack> tracks = Lists.newArrayList();
@@ -25,13 +24,17 @@ public class SeqPattern implements MemoryObject {
 
     public SeqPattern() {}
 
-    public SeqPattern(int index) {
+    public SeqPattern(int index, SeqUtil.SeqMode mode) {
 
         this.index = index;
 
-        // create each track
-        for (int i = 0; i < SeqUtil.TRACK_COUNT; i++) {
-            tracks.add(new SeqTrack(i, notes[i]));
+        // for beat mode, create multiple tracks
+        if (mode == BEAT) {
+            for (int i = 0; i < SeqUtil.BEAT_TRACK_COUNT; i++) {
+                tracks.add(new SeqTrack(i, SeqUtil.BEAT_TRACK_NOTES[i]));
+            }
+        } else {
+            tracks.add(new SeqTrack(0, null));
         }
 
         // create the control tracks
@@ -48,7 +51,10 @@ public class SeqPattern implements MemoryObject {
 
 
     @JsonIgnore public SeqTrack getTrack(int index) {
-        return tracks.get(index);
+        if (index >= 0 && index < tracks.size()) {
+            return tracks.get(index);
+        }
+        return null;
     }
 
     @JsonIgnore public SeqStep getStep(int trackIndex, int stepIndex) {
@@ -110,8 +116,11 @@ public class SeqPattern implements MemoryObject {
         SeqPattern newPattern = new SeqPattern();
         newPattern.setIndex(newIndex);
         try {
-            for (int i = 0; i < SeqUtil.TRACK_COUNT; i++) {
+            for (int i = 0; i < pattern.tracks.size(); i++) {
                 newPattern.tracks.add(SeqTrack.copy(pattern.tracks.get(i), i));
+            }
+            for (int i = 0; i < pattern.controlTracks.size(); i++) {
+                newPattern.controlTracks.add(SeqControlTrack.copy(pattern.controlTracks.get(i), i));
             }
             List<SeqPitchStep> pitchTrack = Lists.newArrayList();
             for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
@@ -119,7 +128,7 @@ public class SeqPattern implements MemoryObject {
                 pitchTrack.add(seqPitchStep);
             }
             newPattern.pitchTrack = pitchTrack;
-            // TODO copy control tracks and pitch track
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,11 +1,14 @@
 package net.perkowitz.issho.hachi.modules.seq;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.perkowitz.issho.devices.GridButton;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.devices.GridControlSet;
+import net.perkowitz.issho.devices.GridPad;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.perkowitz.issho.devices.GridButton.Side.*;
@@ -17,16 +20,22 @@ public class SeqUtil {
 
     public static int SESSION_COUNT = 16;
     public static int PATTERN_COUNT = 16;
-    public static int TRACK_COUNT = 16;
     public static int STEP_COUNT = 16;
+    public static int BEAT_TRACK_COUNT = 16;
     public static int CONTROL_TRACK_COUNT = 16;
-    public static int LONG_PRESS_IN_MILLIS = 500;
+    public static int LONG_PRESS_IN_MILLIS = 250;
 
     public static float VALUE_FACTOR_127 = 128 / 7;
 
-    public enum EditMode {
-        GATE, VELOCITY, CONTROL, PITCH, JUMP
+    public enum SeqMode {
+        BEAT, MONO, PARA
     }
+    public enum EditMode {
+        GATE, CONTROL, PITCH, JUMP
+    }
+
+    public static int[] BEAT_TRACK_NOTES = new int[] { 49, 37, 39, 51, 42, 44, 46, 50,
+            36, 38, 40, 41, 43, 45, 47, 48 };
 
 
     /***** controls *****************/
@@ -39,7 +48,29 @@ public class SeqUtil {
     public static GridControlSet trackMuteControls = GridControlSet.padRows(2,3);
     public static GridControlSet trackSelectControls = GridControlSet.padRows(4,5);
     public static GridControlSet stepControls = GridControlSet.padRows(6, 7);
-    public static GridControlSet controlSelectControls = GridControlSet.padRow(5);
+    public static GridControlSet octaveControls = GridControlSet.padRow(3);
+
+    // GridControlSet to represent a little keyboard
+    public static int KEYBOARD_BLACK_ROW = 4;
+    public static int KEYBOARD_WHITE_ROW = 5;
+    static List<GridControl> keys = Lists.newArrayList();
+    static {
+        // create the keyboard in ascending key order
+        keys.add(new GridControl(GridPad.at(0, KEYBOARD_WHITE_ROW), 0));
+        keys.add(new GridControl(GridPad.at(1, KEYBOARD_BLACK_ROW), 1));
+        keys.add(new GridControl(GridPad.at(1, KEYBOARD_WHITE_ROW), 2));
+        keys.add(new GridControl(GridPad.at(2, KEYBOARD_BLACK_ROW), 3));
+        keys.add(new GridControl(GridPad.at(2, KEYBOARD_WHITE_ROW), 4));
+        keys.add(new GridControl(GridPad.at(3, KEYBOARD_WHITE_ROW), 5));
+        keys.add(new GridControl(GridPad.at(4, KEYBOARD_BLACK_ROW), 6));
+        keys.add(new GridControl(GridPad.at(4, KEYBOARD_WHITE_ROW), 7));
+        keys.add(new GridControl(GridPad.at(5, KEYBOARD_BLACK_ROW), 8));
+        keys.add(new GridControl(GridPad.at(5, KEYBOARD_WHITE_ROW), 9));
+        keys.add(new GridControl(GridPad.at(6, KEYBOARD_BLACK_ROW), 10));
+        keys.add(new GridControl(GridPad.at(6, KEYBOARD_WHITE_ROW), 11));
+    }
+    public static GridControlSet keyboardControls = new GridControlSet(keys);
+
 
     // left controls
     public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
@@ -49,7 +80,7 @@ public class SeqUtil {
     public static GridControl patternSelectControl = new GridControl(GridButton.at(Left, 3), null);
 
     // edit mode controls
-    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 3);
+    public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 2);
     public static GridControl jumpControl = new GridControl(GridButton.at(Bottom, 6), null);
     public static GridControl fillControl = new GridControl(GridButton.at(Bottom, 7), null);
 
@@ -60,6 +91,8 @@ public class SeqUtil {
     public static Integer COLOR_OFF = 0;
     public static Integer COLOR_ON = 1;
     public static Integer COLOR_HIGHLIGHT = 2;
+    public static Integer COLOR_HIGHLIGHT_MID = 3;
+    public static Integer COLOR_HIGHLIGHT_DIM = 4;
     public static Integer COLOR_PATTERN = 10;
     public static Integer COLOR_PATTERN_PLAYING = 11;
     public static Integer COLOR_PATTERN_CHAINED = 12;
@@ -78,12 +111,15 @@ public class SeqUtil {
     public static Integer COLOR_VALUE_OFF = 40;
     public static Integer COLOR_VALUE_ON = 41;
     public static Integer COLOR_VALUE_ACCENT = 42;
+    public static Integer COLOR_KEY_BLACK = 50;
+    public static Integer COLOR_KEY_WHITE = 51;
 
     public static Map<Integer, Color> createPalette(Color playColor) {
         Map<Integer, Color> palette = Maps.newHashMap();
         Color playColorDim = Color.DARK_GRAY;
         Color selectColor = Color.fromIndex(1);
         Color highlightColor = Color.BRIGHT_YELLOW;
+        Color highlightColorMid = Color.fromIndex(Color.yellows[2]);
         Color highlightColorDim = Color.DIM_YELLOW;
         if (playColor == Color.BRIGHT_YELLOW) {
             highlightColor = Color.BRIGHT_PURPLE;
@@ -92,6 +128,8 @@ public class SeqUtil {
         palette.put(COLOR_OFF, playColorDim);
         palette.put(COLOR_ON, Color.WHITE);
         palette.put(COLOR_HIGHLIGHT, highlightColor);
+        palette.put(COLOR_HIGHLIGHT_MID, highlightColorMid);
+        palette.put(COLOR_HIGHLIGHT_DIM, highlightColorDim);
         palette.put(COLOR_PATTERN, playColor);
         palette.put(COLOR_PATTERN_PLAYING, Color.WHITE);
         palette.put(COLOR_PATTERN_CHAINED, playColorDim);
@@ -110,6 +148,8 @@ public class SeqUtil {
         palette.put(COLOR_VALUE_OFF, Color.OFF);
         palette.put(COLOR_VALUE_ON, playColor);
         palette.put(COLOR_VALUE_ACCENT, playColorDim);
+        palette.put(COLOR_KEY_BLACK, Color.DARK_GRAY);
+        palette.put(COLOR_KEY_WHITE, Color.LIGHT_GRAY);
         return palette;
     }
 

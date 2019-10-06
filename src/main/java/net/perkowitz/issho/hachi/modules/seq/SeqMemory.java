@@ -9,6 +9,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import java.util.List;
 import java.util.Map;
 
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
+
 /**
  * Created by optic on 10/24/16.
  */
@@ -21,6 +23,7 @@ public class SeqMemory implements MemoryObject {
     @Getter @Setter private int selectedPatternIndex = 0;
     @Getter @Setter private int selectedControlTrackIndex = 0;
 
+    @Getter @Setter private SeqUtil.SeqMode mode = BEAT;
     @Getter @Setter private int midiChannel = 0;
 
     @Getter private List<SeqSession> sessions = Lists.newArrayList();
@@ -28,9 +31,10 @@ public class SeqMemory implements MemoryObject {
 
     public SeqMemory() {}
 
-    public SeqMemory(List<Integer> controllersDefault, Map<Integer, List<Integer>> controllersByTrack) {
+    public SeqMemory(SeqUtil.SeqMode mode) {
+        this.mode = mode;
         for (int i = 0; i < SeqUtil.SESSION_COUNT; i++) {
-            sessions.add(new SeqSession(i));
+            sessions.add(new SeqSession(i, mode));
         }
     }
 
@@ -78,6 +82,11 @@ public class SeqMemory implements MemoryObject {
     }
 
     @JsonIgnore
+    public int getSelectedStepIndex() {
+        return getCurrentSession().getSelectedStepIndex();
+    }
+
+    @JsonIgnore
     public SeqControlTrack getSelectedControlTrack() {
         return getSelectedPattern().getControlTrack(selectedControlTrackIndex);
     }
@@ -105,6 +114,10 @@ public class SeqMemory implements MemoryObject {
 
     public void selectTrack(int index) {
         getCurrentSession().setSelectedTrackIndex(index);
+    }
+
+    public void selectStep(int index) {
+        getCurrentSession().setSelectedStepIndex(index);
     }
 
     public void selectControlTrack(int index) {

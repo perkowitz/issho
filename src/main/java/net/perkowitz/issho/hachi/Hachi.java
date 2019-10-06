@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.*;
+
 /**
  * Created by optic on 9/19/16.
  */
@@ -413,7 +415,16 @@ public class Hachi {
 
             } else if (className.equals("SeqModule")) {
                 Map<Integer, Color> palette = SeqUtil.getPalette(paletteName.toLowerCase());
-                SeqModule seqModule = new SeqModule(midiTransmitter, midiReceiver, palette, filePrefix);
+                SeqUtil.SeqMode mode = BEAT;
+                if (moduleSettings.get("mode") != null) {
+                    String m = ((String)moduleSettings.get("mode")).toLowerCase();
+                    if (m.equals("mono")) {
+                        mode = MONO;
+                    } else {
+                        mode = BEAT;
+                    }
+                }
+                SeqModule seqModule = new SeqModule(midiTransmitter, midiReceiver, palette, filePrefix, mode);
                 if (moduleSettings.get("midiNoteOffset") != null) {
                     Integer offset = (Integer)moduleSettings.get("midiNoteOffset");
                     if (offset != null) {
