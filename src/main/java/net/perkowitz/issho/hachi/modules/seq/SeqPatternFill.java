@@ -1,5 +1,7 @@
 package net.perkowitz.issho.hachi.modules.seq;
 
+import java.util.List;
+
 /**
  * Created by optic on 2/25/17.
  */
@@ -37,8 +39,12 @@ public class SeqPatternFill extends SeqPattern {
     public SeqTrack getTrack(int index) {
         return basePattern.getTrack(index);
     }
+    public List<SeqTrack> getTracks() { return basePattern.getTracks(); }
 
     public SeqStep getStep(int trackIndex, int stepIndex) {
+        if (stepIndex < 0 || stepIndex >= stepMap.length) {
+            return emptyStep;
+        }
         Integer mappedIndex = stepMap[stepIndex];
         if (mappedIndex == null || mappedIndex < 0 || mappedIndex >= SeqUtil.STEP_COUNT) {
             return emptyStep;
@@ -53,6 +59,9 @@ public class SeqPatternFill extends SeqPattern {
         return basePattern.getPitchStep(stepIndex);
     }
 
+    public String toString() {
+        return "SeqPatternFill:_";
+    }
 
     /***** static methods **************************/
 

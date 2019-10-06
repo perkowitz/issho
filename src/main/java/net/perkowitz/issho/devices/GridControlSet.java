@@ -2,14 +2,12 @@ package net.perkowitz.issho.devices;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.launchpadpro.Color;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by optic on 10/27/16.
@@ -161,5 +159,12 @@ public class GridControlSet {
         return padColumns(column, column);
     }
 
+    public static GridControlSet fromMultiple(GridControlSet ... sets) {
+        Set<GridControl> controls = Sets.newHashSet();
+        for (GridControlSet set : sets) {
+            controls.addAll(set.controls);
+        }
+        return new GridControlSet(controls);
+    }
 
 }

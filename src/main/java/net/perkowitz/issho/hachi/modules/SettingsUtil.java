@@ -33,6 +33,12 @@ public class SettingsUtil {
 
     /***** control sets for each function group *****************************/
 
+    public static GridControlSet allNonHachiControls = GridControlSet.fromMultiple(
+      GridControlSet.padRows(0, 7),
+      GridControlSet.buttonSide(GridButton.Side.Right),
+      GridControlSet.buttonSide(GridButton.Side.Bottom),
+      GridControlSet.buttonSide(GridButton.Side.Left, 2, 7)
+    );
     public static GridControlSet sessionControls = GridControlSet.padRows(SettingsUtil.SESSION_MIN_ROW, SettingsUtil.SESSION_MAX_ROW);
     public static GridControlSet loadControls = GridControlSet.padRows(SettingsUtil.FILE_LOAD_ROW, SettingsUtil.FILE_LOAD_ROW);
     public static GridControlSet saveControls = GridControlSet.padRows(SettingsUtil.FILE_SAVE_ROW, SettingsUtil.FILE_SAVE_ROW);

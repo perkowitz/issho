@@ -47,6 +47,8 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     @Getter private Integer clearSessionIndex = null;
 
 
+
+
     /***** constructor ***********************************/
 
     public SettingsSubmodule() {
@@ -66,7 +68,7 @@ public class SettingsSubmodule extends BasicModule implements Module, Sessionize
     }
 
     public void redraw() {
-        display.initialize();
+        allNonHachiControls.draw(display, Color.OFF);
         drawSessions();
         drawFiles();
         drawMidiChannel();

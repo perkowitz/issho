@@ -14,22 +14,23 @@ import java.util.List;
 public class SeqTrack implements MemoryObject {
 
     @Getter @Setter int index;
-    @Getter private int noteNumber;
-    @Getter private int midiChannel;
+    @Getter private Integer noteNumber = null; // this is set for a beat track, which just triggers one note; null for melody tracks
+    @Getter private Integer midiChannel = null;
     @Getter @Setter private boolean playing = false;
     @Getter private List<SeqStep> steps = Lists.newArrayList();
-    @Getter @Setter private List<SeqControlTrack> controlTracks = Lists.newArrayList();
 
 
     public SeqTrack() {}
 
-    public SeqTrack(int index, int noteNumber) {
+    public SeqTrack(int index, Integer noteNumber) {
         this.index = index;
         this.noteNumber = noteNumber;
         for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
             steps.add(new SeqStep(i));
         }
     }
+
+    // TODO: add a current step marker and a way to advance/reset, to support ratchet etc
 
     public SeqStep getStep(int index) {
         return steps.get(index);
@@ -84,7 +85,6 @@ public class SeqTrack implements MemoryObject {
 
     public static SeqTrack copy(SeqTrack track, int newIndex) {
         SeqTrack newTrack = new SeqTrack(newIndex, track.getNoteNumber());
-        newTrack.setControlTracks(track.controlTracks);
         for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
             newTrack.steps.set(i, SeqStep.copy(track.steps.get(i), i));
         }
