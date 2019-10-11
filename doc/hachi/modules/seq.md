@@ -170,7 +170,8 @@ Seq can also be set to use a blue, green, or pink color palette. Beat uses a def
 midi notes for its various tracks, corresponding to standard MIDI drum mappings. The ```midiNoteOffset```
 setting can be used to transpose all of the tracks by a number of semitones. For example, setting this
 value to 24 will transpose all note numbers by two octaves. The ```tiesEnabled``` setting can be used
-to allow notes longer than a single step to be played by Seq. The ```sessionPrograms``` setting
+to allow notes longer than a single step to be played by Seq; ```tiesEnabled``` defaults to ```false``` for
+Beat mode and ```true``` for Mono mode.  The ```sessionPrograms``` setting
 can be used to set midi program change values for each session. When the session is loaded, a program change 
 message will be sent with the provided value; a missing value or value of ```-1``` will result in no 
 message being sent.

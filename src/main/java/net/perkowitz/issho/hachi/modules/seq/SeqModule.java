@@ -85,6 +85,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         this.seqDisplay.setMode(mode);
         this.filePrefix = filePrefix;
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
+        this.tiesEnabled = (mode != BEAT);
         load(0);
     }
 
