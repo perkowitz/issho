@@ -11,6 +11,7 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.ValueSettable;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.Module;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.Receiver;
