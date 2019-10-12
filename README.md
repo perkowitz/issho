@@ -26,6 +26,21 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 
 # Release notes
 
+## 2019-10-06 v1.0.7
+- Add control tracks to Seq module.
+- Use tap/press for selecting and toggling steps on note and control tracks.
+- Combined the GATE and VELOCITY editing modes in Seq, since tap/press allows both.
+- Finer control of value settings for velocity and controllers.
+- Add MONO mode to Seq, for sequencing monophonic melodies.
+- Moved outdated modules into a 'deprecated' package.  
+- Updated to java 12, updated Module reference.
+
+## 2018-10-14 v1.0.6
+- Fix hang on shutdown.
+- Step module goes into random mode while receiving a fill signal.
+- Updates from [s0len0id](https://github.com/s0len0id) for running on Windows.
+- Independent input and output MIDI settings. 
+
 ## 2017-11-26 v1.0.5
 - In Beatbox, combine jump and play modes into a single mode. Add momentary pitch control and measure clock.
 - In Shihai, a fill button that tells all Sessionizeable modules to play a fill.

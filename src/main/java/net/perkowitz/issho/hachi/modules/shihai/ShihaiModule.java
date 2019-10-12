@@ -12,6 +12,7 @@ import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.Module;
 
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
@@ -27,7 +28,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
 
     private static int[] tempos = new int[] { 128, 124, 120, 116, 112, 108, 100, 92 };
 
-    @Getter @Setter private Module[] modules;
+    @Getter private Module[] modules;
 
     private ShihaiDisplay shihaiDisplay;
     private SettingsSubmodule settingsModule;
