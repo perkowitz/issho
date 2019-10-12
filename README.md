@@ -33,6 +33,7 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 - Finer control of value settings for velocity and controllers.
 - Add MONO mode to Seq, for sequencing monophonic melodies.
 - Moved outdated modules into a 'deprecated' package.  
+- Updated to java 12, updated Module reference.
 
 ## 2018-10-14 v1.0.6
 - Fix hang on shutdown.
