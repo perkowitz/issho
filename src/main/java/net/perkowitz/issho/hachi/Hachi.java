@@ -22,6 +22,7 @@ import net.perkowitz.issho.hachi.modules.seq.SeqModule;
 import net.perkowitz.issho.hachi.modules.seq.SeqUtil;
 import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
 import net.perkowitz.issho.hachi.modules.step.StepModule;
+import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.util.MidiUtil;
 import net.perkowitz.issho.util.SettingsUtil;
 

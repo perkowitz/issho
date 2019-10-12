@@ -12,6 +12,7 @@ import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
+import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.util.MidiUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
