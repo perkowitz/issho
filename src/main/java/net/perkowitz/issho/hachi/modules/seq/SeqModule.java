@@ -439,14 +439,14 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                 patternsPressed.add(index);
             }
 
-        } else if (mode == BEAT && editMode == GATE && trackMuteControls.contains(control)) {
-            int index = trackMuteControls.getIndex(control);
-            memory.getCurrentSession().toggleTrackEnabled(index);
-            seqDisplay.drawTracks(memory);
-
         } else if (editMode == CONTROL && trackMuteControls.contains(control)) {
             int index = trackMuteControls.getIndex(control);
             memory.getCurrentSession().toggleControlTrackEnabled(index);
+            seqDisplay.drawTracks(memory);
+
+        } else if (mode == BEAT && trackMuteControls.contains(control)) {
+            int index = trackMuteControls.getIndex(control);
+            memory.getCurrentSession().toggleTrackEnabled(index);
             seqDisplay.drawTracks(memory);
 
         } else if (mode == MONO && editMode == GATE && keyboardControls.contains(control)) {

@@ -162,7 +162,7 @@ public class SeqDisplay {
 
         if (settingsView) return;
 
-        if (mode == BEAT && editMode == GATE) {
+        if (mode == BEAT && editMode != CONTROL) {
             SeqTrack track = memory.getSelectedPattern().getTrack(index);
             if (track == null) {
                 return;
