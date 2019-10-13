@@ -131,8 +131,8 @@ public class HachiDeviceManager implements GridListener {
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {
-        } else if (button.equals(EXIT_BUTTON) && HachiController.DEBUG_MODE) {
-            if (elapsed > EXIT_PRESS_IN_MILLIS) {
+        } else if (button.equals(EXIT_BUTTON)) {
+            if (elapsed > EXIT_PRESS_IN_MILLIS || HachiController.DEBUG_MODE) {
                 hachiController.pressExit();
             }
         } else {
