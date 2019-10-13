@@ -6,7 +6,7 @@ a rhythm sequencer, a couple of monophonic melody sequencers, and a drawing/anim
 the top row of 8 buttons to select modules (and one more button for start/stop); each module takes 
 over the rest of the grid and buttons while it's in focus.
 
-This manual describes Hachi's basic functions. Separate manuals will provide
+This manual describes Hachi's basic functions. Separate manuals provide
 details on specific modules.
 
 # Getting Started and Configuration
@@ -188,8 +188,9 @@ the data files.
 Setting the midiContinueAsStart option to true will cause Hachi to restart on MIDI continue messages; when it is false, Hachi will continue
 running from the current step.
 
+# Using Hachi
 
-# Selecting Modules
+## Selecting Modules
 
 <img width="600px" src="hachi.png"/>
 
@@ -200,7 +201,13 @@ selected. All modules will continue to run even when not selected, but only the 
 directly controlled (though, of course, it's possible to create a module that can control other
 modules; see [Shihai](modules/shihai.md)).
 
-# Clock
+## Play and Exit
+
+The top two buttons on the left side are also reserved for main Hachi control. The top button
+starts and stops the sequencer, when Hachi is the master clock. The second button exits Hachi;
+hold it down for two seconds to quit.  
+
+## Clock
 
 Hachi includes a simple built-in clock for running clockable modules. The clock is started and stopped
 by tapping the topmost button on the left side (which is also reserved for Hachi). The clock runs at a rate
