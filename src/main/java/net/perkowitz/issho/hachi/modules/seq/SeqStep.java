@@ -86,6 +86,13 @@ public class SeqStep {
         }
     }
 
+    public void set(GateMode gateMode, int semitone, int octave, int velocity) {
+        this.gateMode = gateMode;
+        this.semitone = semitone;
+        this.octave = octave;
+        this.velocity = velocity;
+    }
+
     public void incrementVelocity() {
         setVelocity(velocity + 1);
     }

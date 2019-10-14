@@ -31,7 +31,7 @@ public class SeqUtil {
         BEAT, MONO, PARA
     }
     public enum EditMode {
-        GATE, CONTROL, PITCH, JUMP
+        GATE, CONTROL, PITCH, STEP, JUMP
     }
 
     public static int[] BEAT_TRACK_NOTES = new int[] { 49, 37, 39, 51, 42, 44, 46, 50,
@@ -70,7 +70,11 @@ public class SeqUtil {
         keys.add(new GridControl(GridPad.at(6, KEYBOARD_WHITE_ROW), 11));
     }
     public static GridControlSet keyboardControls = new GridControlSet(keys);
+    public static GridControlSet keyboardBackgroundControls = GridControlSet.padRows(KEYBOARD_BLACK_ROW, KEYBOARD_WHITE_ROW);
 
+    // modifiers & step controls
+    public static GridControl stepRestControl = new GridControl(GridPad.at(7, KEYBOARD_BLACK_ROW), 0);
+    public static GridControl stepTieControl = new GridControl(GridPad.at(7, KEYBOARD_WHITE_ROW), 0);
 
     // left controls
     public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
@@ -81,11 +85,21 @@ public class SeqUtil {
 
     // edit mode controls
     public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 2);
+    public static GridControl stepControl = new GridControl(GridButton.at(Bottom, 3), null);
     public static GridControl jumpControl = new GridControl(GridButton.at(Bottom, 6), null);
     public static GridControl fillControl = new GridControl(GridButton.at(Bottom, 7), null);
 
 
     /***** colors **********************************************************/
+
+    // special modifier colors
+    public static Color STEP_TIE_COLOR = Color.BRIGHT_PURPLE;
+    public static Color STEP_REST_COLOR = Color.DIM_PURPLE;
+    public static Color MOD_HOLD_COLOR = Color.BRIGHT_PURPLE;
+    public static Color MOD_STUTTER_COLOR = Color.BRIGHT_PINK;
+    public static Color MOD_NO_HOLD_COLOR = Color.DIM_PURPLE;
+    public static Color MOD_SKIP_COLOR = Color.BRIGHT_RED;
+    public static Color MOD_LEGATO_COLOR = Color.DIM_BLUE_GREEN;
 
     // give color indices some easy names to refer to
     public static Integer COLOR_OFF = 0;

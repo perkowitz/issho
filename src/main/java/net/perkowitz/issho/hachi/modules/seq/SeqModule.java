@@ -25,8 +25,7 @@ import java.util.Set;
 
 import static net.perkowitz.issho.hachi.modules.seq.SeqStep.GateMode.*;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.*;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.CONTROL;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.GATE;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.*;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
 
@@ -59,6 +58,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     private int currentMeasure = 0;
     private int currentSeq = 0;
     private int currentPulse = 0;
+    private int currentOctave = 4;
 
     private SeqPatternFill patternFill = null;
 
@@ -397,6 +397,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     private void onControlPressed(GridControl control, int velocity) {
 
         control.press();
+//        System.out.printf("Control pressed: %s, %d\n", control, control.getIndex());
 
         // these controls apply in main view or settings view
         if (control.equals(settingsControl)) {
@@ -456,8 +457,41 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             step.setSemitone(index);
             seqDisplay.drawKeyboard(memory);
 
+        } else if (mode == MONO && editMode == STEP && keyboardControls.contains(control)) {
+            // have to check this before trackSelectControls
+            int index = keyboardControls.getIndex(control);
+            SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
+            step.set(PLAY, index, currentOctave, velocity);
+            selectedStep = (selectedStep + 1) % STEP_COUNT;
+            memory.selectStep(selectedStep);
+            seqDisplay.drawKeyboard(memory);
+            seqDisplay.drawSteps(memory);
+            seqDisplay.drawModifiers(memory);
+
+        } else if (mode == MONO && editMode == STEP && stepRestControl.equals(control)) {
+            SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
+            step.setGateMode(REST);
+            selectedStep = (selectedStep + 1) % STEP_COUNT;
+            memory.selectStep(selectedStep);
+            seqDisplay.drawKeyboard(memory);
+            seqDisplay.drawSteps(memory);
+            seqDisplay.drawModifiers(memory);
+
+        } else if (mode == MONO && editMode == STEP && stepTieControl.equals(control)) {
+            SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
+            step.setGateMode(TIE);
+            selectedStep = (selectedStep + 1) % STEP_COUNT;
+            memory.selectStep(selectedStep);
+            seqDisplay.drawKeyboard(memory);
+            seqDisplay.drawSteps(memory);
+            seqDisplay.drawModifiers(memory);
+
+        } else if (mode == MONO && (editMode == GATE || editMode == STEP) && trackSelectControls.contains(control)) {
+            // if it's in the trackSelectControls but not in the keyboard, do nothing
+
         } else if (trackSelectControls.contains(control)) {
             int index = trackSelectControls.getIndex(control);
+            System.out.printf("Trk select: %d\n", index);
             switch (editMode) {
                 case GATE:
                     if (mode == BEAT) {
@@ -483,35 +517,17 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     break;
             }
 
-        } else if (mode == MONO && octaveControls.contains(control)) {
+        } else if (mode == MONO && editMode == GATE && octaveControls.contains(control)) {
             int index = octaveControls.getIndex(control);
             SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
             step.setOctave(index);
             seqDisplay.drawModifiers(memory);
 
-        } else if (mode == MONO && keyboardControls.contains(control)) {
-            int index = keyboardControls.getIndex(control);
-            switch (editMode) {
-                case GATE:
-                    SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
-                    step.setSemitone(index);
-                    seqDisplay.drawKeyboard(memory);
-                    break;
-                case CONTROL:
-                    memory.selectControlTrack(index);
-                    seqDisplay.drawTracks(memory);
-                    seqDisplay.drawControlSteps(memory);
-                    break;
-                case PITCH:
-                    // doesn't do anything in pitch mode
-                    break;
-                case JUMP:
-                    // track buttons play a sound in jump mode
-                    SeqTrack track = memory.getSelectedPattern().getTrack(index);
-                    sendMidiNote(memory.getMidiChannel(), track.getNoteNumber(), velocity);
-                    seqDisplay.drawControlHighlight(control, true);
-                    break;
-            }
+        } else if (mode == MONO && editMode == STEP && octaveControls.contains(control)) {
+            int index = octaveControls.getIndex(control);
+            currentOctave = index;
+            seqDisplay.setCurrentOctave(currentOctave);
+            seqDisplay.drawModifiers(memory);
 
         } else if (stepControls.contains(control)) {
             int index = stepControls.getIndex(control);
@@ -554,9 +570,14 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             int index = editModeControls.getIndex(control);
             editMode = EditMode.values()[index];
             seqDisplay.setEditMode(editMode);
-            seqDisplay.drawEditMode();
-            seqDisplay.drawSteps(memory);
-            seqDisplay.drawTracks(memory);
+            seqDisplay.redraw(memory);
+
+        } else if (mode == MONO && stepControl.equals(control)) {
+            editMode = STEP;
+            selectedStep = 0;
+            memory.selectStep(0);
+            seqDisplay.setEditMode(editMode);
+            seqDisplay.redraw(memory);
 
         } else if (jumpControl.equals(control)) {
             editMode = EditMode.JUMP;

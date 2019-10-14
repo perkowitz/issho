@@ -26,7 +26,7 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 - Save: saves the current memory contents to the current file.
 - Copy: for copying patterns.
 - Edit: for selecting a pattern to edit other than the currently running pattern.
-- Edit view buttons: select gate, control, or pitch.
+- Edit view buttons: select gate, control, pitch, and step.
 - Jump view: selects the jump view rather than one of the edit views.
 - Fill: plays fill patterns while held down.  
 
@@ -155,6 +155,17 @@ Every step has a semitone and octave setting, even if the step is disabled. As i
 steps can be set to PLAY, REST, or TIE by tapping the step pad, and the velocity can be set with the value pads.
 To select a step without changing the play setting, press and hold for half a second. 
  
+### Step view
+
+Step view allows notes to be entered in sequence, without selecting steps in between. When the step view
+is entered, the first step in the track will be selected. Every time a keyboard pad is tapped, the selected
+step will be set to that semitone and the next step will be selected. Tapping the octave pads will select the 
+octave value to be set for the next step; change the octave at any time to affect the next step entered.
+The velocity used to tap the keyboard pad will be stored as the step's velocity. To enter a rest or tie
+a previous note, tap the rest or tie pads next to the keyboard.  
+
+<img width="960px" src="seq-mono-step.png"/> 
+
 ### Other views
 
 The control, pitch, jump, and fill views function the same in Mono mode as they do in Beat mode.
