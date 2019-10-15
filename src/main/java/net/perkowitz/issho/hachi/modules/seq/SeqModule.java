@@ -491,7 +491,6 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
 
         } else if (trackSelectControls.contains(control)) {
             int index = trackSelectControls.getIndex(control);
-            System.out.printf("Trk select: %d\n", index);
             switch (editMode) {
                 case GATE:
                     if (mode == BEAT) {
@@ -534,14 +533,10 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             SeqStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
                 case GATE:
+                case STEP:
                     // selects step for editing
                     selectedStep = index;  // TODO replace this with references to memory.getSelectedStep()
                     memory.selectStep(index);
-                    seqDisplay.drawValue(step.getVelocity(), 127);
-                    if (mode == MONO) {
-                        seqDisplay.drawKeyboard(memory);
-                        seqDisplay.drawModifiers(memory);
-                    }
                     // we don't actually toggle the step until release
                     break;
                 case CONTROL:

@@ -54,6 +54,7 @@ public class SeqUtil {
     public static int KEYBOARD_BLACK_ROW = 4;
     public static int KEYBOARD_WHITE_ROW = 5;
     static List<GridControl> keys = Lists.newArrayList();
+    static List<GridControl> notKeys = Lists.newArrayList();
     static {
         // create the keyboard in ascending key order
         keys.add(new GridControl(GridPad.at(0, KEYBOARD_WHITE_ROW), 0));
@@ -68,9 +69,12 @@ public class SeqUtil {
         keys.add(new GridControl(GridPad.at(5, KEYBOARD_WHITE_ROW), 9));
         keys.add(new GridControl(GridPad.at(6, KEYBOARD_BLACK_ROW), 10));
         keys.add(new GridControl(GridPad.at(6, KEYBOARD_WHITE_ROW), 11));
+        notKeys.add(new GridControl(GridPad.at(0, KEYBOARD_BLACK_ROW), 0));
+        notKeys.add(new GridControl(GridPad.at(3, KEYBOARD_BLACK_ROW), 1));
+
     }
     public static GridControlSet keyboardControls = new GridControlSet(keys);
-    public static GridControlSet keyboardBackgroundControls = GridControlSet.padRows(KEYBOARD_BLACK_ROW, KEYBOARD_WHITE_ROW);
+    public static GridControlSet notKeyboardControls = new GridControlSet(notKeys);
 
     // modifiers & step controls
     public static GridControl stepRestControl = new GridControl(GridPad.at(7, KEYBOARD_BLACK_ROW), 0);

@@ -244,7 +244,7 @@ public class SeqDisplay {
         if (mode != MONO) return;
 
         if (editMode == GATE || editMode == STEP) {
-            keyboardBackgroundControls.draw(display, Color.OFF);
+            notKeyboardControls.draw(display, Color.OFF);
             SeqStep step = memory.getSelectedTrack().getStep(memory.getSelectedStepIndex());
             for (GridControl control : keyboardControls.getControls()) {
                 Color color = Color.OFF;
@@ -267,6 +267,9 @@ public class SeqDisplay {
             if (editMode == STEP) {
                 stepTieControl.draw(display, STEP_TIE_COLOR);
                 stepRestControl.draw(display, STEP_REST_COLOR);
+            } else {
+                stepTieControl.draw(display, Color.OFF);
+                stepRestControl.draw(display, Color.OFF);
             }
         }
     }
