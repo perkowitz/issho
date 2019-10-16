@@ -338,11 +338,15 @@ public class SeqDisplay {
     }
 
     public void drawControl(GridControl control, boolean isOn) {
-        if (isOn) {
-            control.draw(display, palette.get(COLOR_ON));
-        } else {
-            control.draw(display, palette.get(COLOR_OFF));
+        Color color = palette.get(isOn ? COLOR_ON : COLOR_OFF);;
+        if (settingsControl.equals(control) || muteControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_LEFT_DEFAULT_ON : COLOR_LEFT_DEFAULT_OFF);
+        } else if (copyControl.equals(control) || patternSelectControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_LEFT_PATTERNS_ON : COLOR_LEFT_PATTERNS_OFF);
+        } else if (saveControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_LEFT_SAVE_ON : COLOR_LEFT_SAVE_OFF);
         }
+        control.draw(display, color);
     }
 
     public void drawControlHighlight(GridControl control, boolean isOn) {

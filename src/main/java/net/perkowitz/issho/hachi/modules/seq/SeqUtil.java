@@ -131,6 +131,13 @@ public class SeqUtil {
     public static Integer COLOR_VALUE_ACCENT = 42;
     public static Integer COLOR_KEY_BLACK = 50;
     public static Integer COLOR_KEY_WHITE = 51;
+    public static Integer COLOR_LEFT_DEFAULT_OFF = 60;
+    public static Integer COLOR_LEFT_DEFAULT_ON = 61;
+    public static Integer COLOR_LEFT_PATTERNS_OFF = 62;
+    public static Integer COLOR_LEFT_PATTERNS_ON = 63;
+    public static Integer COLOR_LEFT_SAVE_OFF = 64;
+    public static Integer COLOR_LEFT_SAVE_ON = 65;
+
 
     public static Map<Integer, Color> createPalette(Color playColor) {
         Map<Integer, Color> palette = Maps.newHashMap();
@@ -168,6 +175,12 @@ public class SeqUtil {
         palette.put(COLOR_VALUE_ACCENT, playColorDim);
         palette.put(COLOR_KEY_BLACK, Color.DARK_GRAY);
         palette.put(COLOR_KEY_WHITE, Color.LIGHT_GRAY);
+        palette.put(COLOR_LEFT_DEFAULT_OFF, playColorDim);
+        palette.put(COLOR_LEFT_DEFAULT_ON, Color.WHITE);
+        palette.put(COLOR_LEFT_PATTERNS_OFF, playColor);
+        palette.put(COLOR_LEFT_PATTERNS_ON, Color.WHITE);
+        palette.put(COLOR_LEFT_SAVE_OFF, Color.DIM_RED);
+        palette.put(COLOR_LEFT_SAVE_ON, Color.BRIGHT_RED);
         return palette;
     }
 

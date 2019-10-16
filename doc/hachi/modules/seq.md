@@ -214,7 +214,9 @@ as a highlight color (accept for the yellow palette, which uses purple for highl
 in the highlight color, and keys will flash in the main color when played. 
 - Octave keys are in the main color, with the current step's programmed octave in the highlight color. The octave of the currently playing note will be indicated in white.
 - Step pads are white when that step is set to PLAY, gray for TIE, and off for REST.
-- Function buttons on the left and bottom are gray when off, white when on.
+- Of the left function buttons, the pattern buttons (copy and edit select) are the main color, like the pattern pads; the save button
+is red, like the save buttons in the settings view, and the others are gray. 
+- The bottom edit view buttons are gray when off, white or yellow when on.
 - The value buttons show the value in the main color (e.g. blue).
 - The settings view uses the standard settings palette.
 
