@@ -104,6 +104,8 @@ public class HachiDeviceManager implements GridListener {
 
     public void onButtonPressed(GridButton button, int velocity) {
 //        System.out.printf("Hachi buttonPressed: %s, %d\n", button, velocity);
+        GridControl control = new GridControl(button, button.getIndex());
+        control.press();
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE && button.getIndex() < modules.length) {
             // top row used for module switching
             selectModule(button.getIndex());
@@ -112,8 +114,7 @@ public class HachiDeviceManager implements GridListener {
             hachiController.pressPlay();
             redraw();
 
-        } else if (button.equals(EXIT_BUTTON) && HachiController.DEBUG_MODE) {
-            hachiController.pressExit();
+        } else if (button.equals(EXIT_BUTTON)) {
 
         } else {
             // everything else passed through to active module
@@ -125,10 +126,15 @@ public class HachiDeviceManager implements GridListener {
 
     public void onButtonReleased(GridButton button) {
 //        System.out.printf("Hachi buttonReleased: %s\n", button);
+        GridControl control = new GridControl(button, button.getIndex());
+        Long elapsed = control.release();
         if (button.getSide() == HachiUtil.MODULE_BUTTON_SIDE) {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {
         } else if (button.equals(EXIT_BUTTON)) {
+            if (elapsed > EXIT_PRESS_IN_MILLIS || HachiController.DEBUG_MODE) {
+                hachiController.pressExit();
+            }
         } else {
             // everything else passed through to active module
             if (activeListener != null) {

@@ -21,4 +21,6 @@ public class HachiUtil {
     public static Color COLOR_SELECTED = Color.WHITE; //Color.WHITE;//Color.BRIGHT_ORANGE;
     public static Color COLOR_UNSELECTED = Color.DIM_RED; //Color.DIM_ORANGE;// Color.DARK_GRAY;
 
+    public static int EXIT_PRESS_IN_MILLIS = 2000;
+
 }

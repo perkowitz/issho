@@ -36,6 +36,7 @@ public class SeqDisplay {
     @Setter private SeqMode mode = BEAT;
     @Setter private EditMode editMode = GATE;
     @Setter private SeqStep playingStep = null;
+    @Setter private int currentOctave = 0;
 
 
     public SeqDisplay(GridDisplay display) {
@@ -51,12 +52,9 @@ public class SeqDisplay {
     public void redraw(SeqMemory memory) {
         if (!settingsView) {
             drawPatterns(memory);
-            if (mode == MONO && editMode == GATE) {
-                drawKeyboard(memory);
-                drawModifiers(memory);
-            } else {
-                drawTracks(memory);
-            }
+            drawKeyboard(memory);
+            drawModifiers(memory);
+            drawTracks(memory);
             drawSteps(memory);
             drawLeftControls();
             drawValue(0, 7);
@@ -162,7 +160,7 @@ public class SeqDisplay {
 
         if (settingsView) return;
 
-        if (mode == BEAT && editMode == GATE) {
+        if (mode == BEAT && editMode != CONTROL ) {
             SeqTrack track = memory.getSelectedPattern().getTrack(index);
             if (track == null) {
                 return;
@@ -192,7 +190,7 @@ public class SeqDisplay {
             }
             GridControl muteControl = SeqUtil.trackMuteControls.get(index);
             muteControl.draw(display, color);
-        } else {
+        } else if (mode == BEAT) {
             trackMuteControls.draw(display, Color.OFF);
         }
     }
@@ -215,7 +213,7 @@ public class SeqDisplay {
             GridControl control = SeqUtil.stepControls.get(index);
             Color color = palette.get(COLOR_STEP_REST);
             boolean selected = (memory.getSelectedStepIndex() == index);
-            if (editMode == GATE) {
+            if (editMode == GATE || editMode == STEP) {
                 switch (track.getStep(index).getGateMode()) {
                     case PLAY:
                         color = palette.get(COLOR_STEP_PLAY);
@@ -243,7 +241,10 @@ public class SeqDisplay {
 
         if (settingsView) return;
 
-        if (editMode == GATE) {
+        if (mode != MONO) return;
+
+        if (editMode == GATE || editMode == STEP) {
+            notKeyboardControls.draw(display, Color.OFF);
             SeqStep step = memory.getSelectedTrack().getStep(memory.getSelectedStepIndex());
             for (GridControl control : keyboardControls.getControls()) {
                 Color color = Color.OFF;
@@ -258,10 +259,17 @@ public class SeqDisplay {
                     // it's a black key
                     color = palette.get(COLOR_KEY_BLACK);
                 } else if (pad != null && pad.getY() == KEYBOARD_WHITE_ROW) {
-                    // it's a black key
+                    // it's a white key
                     color = palette.get(COLOR_KEY_WHITE);
                 }
                 control.draw(display, color);
+            }
+            if (editMode == STEP) {
+                stepTieControl.draw(display, STEP_TIE_COLOR);
+                stepRestControl.draw(display, STEP_REST_COLOR);
+            } else {
+                stepTieControl.draw(display, Color.OFF);
+                stepRestControl.draw(display, Color.OFF);
             }
         }
     }
@@ -270,10 +278,14 @@ public class SeqDisplay {
 
         if (settingsView) return;
 
-        if (mode == MONO && editMode == GATE) {
+        if (mode == MONO && (editMode == GATE || editMode == STEP)) {
             SeqStep step = memory.getSelectedTrack().getStep(memory.getSelectedStepIndex());
             octaveControls.draw(display, palette.get(COLOR_PATTERN));
-            octaveControls.get(step.getOctave()).draw(display, palette.get(COLOR_PATTERN_SELECTED));
+            if (editMode == STEP) {
+                octaveControls.get(currentOctave).draw(display, palette.get(COLOR_PATTERN_SELECTED));
+            } else {
+                octaveControls.get(step.getOctave()).draw(display, palette.get(COLOR_PATTERN_SELECTED));
+            }
             if (playingStep != null) {
                 octaveControls.get(playingStep.getOctave()).draw(display, palette.get(COLOR_PATTERN_PLAYING));
             }
@@ -352,8 +364,18 @@ public class SeqDisplay {
             control.draw(display, color);
         }
 
+        // step view is in mono mode only
+        Color color = Color.OFF;
+        if (mode == MONO) {
+            color = palette.get(COLOR_OFF);
+            if (editMode == STEP) {
+                color = palette.get(COLOR_ON);
+            }
+        }
+        stepControl.draw(display, color);
+
         // jump mode is elsewhere and uses highlight colors
-        Color color = palette.get(COLOR_OFF);
+        color = palette.get(COLOR_OFF);
         if (editMode == JUMP) {
             color = palette.get(COLOR_HIGHLIGHT);
         }
