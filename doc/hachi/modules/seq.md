@@ -103,7 +103,7 @@ To select a step for editing without toggling, press and hold for half a second.
 
 ### Control view
 
-<img width="480px" src="beat-control.png"/>
+<img width="480px" src="seq-control.png"/>
 
 In the control view, the **track** select and track mute pads work the same as in gate view, 
 but are for selecting and muting the 16 control tracks. The tracks correspond to 16 MIDI 
@@ -132,7 +132,7 @@ pitches down. Seq will send pitch bend signals on its set MIDI channel for each 
 
 ### Jump view
 
-<img width="480px" src="beat-jump.png"/>
+<img width="480px" src="seq-jump.png"/>
 
 In the jump view, the track select pads can be used to play the corresponding 16 drum sounds directly. Tap a pad
 to play the sound, at the velocity with which you play the pad. Tapping any of the step controls will play that step on the next clock tick,
