@@ -284,7 +284,11 @@ public class SeqDisplay {
             if (editMode == STEP) {
                 octaveControls.get(currentOctave).draw(display, palette.get(COLOR_PATTERN_SELECTED));
             } else {
-                octaveControls.get(step.getOctave()).draw(display, palette.get(COLOR_PATTERN_SELECTED));
+                Color color = palette.get(COLOR_PATTERN_SELECTED);
+                if (step.isOctaveBlurred()) {
+                    color = palette.get(COLOR_RANDOM);
+                }
+                octaveControls.get(step.getOctave()).draw(display, color);
             }
             if (playingStep != null) {
                 octaveControls.get(playingStep.getOctave()).draw(display, palette.get(COLOR_PATTERN_PLAYING));
@@ -304,6 +308,9 @@ public class SeqDisplay {
             SeqControlStep step = track.getStep(index);
             if (step.isEnabled()) {
                 color = palette.get(COLOR_STEP_PLAY);
+                if (step.isBlurred()) {
+                    color = palette.get(COLOR_RANDOM);
+                }
             }
             control.draw(display, color);
         }
@@ -330,17 +337,20 @@ public class SeqDisplay {
     }
 
     public void drawLeftControls() {
-        drawControl(settingsControl, settingsView);
-        drawControl(muteControl, isMuted);
-        drawControl(saveControl, false);
         drawControl(copyControl, false);
         drawControl(patternSelectControl, false);
+        drawControl(randomControl, false);
+        drawControl(saveControl, false);
+        drawControl(settingsControl, settingsView);
+        drawControl(muteControl, isMuted);
     }
 
     public void drawControl(GridControl control, boolean isOn) {
         Color color = palette.get(isOn ? COLOR_ON : COLOR_OFF);;
         if (settingsControl.equals(control) || muteControl.equals(control)) {
             color = palette.get(isOn ? COLOR_LEFT_DEFAULT_ON : COLOR_LEFT_DEFAULT_OFF);
+        } else if (randomControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_RANDOM : COLOR_RANDOM_DIM);
         } else if (copyControl.equals(control) || patternSelectControl.equals(control)) {
             color = palette.get(isOn ? COLOR_LEFT_PATTERNS_ON : COLOR_LEFT_PATTERNS_OFF);
         } else if (saveControl.equals(control)) {

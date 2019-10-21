@@ -70,6 +70,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     private List<Integer> patternEditIndexBuffer = Lists.newArrayList();
     private boolean patternEditing = false;
     private boolean patternSelecting = false;
+    private boolean randomizing = false;
     private EditMode editMode = GATE;
     private List<Integer> onNotes = Lists.newArrayList(); // TODO: list or Set?
     @Setter private List<Integer> sessionPrograms = Lists.newArrayList();
@@ -161,7 +162,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                 SeqControlStep controlStep = controlTrack.getStep(nextStepIndex);
                 Integer controlNumber = controllerNumbers.get(controlTrack.getIndex());
                 if (controlNumber != null && controlStep.isEnabled()) {
-                    sendMidiCC(memory.getMidiChannel(), controlNumber, controlStep.getValue());
+                    sendMidiCC(memory.getMidiChannel(), controlNumber, controlStep.Value());
                     controlTrack.setPlaying(true);
                 }
             }
@@ -428,6 +429,10 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             patternSelecting = true;
             seqDisplay.drawControl(control, true);
 
+        } else if (control.equals(randomControl)) {
+            randomizing = true;
+            seqDisplay.drawControl(control, true);
+
         } else if (patternPlayControls.contains(control)) {
             int index = patternPlayControls.getIndex(control);
             if (patternEditing) {
@@ -489,6 +494,24 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         } else if (mode == MONO && (editMode == GATE || editMode == STEP) && trackSelectControls.contains(control)) {
             // if it's in the trackSelectControls but not in the keyboard, do nothing
 
+        } else if (randomizing && trackSelectControls.contains(control)) {
+            int index = trackSelectControls.getIndex(control);
+            switch (editMode) {
+                case GATE:
+                    break;
+                case CONTROL:
+                    memory.selectControlTrack(index);
+                    SeqControlTrack track = memory.getSelectedControlTrack();
+                    seqDisplay.drawTracks(memory);
+                    track.randomize();
+                    seqDisplay.drawSteps(memory);
+                    break;
+                case PITCH:
+                    break;
+                case JUMP:
+                    break;
+            }
+
         } else if (trackSelectControls.contains(control)) {
             int index = trackSelectControls.getIndex(control);
             switch (editMode) {
@@ -520,6 +543,9 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             int index = octaveControls.getIndex(control);
             SeqStep step = memory.getSelectedTrack().getStep(selectedStep);
             step.setOctave(index);
+            if (randomizing) {
+                step.setOctaveBlurred(!step.isOctaveBlurred());
+            }
             seqDisplay.drawModifiers(memory);
 
         } else if (mode == MONO && editMode == STEP && octaveControls.contains(control)) {
@@ -528,9 +554,28 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             seqDisplay.setCurrentOctave(currentOctave);
             seqDisplay.drawModifiers(memory);
 
+        } else if (randomizing && stepControls.contains(control)) {
+            int index = stepControls.getIndex(control);
+            switch (editMode) {
+                case GATE:
+                case STEP:
+                    break;
+                case CONTROL:
+                    selectedControlStep = index;
+                    SeqControlTrack track = memory.getSelectedControlTrack();
+                    SeqControlStep controlStep = track.getStep(index);
+                    controlStep.setBlurred(!controlStep.isBlurred());
+                    seqDisplay.drawSteps(memory);
+                    seqDisplay.drawValue(controlStep.getValue(), 127);
+                    break;
+                case PITCH:
+                    break;
+                case JUMP:
+                    break;
+            }
+
         } else if (stepControls.contains(control)) {
             int index = stepControls.getIndex(control);
-            SeqStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {
                 case GATE:
                 case STEP:
@@ -676,6 +721,10 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             patternSelecting = false;
             seqDisplay.drawControl(control, false);
 
+        } else if (control.equals(randomControl)) {
+            randomizing = false;
+            seqDisplay.drawControl(control, false);
+
         } else if (patternPlayControls.contains(control)) {
             // releasing a pattern pad
             // don't activate until the last pattern pad is released (so additional releases don't look like a new press/release)
@@ -721,7 +770,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     break;
             }
 
-        } else if (stepControls.contains(control)) {
+        } else if (!randomizing && stepControls.contains(control)) {
             int index = stepControls.getIndex(control);
             SeqStep step = memory.getSelectedTrack().getStep(index);
             switch (editMode) {

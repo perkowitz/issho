@@ -41,6 +41,7 @@
   },
   "modules": [
     {
+      "name": "G2 Drums",
       "class": "SeqModule",
       "mode": "beat",
       "palette": "Magenta",

@@ -40,7 +40,7 @@ public class SeqUtil {
 
     /***** controls *****************/
 
-    // a GridControlSet containing all the buttons along the bottom
+    // a GridControlSet containing all the buttons along the right
     public static GridControlSet valueControls = GridControlSet.buttonSide(Right);
 
     // GridControlSets for rows of pads
@@ -80,12 +80,13 @@ public class SeqUtil {
     public static GridControl stepRestControl = new GridControl(GridPad.at(7, KEYBOARD_BLACK_ROW), 0);
     public static GridControl stepTieControl = new GridControl(GridPad.at(7, KEYBOARD_WHITE_ROW), 0);
 
-    // left controls
-    public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
-    public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
-    public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
+    // left controls (index 0 and 1 are used by the main Hachi control)
     public static GridControl copyControl = new GridControl(GridButton.at(Left, 2), null);
     public static GridControl patternSelectControl = new GridControl(GridButton.at(Left, 3), null);
+    public static GridControl randomControl = new GridControl(GridButton.at(Left, 4), null);
+    public static GridControl saveControl = new GridControl(GridButton.at(Left, 5), null);
+    public static GridControl settingsControl = new GridControl(GridButton.at(Left, 6), null);
+    public static GridControl muteControl = new GridControl(GridButton.at(Left, 7), null);
 
     // edit mode controls
     public static GridControlSet editModeControls = GridControlSet.buttonSide(Bottom, 0, 2);
@@ -137,6 +138,8 @@ public class SeqUtil {
     public static Integer COLOR_LEFT_PATTERNS_ON = 63;
     public static Integer COLOR_LEFT_SAVE_OFF = 64;
     public static Integer COLOR_LEFT_SAVE_ON = 65;
+    public static Integer COLOR_RANDOM = 70;
+    public static Integer COLOR_RANDOM_DIM = 71;
 
 
     public static Map<Integer, Color> createPalette(Color playColor) {
@@ -146,9 +149,15 @@ public class SeqUtil {
         Color highlightColor = Color.BRIGHT_YELLOW;
         Color highlightColorMid = Color.fromIndex(Color.yellows[2]);
         Color highlightColorDim = Color.DIM_YELLOW;
+        Color randomColor = Color.BRIGHT_PINK;
+        Color randomColorDim = Color.DIM_PINK;
         if (playColor == Color.BRIGHT_YELLOW) {
             highlightColor = Color.BRIGHT_PURPLE;
             highlightColorDim = Color.DIM_PURPLE;
+        }
+        if (playColor == Color.BRIGHT_PINK) {
+            randomColor = Color.BRIGHT_PURPLE;
+            randomColorDim = Color.DIM_PURPLE;
         }
         palette.put(COLOR_OFF, playColorDim);
         palette.put(COLOR_ON, Color.WHITE);
@@ -181,6 +190,8 @@ public class SeqUtil {
         palette.put(COLOR_LEFT_PATTERNS_ON, Color.WHITE);
         palette.put(COLOR_LEFT_SAVE_OFF, Color.DIM_RED);
         palette.put(COLOR_LEFT_SAVE_ON, Color.BRIGHT_RED);
+        palette.put(COLOR_RANDOM, randomColor);
+        palette.put(COLOR_RANDOM_DIM, randomColorDim);
         return palette;
     }
 

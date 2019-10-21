@@ -34,6 +34,14 @@ public class SeqControlTrack {
         return String.format("SeqCtrlTrack:%02d", index);
     }
 
+    public void randomize() {
+        for (SeqControlStep step : steps) {
+            int v = (int)Math.floor(Math.random() * 128);
+//            step.setEnabled(true);
+            step.setValue(v);
+        }
+    }
+
     /***** static methods **************************/
 
     public static SeqControlTrack copy(SeqControlTrack track, int newIndex) {
