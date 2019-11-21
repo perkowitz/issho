@@ -44,6 +44,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
     private GridDevice[] gridDevices;
     private HachiDeviceManager[] hachiDeviceManagers;
     private MultiDisplay[] displays;
+    private Receiver outputReceiver = null;
 
     private List<Clockable> clockables = Lists.newArrayList();
     private List<Triggerable> triggerables = Lists.newArrayList();
@@ -62,7 +63,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
     private int tempoIntervalInMillis = 125 * 120 / tempo;
 
 
-    public HachiController(Module[] modules, GridDevice[] gridDevices, CountDownLatch stop) {
+    public HachiController(Module[] modules, GridDevice[] gridDevices, CountDownLatch stop, Receiver outputReceiver) {
 
         displays = new MultiDisplay[modules.length];
 
@@ -95,6 +96,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
         }
 
         this.stop = stop;
+        this.outputReceiver = outputReceiver;
     }
 
     public void run() {
@@ -271,6 +273,8 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
             int status = shortMessage.getStatus();
 
             if (command == MIDI_REALTIME_COMMAND) {
+                // echo realtime commands to the midi output
+                outputReceiver.send(message, timeStamp);
                 switch (status) {
                     case START:
 //                        System.out.println("START");
