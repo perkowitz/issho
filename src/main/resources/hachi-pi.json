@@ -45,37 +45,28 @@
       "panicExclude": [14, 15]
     },
     {
-      "class": "BeatModule",
+      "name": "R8m Drums",
+      "class": "SeqModule",
+      "mode": "beat",
       "palette": "Blue",
-      "filePrefix": "beat0"
+      "tiesEnabled": false,
+      "filePrefix": "seqBeat0",
+      "controllerNumbers": [ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 ]
     },
     {
-      "class": "BeatModule",
-      "palette": "Pink",
-      "midiNoteOffset": 24,
-      "filePrefix": "beat1"
-    },
-    {
-      "class": "BeatModule",
+      "name": "a-station",
+      "class": "SeqModule",
+      "mode": "mono",
       "palette": "Green",
-      "filePrefix": "beat2"
-    },
-    {
-      "class": "MonoModule",
-      "filePrefix": "mono1"
-    },
-    {
-      "class": "MonoModule",
-      "filePrefix": "mono2",
-      "palette": "orange"
+      "tiesEnabled": true,
+      "filePrefix": "seqMono0",
+      "midiNoteOffset": 12,
+      "controllerNumbers": [ 21, 25, 20, 24, 74, 71, 102, 105, 29, 30, 27, 28, 103, 113, 114, 111 ],
+      "controllers": ["pwm1", "pwm2", "shape1", "shape2", "freq", "res", "env1>freq", "env1d", "mix", "sub", "detune", "mixop", "lfo>freq", "rate1", "rate2", "env2r"]
     },
     {
       "class": "StepModule",
       "filePrefix": "step0"
-    },
-    {
-      "class": "StepModule",
-      "filePrefix": "step1"
     }
   ]
 }

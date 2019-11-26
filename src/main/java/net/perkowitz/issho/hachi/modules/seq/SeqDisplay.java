@@ -23,7 +23,7 @@ import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
 public class SeqDisplay {
 
     public enum ValueMode {
-        DEFAULT, HIGHLIGHT
+        DEFAULT, HIGHLIGHT, BLURRED
     }
 
     @Setter private GridDisplay display;
@@ -57,7 +57,7 @@ public class SeqDisplay {
             drawTracks(memory);
             drawSteps(memory);
             drawLeftControls();
-            drawValue(0, 7);
+            drawValue(0, 7, ValueMode.DEFAULT, false);
             drawEditMode();
         }
     }
@@ -249,7 +249,7 @@ public class SeqDisplay {
             for (GridControl control : keyboardControls.getControls()) {
                 Color color = Color.OFF;
                 GridPad pad = control.getPad();
-                if (playingStep != null && control.getIndex() == playingStep.getSemitone()) {
+                if (playingStep != null && control.getIndex() == playingStep.getSemitone()) {        // TODO figure out why it's not showing playing step on TIEs
                     // if the key is being played
                     color = palette.get(COLOR_PATTERN);
                 } else if (control.getIndex() == step.getSemitone()) {
@@ -406,13 +406,9 @@ public class SeqDisplay {
         fillControl.draw(display, color);
     }
 
-    public void drawValue(int value, int maxValue) {
-        drawValue(value, maxValue, ValueMode.DEFAULT);
-    }
-
-    public void drawValue(int value, int maxValue, ValueMode valueMode) {
+    public void drawValue(int value, int maxValue, ValueMode valueMode, boolean isBlurred) {
         if (maxValue == 127) {
-            drawValue127(value);
+            drawValue127(value, isBlurred);
             return;
         }
         int valueAsEight = (value * 8) / maxValue;
@@ -430,7 +426,7 @@ public class SeqDisplay {
         }
     }
 
-    private void drawValue127(int value) {
+    public void drawValue127(int value, boolean isBlurred) {
 
         int base = valueToBase(value);
         int accent = base;
@@ -443,7 +439,11 @@ public class SeqDisplay {
 
         valueControls.draw(display, Color.OFF);
         GridControl baseControl = valueControls.get(7 - base);
-        baseControl.draw(display, palette.get(COLOR_VALUE_ON));
+        Color color = palette.get(COLOR_VALUE_ON);
+        if (isBlurred) {
+            color = palette.get(COLOR_RANDOM);
+        }
+        baseControl.draw(display, color);
         if (accent != base && accent >= 0 && accent < 8) {
             GridControl accentControl = valueControls.get(7 - accent);
             accentControl.draw(display, palette.get(COLOR_VALUE_ACCENT));

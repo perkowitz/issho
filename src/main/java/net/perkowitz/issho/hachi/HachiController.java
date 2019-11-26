@@ -22,7 +22,7 @@ import static javax.sound.midi.ShortMessage.*;
  */
 public class HachiController implements Clockable, Receiver, ValueSettable {
 
-    public static boolean DEBUG_MODE = true;
+    public static boolean DEBUG_MODE = false;
 
     private static int STEP_MIN = 0;
     private static int STEP_MAX = 110;

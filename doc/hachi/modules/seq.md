@@ -10,10 +10,10 @@ Features:
 - In Beat mode, each pattern contains 16 tracks, with a MIDI note defined for each track.
 - In Mono mode, each pattern contains one track, which can play a monophonic sequence of notes. 
 - Each track consists of 16 steps. 
-- Each step can play a note (with settable velocity) or rest.
+- Each step can play a note (with settable velocity), a rest, or tie (hold) the previous note.
 - Seq also supports 16 control tracks per pattern, which can send MIDI CC values on each step.
 - The entire contents of memory can be saved to a file. 
-- Within the Seq module, 16 different files can be saved and loaded, but
+- Within the Seq module, 8 different files can be saved and loaded, but
 the files can be copied, backed up, and shared. Data is saved in a JSON format.
 
 # Layout and Controls
@@ -36,7 +36,7 @@ chained. To select a single pattern, tap the pad; the pattern will begin at the 
 To chain a set of patterns, hold down the first pattern in the chain and then press the last pattern in the chain. 
 Those patterns and all those in between will be played in order, beginning at the start of the next measure.
 Whenever a pattern or chain of patterns is selected for play, the first pattern will be selected for editing, but another pattern can be edited by 
-holding down the pattern edit button (along the left side) and tapping the pattern to edit. Pattern selection
+holding down the pattern edit button and tapping the pattern to edit. Pattern selection
 is available in all editing views.
 
 ### Value Buttons
@@ -164,6 +164,7 @@ Mono mode provides a monophonic melodic sequencer for programming melodies acros
 ### Views
 
 Mono mode offers the same five views as beat mode: gate, control, pitch, jump, and fill. 
+In addition, mono mode offers the step view, for entering notes in sequence.
 This section describes the ways mono mode differs from beat mode.
 
 ### Gate view
@@ -202,7 +203,7 @@ In mono mode, the following things can be randomized by holding random and tappi
     - Randomizing an octave button will set that octave value and blur the octave for the currently selected step.
 - In the control view:
     - Randomizing a track will select the track and generate values for each step in the track.
-    - Randomizing a step will blur it. 
+    - Randomizing a step will select the step and blur it. 
 
 ## Settings View
 
