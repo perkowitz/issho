@@ -23,7 +23,7 @@ import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
 public class SeqDisplay {
 
     public enum ValueMode {
-        DEFAULT, HIGHLIGHT
+        DEFAULT, HIGHLIGHT, BLURRED
     }
 
     @Setter private GridDisplay display;
@@ -57,7 +57,7 @@ public class SeqDisplay {
             drawTracks(memory);
             drawSteps(memory);
             drawLeftControls();
-            drawValue(0, 7);
+            drawValue(0, 7, ValueMode.DEFAULT, false);
             drawEditMode();
         }
     }
@@ -249,7 +249,7 @@ public class SeqDisplay {
             for (GridControl control : keyboardControls.getControls()) {
                 Color color = Color.OFF;
                 GridPad pad = control.getPad();
-                if (playingStep != null && control.getIndex() == playingStep.getSemitone()) {
+                if (playingStep != null && control.getIndex() == playingStep.getSemitone()) {        // TODO figure out why it's not showing playing step on TIEs
                     // if the key is being played
                     color = palette.get(COLOR_PATTERN);
                 } else if (control.getIndex() == step.getSemitone()) {
@@ -284,7 +284,11 @@ public class SeqDisplay {
             if (editMode == STEP) {
                 octaveControls.get(currentOctave).draw(display, palette.get(COLOR_PATTERN_SELECTED));
             } else {
-                octaveControls.get(step.getOctave()).draw(display, palette.get(COLOR_PATTERN_SELECTED));
+                Color color = palette.get(COLOR_PATTERN_SELECTED);
+                if (step.isOctaveBlurred()) {
+                    color = palette.get(COLOR_RANDOM);
+                }
+                octaveControls.get(step.getOctave()).draw(display, color);
             }
             if (playingStep != null) {
                 octaveControls.get(playingStep.getOctave()).draw(display, palette.get(COLOR_PATTERN_PLAYING));
@@ -304,6 +308,9 @@ public class SeqDisplay {
             SeqControlStep step = track.getStep(index);
             if (step.isEnabled()) {
                 color = palette.get(COLOR_STEP_PLAY);
+                if (step.isBlurred()) {
+                    color = palette.get(COLOR_RANDOM);
+                }
             }
             control.draw(display, color);
         }
@@ -330,19 +337,26 @@ public class SeqDisplay {
     }
 
     public void drawLeftControls() {
-        drawControl(settingsControl, settingsView);
-        drawControl(muteControl, isMuted);
-        drawControl(saveControl, false);
         drawControl(copyControl, false);
         drawControl(patternSelectControl, false);
+        drawControl(randomControl, false);
+        drawControl(saveControl, false);
+        drawControl(settingsControl, settingsView);
+        drawControl(muteControl, isMuted);
     }
 
     public void drawControl(GridControl control, boolean isOn) {
-        if (isOn) {
-            control.draw(display, palette.get(COLOR_ON));
-        } else {
-            control.draw(display, palette.get(COLOR_OFF));
+        Color color = palette.get(isOn ? COLOR_ON : COLOR_OFF);;
+        if (settingsControl.equals(control) || muteControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_LEFT_DEFAULT_ON : COLOR_LEFT_DEFAULT_OFF);
+        } else if (randomControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_RANDOM : COLOR_RANDOM_DIM);
+        } else if (copyControl.equals(control) || patternSelectControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_LEFT_PATTERNS_ON : COLOR_LEFT_PATTERNS_OFF);
+        } else if (saveControl.equals(control)) {
+            color = palette.get(isOn ? COLOR_LEFT_SAVE_ON : COLOR_LEFT_SAVE_OFF);
         }
+        control.draw(display, color);
     }
 
     public void drawControlHighlight(GridControl control, boolean isOn) {
@@ -392,13 +406,9 @@ public class SeqDisplay {
         fillControl.draw(display, color);
     }
 
-    public void drawValue(int value, int maxValue) {
-        drawValue(value, maxValue, ValueMode.DEFAULT);
-    }
-
-    public void drawValue(int value, int maxValue, ValueMode valueMode) {
+    public void drawValue(int value, int maxValue, ValueMode valueMode, boolean isBlurred) {
         if (maxValue == 127) {
-            drawValue127(value);
+            drawValue127(value, isBlurred);
             return;
         }
         int valueAsEight = (value * 8) / maxValue;
@@ -416,7 +426,7 @@ public class SeqDisplay {
         }
     }
 
-    private void drawValue127(int value) {
+    public void drawValue127(int value, boolean isBlurred) {
 
         int base = valueToBase(value);
         int accent = base;
@@ -429,7 +439,11 @@ public class SeqDisplay {
 
         valueControls.draw(display, Color.OFF);
         GridControl baseControl = valueControls.get(7 - base);
-        baseControl.draw(display, palette.get(COLOR_VALUE_ON));
+        Color color = palette.get(COLOR_VALUE_ON);
+        if (isBlurred) {
+            color = palette.get(COLOR_RANDOM);
+        }
+        baseControl.draw(display, color);
         if (accent != base && accent >= 0 && accent < 8) {
             GridControl accentControl = valueControls.get(7 - accent);
             accentControl.draw(display, palette.get(COLOR_VALUE_ACCENT));

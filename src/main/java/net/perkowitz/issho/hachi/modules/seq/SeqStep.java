@@ -19,11 +19,15 @@ public class SeqStep {
     private static int MAX_OCTAVE = 10;
     private static int DEFAULT_VELOCITY = 80;
     private static int MAX_VELOCITY = 127;
+    private static int OCTAVE_BLUR_RANGE = 1;
+    private static int VELOCITY_BLUR_RANGE = 32;
 
     @Getter private int index;
     @Getter private int semitone;
     @Getter private int octave;
     @Getter private int velocity;
+    @Getter @Setter boolean octaveBlurred = false;
+    @Getter @Setter boolean velocityBlurred = false;
     @Getter @Setter private boolean enabled = false;
     @Getter @Setter private GateMode gateMode = GateMode.REST;
 
@@ -64,6 +68,24 @@ public class SeqStep {
         } else {
             this.semitone = semitone;
         }
+    }
+
+    // Octave returns the step octave adjusted by blurring.
+    public int Octave() {
+        int o = octave;
+        if (octaveBlurred) {
+            o += (int)Math.floor(Math.random() * (2 * OCTAVE_BLUR_RANGE +1)) - OCTAVE_BLUR_RANGE;
+        }
+        return Math.max(0, Math.min(MAX_OCTAVE, o));
+    }
+
+    // Velocity returns the step velocity adjusted by blurring.
+    public int Velocity() {
+        int v = velocity;
+        if (velocityBlurred) {
+            v += (int)Math.floor(Math.random() * (2 * VELOCITY_BLUR_RANGE +1)) - VELOCITY_BLUR_RANGE;
+        }
+        return Math.max(0, Math.min(127, v));
     }
 
     public void setOctave(int octave) {
@@ -115,7 +137,7 @@ public class SeqStep {
 
     @JsonIgnore
     public int getNote() {
-        return octave * 12 + semitone;
+        return Octave() * 12 + semitone;
     }
 
     /***** static methods **************************/

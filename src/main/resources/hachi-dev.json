@@ -41,9 +41,10 @@
   },
   "modules": [
     {
+      "name": "G2 Drums",
       "class": "SeqModule",
       "mode": "beat",
-      "palette": "Magenta",
+      "palette": "Red",
       "tiesEnabled": false,
       "filePrefix": "seqBeat0",
       "controllerNumbers": [ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 ]

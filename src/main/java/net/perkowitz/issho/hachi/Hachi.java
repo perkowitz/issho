@@ -122,7 +122,7 @@ public class Hachi {
         }
 
         // create the HachiController
-        controller = new HachiController(modules, gridDevicesArray, stop);
+        controller = new HachiController(modules, gridDevicesArray, stop, midiReceiver);
         Boolean midiContinueAsStart = (Boolean)settings.get("midiContinueAsStart");
         if (midiContinueAsStart != null) {
             controller.setMidiContinueAsStart(midiContinueAsStart);
