@@ -22,7 +22,8 @@ import static javax.sound.midi.ShortMessage.*;
  */
 public class HachiController implements Clockable, Receiver, ValueSettable {
 
-    public static boolean DEBUG_MODE = false;
+    @Getter @Setter private static boolean debugMode = false;
+    @Setter private static boolean sendMidiRealtime = true;
 
     private static int STEP_MIN = 0;
     private static int STEP_MAX = 110;
@@ -69,6 +70,14 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
 
         this.modules = modules;
         for (int i = 0; i < modules.length; i++) {
+//            GridColor color = Color.WHITE;
+//            if (modules[i] instanceof Multitrack) {
+//                Multitrack m = (Multitrack) modules[i];
+//                color = m.getEnabledColor();
+//            }
+//            Console.fg(Console.fromGrid((net.perkowitz.issho.devices.launchpadpro.Color)color), false);
+//            System.out.printf("Loading module: %s\n", modules[i].name());
+//            Console.reset();
             System.out.printf("Loading module: %s\n", modules[i]);
             if (modules[i] instanceof Clockable) {
                 clockables.add((Clockable)modules[i]);
@@ -274,7 +283,9 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
 
             if (command == MIDI_REALTIME_COMMAND) {
                 // echo realtime commands to the midi output
-                outputReceiver.send(message, timeStamp);
+                if (sendMidiRealtime) {
+                    outputReceiver.send(message, timeStamp);
+                }
                 switch (status) {
                     case START:
 //                        System.out.println("START");

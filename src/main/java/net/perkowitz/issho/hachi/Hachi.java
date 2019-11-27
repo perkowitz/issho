@@ -82,6 +82,7 @@ public class Hachi {
      */
     public static void main(String args[]) throws Exception {
 
+//        Console.fg(Console.Color.GREEN, false);
         // settings
         String settingsFile = null;
         if (args.length > 0) {
@@ -126,6 +127,14 @@ public class Hachi {
         Boolean midiContinueAsStart = (Boolean)settings.get("midiContinueAsStart");
         if (midiContinueAsStart != null) {
             controller.setMidiContinueAsStart(midiContinueAsStart);
+        }
+        Boolean sendMidiRealtime = (Boolean)settings.get("sendMidiRealtime");
+        if (sendMidiRealtime != null) {
+            controller.setSendMidiRealtime(sendMidiRealtime);
+        }
+        Boolean debugMode = (Boolean)settings.get("debugMode");
+        if (debugMode != null) {
+            controller.setDebugMode(debugMode);
         }
 
         // if specified, create a knobby device and make the value control settings
