@@ -64,6 +64,15 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
     }
 
 
+    public String name() {
+        return "Step";
+    }
+
+    public String shortName() {
+        return "Step";
+    }
+
+
     /***** private implementation ****************************************/
 
     private void advance(boolean andReset) {

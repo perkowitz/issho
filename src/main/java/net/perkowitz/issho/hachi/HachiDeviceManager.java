@@ -54,6 +54,8 @@ public class HachiDeviceManager implements GridListener {
             activeListener = moduleListeners[index];
             activeModule.redraw();
             redraw();
+
+            System.out.printf("\rActive module: %d:%s [%s]\n", index, activeModule.name(), activeModule.shortName());
         }
     }
 
@@ -79,7 +81,7 @@ public class HachiDeviceManager implements GridListener {
             display.setButton(PLAY_BUTTON, COLOR_UNSELECTED);
         }
 
-        if (HachiController.DEBUG_MODE) {
+        if (HachiController.isDebugMode()) {
             display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
         }
 
@@ -110,6 +112,7 @@ public class HachiDeviceManager implements GridListener {
             // top row used for module switching
             selectModule(button.getIndex());
 
+
         } else if (button.equals(PLAY_BUTTON)) {
             hachiController.pressPlay();
             redraw();
@@ -132,7 +135,7 @@ public class HachiDeviceManager implements GridListener {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {
         } else if (button.equals(EXIT_BUTTON)) {
-            if (elapsed > EXIT_PRESS_IN_MILLIS || HachiController.DEBUG_MODE) {
+            if (elapsed > EXIT_PRESS_IN_MILLIS || HachiController.isDebugMode()) {
                 hachiController.pressExit();
             }
         } else {

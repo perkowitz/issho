@@ -78,7 +78,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
 //            Console.fg(Console.fromGrid((net.perkowitz.issho.devices.launchpadpro.Color)color), false);
 //            System.out.printf("Loading module: %s\n", modules[i].name());
 //            Console.reset();
-            System.out.printf("Loading module: %s\n", modules[i]);
+            System.out.printf("Loading module (%d): %s\n", i, modules[i].name());
             if (modules[i] instanceof Clockable) {
                 clockables.add((Clockable)modules[i]);
             }

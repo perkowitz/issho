@@ -72,6 +72,14 @@ public class ParaModule extends ChordModule implements Module, Clockable, GridLi
     }
 
 
+    public String name() {
+        return "Para";
+    }
+
+    public String shortName() {
+        return "Para";
+    }
+
     /***** private implementation ****************************************/
 
     private void advance(boolean andReset) {

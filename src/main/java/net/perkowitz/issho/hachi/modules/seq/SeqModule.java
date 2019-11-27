@@ -91,6 +91,14 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         load(0);
     }
 
+    public String name() {
+        return "Seq" + mode.toString();
+    }
+
+    public String shortName() {
+        return mode.toString().substring(0,4);
+    }
+
 
     /***** private implementation ****************************************/
 
@@ -300,19 +308,31 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     /***** Multitrack implementation ************************************/
 
     public int trackCount() {
-        return SeqUtil.BEAT_TRACK_COUNT;
+        if (mode == BEAT) {
+            return SeqUtil.BEAT_TRACK_COUNT;
+        }
+        return 1;
     }
 
     public boolean getTrackEnabled(int index) {
+        if (index >= trackCount()) {
+            return false;
+        }
         return memory.getCurrentSession().getTracksEnabled().get(index);
     }
 
     public void setTrackEnabled(int index, boolean enabled) {
+        if (index >= trackCount()) {
+            return;
+        }
         memory.getCurrentSession().setTrackEnabled(index, enabled);
         seqDisplay.drawTracks(memory);
     }
 
     public void toggleTrackEnabled(int index) {
+        if (index >= trackCount()) {
+            return;
+        }
         memory.getCurrentSession().toggleTrackEnabled(index);
         seqDisplay.drawTracks(memory);
     }

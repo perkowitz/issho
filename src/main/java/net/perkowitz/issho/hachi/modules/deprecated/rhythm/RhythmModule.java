@@ -107,6 +107,14 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     }
 
 
+    public String name() {
+        return "Rhythm";
+    }
+
+    public String shortName() {
+        return "Rhyt";
+    }
+
     /***** RhythmModule interface *********************************************************************/
 
 

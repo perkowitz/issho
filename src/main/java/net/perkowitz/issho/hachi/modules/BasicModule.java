@@ -25,6 +25,14 @@ public class BasicModule implements Module, GridListener {
 
     public void mute(boolean muted) {}
 
+    public String name() {
+        return "Basic";
+    }
+
+    public String shortName() {
+        return "Bas";
+    }
+
     /***** GridListener interface ****************************************/
 
     public void onPadPressed(GridPad pad, int velocity) {
