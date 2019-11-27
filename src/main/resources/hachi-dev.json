@@ -1,6 +1,8 @@
 {
   "filePrefix": "project1/",
   "midiContinueAsStart": true,
+  "midiSendRealtime": false,
+  "debugMode": true,
   "devices": {
     "controllers": [
       {
@@ -40,6 +42,10 @@
     }
   },
   "modules": [
+    {
+      "class": "ShihaiModule",
+      "panicExclude": [14, 15]
+    },
     {
       "name": "G2 Drums",
       "class": "SeqModule",

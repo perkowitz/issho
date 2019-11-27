@@ -1,6 +1,8 @@
 {
   "filePrefix": "project1/",
   "midiContinueAsStart": true,
+  "midiSendRealtime": true,
+  "debugMode": false,
   "devices": {
     "controllers": [
       {
