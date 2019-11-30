@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.devices.launchpadpro.Color;
+import net.perkowitz.issho.util.DisplayUtil;
 
 /**
  * Created by optic on 9/12/16.
@@ -32,6 +33,19 @@ public class BasicModule implements Module, GridListener {
     public String shortName() {
         return "Bas";
     }
+
+    public DisplayUtil.Color color() {
+        return DisplayUtil.Color.WHITE;
+    }
+
+    public String[] buttonLabels() {
+        return new String[0];
+    }
+
+    public String[] rowLabels() {
+        return new String[0];
+    }
+
 
     /***** GridListener interface ****************************************/
 

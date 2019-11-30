@@ -13,6 +13,7 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.util.DisplayUtil;
 import net.perkowitz.issho.util.MidiUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -97,6 +98,26 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
 
     public String shortName() {
         return mode.toString().substring(0,4);
+    }
+
+    public String[] buttonLabels() {
+        switch (mode) {
+            case BEAT:
+                return BUTTON_LABELS_BEAT;
+            case MONO:
+                return BUTTON_LABELS_MONO;
+        }
+        return new String[0];
+    }
+
+    public String[] rowLabels() {
+        switch (mode) {
+            case BEAT:
+                return ROW_LABELS_BEAT;
+            case MONO:
+                return ROW_LABELS_MONO;
+        }
+        return new String[0];
     }
 
 

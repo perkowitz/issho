@@ -11,6 +11,7 @@ import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.Muteable;
 import net.perkowitz.issho.hachi.modules.deprecated.rhythm.models.*;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.util.DisplayUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -114,6 +115,19 @@ public class RhythmModule implements Module, RhythmInterface, Clockable, Session
     public String shortName() {
         return "Rhyt";
     }
+
+    public DisplayUtil.Color color() {
+        return DisplayUtil.Color.WHITE;
+    }
+
+    public String[] buttonLabels() {
+        return new String[0];
+    }
+
+    public String[] rowLabels() {
+        return new String[0];
+    }
+
 
     /***** RhythmModule interface *********************************************************************/
 

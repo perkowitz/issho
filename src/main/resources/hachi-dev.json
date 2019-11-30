@@ -3,6 +3,7 @@
   "midiContinueAsStart": true,
   "midiSendRealtime": false,
   "debugMode": true,
+  "textDisplay": false,
   "devices": {
     "controllers": [
       {

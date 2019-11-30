@@ -25,6 +25,7 @@ import net.perkowitz.issho.hachi.modules.step.StepModule;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.util.MidiUtil;
 import net.perkowitz.issho.util.SettingsUtil;
+import net.perkowitz.issho.util.Terminal;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import static net.perkowitz.issho.devices.launchpadpro.Color.BRIGHT_ORANGE;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.*;
 
 /**
@@ -82,27 +84,42 @@ public class Hachi {
      */
     public static void main(String args[]) throws Exception {
 
-//        Console.fg(Console.Color.GREEN, false);
         // settings
         String settingsFile = null;
         if (args.length > 0) {
             settingsFile = args[0];
-        }
-        if (settingsFile == null) {
-            System.out.println("Getting app settings..");
-            settings = SettingsUtil.getSettings("hachi-mac.json");
         } else {
-            System.out.printf("Getting app settings from %s..\n", settingsFile);
-            settings = SettingsUtil.getSettings(settingsFile);
+            System.out.println("Usage: hachi <settings.json>");
+            System.exit(1);
         }
+
+        System.out.printf("Getting app settings from %s...\n", settingsFile);
+        settings = SettingsUtil.getSettings(settingsFile);
+        Boolean textDisplay = (Boolean)settings.get("textDisplay");
+        if (textDisplay != null) {
+            TextDisplay.setEnabled(textDisplay);
+        }
+
+        if (textDisplay) {
+            Terminal.fg(TextDisplay.defaultColor);
+            Terminal.clear();
+            TextDisplay.drawFrame();
+            Terminal.go(6, 20, Terminal.Color.WHITE, "HACHI");
+            Terminal.fg(TextDisplay.defaultColor);
+            Terminal.go(TextDisplay.LOG_ROW, 1);
+        }
+
 
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
 
-
         List<GridDevice> gridDevices = getControllers();
+        if (gridDevices.size() > 0) {
+            Graphics.setPads(gridDevices.get(0), Graphics.hachi, BRIGHT_ORANGE);
+        }
 
         getMidiDevices();
 
+        // mirroring on another device
 //        GridDevice mainDevice = getGridDevice();
 ////        GridDevice mirrorDevice = getMirrorGridDevice();
 ////        GridDevice gridDevice = new MultiDevice(Lists.<GridDevice>newArrayList(mainDevice, mirrorDevice));
@@ -169,10 +186,11 @@ public class Hachi {
 //        Thread t = new Thread(new CommandLine(controller));
 //        t.start();
 
-        System.out.printf("Awaiting...\n");
         stop.await();
 
+        if (textDisplay) Terminal.go(40, 1);
         System.out.printf("Exiting...\n");
+        if (textDisplay) Terminal.reset();
         System.exit(0);
 
     }
@@ -483,7 +501,7 @@ public class Hachi {
                 module = new DrawingModule(filePrefix);
 
             } else if (className.equals("LogoModule")) {
-                Color color = Color.BRIGHT_ORANGE;
+                Color color = BRIGHT_ORANGE;
                 module = new LogoModule(Graphics.hachi, color);
 
             } else if (className.equals("PaletteModule")) {
@@ -512,7 +530,7 @@ public class Hachi {
     private static Module[] defaultModules() {
 
         Module[] modules = new Module[6];
-        modules[0] = new LogoModule(Graphics.hachi, Color.BRIGHT_ORANGE);
+        modules[0] = new LogoModule(Graphics.hachi, BRIGHT_ORANGE);
         modules[1] = new PaletteModule(false);
 //        modules[2] = new ClockModule();
         modules[2] = new DrawingModule("drawing");
