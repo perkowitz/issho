@@ -181,12 +181,21 @@ the data files.
 
 ```
   "midiContinueAsStart": true,
+  "midiSendRealtime": false,
+  "debugMode": true,
+  "textDisplay": false,
   "devices": {..},
   "modules": {..}
 ```
 
-Setting the midiContinueAsStart option to true will cause Hachi to restart on MIDI continue messages; when it is false, Hachi will continue
-running from the current step.
+Setting the `midiContinueAsStart` option to `true` will cause Hachi to restart on MIDI continue messages; when it is `false`, Hachi will continue
+running from the current step. When `midiSendRealtime` is `true`, Hachi will echo all MIDI realtime messages (clock, start/stop/continue, sysex)
+to its output; otherwise these messages will not be sent, and other MIDI devices cannot sync to Hachi. Note that MIDI realtime messages
+are not supported on Apple OSX, so this option should be `false` when running on a Mac. Enabling `debugMode` will allow you to exit Hachi
+by tapping the exit button and may display additional console output; when `debugMode` is `false`, the exit button must be held down for
+at least two seconds to exit. Setting `textDisplay` to `true` will display labels for Hachi's buttons and pads in the console. The labels
+will update when the active module changes. `textDisplay` uses ANSI escape sequences, so may not work in all clients. Set it to `false` to disable. 
+
 
 # Using Hachi
 
