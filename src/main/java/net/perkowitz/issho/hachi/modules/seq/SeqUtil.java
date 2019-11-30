@@ -37,6 +37,31 @@ public class SeqUtil {
     public static int[] BEAT_TRACK_NOTES = new int[] { 49, 37, 39, 51, 42, 44, 46, 50,
             36, 38, 40, 41, 43, 45, 47, 48 };
 
+    /***** Labels for text output *****/
+    public static String[] ROW_LABELS_BEAT = new String[]{
+            "Pattern","",
+            "Track Mute","",
+            "Track Select","",
+            "Step","",
+    };
+    public static String[] ROW_LABELS_MONO = new String[]{
+            "Pattern","",
+            "Modifiers","Octave",
+            "Keyboard","",
+            "Step","",
+    };
+
+    // these should be <=4 chars
+    public static String[] BUTTON_LABELS_BEAT = new String[]{
+            "Play", "Exit", "Copy", "Slct", "Rand", "Save", "Sett", "Mute",
+            "-", "-", "-", "Valu", "-", "-", "-", "-",
+            "Gate", "Ctrl", "Ptch", "", "", "", "Jump", "Fill"
+    };
+    public static String[] BUTTON_LABELS_MONO = new String[]{
+            "Play", "Exit", "Copy", "Slct", "Rand", "Save", "Sett", "Mute",
+            "-", "-", "-", "Valu", "-", "-", "-", "-",
+            "Gate", "Ctrl", "Ptch", "Step", "", "", "Jump", "Fill"
+    };
 
     /***** controls *****************/
 

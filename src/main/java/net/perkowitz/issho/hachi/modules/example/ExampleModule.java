@@ -47,6 +47,14 @@ public class ExampleModule extends MidiModule implements Module, Clockable, Grid
     }
 
 
+    public String name() {
+        return "Example";
+    }
+
+    public String shortName() {
+        return "Exmp";
+    }
+
     /***** private implementation ****************************************/
 
     /**
@@ -129,7 +137,7 @@ public class ExampleModule extends MidiModule implements Module, Clockable, Grid
     /**
      * receive a set of notes for adjusting/filtering the module's output 
      * 
-     * @param notes
+     * @param chord
      */
     public void setChord(Chord chord) {
 

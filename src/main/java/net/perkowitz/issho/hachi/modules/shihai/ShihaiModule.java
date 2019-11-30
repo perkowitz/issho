@@ -57,6 +57,14 @@ public class ShihaiModule extends MidiModule implements Clockable {
     }
 
 
+    public String name() {
+        return "Shihai";
+    }
+
+    public String shortName() {
+        return "Shih";
+    }
+
     public int tempo() {
         if (tempoIndex < tempos.length && tempoIndex >= 0) {
             return tempos[tempoIndex];
@@ -95,7 +103,6 @@ public class ShihaiModule extends MidiModule implements Clockable {
         this.shihaiDisplay.setDisplay(display);
         this.settingsModule.setDisplay(display);
     }
-
 
 
     /***** GridListener interface ****************************************/

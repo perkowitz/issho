@@ -3,6 +3,9 @@ package net.perkowitz.issho.hachi;
 import lombok.Getter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.hachi.modules.TextDisplay;
+import net.perkowitz.issho.hachi.modules.seq.SeqUtil;
+import net.perkowitz.issho.util.Terminal;
 
 import static net.perkowitz.issho.hachi.HachiUtil.*;
 
@@ -13,6 +16,7 @@ public class HachiDeviceManager implements GridListener {
 
     private Module[] modules = null;
     @Getter private Module activeModule;
+    private int activeModuleIndex = 0;
     private GridListener[] moduleListeners = null;
     private GridListener activeListener = null;
     private GridDisplay display;
@@ -32,6 +36,9 @@ public class HachiDeviceManager implements GridListener {
             moduleListeners[i] = modules[i].getGridListener();
             modules[i].setDisplay(hachiController.getDisplay(i));
         }
+        if (modules.length > activeModuleIndex) {
+            activeModule = modules[activeModuleIndex];
+        }
 
     }
 
@@ -50,10 +57,15 @@ public class HachiDeviceManager implements GridListener {
             }
 
             display = hachiController.getDisplay(index);
-            activeModule = modules[index];
+            activeModuleIndex = index;
+            activeModule = modules[activeModuleIndex];
             activeListener = moduleListeners[index];
             activeModule.redraw();
             redraw();
+
+//            Terminal.go(TextDisplay.BOTTOM_ROW + 2, 1);
+//            System.out.printf("Active: %d:%s\n", index, activeModule.name());
+            TextDisplay.drawModules(modules, index);
         }
     }
 
@@ -79,10 +91,22 @@ public class HachiDeviceManager implements GridListener {
             display.setButton(PLAY_BUTTON, COLOR_UNSELECTED);
         }
 
-        if (HachiController.DEBUG_MODE) {
+        if (HachiController.isDebugMode()) {
             display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
         }
 
+        textDraw();
+    }
+
+    public void textDraw() {
+        Terminal.fg(Terminal.Color.WHITE);
+        TextDisplay.clearFrame();
+        TextDisplay.drawModules(modules, activeModuleIndex);
+        TextDisplay.drawButtons(activeModule.buttonLabels());
+        TextDisplay.drawRows(activeModule.rowLabels());
+        TextDisplay.drawFrame();
+
+        Terminal.fg(Terminal.Color.GREEN);
     }
 
 
@@ -110,6 +134,7 @@ public class HachiDeviceManager implements GridListener {
             // top row used for module switching
             selectModule(button.getIndex());
 
+
         } else if (button.equals(PLAY_BUTTON)) {
             hachiController.pressPlay();
             redraw();
@@ -132,7 +157,7 @@ public class HachiDeviceManager implements GridListener {
             // top row used for module switching
         } else if (button.equals(PLAY_BUTTON)) {
         } else if (button.equals(EXIT_BUTTON)) {
-            if (elapsed > EXIT_PRESS_IN_MILLIS || HachiController.DEBUG_MODE) {
+            if (elapsed > EXIT_PRESS_IN_MILLIS || HachiController.isDebugMode()) {
                 hachiController.pressExit();
             }
         } else {

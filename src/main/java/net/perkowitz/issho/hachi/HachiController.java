@@ -6,6 +6,7 @@ import lombok.Setter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
+import net.perkowitz.issho.util.Terminal;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -23,7 +24,7 @@ import static javax.sound.midi.ShortMessage.*;
 public class HachiController implements Clockable, Receiver, ValueSettable {
 
     @Getter @Setter private static boolean debugMode = false;
-    @Setter private static boolean sendMidiRealtime = true;
+    @Getter @Setter private static boolean sendMidiRealtime = false;
 
     private static int STEP_MIN = 0;
     private static int STEP_MAX = 110;
@@ -78,7 +79,7 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
 //            Console.fg(Console.fromGrid((net.perkowitz.issho.devices.launchpadpro.Color)color), false);
 //            System.out.printf("Loading module: %s\n", modules[i].name());
 //            Console.reset();
-            System.out.printf("Loading module: %s\n", modules[i]);
+            System.out.printf("Loading module (%d): %s\n", i, modules[i].name());
             if (modules[i] instanceof Clockable) {
                 clockables.add((Clockable)modules[i]);
             }
@@ -126,7 +127,6 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
             hachiDeviceManager.selectModule(0);
         }
 
-        System.out.printf("Starting timer...\n");
         startTimer();
 
     }

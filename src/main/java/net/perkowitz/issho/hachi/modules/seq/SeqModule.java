@@ -13,6 +13,7 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.Module;
+import net.perkowitz.issho.util.DisplayUtil;
 import net.perkowitz.issho.util.MidiUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -89,6 +90,34 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
         this.tiesEnabled = (mode != BEAT);
         load(0);
+    }
+
+    public String name() {
+        return "Seq" + mode.toString();
+    }
+
+    public String shortName() {
+        return mode.toString().substring(0,4);
+    }
+
+    public String[] buttonLabels() {
+        switch (mode) {
+            case BEAT:
+                return BUTTON_LABELS_BEAT;
+            case MONO:
+                return BUTTON_LABELS_MONO;
+        }
+        return new String[0];
+    }
+
+    public String[] rowLabels() {
+        switch (mode) {
+            case BEAT:
+                return ROW_LABELS_BEAT;
+            case MONO:
+                return ROW_LABELS_MONO;
+        }
+        return new String[0];
     }
 
 
@@ -300,19 +329,31 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     /***** Multitrack implementation ************************************/
 
     public int trackCount() {
-        return SeqUtil.BEAT_TRACK_COUNT;
+        if (mode == BEAT) {
+            return SeqUtil.BEAT_TRACK_COUNT;
+        }
+        return 1;
     }
 
     public boolean getTrackEnabled(int index) {
+        if (index >= trackCount()) {
+            return false;
+        }
         return memory.getCurrentSession().getTracksEnabled().get(index);
     }
 
     public void setTrackEnabled(int index, boolean enabled) {
+        if (index >= trackCount()) {
+            return;
+        }
         memory.getCurrentSession().setTrackEnabled(index, enabled);
         seqDisplay.drawTracks(memory);
     }
 
     public void toggleTrackEnabled(int index) {
+        if (index >= trackCount()) {
+            return;
+        }
         memory.getCurrentSession().toggleTrackEnabled(index);
         seqDisplay.drawTracks(memory);
     }
