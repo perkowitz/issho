@@ -36,7 +36,6 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
 
     private String filePrefix = "monomodule";
     private int currentFileIndex = 0;
-    private int midiChannel = 0;
 
     private int currentStageIndex = 0;
     private int currentStageStepIndex = 0;
@@ -56,9 +55,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         super(inputTransmitter, outputReceiver);
         this.stepDisplay = new StepDisplay(this.display);
         this.filePrefix = filePrefix;
-        load(0);
         currentSteps = currentStage().getSteps();
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
+        load(0);
         currentMarker = Note;
         stepDisplay.setCurrentMarker(currentMarker);
     }
@@ -435,7 +434,7 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
                     int toSessionIndex = settingsModule.getCopyToSessionIndex();
                     int toFileIndex = settingsModule.getCopyToFileIndex();
                     StepMemory toMemory = loadMemory(toFileIndex);
-                    toMemory.setMidiChannel(memory.getMidiChannel());  // midi channel is per memory, which is kind of weird, but ok
+                    toMemory.setMidiChannel(memory.getMidiChannel());
                     toMemory.getSessions()[toSessionIndex] = StepSession.copy(fromSession, toSessionIndex);
                     saveMemory(toFileIndex, toMemory);
                     System.out.printf("Completed copy to file: %d -> %d, f=%d\n",
@@ -514,6 +513,7 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
 
     public void load(int index) {
         memory = loadMemory(index);
+        settingsModule.setMidiChannel(memory.getMidiChannel());
     }
 
     public StepMemory loadMemory(int index) {

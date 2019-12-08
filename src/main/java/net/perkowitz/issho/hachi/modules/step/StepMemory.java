@@ -20,7 +20,7 @@ public class StepMemory implements MemoryObject {
     @Getter @Setter private int nextSessionIndex = 0;
     @Getter private int currentPatternIndex = 0;
 
-    @Getter @Setter private int midiChannel = 0;
+    @Getter @Setter private int midiChannel;
 
 
 
