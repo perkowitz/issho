@@ -26,7 +26,7 @@ public class Step {
 
     public static int DEFAULT_OCTAVE = 5;
     public static int DEFAULT_VELOCITY = 80;
-    public static int VELOCITY_INCREMENT = 16;
+    public static int VELOCITY_INCREMENT = 32;
     public static int[] DEFAULT_SCALE = { 0, 2, 4, 5, 7, 9, 11, 12 };   // C major scale
 
     public static MultiNoteMode multiNoteMode = ORDER_LOW_TO_HIGH; // TODO: fully implement other modes, make them settable
@@ -81,7 +81,11 @@ public class Step {
         int ties = 0;
 
         for (int i = 0; i < markers.length; i++) {
-            switch (markers[i]) {
+            Stage.Marker m = markers[i];
+            if (m == Stage.Marker.Random) {
+                m = Stage.randomMarker();
+            }
+            switch (m) {
                 case Note:
                     baseNotes.add(scale[i]);
                     noteIndices.add(i);

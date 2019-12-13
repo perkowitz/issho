@@ -7,23 +7,29 @@ import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.MemoryUtil;
 
 import java.util.List;
+import java.util.Random;
 
-import static net.perkowitz.issho.hachi.modules.step.Stage.Marker.None;
+import static net.perkowitz.issho.hachi.modules.step.Stage.Marker.*;
 
 /**
  * Created by optic on 12/2/16.
  */
 public class Stage implements MemoryObject {
 
+    private static final java.util.Random RANDOM = new Random();
+
     public enum Marker {
-        None, Note, Sharp, Flat, OctaveUp, OctaveDown, VolumeUp, VolumeDown, Longer, Repeat, Skip, Slide, Tie
+        None, Note, Sharp, Flat, OctaveUp, OctaveDown, VolumeUp, VolumeDown, Longer, Repeat, Skip, Slide, Tie, Random
     }
+
+    private static Marker[] randomMarkers = { Note, OctaveUp, OctaveDown, Longer, Repeat, Skip };
 
     public static int MAX_MARKERS = 8;
 
     @Getter @Setter private int index;
     @Getter private Marker[] markers = new Marker[MAX_MARKERS];
     @Getter private List<Step> steps = Lists.newArrayList();
+    @Getter private int randomCount = 0;
 
 
     public Stage() {}
@@ -42,7 +48,16 @@ public class Stage implements MemoryObject {
     }
 
     public void putMarker(int index, Marker marker) {
+        if (marker == Random && markers[index] != Random) {
+            randomCount++;
+        } else if (marker != Random && markers[index] == Random) {
+            randomCount--;
+        }
         markers[index] = marker;
+        computeSteps();
+    }
+
+    public void computeSteps() {
         steps = Step.fromMarkers(markers);
     }
 
@@ -148,7 +163,11 @@ public class Stage implements MemoryObject {
             newStage.markers[i] = stage.getMarker(i);
         }
         newStage.steps = stage.getSteps();
+        newStage.randomCount = stage.randomCount;
         return newStage;
     }
 
+    public static Marker randomMarker() {
+        return randomMarkers[RANDOM.nextInt(randomMarkers.length)];
+    }
 }

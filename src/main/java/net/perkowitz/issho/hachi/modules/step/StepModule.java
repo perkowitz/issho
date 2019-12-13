@@ -169,6 +169,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
                 currentStageIndex++;
             }
             currentStageIndex = currentStageIndex % StepPattern.STAGE_COUNT;
+            if (currentStage().getRandomCount() > 0) {
+                currentStage().computeSteps();
+            }
             currentSteps = currentStage().getSteps();
             currentStageStepIndex = 0;
         }
@@ -322,6 +325,10 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
                     newMarker = Tie;
                 } else if (currentMarker == Tie) {
                     newMarker = Longer;
+                } else if (currentMarker == Slide) {
+                    newMarker = Random;
+                } else if (currentMarker == Random) {
+                    newMarker = Slide;
                 }
             }
             currentMarker = newMarker;
