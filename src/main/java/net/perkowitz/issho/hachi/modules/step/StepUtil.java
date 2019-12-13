@@ -109,7 +109,8 @@ public class StepUtil {
         MARKER_COLORS.put(Stage.Marker.Repeat, Color.BRIGHT_PINK);
         MARKER_COLORS.put(Stage.Marker.Skip, Color.BRIGHT_RED);
         MARKER_COLORS.put(Stage.Marker.Slide, Color.DARK_GRAY);
-        MARKER_COLORS.put(Stage.Marker.Tie, Color.fromIndex(55));
+        MARKER_COLORS.put(Stage.Marker.Tie, Color.DIM_PINK_PURPLE);
+        MARKER_COLORS.put(Stage.Marker.Random, Color.BRIGHT_YELLOW);
     }
 
     public static Color ACTIVE_NOTE_COLOR = Color.WHITE;
