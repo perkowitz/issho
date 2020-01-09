@@ -71,6 +71,12 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         return "Step";
     }
 
+    public String[] buttonLabels() {
+        if (displayAltControls) {
+            return BUTTON_LABELS_ALT;
+        }
+        return BUTTON_LABELS;
+    }
 
     /***** private implementation ****************************************/
 
@@ -288,9 +294,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         } else if (settingsView) {
             onControlPressedSettings(control, velocity);
 
-        } else if (control.equals(StepUtil.savePatternControl)) {
+        } else if (control.equals(StepUtil.copyPatternControl)) {
             savingPattern = true;
-            stepDisplay.drawControl(StepUtil.savePatternControl, true);
+            stepDisplay.drawControl(StepUtil.copyPatternControl, true);
 
 //        } else if (control.equals(StepUtil.panicControl)) {
 //            sendMidiCC(memory.getMidiChannel(), MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
@@ -388,9 +394,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
             stepDisplay.drawControl(StepUtil.shiftLeftControl, false);
         } else if (control.equals(StepUtil.shiftRightControl)  && displayAltControls) {
             stepDisplay.drawControl(StepUtil.shiftRightControl, false);
-        } else if (control.equals(StepUtil.savePatternControl)) {
+        } else if (control.equals(StepUtil.copyPatternControl)) {
             savingPattern = false;
-            stepDisplay.drawControl(StepUtil.savePatternControl, false);
+            stepDisplay.drawControl(StepUtil.copyPatternControl, false);
 //        } else if (control.equals(StepUtil.panicControl)) {
 //            stepDisplay.drawControl(StepUtil.panicControl, false);
         } else if (patternControls.contains(control)) {

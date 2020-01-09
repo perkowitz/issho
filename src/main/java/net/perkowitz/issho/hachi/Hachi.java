@@ -114,6 +114,7 @@ public class Hachi {
 
         List<GridDevice> gridDevices = getControllers();
         if (gridDevices.size() > 0) {
+            gridDevices.get(0).initialize();
             Graphics.setPads(gridDevices.get(0), Graphics.hachi, BRIGHT_ORANGE);
         }
 

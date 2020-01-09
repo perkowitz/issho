@@ -94,7 +94,7 @@ public class StepDisplay {
 //        drawControl(StepUtil.panicControl, false);
         StepUtil.currentMarkerDisplayControl.draw(display, markerPalette.get(currentMarker));
         drawControl(StepUtil.altControlsControl, displayAltControls);
-        drawControl(StepUtil.savePatternControl, false);
+        drawControl(StepUtil.copyPatternControl, false);
     }
 
     public void drawPatterns(StepMemory memory) {

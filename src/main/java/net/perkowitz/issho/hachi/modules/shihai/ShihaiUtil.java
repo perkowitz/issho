@@ -16,6 +16,13 @@ import static net.perkowitz.issho.devices.GridButton.Side.Left;
  */
 public class ShihaiUtil {
 
+    // these should be <=4 chars
+    public static String[] BUTTON_LABELS = new String[]{
+            "Play", "Exit", "", "Rset", "Panc", "", "Sett", "Fill",
+            "-", "-", "-", "Temp", "-", "-", "-", "-",
+            "-", "-", "-", "Mute", "-", "-", "-", "-"
+    };
+
     public static Color COLOR_OFF = Color.DARK_GRAY;
     public static Color COLOR_ON = Color.WHITE;
     public static Color COLOR_LOGO = Color.BRIGHT_ORANGE;

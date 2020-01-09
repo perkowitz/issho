@@ -62,10 +62,6 @@ public class HachiDeviceManager implements GridListener {
             activeListener = moduleListeners[index];
             activeModule.redraw();
             redraw();
-
-//            Terminal.go(TextDisplay.BOTTOM_ROW + 2, 1);
-//            System.out.printf("Active: %d:%s\n", index, activeModule.name());
-            TextDisplay.drawModules(modules, index);
         }
     }
 
@@ -105,9 +101,15 @@ public class HachiDeviceManager implements GridListener {
         TextDisplay.drawButtons(activeModule.buttonLabels());
         TextDisplay.drawRows(activeModule.rowLabels());
         TextDisplay.drawFrame();
+        TextDisplay.drawTime("");
 
         Terminal.fg(Terminal.Color.GREEN);
     }
+
+    public void textClock(String beat) {
+        TextDisplay.drawTime(beat);
+    }
+
 
 
     /***** GridListener implementation ***************/

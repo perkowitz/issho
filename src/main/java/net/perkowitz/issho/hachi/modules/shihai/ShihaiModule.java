@@ -65,6 +65,10 @@ public class ShihaiModule extends MidiModule implements Clockable {
         return "Shih";
     }
 
+    public String[] buttonLabels() {
+        return BUTTON_LABELS;
+    }
+
     public int tempo() {
         if (tempoIndex < tempos.length && tempoIndex >= 0) {
             return tempos[tempoIndex];
@@ -161,7 +165,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
 
         } else if (muteControls.contains(control)) {
             int index = muteControls.getIndex(control);
-            if (modules[index] != null && modules[index] instanceof Muteable) {
+            if (index < modules.length && modules[index] != null && modules[index] instanceof Muteable) {
                 boolean muted = ((Muteable)modules[index]).isMuted();
                 ((Muteable)modules[index]).mute(!muted);
                 shihaiDisplay.drawMutes(modules);
