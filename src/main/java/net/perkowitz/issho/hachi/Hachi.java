@@ -496,6 +496,10 @@ public class Hachi {
                 if (panicExclude != null) {
                     shihaiModule.setPanicExclude(panicExclude);
                 }
+                Boolean enableJump = (Boolean)moduleSettings.get("enableJump");
+                if (enableJump != null) {
+                    shihaiModule.setEnableJump(enableJump);
+                }
                 module = shihaiModule;
 
             } else if (className.equals("DrawingModule")) {

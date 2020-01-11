@@ -16,7 +16,6 @@ import static net.perkowitz.issho.devices.GridButton.Side.*;
  */
 public class StepUtil {
 
-
     // these should be <=4 chars
     public static String[] BUTTON_LABELS = new String[]{
             "Play", "Exit", "Copy", "Alt", "Mrkr", "Save", "Sett", "Mute",
