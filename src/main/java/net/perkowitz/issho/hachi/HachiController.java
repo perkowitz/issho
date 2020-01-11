@@ -243,6 +243,9 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
             for (Clockable clockable : clockables) {
                 clockable.tick(andReset);
             }
+            for (HachiDeviceManager hachiDeviceManager : hachiDeviceManagers) {
+                hachiDeviceManager.textClock("");
+            }
         }
     }
 
@@ -250,6 +253,9 @@ public class HachiController implements Clockable, Receiver, ValueSettable {
         if (midiClockRunning) {
             for (Clockable clockable : clockables) {
                 clockable.clock(measure, beat, pulse);
+            }
+            for (HachiDeviceManager hachiDeviceManager : hachiDeviceManagers) {
+                hachiDeviceManager.textClock(String.format("%03d:%02d:%02d", measure, measure % 8, beat));
             }
         }
 

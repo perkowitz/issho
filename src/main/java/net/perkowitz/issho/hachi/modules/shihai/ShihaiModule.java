@@ -4,13 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridDisplay;
-import net.perkowitz.issho.devices.GridPad;
+import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.hachi.Clockable;
 import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.Sessionizeable;
-import net.perkowitz.issho.devices.GridControl;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.Module;
 
@@ -35,8 +32,10 @@ public class ShihaiModule extends MidiModule implements Clockable {
     private boolean settingsView = false;
 
     private List<Multitrack> multitrackModules = null;
+    private List<Jumpable> jumpableModules = null;
 
     private boolean playing = false;
+    private boolean enableJump = false;
     private int tickCount = 0;
     private int measureCount = 0;
     private int currentSessionIndex = 0;
@@ -65,6 +64,10 @@ public class ShihaiModule extends MidiModule implements Clockable {
         return "Shih";
     }
 
+    public String[] buttonLabels() {
+        return BUTTON_LABELS;
+    }
+
     public int tempo() {
         if (tempoIndex < tempos.length && tempoIndex >= 0) {
             return tempos[tempoIndex];
@@ -72,14 +75,33 @@ public class ShihaiModule extends MidiModule implements Clockable {
         return 120;
     }
 
+    public void setEnableJump(boolean enableJump) {
+        this.enableJump = enableJump;
+        if (enableJump) {
+            multitrackControls = Lists.newArrayList(multitrack1, multitrack2);
+        } else {
+            multitrackControls = Lists.newArrayList(multitrack1, multitrack2, multitrack3);
+        }
+        List<GridControl> controls = Lists.newArrayList();
+        for (int m = 0; m < multitrackControls.size(); m++) {
+            controls.addAll(multitrackControls.get(m).getControls());
+        }
+        allMultitrack = new GridControlSet(controls);
+    }
+
+
     /***** Module interface ****************************************/
 
     public void setModules(Module[] modules) {
         this.modules = modules;
         multitrackModules = Lists.newArrayList();
+        jumpableModules = Lists.newArrayList();
         for (Module module : this.modules) {
             if (module instanceof Multitrack) {
                 multitrackModules.add((Multitrack)module);
+            }
+            if (module instanceof Jumpable) {
+                jumpableModules.add((Jumpable) module);
             }
         }
         shihaiDisplay.setMultitrackModules(multitrackModules);
@@ -161,7 +183,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
 
         } else if (muteControls.contains(control)) {
             int index = muteControls.getIndex(control);
-            if (modules[index] != null && modules[index] instanceof Muteable) {
+            if (index < modules.length && modules[index] != null && modules[index] instanceof Muteable) {
                 boolean muted = ((Muteable)modules[index]).isMuted();
                 ((Muteable)modules[index]).mute(!muted);
                 shihaiDisplay.drawMutes(modules);
@@ -171,6 +193,12 @@ public class ShihaiModule extends MidiModule implements Clockable {
             Integer index = patternControls.getIndex(control);
             if (index != null) {
                 patternsPressed.add(index);
+            }
+
+        } else if (enableJump && jumpControls.contains(control)) {
+            Integer index = jumpControls.getIndex(control);
+            for (Jumpable jumpable : jumpableModules) {
+                jumpable.jumpTo(index);
             }
 
         } else if (allMultitrack.contains(control)) {

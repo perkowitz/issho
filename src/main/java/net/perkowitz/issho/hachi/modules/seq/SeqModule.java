@@ -34,7 +34,7 @@ import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
 /**
  * Created by optic on 10/24/16.
  */
-public class SeqModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable, Multitrack {
+public class SeqModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable, Multitrack, Jumpable {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -323,6 +323,14 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
      */
     public boolean isMuted() {
         return isMuted;
+    }
+
+
+    /***** Jumpable implementation **************************/
+
+    public void jumpTo(int index) {
+        if (index < 0) return;
+        nextStepIndex = index % STEP_COUNT;
     }
 
 
@@ -659,7 +667,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     break;
                 case JUMP:
                     // jumps to that step
-                    nextStepIndex = index;
+                    jumpTo(index);
                     break;
             }
 

@@ -16,6 +16,18 @@ import static net.perkowitz.issho.devices.GridButton.Side.*;
  */
 public class StepUtil {
 
+    // these should be <=4 chars
+    public static String[] BUTTON_LABELS = new String[]{
+            "Play", "Exit", "Copy", "Alt", "Mrkr", "Save", "Sett", "Mute",
+            "-", "-", "-", "Patt", "-", "-", "-", "-",
+            "Clr", "Note", "#/b", "Octv", "Velo", "Long", "Rpet", "Slid"
+    };
+    public static String[] BUTTON_LABELS_ALT = new String[]{
+            "Play", "Exit", "Copy", "Alt", "Mrkr", "Save", "Sett", "Mute",
+            "-", "-", "-", "Patt", "-", "-", "-", "-",
+            "Left", "Rght", "Rand", "", "", "", "", ""
+    };
+
     /***** controls *****************/
 
     public static GridControlSet[] stageColumns = {
@@ -52,7 +64,7 @@ public class StepUtil {
 //    public static GridControl panicControl = new GridControl(GridButton.at(Left, 4), null);
     public static GridControl currentMarkerDisplayControl = new GridControl(GridButton.at(Left, 4), null);
     public static GridControl altControlsControl = new GridControl(GridButton.at(Left, 3), null);
-    public static GridControl savePatternControl = new GridControl(GridButton.at(Left, 2), null);
+    public static GridControl copyPatternControl = new GridControl(GridButton.at(Left, 2), null);
 
     // alt controls (used in place of marker controls when alt controls is enabled)
     public static GridControl shiftLeftControl = new GridControl(GridButton.at(Bottom, 0), null);

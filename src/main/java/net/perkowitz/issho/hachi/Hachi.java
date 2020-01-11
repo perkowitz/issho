@@ -114,6 +114,7 @@ public class Hachi {
 
         List<GridDevice> gridDevices = getControllers();
         if (gridDevices.size() > 0) {
+            gridDevices.get(0).initialize();
             Graphics.setPads(gridDevices.get(0), Graphics.hachi, BRIGHT_ORANGE);
         }
 
@@ -494,6 +495,10 @@ public class Hachi {
                 List<Integer> panicExclude = (List<Integer>)moduleSettings.get("panicExclude");
                 if (panicExclude != null) {
                     shihaiModule.setPanicExclude(panicExclude);
+                }
+                Boolean enableJump = (Boolean)moduleSettings.get("enableJump");
+                if (enableJump != null) {
+                    shihaiModule.setEnableJump(enableJump);
                 }
                 module = shihaiModule;
 
