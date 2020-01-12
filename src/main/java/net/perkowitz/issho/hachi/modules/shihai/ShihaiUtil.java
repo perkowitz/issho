@@ -26,8 +26,8 @@ public class ShihaiUtil {
     public static Color COLOR_OFF = Color.DARK_GRAY;
     public static Color COLOR_ON = Color.WHITE;
     public static Color COLOR_LOGO = Color.BRIGHT_ORANGE;
-    public static Color COLOR_MUTED = HachiUtil.COLOR_UNSELECTED;
-    public static Color COLOR_UNMUTED = HachiUtil.COLOR_SELECTED;
+    public static Color COLOR_MUTED = HachiUtil.COLOR_UNSET;
+    public static Color COLOR_UNMUTED = HachiUtil.COLOR_SET;
     public static Color COLOR_SESSION = Color.DIM_GREEN;
     public static Color COLOR_SESSION_HIGHLIGHT = Color.WHITE;
     public static Color COLOR_PATTERN = Color.DARK_GRAY;
