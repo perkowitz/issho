@@ -13,7 +13,6 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.util.DisplayUtil;
 import net.perkowitz.issho.util.MidiUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -134,6 +133,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             nextStepIndex = 0;
         }
 
+        boolean newPattern = false;
         if (nextStepIndex == 0) {
             int currentPatternIndex = memory.getPlayingPatternIndex();
 
@@ -151,6 +151,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                 nextSessionIndex = null;
             }
 
+            // check for next pattern
             if (nextChainStart != null && nextChainEnd != null) {
                 // set chain, and advance pattern to start of chain
                 memory.selectChain(nextChainStart, nextChainEnd);
@@ -165,8 +166,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             }
 
             if (memory.getPlayingPatternIndex() != currentPatternIndex) {
-                seqDisplay.drawPatterns(memory);
-                seqDisplay.drawSteps(memory);
+                newPattern = true;
             }
         }
 
@@ -256,6 +256,11 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         }
         if (doResetPlayingStep) {
             seqDisplay.setPlayingStep(null);
+        }
+
+        if (newPattern) {
+            seqDisplay.drawPatterns(memory);
+            seqDisplay.drawSteps(memory);
         }
 
         nextStepIndex = (nextStepIndex + 1) % SeqUtil.STEP_COUNT;
