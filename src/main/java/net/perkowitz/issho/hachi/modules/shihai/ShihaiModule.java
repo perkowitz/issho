@@ -36,6 +36,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
 
     private boolean playing = false;
     private boolean enableJump = false;
+    private boolean enableReset = true;
     private int tickCount = 0;
     private int measureCount = 0;
     private int currentSessionIndex = 0;
@@ -89,6 +90,10 @@ public class ShihaiModule extends MidiModule implements Clockable {
         allMultitrack = new GridControlSet(controls);
     }
 
+    public void setEnableReset(boolean enableReset) {
+        this.enableReset = enableReset;
+        shihaiDisplay.setEnableReset(this.enableReset);
+    }
 
     /***** Module interface ****************************************/
 
@@ -160,7 +165,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
                 }
             }
 
-        } else if (control.equals(ShihaiUtil.clockResetControl)) {
+        } else if (enableReset && control.equals(ShihaiUtil.clockResetControl)) {
             shihaiDisplay.drawControl(ShihaiUtil.clockResetControl, true);
             for (Module module : modules) {
                 if (module instanceof Clockable) {
@@ -265,7 +270,7 @@ public class ShihaiModule extends MidiModule implements Clockable {
         } else if (control.equals(ShihaiUtil.panicControl)) {
             shihaiDisplay.drawControl(ShihaiUtil.panicControl, false);
 
-        } else if (control.equals(ShihaiUtil.clockResetControl)) {
+        } else if (enableReset && control.equals(ShihaiUtil.clockResetControl)) {
             shihaiDisplay.drawControl(ShihaiUtil.clockResetControl, false);
 
         } else if (control.equals(ShihaiUtil.fillControl)) {

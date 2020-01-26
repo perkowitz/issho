@@ -500,6 +500,10 @@ public class Hachi {
                 if (enableJump != null) {
                     shihaiModule.setEnableJump(enableJump);
                 }
+                Boolean enableReset = (Boolean)moduleSettings.get("enableReset");
+                if (enableReset != null) {
+                    shihaiModule.setEnableReset(enableReset);
+                }
                 module = shihaiModule;
 
             } else if (className.equals("DrawingModule")) {
