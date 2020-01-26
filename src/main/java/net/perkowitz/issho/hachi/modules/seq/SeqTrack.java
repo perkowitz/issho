@@ -40,6 +40,13 @@ public class SeqTrack implements MemoryObject {
         return String.format("SeqTrack:%02d", index);
     }
 
+    public void randomize() {
+        for (SeqStep step : steps) {
+            int v = (int)Math.floor(Math.random() * 128);
+            step.setVelocity(v);
+        }
+    }
+
 
     /***** MemoryObject implementation ***********************/
 

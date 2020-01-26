@@ -176,10 +176,16 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             playingPattern = patternFill;
         }
 
+        // if the current step has a jump set, figure it out now
+        if (playingPattern.getJump(nextStepIndex)) {
+            nextStepIndex = (int)Math.floor(Math.random() * nextStepIndex);
+        }
+
         // if a fill is playing that shuffles the steps, this will figure out which step is actually playing
         int actualStepIndex = playingPattern.getStep(0, nextStepIndex).getIndex();
         boolean drawMeasure = currentPulse < 12;
         seqDisplay.drawStepsClock(actualStepIndex, currentMeasure, drawMeasure);
+
 
         // send pitchbend and controllers before notes
         SeqPitchStep pitchStep = memory.getSelectedPattern().getPitchStep(selectedPitchStep);
@@ -559,12 +565,17 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             int index = trackSelectControls.getIndex(control);
             switch (editMode) {
                 case GATE:
+                    memory.selectTrack(index);
+                    SeqTrack track = memory.getSelectedTrack();
+                    seqDisplay.drawTracks(memory);
+                    track.randomize();
+                    seqDisplay.drawSteps(memory);
                     break;
                 case CONTROL:
                     memory.selectControlTrack(index);
-                    SeqControlTrack track = memory.getSelectedControlTrack();
+                    SeqControlTrack controlTrack = memory.getSelectedControlTrack();
                     seqDisplay.drawTracks(memory);
-                    track.randomize();
+                    controlTrack.randomize();
                     seqDisplay.drawSteps(memory);
                     break;
                 case PITCH:
@@ -620,13 +631,8 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             switch (editMode) {
                 case GATE:
                 case STEP:
-                    // selects step for editing
-                    selectedStep = index;  // TODO replace this with references to memory.getSelectedStep()
-                    memory.selectStep(index);
-                    SeqStep step = memory.getSelectedTrack().getStep(index);
-                    step.setVelocityBlurred(!step.isVelocityBlurred());
-                    seqDisplay.drawValue127(step.getVelocity(), step.isVelocityBlurred());
-                    // we don't actually toggle the step until release
+                    memory.getSelectedPattern().toggleJump(index);
+                    seqDisplay.drawSteps(memory);
                     break;
                 case CONTROL:
                     selectedControlStep = index;
@@ -892,11 +898,13 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             switch (editMode) {
                 case GATE:
                     // step was selected and displayed on press; on release decide whether to toggle step and redraw
-                    if (elapsed < LONG_PRESS_IN_MILLIS) {
-                        step.toggleEnabled();
-                        step.advanceGateMode(tiesEnabled);
+                    if (!randomizing) {
+                        if (elapsed < LONG_PRESS_IN_MILLIS) {
+                            step.toggleEnabled();
+                            step.advanceGateMode(tiesEnabled);
+                        }
+                        seqDisplay.drawSteps(memory);
                     }
-                    seqDisplay.drawSteps(memory);
                     break;
                 case CONTROL:
                     // step was selected and displayed on press; on release decide whether to toggle step and redraw
