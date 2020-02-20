@@ -7,6 +7,7 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.Muteable;
+import org.w3c.dom.stylesheets.DocumentStyle;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class ShihaiDisplay {
     @Setter private GridDisplay display;
 
     @Setter private boolean settingsView = false;
+    @Setter private boolean enableReset = true;
     @Setter private List<Multitrack> multitrackModules = null;
 
 
@@ -134,9 +136,12 @@ public class ShihaiDisplay {
     }
 
     public void drawLeftControls() {
+        leftControls.draw(display, Color.OFF);
         drawControl(ShihaiUtil.settingsControl, settingsView);
         drawControl(ShihaiUtil.panicControl, false);
-        drawControl(ShihaiUtil.clockResetControl, false);
+        if (enableReset) {
+            drawControl(ShihaiUtil.clockResetControl, false);
+        }
         drawControl(ShihaiUtil.fillControl, false);
     }
 
