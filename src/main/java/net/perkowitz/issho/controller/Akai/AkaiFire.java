@@ -1,7 +1,16 @@
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.akai;
 
 import com.google.common.collect.Maps;
 import lombok.Setter;
+import net.perkowitz.issho.controller.ButtonElement;
+import net.perkowitz.issho.controller.Colors;
+import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
+import net.perkowitz.issho.controller.Element;
+import net.perkowitz.issho.controller.KnobElement;
+import net.perkowitz.issho.controller.LightElement;
+import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.PadElement;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
