@@ -3,8 +3,8 @@ package net.perkowitz.issho.controller.akai;
 import net.perkowitz.issho.controller.ButtonElement;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.ControllerListenerTest;
 import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.TestListener;
 import net.perkowitz.issho.util.MidiUtil;
 
 import javax.sound.midi.MidiDevice;
@@ -32,7 +32,7 @@ public class AkaiFireTest {
             System.exit(1);
         }
 
-        ControllerListener listener = new ControllerListenerTest();
+        ControllerListener listener = new TestListener();
         MidiOut midiOut = new MidiOut(midiReceiver);
         AkaiFire fire = new AkaiFire(midiOut, listener);
 
