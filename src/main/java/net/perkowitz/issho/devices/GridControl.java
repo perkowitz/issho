@@ -82,7 +82,7 @@ public class GridControl {
 
     @Override
     public String toString() {
-        String s = "Control:";
+        String s = "Element:";
         if (pad != null) {
             s += pad.toString();
         } else if (button != null) {

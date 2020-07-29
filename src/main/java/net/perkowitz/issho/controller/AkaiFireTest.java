@@ -5,11 +5,7 @@ import net.perkowitz.issho.util.MidiUtil;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-
-import static net.perkowitz.issho.controller.Control.Side.*;
 
 public class AkaiFireTest {
 
@@ -35,10 +31,9 @@ public class AkaiFireTest {
         MidiOut midiOut = new MidiOut(midiReceiver);
         AkaiFire fire = new AkaiFire(midiOut, listener);
 
-        Control.Side[] sides = {TOP, BOTTOM, LEFT, RIGHT, OTHER};
-        for (Control.Side side : sides) {
-            for (int i = 0; i < AkaiFire.buttonCount.get(side); i++) {
-                Button button = new Button(side, i);
+        for (int group = 0; group < 4; group++) {
+            for (int i = 0; i < AkaiFire.buttonCount.get(group); i++) {
+                ButtonElement button = new ButtonElement(group, i);
                 fire.setButton(button, Colors.DIM);
             }
         }

@@ -4,7 +4,6 @@ import java.awt.*;
 
 public class Colors {
 
-
     // OFF, DIM, and BRIGHT aren't really colors but can be used as a shorthand for monochrome controls.
     public static final Color OFF = Color.BLACK;
     public static final Color DIM = Color.GRAY;
@@ -13,6 +12,8 @@ public class Colors {
     public static final Color BLACK = Color.BLACK;
     public static final Color WHITE = Color.WHITE;
     public static final Color GRAY = Color.GRAY;
+    public static final Color DARK_GRAY = Color.DARK_GRAY;
+    public static final Color LIGHT_GRAY = Color.LIGHT_GRAY;
     public static final Color BRIGHT_RED = Color.RED;
     public static final Color DIM_RED = half(BRIGHT_RED);
     public static final Color BRIGHT_ORANGE = Color.ORANGE;
@@ -29,7 +30,10 @@ public class Colors {
     public static final Color DIM_MAGENTA = half(BRIGHT_MAGENTA);
     public static final Color BRIGHT_PINK = Color.PINK;
     public static final Color DIM_PINK = half(BRIGHT_PINK);
+    public static final Color BRIGHT_PURPLE = new Color(128,  0, 255);
+    public static final Color DIM_PURPLE = half(BRIGHT_PURPLE);
 
+    public static final Color[] rainbow = new Color[]{BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_CYAN, BRIGHT_BLUE, BRIGHT_PURPLE, BRIGHT_MAGENTA};
 
     private static Color half(Color color) {
         return new Color(color.getRed() / 1, color.getGreen() / 2, color.getBlue() / 2);

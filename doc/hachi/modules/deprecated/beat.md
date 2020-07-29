@@ -30,7 +30,7 @@ The first two rows of the grid in drum view are for selecting the playing patter
 including selecting a range of patterns to be chained. To chain a set of patterns, hold down the first pattern in the
 chain and then press the last pattern in the chain. Those patterns and all those in between will be played in order.
 Whenever a pattern or chain of patterns is selected for play, the first pattern will be selected for editing, but another pattern can be edited by 
-holding down the pattern edit button (along the left side) and tapping the pattern to edit.
+holding down the pattern edit button (along the left group) and tapping the pattern to edit.
 
 
 ### Tracks
@@ -66,13 +66,13 @@ next button will be up two semitones, and then the highest button will bend an o
 pitches down. Beatbox will send pitch bend signals on its set MIDI channel for each enabled step. Pitch bend applies to the entire channel,
 so is not programmable per track; think of each pattern as having a single pitch track.
 
-<img width="480px" src="beat-control.png"/>
+<img width="480px" src="beat-element.png"/>
 
 Jump mode is more of a "performance" mode. In jump mode, tapping any of the step controls will play that step on the next clock tick,
 advancing normally from there. The sequence will reset to the first step at the next reset. Tapping any of the track select controls
 will play the corresponding sound rather than selecting the track. Also in jump mode, Beatbox will display a clock, where the current
 step being played will be lit up, and a counter will keep track of the measure count up to 8. This is useful for knowing when
-to trigger fills and watching what steps play during jumps and fills. Jump mode also allows "momentary pitch" control. Holding down
+to trigger fills and watching what steps play during jumps and fills. Jump mode also allows "momentary pitch" element. Holding down
 the value buttons will send a midi pitch bend value just as in pitch mode, but pitch bend will be reset to zero when you release
 the button.
 

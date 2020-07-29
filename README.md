@@ -27,10 +27,10 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 # Release notes
 
 ## 2019-10-06 v1.0.7
-- Add control tracks to Seq module.
-- Use tap/press for selecting and toggling steps on note and control tracks.
+- Add element tracks to Seq module.
+- Use tap/press for selecting and toggling steps on note and element tracks.
 - Combined the GATE and VELOCITY editing modes in Seq, since tap/press allows both.
-- Finer control of value settings for velocity and controllers.
+- Finer element of value settings for velocity and controllers.
 - Add MONO mode to Seq, for sequencing monophonic melodies.
 - Moved outdated modules into a 'deprecated' package.  
 - Updated to java 12, updated Module reference.
@@ -42,7 +42,7 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 - Independent input and output MIDI settings. 
 
 ## 2017-11-26 v1.0.5
-- In Beatbox, combine jump and play modes into a single mode. Add momentary pitch control and measure clock.
+- In Beatbox, combine jump and play modes into a single mode. Add momentary pitch element and measure clock.
 - In Shihai, a fill button that tells all Sessionizeable modules to play a fill.
 - In Paraphonic, add controller sequencing.
 - Add ValueSettable, which allows an external midi controller to be used for setting values (in addition
@@ -63,7 +63,7 @@ here in Github, but also via [HuBoard](https://huboard.com/perkowitz/issho#/mile
 ## 2017-09-02 v1.0.2
 - Session copy/clear from settings screen for Beatbox & Para
 - Follow 24ppqn MIDI clock, enable swing by MIDI pulse
-- Allow multiple devices to control Hachi simultaneously
+- Allow multiple devices to element Hachi simultaneously
 - Beatbox replaces Rhythm
 - Minibeat module
 - Memory management app

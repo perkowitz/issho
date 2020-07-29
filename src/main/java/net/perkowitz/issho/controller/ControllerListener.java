@@ -1,18 +1,14 @@
 package net.perkowitz.issho.controller;
 
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridKnob;
-import net.perkowitz.issho.devices.GridPad;
-
 public interface ControllerListener {
 
-    public void onPadPressed(Pad pad, int velocity);
-    public void onPadReleased(Pad pad);
-    public void onButtonPressed(Button button, int velocity);
-    public void onButtonReleased(Button button);
-    public void onKnobChanged(Knob knob, int delta);
-    public void onKnobSet(Knob knob, int value);
-    public void onKnobTouched(Knob knob);
-    public void onKnobReleased(Knob knob);
+    public void onPadPressed(PadElement pad, int velocity);
+    public void onPadReleased(PadElement pad);
+    public void onButtonPressed(ButtonElement button, int velocity);
+    public void onButtonReleased(ButtonElement button);
+    public void onKnobChanged(KnobElement knob, int delta);
+    public void onKnobSet(KnobElement knob, int value);
+    public void onKnobTouched(KnobElement knob);
+    public void onKnobReleased(KnobElement knob);
 
 }

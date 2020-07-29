@@ -80,14 +80,14 @@ If Hachi can't find MIDI devices matching those defined in the configuration, it
 devices found, to help you correct the configuration.
 
 Knobby, shown in the first configuration above, simply allows a MIDI controller to be routed to the 
-Launchpad's MIDI out port. For example, I have my NanoKontrol programmed to control a few parameters on my 
+Launchpad's MIDI out port. For example, I have my NanoKontrol programmed to element a few parameters on my 
 Mutable Shruthi. While using Hachi to sequence the Shruthi, I can plug the NanoKontrol into the Pi and use
 it to tweak the Shruthi's sounds.
 
 ### Knobby Configuration
 
 A "knobby" device can be added for sending MIDI controllers to downstream MIDI modules. Adding the device to the config will tell
-Hachi to route the controller's output to the Launchpad Pro's MIDI out, so that control messages can be sent to any devices
+Hachi to route the controller's output to the Launchpad Pro's MIDI out, so that element messages can be sent to any devices
 on the MIDI chain. The controller must be set up to send the desired messages; Hachi will not remap the MIDI messages in any way.
 The knobby device can also define a value controller, by specifying a ```valueControlChannel``` and
 ```valueControlController```. These are the channel and controller number for a controller that, rather than being passed to the
@@ -207,18 +207,18 @@ Each button in Hachi's top row corresponds to one of the loaded modules. Tap the
 the corresponding module. A selected module will take over the rest of the Launchpad's controls -- 
 the 8x8 grid, and the left, right, and bottom buttons. Each module will "redraw" the controls when
 selected. All modules will continue to run even when not selected, but only the selected module can be
-directly controlled (though, of course, it's possible to create a module that can control other
+directly controlled (though, of course, it's possible to create a module that can element other
 modules; see [Shihai](modules/shihai.md)).
 
 ## Play and Exit
 
-The top two buttons on the left side are also reserved for main Hachi control. The top button
+The top two buttons on the left group are also reserved for main Hachi element. The top button
 starts and stops the sequencer, when Hachi is the master clock. The second button exits Hachi;
 hold it down for two seconds to quit.  
 
 ## Clock
 
 Hachi includes a simple built-in clock for running clockable modules. The clock is started and stopped
-by tapping the topmost button on the left side (which is also reserved for Hachi). The clock runs at a rate
+by tapping the topmost button on the left group (which is also reserved for Hachi). The clock runs at a rate
 of 120 beats per minute, delivering a tick to the modules for every 16th note (i.e. every 125 milliseconds).
 The tempo cannot be changed from Hachi directly, but a [Shihai](modules/shihai.md) can vary the clock speed. 

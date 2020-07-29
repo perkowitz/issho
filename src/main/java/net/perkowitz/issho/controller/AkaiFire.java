@@ -1,20 +1,15 @@
 package net.perkowitz.issho.controller;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import net.perkowitz.issho.devices.GridButton;
-import net.perkowitz.issho.devices.GridPad;
+import lombok.Setter;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import java.awt.*;
 import java.util.Map;
-import java.util.Set;
 
 import static javax.sound.midi.ShortMessage.*;
-import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
-import static net.perkowitz.issho.util.MidiUtil.MIDI_REALTIME_COMMAND;
 
 public class AkaiFire implements Receiver, Controller {
 
@@ -39,26 +34,32 @@ public class AkaiFire implements Receiver, Controller {
     private static final int LIGHTS_START = 0x28;
     private static final int PADS_START = 0x36;
 
+    private static final int GROUP_TOP = 0;
+    private static final int GROUP_BOTTOM= 1;
+    private static final int GROUP_LEFT = 2;
+    private static final int GROUP_RIGHT = 3;
+    private static final int GROUP_OTHER = 4;
+
     private static final byte[] padMessage = { (byte)0xF0, 0x47, 0x7F, 0x43, 0x65, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, (byte)0xF7 };
 
-    public static Map<Control.Side, Integer> buttonCount = Maps.newHashMap();
-    private static Map<Control.Side, Integer> buttonStart = Maps.newHashMap();
+    public static Map<Integer, Integer> buttonCount = Maps.newHashMap();
+    private static Map<Integer, Integer> buttonStart = Maps.newHashMap();
     static {
-        buttonCount.put(Control.Side.TOP, BUTTONS_TOP);
-        buttonCount.put(Control.Side.BOTTOM, BUTTONS_BOTTOM);
-        buttonCount.put(Control.Side.LEFT, BUTTONS_LEFT);
-        buttonCount.put(Control.Side.RIGHT, BUTTONS_RIGHT);
-        buttonCount.put(Control.Side.OTHER, BUTTONS_OTHER);
-        buttonStart.put(Control.Side.TOP, BUTTONS_TOP_START);
-        buttonStart.put(Control.Side.BOTTOM, BUTTONS_BOTTOM_START);
-        buttonStart.put(Control.Side.LEFT, BUTTONS_LEFT_START);
-        buttonStart.put(Control.Side.RIGHT, BUTTONS_RIGHT_START);
-        buttonStart.put(Control.Side.OTHER, BUTTONS_OTHER_START);
+        buttonCount.put(GROUP_TOP, BUTTONS_TOP);
+        buttonCount.put(GROUP_BOTTOM, BUTTONS_BOTTOM);
+        buttonCount.put(GROUP_LEFT, BUTTONS_LEFT);
+        buttonCount.put(GROUP_RIGHT, BUTTONS_RIGHT);
+        buttonCount.put(GROUP_OTHER, BUTTONS_OTHER);
+        buttonStart.put(GROUP_TOP, BUTTONS_TOP_START);
+        buttonStart.put(GROUP_BOTTOM, BUTTONS_BOTTOM_START);
+        buttonStart.put(GROUP_LEFT, BUTTONS_LEFT_START);
+        buttonStart.put(GROUP_RIGHT, BUTTONS_RIGHT_START);
+        buttonStart.put(GROUP_OTHER, BUTTONS_OTHER_START);
     }
 
     private int channel = 0;
     private MidiOut midiOut;
-    private ControllerListener listener;
+    @Setter private ControllerListener listener;
 
 
     public AkaiFire(MidiOut midiOut, ControllerListener listener) {
@@ -67,7 +68,11 @@ public class AkaiFire implements Receiver, Controller {
     }
 
 
-    public void setPad(Pad pad, Color color) {
+    public void initialize() {
+
+    }
+
+    public void setPad(PadElement pad, Color color) {
         if (pad.getRow() < 0 || pad.getRow() >= PAD_ROWS || pad.getColumn() < 0 || pad.getColumn() >= PAD_COLUMNS) {
             return;
         }
@@ -77,22 +82,22 @@ public class AkaiFire implements Receiver, Controller {
         midiOut.sysex(bytes);
     }
 
-    public void setButton(Button button, Color color) {
+    public void setButton(ButtonElement button, Color color) {
         int index = button.getIndex();
-        Integer c = buttonCount.get(button.getSide());
+        Integer c = buttonCount.get(button.getGroup());
         if (index < 0 || c == null || index >= c) {
             return;
         }
-        Integer s = buttonStart.get(button.getSide());
+        Integer s = buttonStart.get(button.getGroup());
         if (s == null) return;
 
         int note = s + index;
         int velocity = 0;
 
         // monochrome buttons
-        if (button.getSide() == Control.Side.TOP || button.getSide() == Control.Side.LEFT
-                || button.equals(Button.at(Control.Side.BOTTOM, 5))
-                || button.equals(Button.at(Control.Side.BOTTOM, 8))) {
+        if (button.getGroup() == GROUP_TOP || button.getGroup() == GROUP_LEFT
+                || button.equals(ButtonElement.at(GROUP_BOTTOM, 5))
+                || button.equals(ButtonElement.at(GROUP_BOTTOM, 8))) {
             if (color.equals(Colors.OFF)) {
                 velocity = 0;
             } else if (color.equals(Colors.DIM) || color.equals(Colors.DIM_RED)
@@ -118,12 +123,12 @@ public class AkaiFire implements Receiver, Controller {
         midiOut.note(channel, note, velocity);
     }
 
-    public void setKnob(Knob knob, Color color) {
+    public void setKnob(KnobElement knob, Color color) {
         // in fact there is no display for the knobs
     }
 
-    public void setLight(Light light, Color color) {
-        if (light.getSide() != Control.Side.LEFT || light.getIndex() < 0 || light.getIndex() >= LIGHTS_COUNT) {
+    public void setLight(LightElement light, Color color) {
+        if (light.getGroup() != GROUP_LEFT || light.getIndex() < 0 || light.getIndex() >= LIGHTS_COUNT) {
             return;
         }
 
@@ -157,35 +162,35 @@ public class AkaiFire implements Receiver, Controller {
             if (command == NOTE_ON) {
                 int note = shortMessage.getData1();
                 int velocity = shortMessage.getData2();
-                Control control = noteToControl(note);
-                if (control == null) return;
+                Element element = noteToControl(note);
+                if (element == null) return;
                 if (listener != null) {
-                    switch (control.getType()) {
+                    switch (element.getType()) {
                         case PAD:
-                            listener.onPadPressed((Pad) control, velocity);
+                            listener.onPadPressed((PadElement) element, velocity);
                             break;
                         case BUTTON:
-                            listener.onButtonPressed((Button) control, velocity);
+                            listener.onButtonPressed((ButtonElement) element, velocity);
                             break;
                         case KNOB:
-                            listener.onKnobTouched((Knob) control);
+                            listener.onKnobTouched((KnobElement) element);
                             break;
                     }
                 }
             } else if (command == NOTE_OFF) {
                 int note = shortMessage.getData1();
-                Control control = noteToControl(note);
-                if (control == null) return;
+                Element element = noteToControl(note);
+                if (element == null) return;
                 if (listener != null) {
-                    switch (control.getType()) {
+                    switch (element.getType()) {
                         case PAD:
-                            listener.onPadReleased((Pad) control);
+                            listener.onPadReleased((PadElement) element);
                             break;
                         case BUTTON:
-                            listener.onButtonReleased((Button) control);
+                            listener.onButtonReleased((ButtonElement) element);
                             break;
                         case KNOB:
-                            listener.onKnobReleased((Knob) control);
+                            listener.onKnobReleased((KnobElement) element);
                             break;
                     }
                 }
@@ -210,27 +215,27 @@ public class AkaiFire implements Receiver, Controller {
         return bytes;
     }
 
-    private Pad noteToPad(int note) {
+    private PadElement noteToPad(int note) {
         int index = note - PADS_START;
-        return new Pad(index / PAD_COLUMNS, index % PAD_COLUMNS);
+        return new PadElement(index / PAD_COLUMNS, index % PAD_COLUMNS);
     }
 
-    private Control noteToControl(int note) {
+    private Element noteToControl(int note) {
         if (note >= PADS_START && note < PADS_START + PAD_ROWS * PAD_COLUMNS) {
             int index = note - PADS_START;
-            return new Pad(index / PAD_COLUMNS, index % PAD_COLUMNS);
+            return new PadElement(index / PAD_COLUMNS, index % PAD_COLUMNS);
         } else if (note >= BUTTONS_TOP_START && note < BUTTONS_TOP_START + BUTTONS_TOP) {
-            return new Button(Control.Side.TOP, note - BUTTONS_TOP_START);
+            return new ButtonElement(GROUP_TOP, note - BUTTONS_TOP_START);
         } else if (note >= BUTTONS_BOTTOM_START && note < BUTTONS_BOTTOM_START + BUTTONS_BOTTOM) {
-            return new Button(Control.Side.BOTTOM, note - BUTTONS_BOTTOM_START);
+            return new ButtonElement(GROUP_BOTTOM, note - BUTTONS_BOTTOM_START);
         } else if (note >= BUTTONS_LEFT_START && note < BUTTONS_LEFT_START + BUTTONS_LEFT) {
-            return new Button(Control.Side.LEFT, note - BUTTONS_LEFT_START);
+            return new ButtonElement(GROUP_LEFT, note - BUTTONS_LEFT_START);
         } else if (note >= BUTTONS_RIGHT_START && note < BUTTONS_RIGHT_START + BUTTONS_RIGHT) {
-            return new Button(Control.Side.RIGHT, note - BUTTONS_RIGHT_START);
+            return new ButtonElement(GROUP_RIGHT, note - BUTTONS_RIGHT_START);
         } else if (note >= BUTTONS_OTHER_START && note < BUTTONS_OTHER_START + BUTTONS_OTHER) {
-            return new Button(Control.Side.OTHER, note - BUTTONS_OTHER_START);
+            return new ButtonElement(GROUP_OTHER, note - BUTTONS_OTHER_START);
         } else if (note >= KNOBS_TOUCH_START && note < KNOBS_TOUCH_START + KNOBS_COUNT) {
-            return new Knob(Control.Side.TOP, note - KNOBS_TOUCH_START);
+            return new KnobElement(GROUP_TOP, note - KNOBS_TOUCH_START);
         }
         return null;
     }

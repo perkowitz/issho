@@ -1,10 +1,13 @@
 package net.perkowitz.issho.controller;
 
-public class ControllerListenerTest implements ControllerListener {
-
+/**
+ * Created by mikep on 7/28/20.
+ */
+public class TestListener implements ControllerListener {
     public void onPadPressed(PadElement pad, int velocity) {
         System.out.printf("PadElement pressed: %s, %d\n", pad, velocity);
     }
+
     public void onPadReleased(PadElement pad) {
         System.out.printf("PadElement released: %s\n", pad);
     }
