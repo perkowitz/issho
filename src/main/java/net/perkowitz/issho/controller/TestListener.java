@@ -1,39 +1,43 @@
 package net.perkowitz.issho.controller;
 
+import net.perkowitz.issho.controller.elements.Button;
+import net.perkowitz.issho.controller.elements.Knob;
+import net.perkowitz.issho.controller.elements.Pad;
+
 /**
  * Created by mikep on 7/28/20.
  */
 public class TestListener implements ControllerListener {
-    public void onPadPressed(PadElement pad, int velocity) {
-        System.out.printf("PadElement pressed: %s, %d\n", pad, velocity);
+    public void onPadPressed(Pad pad, int velocity) {
+        System.out.printf("Pad pressed: %s, %d\n", pad, velocity);
     }
 
-    public void onPadReleased(PadElement pad) {
-        System.out.printf("PadElement released: %s\n", pad);
+    public void onPadReleased(Pad pad) {
+        System.out.printf("Pad released: %s\n", pad);
     }
 
-    public void onButtonPressed(ButtonElement button, int velocity) {
-        System.out.printf("ButtonElement pressed: %s, %d\n", button, velocity);
+    public void onButtonPressed(Button button, int velocity) {
+        System.out.printf("Button pressed: %s, %d\n", button, velocity);
     }
 
-    public void onButtonReleased(ButtonElement button) {
-        System.out.printf("ButtonElement released: %s\n", button);
+    public void onButtonReleased(Button button) {
+        System.out.printf("Button released: %s\n", button);
     }
 
-    public void onKnobChanged(KnobElement knob, int delta) {
-        System.out.printf("KnobElement changed: %s, %d\n", knob, delta);
+    public void onKnobChanged(Knob knob, int delta) {
+        System.out.printf("Knob changed: %s, %d\n", knob, delta);
     }
 
-    public void onKnobSet(KnobElement knob, int value) {
-        System.out.printf("KnobElement set: %s, %d\n", knob, value);
+    public void onKnobSet(Knob knob, int value) {
+        System.out.printf("Knob set: %s, %d\n", knob, value);
     }
 
-    public void onKnobTouched(KnobElement knob) {
-        System.out.printf("KnobElement touched: %s\n", knob);
+    public void onKnobTouched(Knob knob) {
+        System.out.printf("Knob touched: %s\n", knob);
     }
 
-    public void onKnobReleased(KnobElement knob) {
-        System.out.printf("KnobElement released: %s\n", knob);
+    public void onKnobReleased(Knob knob) {
+        System.out.printf("Knob released: %s\n", knob);
     }
 
 }

@@ -1,14 +1,14 @@
 // LightElement is an element that just lights up in a color; there is no input from a Light.
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.elements;
 
 import lombok.Getter;
 
-public class LightElement implements Element {
+public class Light implements Element {
 
     @Getter private int group;
     @Getter private int index;
 
-    public LightElement(int group, int index) {
+    public Light(int group, int index) {
         this.group = group;
         this.index = index;
     }
@@ -23,8 +23,8 @@ public class LightElement implements Element {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof LightElement) {
-            LightElement l = (LightElement) object;
+        if (object instanceof Light) {
+            Light l = (Light) object;
             return group == l.getGroup() && index == l.getIndex();
         }
         return false;
@@ -43,15 +43,15 @@ public class LightElement implements Element {
 
     /***** static methods *****/
 
-    public static LightElement at(int group, int index) {
-        return new LightElement(group, index);
+    public static Light at(int group, int index) {
+        return new Light(group, index);
     }
 
-    public LightElement fromElement(Element element) {
+    public Light fromElement(Element element) {
         if (element.getType() != Type.LIGHT) {
             return null;
         }
-        return (LightElement) element;
+        return (Light) element;
     }
 
 

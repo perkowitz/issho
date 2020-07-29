@@ -1,22 +1,16 @@
 package net.perkowitz.issho.controller.novation;
 
-import net.perkowitz.issho.controller.ButtonElement;
+import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.MidiOut;
-import net.perkowitz.issho.controller.PadElement;
-import net.perkowitz.issho.controller.TestListener;
 import net.perkowitz.issho.util.MidiUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
-import java.awt.*;
 import java.util.Timer;
 import java.util.concurrent.CountDownLatch;
-
-import static net.perkowitz.issho.devices.GridButton.Side.*;
 
 /**
  * Created by mikep on 7/28/20.
@@ -61,7 +55,7 @@ public class LaunchpadProTest {
         lpp.initialize();
 
         for (int i = 0; i < 7; i++) {
-            lpp.setButton(ButtonElement.at(LaunchpadPro.BUTTONS_BOTTOM, i + 1), Colors.rainbow[i]);
+            lpp.setButton(Button.at(LaunchpadPro.BUTTONS_BOTTOM, i + 1), Colors.rainbow[i]);
         }
 
 

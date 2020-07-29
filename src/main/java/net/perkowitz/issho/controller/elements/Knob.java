@@ -1,15 +1,15 @@
 // KnobElement is an element that can be used to set a value.
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.elements;
 
 import lombok.Getter;
 
-public class KnobElement implements Element {
+public class Knob implements Element {
 
     @Getter private int group;
     @Getter private int index;
 
 
-    public KnobElement(int group, int index) {
+    public Knob(int group, int index) {
         this.group = group;
         this.index = index;
     }
@@ -24,8 +24,8 @@ public class KnobElement implements Element {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof KnobElement) {
-            KnobElement k = (KnobElement) object;
+        if (object instanceof Knob) {
+            Knob k = (Knob) object;
             return group == k.getGroup() && index == k.getIndex();
         }
         return false;
@@ -44,15 +44,15 @@ public class KnobElement implements Element {
 
     /***** static methods *****/
 
-    public static KnobElement at(int group, int index) {
-        return new KnobElement(group, index);
+    public static Knob at(int group, int index) {
+        return new Knob(group, index);
     }
 
-    public KnobElement fromElement(Element element) {
+    public Knob fromElement(Element element) {
         if (element.getType() != Type.KNOB) {
             return null;
         }
-        return (KnobElement) element;
+        return (Knob) element;
     }
 
 

@@ -1,5 +1,5 @@
 // Element represents any input or output (hardware) element that can appear on a controller.
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.elements;
 
 public interface Element {
 

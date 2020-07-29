@@ -1,6 +1,6 @@
 package net.perkowitz.issho.controller.akai;
 
-import net.perkowitz.issho.controller.ButtonElement;
+import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.MidiOut;
@@ -38,7 +38,7 @@ public class AkaiFireTest {
 
         for (int group = 0; group < 4; group++) {
             for (int i = 0; i < AkaiFire.buttonCount.get(group); i++) {
-                ButtonElement button = new ButtonElement(group, i);
+                Button button = new Button(group, i);
                 fire.setButton(button, Colors.DIM);
             }
         }

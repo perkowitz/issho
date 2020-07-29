@@ -1,12 +1,11 @@
 package net.perkowitz.issho.controller.novation;
 
 import lombok.Setter;
-import net.perkowitz.issho.controller.ButtonElement;
+import net.perkowitz.issho.controller.elements.*;
+import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.KnobElement;
-import net.perkowitz.issho.controller.PadElement;
 
 import java.awt.*;
 
@@ -19,15 +18,15 @@ public class LaunchPadProTestListener implements ControllerListener {
     @Setter private Controller controller;
 
 
-    public void onPadPressed(PadElement pad, int velocity) {
+    public void onPadPressed(Pad pad, int velocity) {
         controller.setPad(pad, color);
     }
 
-    public void onPadReleased(PadElement pad) {
-        System.out.printf("PadElement released: %s\n", pad);
+    public void onPadReleased(Pad pad) {
+        System.out.printf("Pad released: %s\n", pad);
     }
 
-    public void onButtonPressed(ButtonElement button, int velocity) {
+    public void onButtonPressed(net.perkowitz.issho.controller.elements.Button button, int velocity) {
         if (button.getGroup() == LaunchpadPro.BUTTONS_BOTTOM && button.getIndex() == 0) {
             color = Colors.BLACK;
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_BOTTOM) {
@@ -37,33 +36,33 @@ public class LaunchPadProTestListener implements ControllerListener {
             System.exit(0);
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_RIGHT) {
             for (int i = 0; i < 8; i++) {
-                controller.setPad(PadElement.at(button.getIndex(), i), color);
+                controller.setPad(Pad.at(button.getIndex(), i), color);
             }
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_TOP) {
             for (int i = 0; i < 8; i++) {
-                controller.setPad(PadElement.at(i, button.getIndex()), color);
+                controller.setPad(Pad.at(i, button.getIndex()), color);
             }
         }
     }
 
-    public void onButtonReleased(ButtonElement button) {
-        System.out.printf("ButtonElement released: %s\n", button);
+    public void onButtonReleased(Button button) {
+        System.out.printf("Button released: %s\n", button);
     }
 
-    public void onKnobChanged(KnobElement knob, int delta) {
-        System.out.printf("KnobElement changed: %s, %d\n", knob, delta);
+    public void onKnobChanged(Knob knob, int delta) {
+        System.out.printf("Knob changed: %s, %d\n", knob, delta);
     }
 
-    public void onKnobSet(KnobElement knob, int value) {
-        System.out.printf("KnobElement set: %s, %d\n", knob, value);
+    public void onKnobSet(Knob knob, int value) {
+        System.out.printf("Knob set: %s, %d\n", knob, value);
     }
 
-    public void onKnobTouched(KnobElement knob) {
-        System.out.printf("KnobElement touched: %s\n", knob);
+    public void onKnobTouched(Knob knob) {
+        System.out.printf("Knob touched: %s\n", knob);
     }
 
-    public void onKnobReleased(KnobElement knob) {
-        System.out.printf("KnobElement released: %s\n", knob);
+    public void onKnobReleased(Knob knob) {
+        System.out.printf("Knob released: %s\n", knob);
     }
 
 }

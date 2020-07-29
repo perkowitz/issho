@@ -1,6 +1,5 @@
 package net.perkowitz.issho.controller;
 
-import javax.sound.midi.MidiMessage;
 import java.awt.*;
 
 /**
@@ -14,10 +13,10 @@ public class Test {
 
         for (int group = 0; group < 8; group++) {
             for (int index = 0; index < 4; index++) {
-                t.setButton(ButtonElement.at(group, index), new Color(index, index, index));
-//                t.setPad(PadElement.at(group, index), new Color(index, index, index));
-//                t.setLight(LightElement.at(group, index), new Color(index, index, index));
-//                t.setKnob(KnobElement.at(group, index), new Color(index, index, index));
+                t.setButton(net.perkowitz.issho.controller.elements.Button.at(group, index), new Color(index, index, index));
+//                t.setPad(Pad.at(group, index), new Color(index, index, index));
+//                t.setLight(Light.at(group, index), new Color(index, index, index));
+//                t.setKnob(Knob.at(group, index), new Color(index, index, index));
             }
         }
 

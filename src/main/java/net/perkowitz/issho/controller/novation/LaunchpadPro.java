@@ -1,14 +1,12 @@
 package net.perkowitz.issho.controller.novation;
 
 import com.google.common.collect.Maps;
-import net.perkowitz.issho.controller.ButtonElement;
+import net.perkowitz.issho.controller.elements.*;
+import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.KnobElement;
-import net.perkowitz.issho.controller.LightElement;
 import net.perkowitz.issho.controller.MidiOut;
-import net.perkowitz.issho.controller.PadElement;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -75,27 +73,27 @@ public class LaunchpadPro implements Controller, Receiver {
     public void initialize() {
         for (int side = 0; side < 4; side++) {
             for (int index = 0; index < 8; index++) {
-                setButton(ButtonElement.at(side, index), Colors.BLACK);
+                setButton(Button.at(side, index), Colors.BLACK);
             }
         }
 
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 8; column++) {
-                setPad(PadElement.at(row, column), Colors.BLACK);
+                setPad(Pad.at(row, column), Colors.BLACK);
             }
         }
     }
 
-    public void setPad(PadElement pad, Color color) {
+    public void setPad(Pad pad, Color color) {
         midiOut.note(CHANNEL, padToNote(pad), colorToIndex(color));
     }
 
-    public void setButton(ButtonElement button, Color color) {
+    public void setButton(Button button, Color color) {
         midiOut.cc(CHANNEL, buttonToCc(button), colorToIndex(color));
     }
 
-    public void setKnob(KnobElement knob, Color color) {}
-    public void setLight(LightElement light, Color color) {}
+    public void setKnob(Knob knob, Color color) {}
+    public void setLight(Light light, Color color) {}
 
 
     /***** midi receiver implementation **************************************************************/
@@ -129,7 +127,7 @@ public class LaunchpadPro implements Controller, Receiver {
                     case NOTE_ON:
 //                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         if (listener != null) {
-                            PadElement pad = noteToPad(shortMessage.getData1());
+                            Pad pad = noteToPad(shortMessage.getData1());
                             int velocity = shortMessage.getData2();
                             if (velocity == 0) {
                                 listener.onPadReleased(pad);
@@ -141,14 +139,14 @@ public class LaunchpadPro implements Controller, Receiver {
                     case NOTE_OFF:
 //                        System.out.printf("NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         if (listener != null) {
-                            PadElement pad = noteToPad(shortMessage.getData1());
+                            Pad pad = noteToPad(shortMessage.getData1());
                             listener.onPadReleased(pad);
                         }
                         break;
                     case CONTROL_CHANGE:
 //                        System.out.printf("MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         if (listener != null) {
-                            ButtonElement button = ccToButton(shortMessage.getData1());
+                            Button button = ccToButton(shortMessage.getData1());
                             int velocity = shortMessage.getData2();
                             if (velocity == 0) {
                                 listener.onButtonReleased(button);
@@ -178,18 +176,18 @@ public class LaunchpadPro implements Controller, Receiver {
         return index;
     }
 
-    private int padToNote(PadElement pad) {
+    private int padToNote(Pad pad) {
         return (7-pad.getRow()) * 10 + pad.getColumn() + 11;
     }
 
-    private PadElement noteToPad(int note) {
+    private Pad noteToPad(int note) {
         int column = note % 10 - 1;
         int row = 7 - (note / 10 - 1);
-        return PadElement.at(row, column);
+        return Pad.at(row, column);
 
     }
 
-    private int buttonToCc(ButtonElement button) {
+    private int buttonToCc(net.perkowitz.issho.controller.elements.Button button) {
 
         int index = button.getIndex();
         int flippedIndex = 7 - index;
@@ -208,7 +206,7 @@ public class LaunchpadPro implements Controller, Receiver {
 
     }
 
-    public static ButtonElement ccToButton(int cc) {
+    public static Button ccToButton(int cc) {
 
         int group = BUTTONS_TOP;
         int index = 0;
@@ -221,7 +219,7 @@ public class LaunchpadPro implements Controller, Receiver {
             group = (cc < 10) ? BUTTONS_BOTTOM : BUTTONS_TOP;
         }
 
-        return ButtonElement.at(group, index);
+        return Button.at(group, index);
     }
 
 

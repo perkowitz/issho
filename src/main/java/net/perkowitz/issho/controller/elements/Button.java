@@ -1,14 +1,14 @@
 // ButtonElement is an element that you can push and release.
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.elements;
 
 import lombok.Getter;
 
-public class ButtonElement implements Element {
+public class Button implements Element {
 
     @Getter private int group;
     @Getter private int index;
 
-    public ButtonElement(int group, int index) {
+    public Button(int group, int index) {
         this.group = group;
         this.index = index;
     }
@@ -23,8 +23,8 @@ public class ButtonElement implements Element {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof ButtonElement) {
-            ButtonElement b = (ButtonElement) object;
+        if (object instanceof Button) {
+            Button b = (Button) object;
             return group == b.getGroup() && index == b.getIndex();
         }
         return false;
@@ -43,15 +43,15 @@ public class ButtonElement implements Element {
 
     /***** static methods *****/
 
-    public static ButtonElement at(int group, int index) {
-        return new ButtonElement(group, index);
+    public static Button at(int group, int index) {
+        return new Button(group, index);
     }
 
-    public ButtonElement fromElement(Element element) {
+    public Button fromElement(Element element) {
         if (element.getType() != Type.BUTTON) {
             return null;
         }
-        return (ButtonElement) element;
+        return (Button) element;
     }
 
 }

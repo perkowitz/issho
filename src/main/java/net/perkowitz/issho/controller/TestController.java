@@ -1,5 +1,8 @@
 package net.perkowitz.issho.controller;
 
+import net.perkowitz.issho.controller.elements.*;
+import net.perkowitz.issho.controller.elements.Button;
+
 import javax.sound.midi.MidiMessage;
 import java.awt.*;
 
@@ -16,48 +19,48 @@ public class TestController {
 
     public void initialize() {}
 
-    public void setPad(PadElement pad, Color color) {
+    public void setPad(Pad pad, Color color) {
         System.out.printf("Set pad %s to color %s.\n", pad, color);
     }
 
-    public void setButton(ButtonElement button, Color color) {
+    public void setButton(Button button, Color color) {
 //            System.out.printf("Set button %s to color %s.\n", button, color);
 
         // the buttons activate test actions on other elements
         switch (button.getGroup()) {
             case 0:
-                listener.onButtonPressed(ButtonElement.at(0, button.getIndex()), 64);
+                listener.onButtonPressed(net.perkowitz.issho.controller.elements.Button.at(0, button.getIndex()), 64);
                 break;
             case 1:
-                listener.onButtonReleased(ButtonElement.at(0, button.getIndex()));
+                listener.onButtonReleased(Button.at(0, button.getIndex()));
                 break;
             case 2:
-                listener.onPadPressed(PadElement.at(0, button.getIndex()), 64);
+                listener.onPadPressed(Pad.at(0, button.getIndex()), 64);
                 break;
             case 3:
-                listener.onPadReleased(PadElement.at(0, button.getIndex()));
+                listener.onPadReleased(Pad.at(0, button.getIndex()));
                 break;
             case 4:
-                listener.onKnobTouched(KnobElement.at(0, button.getIndex()));
+                listener.onKnobTouched(Knob.at(0, button.getIndex()));
                 break;
             case 5:
-                listener.onKnobReleased(KnobElement.at(0, button.getIndex()));
+                listener.onKnobReleased(Knob.at(0, button.getIndex()));
                 break;
             case 6:
-                listener.onKnobSet(KnobElement.at(0, button.getIndex()), 64);
+                listener.onKnobSet(Knob.at(0, button.getIndex()), 64);
                 break;
             case 7:
-                listener.onKnobChanged(KnobElement.at(0, button.getIndex()), 10);
+                listener.onKnobChanged(Knob.at(0, button.getIndex()), 10);
                 break;
         }
 
     }
 
-    public void setKnob(KnobElement knob, Color color) {
+    public void setKnob(Knob knob, Color color) {
         System.out.printf("Set knob %s to color %s.\n", knob, color);
     }
 
-    public void setLight(LightElement light, Color color) {
+    public void setLight(Light light, Color color) {
         System.out.printf("Set light %s to color %s.\n", light, color);
     }
 
