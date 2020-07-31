@@ -1,3 +1,4 @@
+// Colors provides a broader set of named instances of java.awt.Color for use with controllers.
 package net.perkowitz.issho.controller;
 
 import java.awt.*;
@@ -36,7 +37,7 @@ public class Colors {
     public static final Color[] rainbow = new Color[]{BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_CYAN, BRIGHT_BLUE, BRIGHT_PURPLE, BRIGHT_MAGENTA};
 
     private static Color half(Color color) {
-        return new Color(color.getRed() / 1, color.getGreen() / 2, color.getBlue() / 2);
+        return new Color(color.getRed() / 2, color.getGreen() / 2, color.getBlue() / 2);
     }
 
 
