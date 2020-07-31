@@ -1,3 +1,4 @@
+// LaunchpadProTest runs a simple drawing program to test the Launchpad controller.
 package net.perkowitz.issho.controller.novation;
 
 import net.perkowitz.issho.controller.elements.Button;
@@ -16,8 +17,6 @@ import java.util.concurrent.CountDownLatch;
  * Created by mikep on 7/28/20.
  */
 public class LaunchpadProTest {
-
-
 
     private static MidiDevice lppInput;
     private static MidiDevice lppOutput;
@@ -58,17 +57,12 @@ public class LaunchpadProTest {
             lpp.setButton(Button.at(LaunchpadPro.BUTTONS_BOTTOM, i + 1), Colors.rainbow[i]);
         }
 
-
         stop.await();
 
         lppInput.close();
         lppOutput.close();
 
         System.exit(0);
-
-
     }
-
-
 
 }
