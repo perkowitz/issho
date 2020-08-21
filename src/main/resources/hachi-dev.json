@@ -14,13 +14,21 @@
         ]
       }
     ],
-    "midiOutput": {
-      "type": "launchpadpro",
-      "names":[
-        "Launchpad Pro",
-        "Midi Port"
-      ]
-    },
+    "midiOutputs": [
+      {
+        "type": "launchpadpro",
+        "names":[
+          "Launchpad Pro",
+          "Midi Port"
+        ]
+      },
+      {
+        "type": "launchpadpro",
+        "names":[
+          "Moog Sub 37"
+        ]
+      }
+    ],
     "midiInput": {
       "names":[
         "Launchpad Pro",
@@ -43,6 +51,10 @@
     }
   },
   "modules": [
+    {
+      "class": "StepModule",
+      "filePrefix": "step0"
+    },
     {
       "class": "ShihaiModule",
       "panicExclude": [14, 15]
@@ -69,7 +81,7 @@
     },
     {
       "class": "StepModulexxx",
-      "filePrefix": "step0"
+      "filePrefix": "step1"
     }
   ]
 }
