@@ -17,15 +17,9 @@
     "midiOutputs": [
       {
         "type": "launchpadpro",
-        "names":[
+        "names": [
           "Launchpad Pro",
           "Midi Port"
-        ]
-      },
-      {
-        "type": "launchpadpro",
-        "names":[
-          "Moog Sub 37"
         ]
       }
     ],
