@@ -7,7 +7,6 @@ import net.perkowitz.issho.devices.launchpadpro.Color;
 import net.perkowitz.issho.hachi.Multitrack;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.Muteable;
-import org.w3c.dom.stylesheets.DocumentStyle;
 
 import java.util.List;
 
