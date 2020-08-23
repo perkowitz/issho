@@ -36,11 +36,11 @@ public class LaunchPadProTestListener implements ControllerListener {
             System.exit(0);
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_RIGHT) {
             for (int i = 0; i < 8; i++) {
-                controller.setPad(Pad.at(button.getIndex(), i), color);
+                controller.setPad(Pad.at(0, button.getIndex(), i), color);
             }
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_TOP) {
             for (int i = 0; i < 8; i++) {
-                controller.setPad(Pad.at(i, button.getIndex()), color);
+                controller.setPad(Pad.at(0, i, button.getIndex()), color);
             }
         }
     }

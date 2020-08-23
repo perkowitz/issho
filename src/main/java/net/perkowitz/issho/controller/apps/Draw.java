@@ -99,7 +99,7 @@ public class Draw implements ControllerListener {
 
     public void onPadReleased(Pad pad) {}
 
-    public void onButtonPressed(net.perkowitz.issho.controller.elements.Button button, int velocity) {
+    public void onButtonPressed(Button button, int velocity) {
         if (button.getGroup() == LaunchpadPro.BUTTONS_BOTTOM) {
             color = palette[button.getIndex()];
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_LEFT) {
@@ -107,11 +107,11 @@ public class Draw implements ControllerListener {
             System.exit(0);
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_RIGHT) {
             for (int i = 0; i < 8; i++) {
-                controller.setPad(Pad.at(button.getIndex(), i), color);
+                controller.setPad(Pad.at(0, button.getIndex(), i), color);
             }
         } else if (button.getGroup() == LaunchpadPro.BUTTONS_TOP) {
             for (int i = 0; i < 8; i++) {
-                controller.setPad(Pad.at(i, button.getIndex()), color);
+                controller.setPad(Pad.at(0, i, button.getIndex()), color);
             }
         }
     }

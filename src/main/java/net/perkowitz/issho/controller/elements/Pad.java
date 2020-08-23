@@ -5,10 +5,12 @@ import lombok.Getter;
 
 public class Pad implements Element {
 
+    @Getter private int group;
     @Getter private int row;
     @Getter private int column;
 
-    public Pad(int row, int column) {
+    public Pad(int group, int row, int column) {
+        this.group = group;
         this.row = row;
         this.column = column;
     }
@@ -38,14 +40,14 @@ public class Pad implements Element {
 
     @Override
     public String toString() {
-        return String.format("Pad:%03d:%03d", row, column);
+        return String.format("Pad:%03d:%03d/%03d", group, row, column);
     }
 
 
     /***** static methods *****/
 
-    public static Pad at(int row, int column) {
-        return new Pad(row, column);
+    public static Pad at(int group, int row, int column) {
+        return new Pad(group, row, column);
     }
 
     public Pad fromElement(Element element) {

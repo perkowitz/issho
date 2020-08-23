@@ -79,7 +79,7 @@ public class LaunchpadPro implements Controller, Receiver {
 
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 8; column++) {
-                setPad(Pad.at(row, column), Colors.BLACK);
+                setPad(Pad.at(0, row, column), Colors.BLACK);
             }
         }
     }
@@ -183,7 +183,7 @@ public class LaunchpadPro implements Controller, Receiver {
     private Pad noteToPad(int note) {
         int column = note % 10 - 1;
         int row = 7 - (note / 10 - 1);
-        return Pad.at(row, column);
+        return Pad.at(0, row, column);
 
     }
 

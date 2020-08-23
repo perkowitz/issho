@@ -226,13 +226,13 @@ public class AkaiFire implements Receiver, Controller {
 
     private Pad noteToPad(int note) {
         int index = note - PADS_START;
-        return new Pad(index / PAD_COLUMNS, index % PAD_COLUMNS);
+        return new Pad(0, index / PAD_COLUMNS, index % PAD_COLUMNS);
     }
 
     private Element noteToControl(int note) {
         if (note >= PADS_START && note < PADS_START + PAD_ROWS * PAD_COLUMNS) {
             int index = note - PADS_START;
-            return new Pad(index / PAD_COLUMNS, index % PAD_COLUMNS);
+            return new Pad(0, index / PAD_COLUMNS, index % PAD_COLUMNS);
         } else if (note >= BUTTONS_TOP_START && note < BUTTONS_TOP_START + BUTTONS_TOP) {
             return new Button(GROUP_TOP, note - BUTTONS_TOP_START);
         } else if (note >= BUTTONS_BOTTOM_START && note < BUTTONS_BOTTOM_START + BUTTONS_BOTTOM) {

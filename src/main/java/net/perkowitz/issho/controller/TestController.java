@@ -35,10 +35,10 @@ public class TestController {
                 listener.onButtonReleased(Button.at(0, button.getIndex()));
                 break;
             case 2:
-                listener.onPadPressed(Pad.at(0, button.getIndex()), 64);
+                listener.onPadPressed(Pad.at(0, 0, button.getIndex()), 64);
                 break;
             case 3:
-                listener.onPadReleased(Pad.at(0, button.getIndex()));
+                listener.onPadReleased(Pad.at(0, 0, button.getIndex()));
                 break;
             case 4:
                 listener.onKnobTouched(Knob.at(0, button.getIndex()));
