@@ -1,6 +1,7 @@
 package net.perkowitz.issho.controller;
 
 import net.perkowitz.issho.controller.elements.Button;
+import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.Knob;
 import net.perkowitz.issho.controller.elements.Pad;
 
@@ -8,36 +9,20 @@ import net.perkowitz.issho.controller.elements.Pad;
  * Created by mikep on 7/28/20.
  */
 public class TestListener implements ControllerListener {
-    public void onPadPressed(Pad pad, int velocity) {
-        System.out.printf("Pad pressed: %s, %d\n", pad, velocity);
+    public void onElementPressed(Element element, int value) {
+        System.out.printf("Element pressed: %s, %d\n", element, value);
     }
 
-    public void onPadReleased(Pad pad) {
-        System.out.printf("Pad released: %s\n", pad);
+    public void onElementReleased(Element element) {
+        System.out.printf("Element released: %s\n", element);
+    }
+
+    public void onElementChanged(Element element, int delta) {
+        System.out.printf("Element changed: %s\n", element);
     }
 
     public void onButtonPressed(Button button, int velocity) {
         System.out.printf("Button pressed: %s, %d\n", button, velocity);
-    }
-
-    public void onButtonReleased(Button button) {
-        System.out.printf("Button released: %s\n", button);
-    }
-
-    public void onKnobChanged(Knob knob, int delta) {
-        System.out.printf("Knob changed: %s, %d\n", knob, delta);
-    }
-
-    public void onKnobSet(Knob knob, int value) {
-        System.out.printf("Knob set: %s, %d\n", knob, value);
-    }
-
-    public void onKnobTouched(Knob knob) {
-        System.out.printf("Knob touched: %s\n", knob);
-    }
-
-    public void onKnobReleased(Knob knob) {
-        System.out.printf("Knob released: %s\n", knob);
     }
 
 }

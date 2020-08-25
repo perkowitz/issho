@@ -29,28 +29,25 @@ public class TestController {
         // the buttons activate test actions on other elements
         switch (button.getGroup()) {
             case 0:
-                listener.onButtonPressed(net.perkowitz.issho.controller.elements.Button.at(0, button.getIndex()), 64);
+                listener.onElementPressed(net.perkowitz.issho.controller.elements.Button.at(0, button.getIndex()), 64);
                 break;
             case 1:
-                listener.onButtonReleased(Button.at(0, button.getIndex()));
+                listener.onElementReleased(Button.at(0, button.getIndex()));
                 break;
             case 2:
-                listener.onPadPressed(Pad.at(0, 0, button.getIndex()), 64);
+                listener.onElementPressed(Pad.at(0, 0, button.getIndex()), 64);
                 break;
             case 3:
-                listener.onPadReleased(Pad.at(0, 0, button.getIndex()));
+                listener.onElementReleased(Pad.at(0, 0, button.getIndex()));
                 break;
             case 4:
-                listener.onKnobTouched(Knob.at(0, button.getIndex()));
+                listener.onElementPressed(Knob.at(0, button.getIndex()), 64);
                 break;
             case 5:
-                listener.onKnobReleased(Knob.at(0, button.getIndex()));
+                listener.onElementReleased(Knob.at(0, button.getIndex()));
                 break;
             case 6:
-                listener.onKnobSet(Knob.at(0, button.getIndex()), 64);
-                break;
-            case 7:
-                listener.onKnobChanged(Knob.at(0, button.getIndex()), 10);
+                listener.onElementChanged(Knob.at(0, button.getIndex()), 10);
                 break;
         }
 

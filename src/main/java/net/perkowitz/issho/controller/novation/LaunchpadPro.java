@@ -1,12 +1,10 @@
 package net.perkowitz.issho.controller.novation;
 
 import com.google.common.collect.Maps;
+import lombok.Setter;
+import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.elements.Button;
-import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.Controller;
-import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.MidiOut;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -62,7 +60,7 @@ public class LaunchpadPro implements Controller, Receiver {
     }
 
     private MidiOut midiOut;
-    private ControllerListener listener;
+    @Setter private ControllerListener listener;
 
     public LaunchpadPro (MidiOut midiOut, ControllerListener listener) {
         this.midiOut = midiOut;
@@ -130,9 +128,9 @@ public class LaunchpadPro implements Controller, Receiver {
                             Pad pad = noteToPad(shortMessage.getData1());
                             int velocity = shortMessage.getData2();
                             if (velocity == 0) {
-                                listener.onPadReleased(pad);
+                                listener.onElementReleased(pad);
                             } else {
-                                listener.onPadPressed(pad, velocity);
+                                listener.onElementPressed(pad, velocity);
                             }
                         }
                         break;
@@ -140,7 +138,7 @@ public class LaunchpadPro implements Controller, Receiver {
 //                        System.out.printf("NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         if (listener != null) {
                             Pad pad = noteToPad(shortMessage.getData1());
-                            listener.onPadReleased(pad);
+                            listener.onElementReleased(pad);
                         }
                         break;
                     case CONTROL_CHANGE:
@@ -149,9 +147,9 @@ public class LaunchpadPro implements Controller, Receiver {
                             Button button = ccToButton(shortMessage.getData1());
                             int velocity = shortMessage.getData2();
                             if (velocity == 0) {
-                                listener.onButtonReleased(button);
+                                listener.onElementReleased(button);
                             } else {
-                                listener.onButtonPressed(button, velocity);
+                                listener.onElementPressed(button, velocity);
                             }
                         }
                         break;

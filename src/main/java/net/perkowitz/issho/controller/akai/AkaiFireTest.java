@@ -1,10 +1,7 @@
 package net.perkowitz.issho.controller.akai;
 
+import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.Button;
-import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.MidiOut;
-import net.perkowitz.issho.controller.TestListener;
 import net.perkowitz.issho.util.MidiUtil;
 
 import javax.sound.midi.MidiDevice;

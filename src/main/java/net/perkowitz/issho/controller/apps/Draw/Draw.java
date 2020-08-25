@@ -1,11 +1,8 @@
-package net.perkowitz.issho.controller.apps;
+package net.perkowitz.issho.controller.apps.Draw;
 
-import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.Controller;
-import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.Button;
-import net.perkowitz.issho.controller.elements.Knob;
+import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.Pad;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.util.MidiUtil;
@@ -24,9 +21,13 @@ import static net.perkowitz.issho.controller.Colors.*;
  */
 public class Draw implements ControllerListener {
 
+    // element groups
+    private int PALETTE_BUTTON_GROUP = 0;
+    private int CANVAS_PADS_GROUP = 0;
+
+
     private Color color = Colors.BLACK;
     private Controller controller;
-    private LaunchpadPro lpp;
 
     public static final Color[] palette = new Color[]{
         BLACK, WHITE,
@@ -69,9 +70,10 @@ public class Draw implements ControllerListener {
         receiver = controllerMidiOutput.getReceiver();
 
         MidiOut midiOut = new MidiOut(receiver);
-        lpp = new LaunchpadPro(midiOut, this);
-        transmitter.setReceiver(lpp);
-        controller = lpp;
+        LaunchpadPro lpp = new LaunchpadPro(midiOut, this);
+        LaunchpadProTranslator translator = new LaunchpadProTranslator(lpp);
+        transmitter.setReceiver(translator);
+        controller = translator;
 
         initialize();
 
@@ -87,48 +89,38 @@ public class Draw implements ControllerListener {
     private void initialize() {
         controller.initialize();
         for (int i = 0; i < 7; i++) {
-            lpp.setButton(Button.at(LaunchpadPro.BUTTONS_BOTTOM, i), palette[i]);
+            controller.setButton(Button.at(LaunchpadPro.BUTTONS_BOTTOM, i), palette[i]);
         }
     }
 
     /***** ControllerListener implementation ******************************************/
 
-    public void onPadPressed(Pad pad, int velocity) {
-        controller.setPad(pad, color);
-    }
-
-    public void onPadReleased(Pad pad) {}
-
-    public void onButtonPressed(Button button, int velocity) {
-        if (button.getGroup() == LaunchpadPro.BUTTONS_BOTTOM) {
-            color = palette[button.getIndex()];
-        } else if (button.getGroup() == LaunchpadPro.BUTTONS_LEFT) {
-            controller.initialize();
-            System.exit(0);
-        } else if (button.getGroup() == LaunchpadPro.BUTTONS_RIGHT) {
-            for (int i = 0; i < 8; i++) {
-                controller.setPad(Pad.at(0, button.getIndex(), i), color);
-            }
-        } else if (button.getGroup() == LaunchpadPro.BUTTONS_TOP) {
-            for (int i = 0; i < 8; i++) {
-                controller.setPad(Pad.at(0, i, button.getIndex()), color);
+    public void onElementPressed(Element element, int value) {
+        if (element.getType() == Element.Type.PAD) {
+            controller.setPad((Pad)element, color);
+        } else if (element.getType() == Element.Type.BUTTON) {
+            Button button = (Button)element;
+            if (button.getGroup() == LaunchpadPro.BUTTONS_BOTTOM) {
+                color = palette[button.getIndex()];
+            } else if (button.getGroup() == LaunchpadPro.BUTTONS_LEFT) {
+                controller.initialize();
+                System.exit(0);
+            } else if (button.getGroup() == LaunchpadPro.BUTTONS_RIGHT) {
+                for (int i = 0; i < 8; i++) {
+                    controller.setPad(Pad.at(0, button.getIndex(), i), color);
+                }
+            } else if (button.getGroup() == LaunchpadPro.BUTTONS_TOP) {
+                for (int i = 0; i < 8; i++) {
+                    controller.setPad(Pad.at(0, i, button.getIndex()), color);
+                }
             }
         }
     }
 
-    public void onButtonReleased(Button button) {
+    public void onElementChanged(Element element, int delta) {
     }
 
-    public void onKnobChanged(Knob knob, int delta) {
-    }
-
-    public void onKnobSet(Knob knob, int value) {
-    }
-
-    public void onKnobTouched(Knob knob) {
-    }
-
-    public void onKnobReleased(Knob knob) {
+    public void onElementReleased(Element element) {
     }
 
 }

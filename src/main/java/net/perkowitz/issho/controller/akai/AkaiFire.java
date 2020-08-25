@@ -2,14 +2,11 @@ package net.perkowitz.issho.controller.akai;
 
 import com.google.common.collect.Maps;
 import lombok.Setter;
+import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.Button;
-import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.Controller;
-import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.Knob;
 import net.perkowitz.issho.controller.elements.Light;
-import net.perkowitz.issho.controller.MidiOut;
 import net.perkowitz.issho.controller.elements.Pad;
 
 import javax.sound.midi.MidiMessage;
@@ -174,16 +171,10 @@ public class AkaiFire implements Receiver, Controller {
                 Element element = noteToControl(note);
                 if (element == null) return;
                 if (listener != null) {
-                    switch (element.getType()) {
-                        case PAD:
-                            listener.onPadPressed((Pad) element, velocity);
-                            break;
-                        case BUTTON:
-                            listener.onButtonPressed((Button) element, velocity);
-                            break;
-                        case KNOB:
-                            listener.onKnobTouched((Knob) element);
-                            break;
+                    if (velocity == 0) {
+                        listener.onElementReleased(element);
+                    } else {
+                        listener.onElementPressed(element, velocity);
                     }
                 }
             } else if (command == NOTE_OFF) {
@@ -191,17 +182,7 @@ public class AkaiFire implements Receiver, Controller {
                 Element element = noteToControl(note);
                 if (element == null) return;
                 if (listener != null) {
-                    switch (element.getType()) {
-                        case PAD:
-                            listener.onPadReleased((Pad) element);
-                            break;
-                        case BUTTON:
-                            listener.onButtonReleased((Button) element);
-                            break;
-                        case KNOB:
-                            listener.onKnobReleased((Knob) element);
-                            break;
-                    }
+                    listener.onElementReleased(element);
                 }
             }
 

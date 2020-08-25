@@ -47,6 +47,10 @@ public class Button implements Element {
         return new Button(group, index);
     }
 
+    public static Button to(int group, Button button) {
+        return new Button(group, button.getIndex());
+    }
+
     public Button fromElement(Element element) {
         if (element.getType() != Type.BUTTON) {
             return null;

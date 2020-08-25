@@ -19,8 +19,7 @@ public class Pad implements Element {
         return Element.Type.PAD;
     }
 
-    public int getGroup() { return row; }
-    public int getIndex() { return column; }
+    public int getIndex() { return -1; }
 
     /***** overrides ****************************************/
 
@@ -50,6 +49,10 @@ public class Pad implements Element {
         return new Pad(group, row, column);
     }
 
+    public static Pad to(int group, Pad pad) {
+        return new Pad(group, pad.getRow(), pad.getColumn());
+    }
+    
     public Pad fromElement(Element element) {
         if (element.getType() != Type.PAD) {
             return null;
