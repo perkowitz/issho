@@ -1,9 +1,6 @@
 package net.perkowitz.issho.controller;
 
-import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Element;
-import net.perkowitz.issho.controller.elements.Knob;
-import net.perkowitz.issho.controller.elements.Pad;
 
 public interface ControllerListener {
 

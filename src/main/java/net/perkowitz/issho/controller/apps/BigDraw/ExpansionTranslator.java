@@ -30,9 +30,18 @@ public class ExpansionTranslator implements Translator {
 
     private static final int PALETTE_GROUP = LaunchpadPro.BUTTONS_BOTTOM;
     private static final int BUTTONS_GROUP = LaunchpadPro.BUTTONS_LEFT;
+    private static final int CANVAS_GROUP = LaunchpadPro.PADS_GROUP;
 
     private LaunchpadPro launchpad;
     private ControllerListener listener;
+
+    // elements the translator overrides to use internally
+    private Button translatorPaletteButton = Button.at(LaunchpadPro.BUTTONS_LEFT, 7);
+    private Button upButton = Button.at(LaunchpadPro.BUTTONS_TOP, 0);
+    private Button downButton = Button.at(LaunchpadPro.BUTTONS_TOP, 1);
+    private Button leftButton = Button.at(LaunchpadPro.BUTTONS_TOP, 2);
+    private Button rightButton = Button.at(LaunchpadPro.BUTTONS_TOP, 3);
+    private ElementSet moveButtons = ElementSet.buttons(LaunchpadPro.BUTTONS_TOP, 0, 3);
 
     private Color canvas[][] = new Color[MAX_ROWS][MAX_COLUMNS];
     private int rowOffset = 0;
@@ -47,16 +56,24 @@ public class ExpansionTranslator implements Translator {
     }
 
     private void drawButtons() {
-        Color color = Colors.DARK_GRAY;
-        if (paletteOffset > 0) {
-            color = Colors.WHITE;
-        }
-        launchpad.setButton(Button.at(BUTTONS_GROUP, 7), color);
+        launchpad.setButton(translatorPaletteButton, paletteOffset > 0 ? Colors.WHITE : Colors.DARK_GRAY);
+        launchpad.setButton(upButton, Colors.DARK_GRAY);
+        launchpad.setButton(downButton, Colors.DARK_GRAY);
+        launchpad.setButton(leftButton, Colors.DARK_GRAY);
+        launchpad.setButton(rightButton, Colors.DARK_GRAY);
     }
 
     private void drawPalette() {
         for (int i = 0; i < 8; i++) {
             launchpad.setButton(Button.at(PALETTE_GROUP, i), BigDraw.palette[i + paletteOffset]);
+        }
+    }
+
+    private void drawCanvas() {
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                launchpad.setPad(Pad.at(CANVAS_GROUP, r, c), canvas[r + rowOffset][c + columnOffset]);
+            }
         }
     }
 
@@ -67,7 +84,7 @@ public class ExpansionTranslator implements Translator {
     }
 
     public void setPad(Pad pad, Color color) {
-        if (pad.getGroup() == BigDraw.CANVAS_PADS_GROUP) {
+        if (BigDraw.canvasPads.contains(pad)) {
             canvas[pad.getRow()][pad.getColumn()] = color;
             if (pad.getRow() >= rowOffset && pad.getRow() < rowOffset + 8 &&
                     pad.getColumn() >= columnOffset && pad.getColumn() < columnOffset + 8) {
@@ -77,11 +94,13 @@ public class ExpansionTranslator implements Translator {
     }
 
     public void setButton(Button button, Color color) {
-        if (button.getGroup() == BigDraw.PALETTE_BUTTON_GROUP) {
+        if (BigDraw.paletteButtons.contains(button)) {
             palette[button.getIndex()] = color;
             if (button.getIndex() >= paletteOffset && button.getIndex() < paletteOffset + 8) {
                 launchpad.setButton(Button.at(PALETTE_GROUP, button.getIndex()-paletteOffset), color);
             }
+        } else if (BigDraw.miscButtons.contains(button)) {
+            launchpad.setButton(Button.at(BUTTONS_GROUP, button.getIndex()), color);
         }
     }
 
@@ -93,22 +112,42 @@ public class ExpansionTranslator implements Translator {
     /***** ControllerListener implementation *****/
 
     public void onElementPressed(Element element, int value) {
-        if (element instanceof Pad && element.getGroup() == BigDraw.CANVAS_PADS_GROUP) {
+        // first check the translator's own overrides
+        if (translatorPaletteButton.equals(element)) {
+            paletteOffset = 8 - paletteOffset;
+            drawPalette();
+            drawButtons();
+        } else if (moveButtons.contains(element)) {
+            switch (element.getIndex()) {
+                case 0:
+                    rowOffset--;
+                    break;
+                case 1:
+                    rowOffset++;
+                    break;
+                case 2:
+                    columnOffset--;
+                    break;
+                case 3:
+                    columnOffset++;
+                    break;
+            }
+            rowOffset = Math.floorMod(rowOffset, MAX_ROWS);
+            columnOffset = Math.floorMod(columnOffset, MAX_COLUMNS);
+            drawCanvas();
+            drawButtons();
+        } else if (LaunchpadPro.pads.contains(element)) {
             Pad pad = (Pad) element;
             Pad newPad = Pad.at(pad.getGroup(), pad.getRow() + rowOffset, pad.getColumn() + columnOffset);
             listener.onElementPressed(newPad, value);
-        } else if (element instanceof Button) {
+        } else if (LaunchpadPro.bottomButtons.contains(element)) {
             Button button = (Button) element;
-            if (button.getGroup() == PALETTE_GROUP) {
-                Button newButton = Button.at(BigDraw.PALETTE_BUTTON_GROUP, button.getIndex() + paletteOffset);
-                listener.onElementPressed(newButton, value);
-            } else if (button.getGroup() == BUTTONS_GROUP && button.getIndex() == 0) {
-                listener.onElementPressed(button, value);
-            } else if (button.getGroup() == BUTTONS_GROUP && button.getIndex() == 7) {
-                paletteOffset = 8 - paletteOffset;
-                drawPalette();
-                drawButtons();
-            }
+            Button newButton = Button.at(BigDraw.PALETTE_BUTTONS_GROUP, button.getIndex() + paletteOffset);
+            listener.onElementPressed(newButton, value);
+        } else if (LaunchpadPro.leftButtons.contains(element)) {
+            Button button = (Button) element;
+            Button newButton = Button.at(BigDraw.MISC_BUTTONS_GROUP, button.getIndex());
+            listener.onElementPressed(newButton, value);
         } else {
             listener.onElementPressed(element, value);
         }
