@@ -38,7 +38,7 @@ public class TruncationTranslator implements Translator {
     }
 
     public void setButton(Button button, Color color) {
-        if (button.getGroup() == BigDraw.PALETTE_BUTTON_GROUP && button.getIndex() >= 0 && button.getIndex() < 8) {
+        if (button.getGroup() == BigDraw.PALETTE_BUTTONS_GROUP && button.getIndex() >= 0 && button.getIndex() < 8) {
             launchpad.setButton(Button.to(LaunchpadPro.BUTTONS_BOTTOM, button), color);
         }
     }

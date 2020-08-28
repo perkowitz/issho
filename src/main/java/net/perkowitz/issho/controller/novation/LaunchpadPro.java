@@ -15,6 +15,8 @@ import java.util.Map;
 import static javax.sound.midi.ShortMessage.*;
 import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
+import static net.perkowitz.issho.controller.Colors.*;
+import static net.perkowitz.issho.controller.Colors.DIM_PINK;
 
 
 /**
@@ -30,6 +32,17 @@ public class LaunchpadPro implements Controller, Receiver {
     public static final int BUTTONS_BOTTOM = 1;
     public static final int BUTTONS_LEFT = 2;
     public static final int BUTTONS_RIGHT = 3;
+    public static final int MAX_BUTTONS = 8;
+    public static final int PADS_GROUP = 0;
+    public static final int MAX_ROWS = 8;
+    public static final int MAX_COLUMNS = 8;
+
+    // elements
+    public static final ElementSet pads = ElementSet.pads(PADS_GROUP, 0, MAX_ROWS, 0, MAX_COLUMNS);
+    public static final ElementSet topButtons = ElementSet.buttons(BUTTONS_TOP, 0, MAX_BUTTONS);
+    public static final ElementSet bottomButtons = ElementSet.buttons(BUTTONS_BOTTOM, 0, MAX_BUTTONS);
+    public static final ElementSet leftButtons = ElementSet.buttons(BUTTONS_LEFT, 0, MAX_BUTTONS);
+    public static final ElementSet rightButtons = ElementSet.buttons(BUTTONS_RIGHT, 0, MAX_BUTTONS);
 
     // The Launchpad uses an indexed color table. These are constants for common colors.
     private static Map<Color, Integer> colorMap = Maps.newHashMap();
