@@ -204,6 +204,7 @@ public class SeqDisplay {
             return;
         }
 
+        SeqPattern pattern = memory.getSelectedPattern();
         SeqTrack track = memory.getSelectedTrack();
         if (track == null) {
             return;
@@ -214,19 +215,29 @@ public class SeqDisplay {
             Color color = palette.get(COLOR_STEP_REST);
             boolean selected = (memory.getSelectedStepIndex() == index);
             if (editMode == GATE || editMode == STEP) {
-                switch (track.getStep(index).getGateMode()) {
-                    case PLAY:
-                        color = palette.get(COLOR_STEP_PLAY);
-                        if (selected) { color = palette.get(COLOR_HIGHLIGHT); }
-                        break;
-                    case TIE:
-                        color = palette.get(COLOR_STEP_TIE);
-                        if (selected) { color = palette.get(COLOR_HIGHLIGHT_MID); }
-                        break;
-                    case REST:
-                        color = palette.get(COLOR_STEP_REST);
-                        if (selected) { color = palette.get(COLOR_HIGHLIGHT_DIM); }
-                        break;
+                if (pattern.getJump(index)) {
+                    color = palette.get(COLOR_RANDOM);
+                } else {
+                    switch (track.getStep(index).getGateMode()) {
+                        case PLAY:
+                            color = palette.get(COLOR_STEP_PLAY);
+                            if (selected) {
+                                color = palette.get(COLOR_HIGHLIGHT);
+                            }
+                            break;
+                        case TIE:
+                            color = palette.get(COLOR_STEP_TIE);
+                            if (selected) {
+                                color = palette.get(COLOR_HIGHLIGHT_MID);
+                            }
+                            break;
+                        case REST:
+                            color = palette.get(COLOR_STEP_REST);
+                            if (selected) {
+                                color = palette.get(COLOR_HIGHLIGHT_DIM);
+                            }
+                            break;
+                    }
                 }
             } else if (editMode == EditMode.PITCH) {
                 if (memory.getSelectedPattern().getPitchStep(index).isEnabled()) {

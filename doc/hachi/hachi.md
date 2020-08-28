@@ -32,7 +32,8 @@ configuration may need to be customized for each host. A device like the Novatio
 logical ports visible to the host, with various names.
 
 Here's an example device configuration, specifying how to find the Launchpad device itself and how to address
-its MIDI ports. This configuration works well on a Mac.
+its MIDI ports. This configuration works well on a Mac. Multiple MIDI outputs can be specified; the same
+data will be sent to all MIDI outputs. A single MIDI input can be specified.
 
 ```
   "devices": {
@@ -42,11 +43,20 @@ its MIDI ports. This configuration works well on a Mac.
         "Standalone"
         ]
     },
-    "midi": {
+    "midiOutputs": [
+      {
+        "type": "launchpadpro",
+        "names": [
+          "Launchpad Pro",
+          "Midi Port"
+        ]
+      }
+    ],
+    "midiInput": {
       "names":[
         "Launchpad Pro",
         "Midi Port"
-        ]
+      ]
     },
     "knobby": {
       "names":[
@@ -67,12 +77,21 @@ MIDI ports appear with different names on the Pi.
         "1,0,1"
         ]
     },
-    "midi": {
+    "midiOutputs": [
+      {
+        "type": "launchpadpro",
+        "names": [
+          "Launchpad Pro",
+        "1,0,2"
+        ]
+      }
+    ],
+    "midiInput": {
       "names":[
         "Launchpad Pro",
         "1,0,2"
-        ]
-    }
+      ]
+    },
   }
 ```
 

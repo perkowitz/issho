@@ -3,6 +3,10 @@ package net.perkowitz.issho.hachi.modules;
 import lombok.Setter;
 import net.perkowitz.issho.util.Terminal;
 import net.perkowitz.issho.util.Terminal.Color;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static net.perkowitz.issho.util.Terminal.Color.*;
 
 public class TextDisplay {
@@ -92,5 +96,20 @@ public class TextDisplay {
             System.out.printf("%s ", labels[i]);
         }
         Terminal.fg(defaultColor);
+    }
+
+    public static void drawTime(String beat) {
+        if (!enabled) return;
+
+        Terminal.fg(WHITE);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        Terminal.go(TOP_ROW, RIGHT_COLUMN + 4);
+        System.out.printf(dtf.format(now));
+        Terminal.go(TOP_ROW + 1, RIGHT_COLUMN + 3);
+        System.out.printf(beat);
+        Terminal.fg(defaultColor);
+        Terminal.go(1,1);
+
     }
 }

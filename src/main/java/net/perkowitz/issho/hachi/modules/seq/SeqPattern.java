@@ -9,6 +9,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.List;
 
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.STEP_COUNT;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
 
 /**
@@ -16,10 +17,14 @@ import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
  */
 public class SeqPattern implements MemoryObject {
 
+    public static int JUMP_TO_OFF = 0;
+    public static int JUMP_TO_RANDOM = 1;
+
     @Getter @Setter private int index;
     @Getter private List<SeqTrack> tracks = Lists.newArrayList();
     @Getter private List<SeqControlTrack> controlTracks = Lists.newArrayList();
     @Getter private List<SeqPitchStep> pitchTrack = Lists.newArrayList();
+    private SeqControlTrack jumpTrack;
 
 
     public SeqPattern() {}
@@ -43,10 +48,11 @@ public class SeqPattern implements MemoryObject {
         }
 
         // create the pitch track
-        for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
+        for (int i = 0; i < STEP_COUNT; i++) {
             pitchTrack.add(new SeqPitchStep(i));
         }
 
+        jumpTrack = new SeqControlTrack(-1);
     }
 
 
@@ -69,6 +75,48 @@ public class SeqPattern implements MemoryObject {
 
     public SeqPitchStep getPitchStep(int stepIndex) {
         return pitchTrack.get(stepIndex);
+    }
+
+    @JsonIgnore
+    public void setJump(int index, boolean jump) {
+        if (index < 0 || index > STEP_COUNT) {
+            return;
+        }
+        if (jumpTrack == null || jumpTrack.getStep(index) == null) {
+            jumpTrack = new SeqControlTrack(-1);
+        }
+        SeqControlStep step = jumpTrack.getStep(index);
+        if (jump) {
+            step.setValue(JUMP_TO_RANDOM);
+        } else {
+            step.setValue(JUMP_TO_OFF);
+        }
+    }
+
+    public void toggleJump(int index) {
+        if (index < 0 || index > STEP_COUNT) {
+            return;
+        }
+        if (jumpTrack == null || jumpTrack.getStep(index) == null) {
+            jumpTrack = new SeqControlTrack(-1);
+        }
+        SeqControlStep step = jumpTrack.getStep(index);
+        if (step.getValue() == JUMP_TO_RANDOM) {
+            step.setValue(JUMP_TO_OFF);
+        } else {
+            step.setValue(JUMP_TO_RANDOM);
+        }
+    }
+
+    @JsonIgnore
+    public boolean getJump(int index) {
+        if (index < 0 || index > STEP_COUNT) {
+            return false;
+        }
+        if (jumpTrack == null || jumpTrack.getStep(index) == null) {
+            jumpTrack = new SeqControlTrack(-1);
+        }
+        return (jumpTrack.getStep(index).getValue() == JUMP_TO_RANDOM);
     }
 
     /***** MemoryObject implementation ***********************/
@@ -123,7 +171,7 @@ public class SeqPattern implements MemoryObject {
                 newPattern.controlTracks.add(SeqControlTrack.copy(pattern.controlTracks.get(i), i));
             }
             List<SeqPitchStep> pitchTrack = Lists.newArrayList();
-            for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
+            for (int i = 0; i < STEP_COUNT; i++) {
                 SeqPitchStep seqPitchStep = SeqPitchStep.copy(pattern.getPitchStep(i), i);
                 pitchTrack.add(seqPitchStep);
             }
