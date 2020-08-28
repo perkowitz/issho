@@ -13,7 +13,6 @@ import net.perkowitz.issho.hachi.Saveable;
 import net.perkowitz.issho.hachi.Sessionizeable;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.Module;
-import net.perkowitz.issho.util.DisplayUtil;
 import net.perkowitz.issho.util.MidiUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -34,7 +33,7 @@ import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
 /**
  * Created by optic on 10/24/16.
  */
-public class SeqModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable, Multitrack {
+public class SeqModule extends MidiModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable, Multitrack, Jumpable {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -134,6 +133,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             nextStepIndex = 0;
         }
 
+        boolean newPattern = false;
         if (nextStepIndex == 0) {
             int currentPatternIndex = memory.getPlayingPatternIndex();
 
@@ -151,6 +151,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                 nextSessionIndex = null;
             }
 
+            // check for next pattern
             if (nextChainStart != null && nextChainEnd != null) {
                 // set chain, and advance pattern to start of chain
                 memory.selectChain(nextChainStart, nextChainEnd);
@@ -165,8 +166,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             }
 
             if (memory.getPlayingPatternIndex() != currentPatternIndex) {
-                seqDisplay.drawPatterns(memory);
-                seqDisplay.drawSteps(memory);
+                newPattern = true;
             }
         }
 
@@ -176,10 +176,16 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             playingPattern = patternFill;
         }
 
+        // if the current step has a jump set, figure it out now
+        if (playingPattern.getJump(nextStepIndex)) {
+            nextStepIndex = (int)Math.floor(Math.random() * nextStepIndex);
+        }
+
         // if a fill is playing that shuffles the steps, this will figure out which step is actually playing
         int actualStepIndex = playingPattern.getStep(0, nextStepIndex).getIndex();
         boolean drawMeasure = currentPulse < 12;
         seqDisplay.drawStepsClock(actualStepIndex, currentMeasure, drawMeasure);
+
 
         // send pitchbend and controllers before notes
         SeqPitchStep pitchStep = memory.getSelectedPattern().getPitchStep(selectedPitchStep);
@@ -258,6 +264,11 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             seqDisplay.setPlayingStep(null);
         }
 
+        if (newPattern) {
+            seqDisplay.drawPatterns(memory);
+            seqDisplay.drawSteps(memory);
+        }
+
         nextStepIndex = (nextStepIndex + 1) % SeqUtil.STEP_COUNT;
 
     }
@@ -323,6 +334,14 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
      */
     public boolean isMuted() {
         return isMuted;
+    }
+
+
+    /***** Jumpable implementation **************************/
+
+    public void jumpTo(int index) {
+        if (index < 0) return;
+        nextStepIndex = index % STEP_COUNT;
     }
 
 
@@ -546,12 +565,17 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             int index = trackSelectControls.getIndex(control);
             switch (editMode) {
                 case GATE:
+                    memory.selectTrack(index);
+                    SeqTrack track = memory.getSelectedTrack();
+                    seqDisplay.drawTracks(memory);
+                    track.randomize();
+                    seqDisplay.drawSteps(memory);
                     break;
                 case CONTROL:
                     memory.selectControlTrack(index);
-                    SeqControlTrack track = memory.getSelectedControlTrack();
+                    SeqControlTrack controlTrack = memory.getSelectedControlTrack();
                     seqDisplay.drawTracks(memory);
-                    track.randomize();
+                    controlTrack.randomize();
                     seqDisplay.drawSteps(memory);
                     break;
                 case PITCH:
@@ -607,13 +631,8 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             switch (editMode) {
                 case GATE:
                 case STEP:
-                    // selects step for editing
-                    selectedStep = index;  // TODO replace this with references to memory.getSelectedStep()
-                    memory.selectStep(index);
-                    SeqStep step = memory.getSelectedTrack().getStep(index);
-                    step.setVelocityBlurred(!step.isVelocityBlurred());
-                    seqDisplay.drawValue127(step.getVelocity(), step.isVelocityBlurred());
-                    // we don't actually toggle the step until release
+                    memory.getSelectedPattern().toggleJump(index);
+                    seqDisplay.drawSteps(memory);
                     break;
                 case CONTROL:
                     selectedControlStep = index;
@@ -659,7 +678,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
                     break;
                 case JUMP:
                     // jumps to that step
-                    nextStepIndex = index;
+                    jumpTo(index);
                     break;
             }
 
@@ -879,11 +898,13 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             switch (editMode) {
                 case GATE:
                     // step was selected and displayed on press; on release decide whether to toggle step and redraw
-                    if (elapsed < LONG_PRESS_IN_MILLIS) {
-                        step.toggleEnabled();
-                        step.advanceGateMode(tiesEnabled);
+                    if (!randomizing) {
+                        if (elapsed < LONG_PRESS_IN_MILLIS) {
+                            step.toggleEnabled();
+                            step.advanceGateMode(tiesEnabled);
+                        }
+                        seqDisplay.drawSteps(memory);
                     }
-                    seqDisplay.drawSteps(memory);
                     break;
                 case CONTROL:
                     // step was selected and displayed on press; on release decide whether to toggle step and redraw

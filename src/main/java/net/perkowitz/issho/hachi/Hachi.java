@@ -24,6 +24,7 @@ import net.perkowitz.issho.hachi.modules.shihai.ShihaiModule;
 import net.perkowitz.issho.hachi.modules.step.StepModule;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.util.MidiUtil;
+import net.perkowitz.issho.util.MultiReceiver;
 import net.perkowitz.issho.util.SettingsUtil;
 import net.perkowitz.issho.util.Terminal;
 
@@ -114,10 +115,12 @@ public class Hachi {
 
         List<GridDevice> gridDevices = getControllers();
         if (gridDevices.size() > 0) {
+            gridDevices.get(0).initialize();
             Graphics.setPads(gridDevices.get(0), Graphics.hachi, BRIGHT_ORANGE);
         }
 
-        getMidiDevices();
+        getMidiInputs();
+        getMidiOutputs();
 
         // mirroring on another device
 //        GridDevice mainDevice = getGridDevice();
@@ -205,6 +208,11 @@ public class Hachi {
         return rhythm;
     }
 
+    /**
+     * getControllers reads the controller descriptions from the config and finds the corresponding
+     * connected devices. A controller (such as a Launchpad) provides input and output to Hachi.
+     * @return List of GridDevice objects
+     */
     private static List<GridDevice> getControllers() {
 
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
@@ -251,7 +259,43 @@ public class Hachi {
         return gridDevices;
     }
 
-    private static void getMidiDevices() {
+    /**
+     * getMidiOutputs reads MIDI device descriptions from the config and finds the
+     * corresponding connected devices.
+     * @return List of GridDevice objects
+     */
+    private static void getMidiOutputs() {
+
+        Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
+        List<Object> controllerConfigs = (List<Object>)deviceConfigs.get("midiOutputs");
+
+        if (controllerConfigs == null || controllerConfigs.size() == 0) {
+            System.err.println("Unable to find config settings for controller devices.");
+        }
+
+        List<Receiver> receivers = Lists.newArrayList();
+        for (Object controllerConfig : controllerConfigs) {
+            Map<Object, Object> config = (Map<Object,Object>)controllerConfig;
+            List<String> names = (List<String>)config.get("names");
+            String type = (String)config.get("type");
+            MidiDevice output = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
+            if (output == null) {
+                System.err.printf("Unable to find controller device matching name: %s\n", names);
+            } else {
+                try {
+                    output.open();
+                    receivers.add(output.getReceiver());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
+        }
+
+        midiReceiver = new MultiReceiver(receivers);
+    }
+
+    private static void getMidiInputs() {
 
         // get the device configs from the settings
         Map<Object,Object> deviceConfigs = (Map<Object,Object>)settings.get("devices");
@@ -271,26 +315,9 @@ public class Hachi {
             System.exit(1);
         }
 
-        // find the midi output device
-        midiConfig = (Map<Object,Object>)deviceConfigs.get("midiOutput");
-        if (midiConfig != null) {
-            names = (List<String>)midiConfig.get("names");
-            midiOutput = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
-        } else {
-            System.err.println("Unable to find config settings for midiOutput device.");
-        }
-        if (midiOutput == null) {
-            System.err.printf("Unable to find midi-out device matching name: %s\n", names);
-            MidiUtil.printMidiDevices();
-            System.exit(1);
-        }
-
         try {
             midiInput.open();
-            midiOutput.open();
             midiTransmitter = midiInput.getTransmitter();
-//            midiReceiver = new LoggingMidiReceiver(midiOutput.getReceiver(), Lists.<LoggingMidiReceiver.LogType>newArrayList(LoggingMidiReceiver.LogType.CC));
-            midiReceiver = midiOutput.getReceiver();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -494,6 +521,14 @@ public class Hachi {
                 List<Integer> panicExclude = (List<Integer>)moduleSettings.get("panicExclude");
                 if (panicExclude != null) {
                     shihaiModule.setPanicExclude(panicExclude);
+                }
+                Boolean enableJump = (Boolean)moduleSettings.get("enableJump");
+                if (enableJump != null) {
+                    shihaiModule.setEnableJump(enableJump);
+                }
+                Boolean enableReset = (Boolean)moduleSettings.get("enableReset");
+                if (enableReset != null) {
+                    shihaiModule.setEnableReset(enableReset);
                 }
                 module = shihaiModule;
 

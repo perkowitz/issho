@@ -26,6 +26,15 @@ public class SeqControlTrack {
         }
     }
 
+    public SeqControlTrack(int index, int value) {
+        this.index = index;
+        for (int i = 0; i < SeqUtil.STEP_COUNT; i++) {
+            SeqControlStep step = new SeqControlStep(i);
+            step.setValue(value);
+            steps.add(step);
+        }
+    }
+
     public SeqControlStep getStep(int index) {
         return steps.get(index);
     }
@@ -37,7 +46,6 @@ public class SeqControlTrack {
     public void randomize() {
         for (SeqControlStep step : steps) {
             int v = (int)Math.floor(Math.random() * 128);
-//            step.setEnabled(true);
             step.setValue(v);
         }
     }

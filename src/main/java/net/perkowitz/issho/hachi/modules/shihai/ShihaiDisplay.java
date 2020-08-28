@@ -21,6 +21,7 @@ public class ShihaiDisplay {
     @Setter private GridDisplay display;
 
     @Setter private boolean settingsView = false;
+    @Setter private boolean enableReset = true;
     @Setter private List<Multitrack> multitrackModules = null;
 
 
@@ -134,9 +135,12 @@ public class ShihaiDisplay {
     }
 
     public void drawLeftControls() {
+        leftControls.draw(display, Color.OFF);
         drawControl(ShihaiUtil.settingsControl, settingsView);
         drawControl(ShihaiUtil.panicControl, false);
-        drawControl(ShihaiUtil.clockResetControl, false);
+        if (enableReset) {
+            drawControl(ShihaiUtil.clockResetControl, false);
+        }
         drawControl(ShihaiUtil.fillControl, false);
     }
 

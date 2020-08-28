@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.perkowitz.issho.devices.*;
 import net.perkowitz.issho.hachi.modules.Module;
 import net.perkowitz.issho.hachi.modules.TextDisplay;
-import net.perkowitz.issho.hachi.modules.seq.SeqUtil;
 import net.perkowitz.issho.util.Terminal;
 
 import static net.perkowitz.issho.hachi.HachiUtil.*;
@@ -62,10 +61,6 @@ public class HachiDeviceManager implements GridListener {
             activeListener = moduleListeners[index];
             activeModule.redraw();
             redraw();
-
-//            Terminal.go(TextDisplay.BOTTOM_ROW + 2, 1);
-//            System.out.printf("Active: %d:%s\n", index, activeModule.name());
-            TextDisplay.drawModules(modules, index);
         }
     }
 
@@ -79,20 +74,20 @@ public class HachiDeviceManager implements GridListener {
         for (int index = 0; index < modules.length; index++) {
             GridButton button = GridButton.at(HachiUtil.MODULE_BUTTON_SIDE, index);
             if (modules[index] == activeModule) {
-                display.setButton(button, COLOR_SELECTED);
+                display.setButton(button, COLOR_SET);
             } else {
-                display.setButton(button, COLOR_UNSELECTED);
+                display.setButton(button, COLOR_UNSET);
             }
         }
 
         if (hachiController.isClockRunning()) {
-            display.setButton(PLAY_BUTTON, COLOR_SELECTED);
+            display.setButton(PLAY_BUTTON, COLOR_SET);
         } else {
-            display.setButton(PLAY_BUTTON, COLOR_UNSELECTED);
+            display.setButton(PLAY_BUTTON, COLOR_UNSET);
         }
 
         if (HachiController.isDebugMode()) {
-            display.setButton(EXIT_BUTTON, COLOR_UNSELECTED);
+            display.setButton(EXIT_BUTTON, COLOR_UNSET);
         }
 
         textDraw();
@@ -105,9 +100,15 @@ public class HachiDeviceManager implements GridListener {
         TextDisplay.drawButtons(activeModule.buttonLabels());
         TextDisplay.drawRows(activeModule.rowLabels());
         TextDisplay.drawFrame();
+        TextDisplay.drawTime("");
 
         Terminal.fg(Terminal.Color.GREEN);
     }
+
+    public void textClock(String beat) {
+        TextDisplay.drawTime(beat);
+    }
+
 
 
     /***** GridListener implementation ***************/

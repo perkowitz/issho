@@ -13,13 +13,15 @@
         ]
       }
     ],
-    "midiOutput": {
-      "type": "launchpadpro",
-      "names":[
-        "Launchpad Pro",
-        "Midi Port"
-      ]
-    },
+    "midiOutputs": [
+      {
+        "type": "launchpadpro",
+        "names":[
+          "Launchpad Pro",
+          "Midi Port"
+        ]
+      }
+    ],
     "midiInput": {
       "names":[
         "Launchpad Pro",

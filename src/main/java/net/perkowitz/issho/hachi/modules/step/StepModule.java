@@ -17,13 +17,14 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.STEP_COUNT;
 import static net.perkowitz.issho.hachi.modules.step.Stage.Marker.*;
 import static net.perkowitz.issho.hachi.modules.step.StepUtil.*;
 
 /**
  * Created by optic on 10/24/16.
  */
-public class StepModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable {
+public class StepModule extends ChordModule implements Module, Clockable, GridListener, Sessionizeable, Saveable, Muteable, Jumpable {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -71,6 +72,12 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         return "Step";
     }
 
+    public String[] buttonLabels() {
+        if (displayAltControls) {
+            return BUTTON_LABELS_ALT;
+        }
+        return BUTTON_LABELS;
+    }
 
     /***** private implementation ****************************************/
 
@@ -160,8 +167,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
     private void nextStep() {
         currentStageStepIndex++;
         currentSteps = currentStage().getSteps();
-        while (currentStageStepIndex >= currentSteps.size()) {
-            // todo this could loop forever if all stages are SKIP
+        int c = 0;
+        while (currentStageStepIndex >= currentSteps.size() && c <= StepPattern.STAGE_COUNT * 4) {
+            // this will just loop until c gets too big if all stages are SKIP
 //            stagesToRedraw.add(currentStageIndex);
             if (randomOrder) {
                 currentStageIndex = (int)(Math.random() * StepPattern.STAGE_COUNT);
@@ -222,6 +230,16 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
 
     public boolean isMuted() {
         return isMuted;
+    }
+
+
+    /***** Jumpable implementation **************************/
+
+    public void jumpTo(int index) {
+        if (index < 0) return;
+        currentStageIndex = index % StepPattern.STAGE_COUNT;
+        currentStageStepIndex = 0;
+        currentSteps = currentStage().getSteps();
     }
 
 
@@ -288,9 +306,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
         } else if (settingsView) {
             onControlPressedSettings(control, velocity);
 
-        } else if (control.equals(StepUtil.savePatternControl)) {
+        } else if (control.equals(StepUtil.copyPatternControl)) {
             savingPattern = true;
-            stepDisplay.drawControl(StepUtil.savePatternControl, true);
+            stepDisplay.drawControl(StepUtil.copyPatternControl, true);
 
 //        } else if (control.equals(StepUtil.panicControl)) {
 //            sendMidiCC(memory.getMidiChannel(), MidiModule.MIDI_ALL_NOTES_OFF_CC, 0);
@@ -388,9 +406,9 @@ public class StepModule extends ChordModule implements Module, Clockable, GridLi
             stepDisplay.drawControl(StepUtil.shiftLeftControl, false);
         } else if (control.equals(StepUtil.shiftRightControl)  && displayAltControls) {
             stepDisplay.drawControl(StepUtil.shiftRightControl, false);
-        } else if (control.equals(StepUtil.savePatternControl)) {
+        } else if (control.equals(StepUtil.copyPatternControl)) {
             savingPattern = false;
-            stepDisplay.drawControl(StepUtil.savePatternControl, false);
+            stepDisplay.drawControl(StepUtil.copyPatternControl, false);
 //        } else if (control.equals(StepUtil.panicControl)) {
 //            stepDisplay.drawControl(StepUtil.panicControl, false);
         } else if (patternControls.contains(control)) {
