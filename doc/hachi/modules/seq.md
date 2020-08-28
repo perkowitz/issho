@@ -11,7 +11,7 @@ Features:
 - In Mono mode, each pattern contains one track, which can play a monophonic sequence of notes. 
 - Each track consists of 16 steps. 
 - Each step can play a note (with settable velocity), a rest, or tie (hold) the previous note.
-- Seq also supports 16 control tracks per pattern, which can send MIDI CC values on each step.
+- Seq also supports 16 element tracks per pattern, which can send MIDI CC values on each step.
 - The entire contents of memory can be saved to a file. 
 - Within the Seq module, 8 different files can be saved and loaded, but
 the files can be copied, backed up, and shared. Data is saved in a JSON format.
@@ -26,7 +26,7 @@ the files can be copied, backed up, and shared. Data is saved in a JSON format.
 - Save: saves the current memory contents to the current file.
 - Copy: for copying patterns.
 - Edit: for selecting a pattern to edit other than the currently running pattern.
-- Edit view buttons: select gate, control, pitch, and step.
+- Edit view buttons: select gate, element, pitch, and step.
 - Jump view: selects the jump view rather than one of the edit views.
 - Fill: plays fill patterns while held down.  
 
@@ -42,7 +42,7 @@ is available in all editing views.
 ### Value Buttons
 
 These buttons can be used to select from a range of values. In the main editing view, the value buttons are used to
-edit the velocity value for each step. In control edit view, they are used to set the value for the controller at
+edit the velocity value for each step. In element edit view, they are used to set the value for the controller at
 each step. The eight value buttons represent eight values in the relevant numeric range,  
 with the lowest value at the bottom and highest value at the top; tap a button 
 to set the velocity to that value. For in-between values, press and hold a button to set the value, and then tap 
@@ -74,8 +74,8 @@ be used to trigger one-shot drum sounds or samples, as well as sustained loops o
 
 - Gate view: for editing individual drum tracks, used to sequence drum triggers on each track and set velocity. 
 - Control view: for editing the 16 controller tracks. 
-each pattern also includes 16 MIDI controller tracks, which can be edited in the control view.
-- Pitch view: similar to the control view, but specifically for MIDI pitch bend.
+each pattern also includes 16 MIDI controller tracks, which can be edited in the element view.
+- Pitch view: similar to the element view, but specifically for MIDI pitch bend.
 - Jump view: a performance view allowing direct playing of drum sounds and realtime manipulation of pattern playback.
 - Fill: plays a randomly-selected, algorithmically-computed fill pattern while held down.   
 
@@ -103,10 +103,10 @@ To select a step for editing without toggling, press and hold for half a second.
 
 ### Control view
 
-<img width="480px" src="seq-control.png"/>
+<img width="480px" src="seq-element.png"/>
 
-In the control view, the **track** select and track mute pads work the same as in gate view, 
-but are for selecting and muting the 16 control tracks. The tracks correspond to 16 MIDI 
+In the element view, the **track** select and track mute pads work the same as in gate view, 
+but are for selecting and muting the 16 element tracks. The tracks correspond to 16 MIDI 
 continuous controllers, which can be set via
 the `controllerNumbers` configuration option. For example, including 
 `"controllerNumbers": [ 21, 25, 20, 24, 74, 71, 102, 105, 29, 30, 27, 28, 103, 113, 114, 111 ]`
@@ -114,11 +114,11 @@ in the config file will assign those controllers to the 16 tracks.
 
 Similarly, the **step** pads work the same as in the gate view,
 except that the value buttons are used to edit the transmitted controller
-value rather than the note velocity. The control view also has no TIE option.
+value rather than the note velocity. The element view also has no TIE option.
 
 ### Pitch view
 
-The pitch view is similar to the control view, except that it is used for sending MIDI pitch bend control and there is only
+The pitch view is similar to the element view, except that it is used for sending MIDI pitch bend element and there is only
 one track. The track select and track mute pads don't do anything, but the first pad lights up as a reminder that 
 there is a single pitch track. 
 
@@ -136,7 +136,7 @@ pitches down. Seq will send pitch bend signals on its set MIDI channel for each 
 
 In the jump view, the track select pads can be used to play the corresponding 16 drum sounds directly. Tap a pad
 to play the sound, at the velocity with which you play the pad. Tapping any of the step controls will play that step on the next clock tick,
-advancing normally from there. The sequence will reset to the first step at the next reset. Jump view also allows "momentary pitch" control. Holding down
+advancing normally from there. The sequence will reset to the first step at the next reset. Jump view also allows "momentary pitch" element. Holding down
 the value buttons will send a midi pitch bend value just as in pitch view, but pitch bend will be reset to zero when you release
 the button.
 
@@ -151,7 +151,7 @@ pattern in various ways to produce a fill.
 In beat mode, the following things can be randomized by holding random and tapping them:
 - In the gate view:
     - Randomizing a step will blur the velocity for that step.
-- In the control view:
+- In the element view:
     - Randomizing a track will generate values for each step in the track (but will not change enabled/disabled for each step).
     - Randomizing a step will blur it. 
 
@@ -163,7 +163,7 @@ Mono mode provides a monophonic melodic sequencer for programming melodies acros
 
 ### Views
 
-Mono mode offers the same five views as beat mode: gate, control, pitch, jump, and fill. 
+Mono mode offers the same five views as beat mode: gate, element, pitch, jump, and fill. 
 In addition, mono mode offers the step view, for entering notes in sequence.
 This section describes the ways mono mode differs from beat mode.
 
@@ -193,7 +193,7 @@ tap the corresponding step pad.
 
 ### Other views
 
-The control, pitch, jump, and fill views function the same in Mono mode as they do in Beat mode.
+The element, pitch, jump, and fill views function the same in Mono mode as they do in Beat mode.
 
 ### Random
 
@@ -201,7 +201,7 @@ In mono mode, the following things can be randomized by holding random and tappi
 - In the gate view:
     - Randomizing a step will select the step and blur the velocity for that step.
     - Randomizing an octave button will set that octave value and blur the octave for the currently selected step.
-- In the control view:
+- In the element view:
     - Randomizing a track will select the track and generate values for each step in the track.
     - Randomizing a step will select the step and blur it. 
 

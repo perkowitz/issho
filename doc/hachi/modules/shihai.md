@@ -1,6 +1,6 @@
 # Overview
 
-"Shihai" means "control" in Japanese. The Shihai module is intended to control both Hachi itself and 
+"Shihai" means "element" in Japanese. The Shihai module is intended to element both Hachi itself and 
 other modules. It can be used to set Hachi's clock tempo, mute/unmute other modules, 
 select sessions and patterns (for modules that use sessions or patterns), 
 set chords (for modules that use chords), 
@@ -10,7 +10,7 @@ Modules in Hachi can support a number of capabilities. Shihai keeps track of the
 and knows what it can tell the modules to do. These capabilities include:
 - Save and load data. Shihai can tell these modules to save their current data.
 - Play sessions and patterns. Shihai can tell these modules to load new sessions and patterns.
-- Sync to a clock. Shihai can control the tempo of the clock that Hachi sends to these modules.
+- Sync to a clock. Shihai can element the tempo of the clock that Hachi sends to these modules.
 
 
 # Examples and Uses

@@ -465,7 +465,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     private void onControlPressed(GridControl control, int velocity) {
 
         control.press();
-//        System.out.printf("Control pressed: %s, %d\n", control, control.getIndex());
+//        System.out.printf("Element pressed: %s, %d\n", control, control.getIndex());
 
         // these controls apply in main view or settings view
         if (control.equals(settingsControl)) {
