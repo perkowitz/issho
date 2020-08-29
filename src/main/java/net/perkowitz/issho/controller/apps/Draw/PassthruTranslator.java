@@ -4,6 +4,7 @@
 package net.perkowitz.issho.controller.apps.Draw;
 
 import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Knob;
 import net.perkowitz.issho.controller.elements.Light;
@@ -41,7 +42,9 @@ public class PassthruTranslator implements Controller, Receiver {
 
     public void setLight(Light light, Color color) {}
 
+    public void setListener(ControllerListener listener) {}
 
+    
     /***** Receiver implementation *****/
 
     public void send(MidiMessage message, long timeStamp) {

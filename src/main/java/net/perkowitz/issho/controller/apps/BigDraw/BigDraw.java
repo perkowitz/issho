@@ -9,6 +9,7 @@
  */
 package net.perkowitz.issho.controller.apps.BigDraw;
 
+import com.google.common.collect.Lists;
 import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Element;
@@ -22,6 +23,7 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 import java.awt.*;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static net.perkowitz.issho.controller.Colors.*;
@@ -31,23 +33,26 @@ import static net.perkowitz.issho.controller.Colors.*;
  */
 public class BigDraw implements ControllerListener {
 
+    // app constants
     public static final int MAX_ROWS = 16;
     public static final int MAX_COLUMNS = 16;
 
-    // element groups
+    // colors for the drawing palette
+    public static final Color[] palette = new Color[]{
+            BLACK, WHITE,
+            BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_BLUE, BRIGHT_PURPLE,
+            DARK_GRAY, GRAY,
+            DIM_RED, DIM_ORANGE, DIM_YELLOW, DIM_GREEN, DIM_BLUE, DIM_PURPLE,
+            BRIGHT_CYAN, BRIGHT_MAGENTA, BRIGHT_PINK,
+            DIM_CYAN, DIM_MAGENTA, DIM_PINK};
+
+    // reference numbers for element groups
     public static final int PALETTE_BUTTONS_GROUP = 0;
     public static final int CANVAS_PADS_GROUP = 0;
     public static final int MISC_BUTTONS_GROUP = 1;
 
-    public static final Color[] palette = new Color[]{
-        BLACK, WHITE,
-        BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_BLUE, BRIGHT_PURPLE,
-        DARK_GRAY, GRAY,
-        DIM_RED, DIM_ORANGE, DIM_YELLOW, DIM_GREEN, DIM_BLUE, DIM_PURPLE,
-        BRIGHT_CYAN, BRIGHT_MAGENTA, BRIGHT_PINK,
-        DIM_CYAN, DIM_MAGENTA, DIM_PINK};
-
-    // elements
+    // declare all elements needed by the app here, and use these for updating the controller
+    // then implement translators to map between these elements and those offered by the controller
     public static final ElementSet canvasPads = ElementSet.pads(CANVAS_PADS_GROUP, 0, MAX_ROWS, 0, MAX_COLUMNS);
     public static final ElementSet paletteButtons = ElementSet.buttons(PALETTE_BUTTONS_GROUP, 0, palette.length);
     public static final ElementSet miscButtons = ElementSet.buttons(MISC_BUTTONS_GROUP, 0, 8);
@@ -55,16 +60,13 @@ public class BigDraw implements ControllerListener {
     public static final Button clearButton = Button.at(MISC_BUTTONS_GROUP, 1);
     public static final Button colorButton = Button.at(MISC_BUTTONS_GROUP, 2);
 
-    private MidiDevice controllerMidiInput;
-    private MidiDevice controllerMidiOutput;
-    private Transmitter transmitter;
-    private Receiver receiver;
-
+    // for managing app state
     private Color canvas[][] = new Color[MAX_ROWS][MAX_COLUMNS];
     private Color currentColor = Colors.BLACK;
     private Controller controller;
-
+    private List<Controller> controllers = Lists.newArrayList();
     private CountDownLatch stop = new CountDownLatch(1);
+    private MidiSetup midiSetup = null;
 
     public static void main(String args[]) throws Exception {
         BigDraw draw = new BigDraw();
@@ -74,46 +76,41 @@ public class BigDraw implements ControllerListener {
 
     public void run() throws Exception {
 
-        // find the indicated devices in the system
-        String[] lppNames = new String[] { "Launchpad", "Standalone" };
-        controllerMidiInput = MidiUtil.findMidiDevice(lppNames, false, true);
-        if (controllerMidiInput == null) {
-            System.err.printf("Unable to find controller input device matching name: %s\n", StringUtils.join(lppNames, ", "));
-            System.exit(1);
-        }
-        controllerMidiOutput = MidiUtil.findMidiDevice(lppNames, true, false);
-        if (controllerMidiOutput == null) {
-            System.err.printf("Unable to find controller output device matching name: %s\n", StringUtils.join(lppNames, ", "));
+        // MidiSetup does the work of matching available midi devices against supported controller types
+        midiSetup = new MidiSetup();
+        if (midiSetup.getControllers().size() == 0) {
+            System.err.println("No supported MIDI controllers found.");
             System.exit(1);
         }
 
-        // open the midi devices and find the transmitter and receiver
-        controllerMidiInput.open();
-        transmitter = controllerMidiInput.getTransmitter();
-        controllerMidiOutput.open();
-        receiver = controllerMidiOutput.getReceiver();
+        // translators are app-specific, so create those based on controllers found
+        for (Controller controller : midiSetup.getControllers()) {
+            Translator translator = null;
+            if (controller.toString() == LaunchpadPro.name()) {
+                translator = new ExpansionTranslator((LaunchpadPro) controller, this);
+                controller.setListener(translator);
+                controllers.add(translator);
+            } else {
+                // use no translator; direct connection to controller
+                controller.setListener(this);
+                controllers.add(controller);
+            }
+        }
 
-        MidiOut midiOut = new MidiOut(receiver);
-        LaunchpadPro lpp = new LaunchpadPro(midiOut, null);
-        // the translator will take commands from the app and send them to the launchpad
-        // the app will listen to events coming from the translator
-        // the translator will listen to events coming from the launchpad
-        Translator translator = new ExpansionTranslator(lpp, this);
-        lpp.setListener(translator);
-        transmitter.setReceiver(lpp);
-        controller = translator;
+        // TODO: support more than one controller!!!
+        controller = controllers.get(0);
 
+        // start up the app
         initialize();
 
+        // just respond to user input
         stop.await();
 
-        controllerMidiInput.close();
-        controllerMidiOutput.close();
-
-        System.exit(0);
-
+        // we shouldn't ever get here
+        quit();
     }
 
+    // initialize puts the controller in its starting state.
     private void initialize() {
         controller.initialize();
         for (int r = 0; r < MAX_ROWS; r++) {
@@ -127,23 +124,32 @@ public class BigDraw implements ControllerListener {
         }
     }
 
+    // quit cleans up anything it needs to and exits.
+    private void quit() {
+        midiSetup.close();
+        System.exit(0);
+    }
+
     /***** ControllerListener implementation *****/
 
+    // onElementPressed responds to user input from the controller.
     public void onElementPressed(Element element, int value) {
         if (canvasPads.contains(element)) {
+            // draw at this pad in the current color
             controller.setPad((Pad)element, currentColor);
         } else if (paletteButtons.contains(element)) {
+            // set the current color to the pressed palette value
             if (element.getIndex() >= 0 && element.getIndex() < paletteButtons.size()) {
                 Button button = (Button) element;
                 currentColor = palette[button.getIndex()];
                 controller.setButton(colorButton, currentColor);
             }
         } else if (quitButton.equals(element)) {
-            controller.initialize();
-            System.exit(0);
+            quit();
         } else if (clearButton.equals(element)) {
             for (int r = 0; r < MAX_ROWS; r++) {
                 for (int c = 0; c < MAX_COLUMNS; c++) {
+                    canvas[r][c] = BLACK;
                     controller.setPad(Pad.at(CANVAS_PADS_GROUP, r, c), BLACK);
                 }
             }

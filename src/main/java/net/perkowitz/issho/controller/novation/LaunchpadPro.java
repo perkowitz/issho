@@ -15,8 +15,6 @@ import java.util.Map;
 import static javax.sound.midi.ShortMessage.*;
 import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
 import static javax.sound.midi.ShortMessage.NOTE_OFF;
-import static net.perkowitz.issho.controller.Colors.*;
-import static net.perkowitz.issho.controller.Colors.DIM_PINK;
 
 
 /**
@@ -106,6 +104,14 @@ public class LaunchpadPro implements Controller, Receiver {
     public void setKnob(Knob knob, Color color) {}
     public void setLight(Light light, Color color) {}
 
+    @Override
+    public String toString() {
+        return name();
+    }
+
+    public static String name() {
+        return "LaunchpadPro";
+    }
 
     /***** midi receiver implementation **************************************************************/
 
