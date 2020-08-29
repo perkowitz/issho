@@ -5,6 +5,7 @@
  */
 package net.perkowitz.issho.controller.apps.BigDraw;
 
+import lombok.Setter;
 import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.Translator;
 import net.perkowitz.issho.controller.elements.*;
@@ -16,7 +17,7 @@ import java.awt.*;
 public class TruncationTranslator implements Translator {
 
     private LaunchpadPro launchpad;
-    private ControllerListener listener;
+    @Setter private ControllerListener listener;
 
     public TruncationTranslator(LaunchpadPro launchpad, ControllerListener listener) {
         this.launchpad = launchpad;

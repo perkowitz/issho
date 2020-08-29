@@ -14,6 +14,7 @@
  */
 package net.perkowitz.issho.controller.apps.BigDraw;
 
+import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.Translator;
@@ -33,7 +34,7 @@ public class ExpansionTranslator implements Translator {
     private static final int CANVAS_GROUP = LaunchpadPro.PADS_GROUP;
 
     private LaunchpadPro launchpad;
-    private ControllerListener listener;
+    @Setter private ControllerListener listener;
 
     // elements the translator overrides to use internally
     private Button translatorPaletteButton = Button.at(LaunchpadPro.BUTTONS_LEFT, 7);

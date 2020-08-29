@@ -8,6 +8,8 @@ import java.awt.*;
 public interface Controller {
 
     public void initialize();
+    public String toString();
+    public void setListener(ControllerListener listener);
 
     public void setPad(Pad pad, Color color);
     public void setButton(Button button, Color color);
