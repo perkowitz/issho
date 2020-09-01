@@ -19,9 +19,6 @@ import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.util.MidiUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Transmitter;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
