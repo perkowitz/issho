@@ -1,48 +1,46 @@
 package net.perkowitz.issho.controller.apps.Draw;
 
-import net.perkowitz.issho.controller.*;
-import net.perkowitz.issho.controller.elements.Button;
-import net.perkowitz.issho.controller.elements.Element;
-import net.perkowitz.issho.controller.elements.Pad;
+import com.google.common.collect.Lists;
+import net.perkowitz.issho.controller.Colors;
+import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
+import net.perkowitz.issho.controller.MidiSetup;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
-import net.perkowitz.issho.util.MidiUtil;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Transmitter;
 import java.awt.*;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static net.perkowitz.issho.controller.Colors.*;
+import static net.perkowitz.issho.controller.Colors.BLACK;
 
-/**
- * Created by mikep on 7/30/20.
- */
-public class Draw implements ControllerListener {
+public class Draw implements DrawListener {
 
-    // element groups
-    private int PALETTE_BUTTON_GROUP = 0;
-    private int CANVAS_PADS_GROUP = 0;
+    // app constants
+    public static final int MAX_ROWS = 16;
+    public static final int MAX_COLUMNS = 16;
 
+    // various buttons for the UI
+    public enum ButtonId {
+        QUIT, CLEAR, CURRENT_COLOR
+    }
 
-    private Color color = Colors.BLACK;
-    private Controller controller;
-
+    // colors for the drawing palette
     public static final Color[] palette = new Color[]{
-        BLACK, WHITE,
-        BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_BLUE, BRIGHT_PURPLE,
-        DARK_GRAY, GRAY,
-        DIM_RED, DIM_ORANGE, DIM_YELLOW, DIM_GREEN, DIM_BLUE, DIM_PURPLE,
-        BRIGHT_CYAN, BRIGHT_MAGENTA, BRIGHT_PINK,
-        DIM_CYAN, DIM_MAGENTA, DIM_PINK};
+            BLACK, WHITE,
+            BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_BLUE, BRIGHT_PURPLE,
+            DARK_GRAY, GRAY,
+            DIM_RED, DIM_ORANGE, DIM_YELLOW, DIM_GREEN, DIM_BLUE, DIM_PURPLE,
+            BRIGHT_CYAN, BRIGHT_MAGENTA, BRIGHT_PINK,
+            DIM_CYAN, DIM_MAGENTA, DIM_PINK};
 
-    private MidiDevice controllerMidiInput;
-    private MidiDevice controllerMidiOutput;
-    private Transmitter transmitter;
-    private Receiver receiver;
-
+    // for managing app state
+    private Color canvas[][] = new Color[MAX_ROWS][MAX_COLUMNS];
+    private Color currentColor = Colors.BLACK;
+    private DrawController controller;
+    private List<DrawController> controllers = Lists.newArrayList();
     private CountDownLatch stop = new CountDownLatch(1);
+    private MidiSetup midiSetup = null;
 
     public static void main(String args[]) throws Exception {
         Draw draw = new Draw();
@@ -52,75 +50,93 @@ public class Draw implements ControllerListener {
 
     public void run() throws Exception {
 
-        String[] lppNames = new String[] { "Launchpad", "Standalone" };
-        controllerMidiInput = MidiUtil.findMidiDevice(lppNames, false, true);
-        if (controllerMidiInput == null) {
-            System.err.printf("Unable to find controller input device matching name: %s\n", StringUtils.join(lppNames, ", "));
-            System.exit(1);
-        }
-        controllerMidiOutput = MidiUtil.findMidiDevice(lppNames, true, false);
-        if (controllerMidiOutput == null) {
-            System.err.printf("Unable to find controller output device matching name: %s\n", StringUtils.join(lppNames, ", "));
+        // MidiSetup does the work of matching available midi devices against supported controller types
+        midiSetup = new MidiSetup();
+        if (midiSetup.getControllers().size() == 0) {
+            System.err.println("No supported MIDI controllers found.");
             System.exit(1);
         }
 
-        controllerMidiInput.open();
-        transmitter = controllerMidiInput.getTransmitter();
-        controllerMidiOutput.open();
-        receiver = controllerMidiOutput.getReceiver();
+        // translators are app-specific, so create those based on controllers found
+        for (Controller c : midiSetup.getControllers()) {
+            if (c.toString() == LaunchpadPro.name()) {
+//                DrawController t = new LaunchpadProPassthruTranslator((LaunchpadPro) c, this);
+                DrawController t = new LaunchpadProExpansionTranslator((LaunchpadPro) c, this);
+                controllers.add(t);
+                c.setListener((ControllerListener) t);
+            }
+        }
 
-        MidiOut midiOut = new MidiOut(receiver);
-        LaunchpadPro lpp = new LaunchpadPro(midiOut, this);
-        LaunchpadProTranslator translator = new LaunchpadProTranslator(lpp);
-        transmitter.setReceiver(translator);
-        controller = translator;
+        // TODO: support more than one controller!!!
+        controller = controllers.get(0);
 
+        // start up the app
         initialize();
 
+        // just respond to user input
         stop.await();
 
-        controllerMidiInput.close();
-        controllerMidiOutput.close();
-
-        System.exit(0);
-
+        // we shouldn't ever get here
+        quit();
     }
 
+    // initialize puts the controller in its starting state.
     private void initialize() {
         controller.initialize();
-        for (int i = 0; i < 7; i++) {
-            controller.setButton(Button.at(LaunchpadPro.BUTTONS_BOTTOM, i), palette[i]);
-        }
+        drawPalette();
+        drawButtons();
     }
 
-    /***** ControllerListener implementation ******************************************/
-
-    public void onElementPressed(Element element, int value) {
-        if (element.getType() == Element.Type.PAD) {
-            controller.setPad((Pad)element, color);
-        } else if (element.getType() == Element.Type.BUTTON) {
-            Button button = (Button)element;
-            if (button.getGroup() == LaunchpadPro.BUTTONS_BOTTOM) {
-                color = palette[button.getIndex()];
-            } else if (button.getGroup() == LaunchpadPro.BUTTONS_LEFT) {
-                controller.initialize();
-                System.exit(0);
-            } else if (button.getGroup() == LaunchpadPro.BUTTONS_RIGHT) {
-                for (int i = 0; i < 8; i++) {
-                    controller.setPad(Pad.at(0, button.getIndex(), i), color);
-                }
-            } else if (button.getGroup() == LaunchpadPro.BUTTONS_TOP) {
-                for (int i = 0; i < 8; i++) {
-                    controller.setPad(Pad.at(0, i, button.getIndex()), color);
-                }
+    private void clearCanvas() {
+        for (int r = 0; r < MAX_ROWS; r++) {
+            for (int c = 0; c < MAX_COLUMNS; c++) {
+                canvas[r][c] = BLACK;
+                controller.setCanvas(r, c, BLACK);
             }
         }
     }
 
-    public void onElementChanged(Element element, int delta) {
+    // quit cleans up anything it needs to and exits.
+    private void quit() {
+        controller.initialize();
+        midiSetup.close();
+        System.exit(0);
     }
 
-    public void onElementReleased(Element element) {
+    /***** ControllerListener implementation *****/
+
+    public void onPalettePressed(int index) {
+        if (index >= 0 && index < palette.length) {
+            currentColor = palette[index];
+            controller.setButton(ButtonId.CURRENT_COLOR, currentColor);
+        }
+    }
+
+    public void onCanvasPressed(int row, int column) {
+        controller.setCanvas(row, column, currentColor);
+    }
+
+    public void onButtonPressed(Draw.ButtonId buttonId) {
+        switch (buttonId) {
+            case QUIT:
+                quit();
+                break;
+            case CLEAR:
+                clearCanvas();
+                break;
+        }
+    }
+
+    public void drawPalette() {
+        for (int i = 0; i < palette.length; i++) {
+            controller.setPalette(i, palette[i]);
+        }
+    }
+
+    public void drawButtons() {
+        controller.setButton(ButtonId.QUIT, BRIGHT_RED);
+        controller.setButton(ButtonId.CLEAR, DARK_GRAY);
+        controller.setButton(ButtonId.CURRENT_COLOR, currentColor);
     }
 
 }
