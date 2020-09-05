@@ -1,4 +1,4 @@
-package net.perkowitz.issho.controller.apps.Draw;
+package net.perkowitz.issho.controller.apps.draw;
 
 import com.google.common.collect.Maps;
 import net.perkowitz.issho.controller.ControllerListener;
