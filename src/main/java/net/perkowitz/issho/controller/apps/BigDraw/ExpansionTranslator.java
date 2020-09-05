@@ -27,7 +27,7 @@ import java.awt.*;
 import static net.perkowitz.issho.controller.apps.BigDraw.BigDraw.MAX_COLUMNS;
 import static net.perkowitz.issho.controller.apps.BigDraw.BigDraw.MAX_ROWS;
 
-public class ExpansionTranslator implements Translator {
+public class ExpansionTranslator implements Translator, ControllerListener {
 
     private static final int PALETTE_GROUP = LaunchpadPro.BUTTONS_BOTTOM;
     private static final int BUTTONS_GROUP = LaunchpadPro.BUTTONS_LEFT;

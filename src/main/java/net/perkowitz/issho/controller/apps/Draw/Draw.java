@@ -3,6 +3,7 @@ package net.perkowitz.issho.controller.apps.Draw;
 import com.google.common.collect.Lists;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.MidiSetup;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 
@@ -59,9 +60,10 @@ public class Draw implements DrawListener {
         // translators are app-specific, so create those based on controllers found
         for (Controller c : midiSetup.getControllers()) {
             if (c.toString() == LaunchpadPro.name()) {
-                LaunchpadProPassthruTranslator t = new LaunchpadProPassthruTranslator((LaunchpadPro) c, this);
+//                DrawController t = new LaunchpadProPassthruTranslator((LaunchpadPro) c, this);
+                DrawController t = new LaunchpadProExpansionTranslator((LaunchpadPro) c, this);
                 controllers.add(t);
-                c.setListener(t);
+                c.setListener((ControllerListener) t);
             }
         }
 
@@ -81,9 +83,8 @@ public class Draw implements DrawListener {
     // initialize puts the controller in its starting state.
     private void initialize() {
         controller.initialize();
-        for (int i = 0; i < palette.length; i++) {
-            controller.setPalette(i, palette[i]);
-        }
+        drawPalette();
+        drawButtons();
     }
 
     private void clearCanvas() {
@@ -124,6 +125,18 @@ public class Draw implements DrawListener {
                 clearCanvas();
                 break;
         }
+    }
+
+    public void drawPalette() {
+        for (int i = 0; i < palette.length; i++) {
+            controller.setPalette(i, palette[i]);
+        }
+    }
+
+    public void drawButtons() {
+        controller.setButton(ButtonId.QUIT, BRIGHT_RED);
+        controller.setButton(ButtonId.CLEAR, DARK_GRAY);
+        controller.setButton(ButtonId.CURRENT_COLOR, currentColor);
     }
 
 }

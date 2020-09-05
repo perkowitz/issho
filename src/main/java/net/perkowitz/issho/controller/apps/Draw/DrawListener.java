@@ -6,4 +6,6 @@ public interface DrawListener {
     public void onCanvasPressed(int row, int column);
     public void onButtonPressed(Draw.ButtonId buttonId);
 
+    public void drawPalette();
+
 }

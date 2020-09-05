@@ -10,6 +10,9 @@ import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import java.awt.*;
 import java.util.Map;
 
+import static net.perkowitz.issho.controller.Colors.DARK_GRAY;
+import static net.perkowitz.issho.controller.Colors.WHITE;
+
 public class LaunchpadProExpansionTranslator implements DrawController, ControllerListener {
 
     private LaunchpadPro launchpadPro;
@@ -29,22 +32,39 @@ public class LaunchpadProExpansionTranslator implements DrawController, Controll
         indexToButtonMap.put(buttonToIndexMap.get(Draw.ButtonId.CURRENT_COLOR), Draw.ButtonId.CURRENT_COLOR);
     }
 
+    // override certain elements to use for controller mode-switching, invisibly to application
+    private static final Color OFF_COLOR = DARK_GRAY;
+    private static final Color ON_COLOR = WHITE;
+    private Button paletteButton = Button.at(BUTTONS_GROUP, 7);
+    private int paletteOffset = 0;
+
+
     public LaunchpadProExpansionTranslator(LaunchpadPro launchpadPro, DrawListener listener) {
         this.launchpadPro = launchpadPro;
         this.listener = listener;
     }
 
 
+    private void drawTranslatorButtons() {
+        launchpadPro.setButton(paletteButton, paletteOffset == 0 ? OFF_COLOR : ON_COLOR);
+    }
+
+    private void drawPalette() {
+        
+    }
+
     /***** DrawController implementation *****/
 
     public void initialize() {
         launchpadPro.initialize();
+        drawTranslatorButtons();
     }
 
     // setPalette sets the color in the designated button group if within the LPP's index range.
     public void setPalette(int index, Color color) {
-        if (index >= 0 && index < 8)  {
-            launchpadPro.setButton(Button.at(PALETTE_GROUP, index), color);
+        int i = index - paletteOffset;
+        if (i >= 0 && i < 8)  {
+            launchpadPro.setButton(Button.at(PALETTE_GROUP, i), color);
         }
     }
 
@@ -67,8 +87,13 @@ public class LaunchpadProExpansionTranslator implements DrawController, Controll
     /***** ControllerListener implementation *****/
 
     public void onElementPressed(Element element, int value) {
-        if (element.getType() == Element.Type.BUTTON && element.getGroup() == PALETTE_GROUP) {
-            listener.onPalettePressed(element.getIndex());
+        // check the translator overridden elements first
+        if (element.equals(paletteButton)) {
+            paletteOffset = 8 - paletteOffset;
+            drawTranslatorButtons();
+            listener.drawPalette();
+        } else if (element.getType() == Element.Type.BUTTON && element.getGroup() == PALETTE_GROUP) {
+            listener.onPalettePressed(element.getIndex() + paletteOffset);
         } else if (element.getType() == Element.Type.PAD && element.getGroup() == CANVAS_GROUP) {
             Pad pad = (Pad) element;
             listener.onCanvasPressed(pad.getRow(), pad.getColumn());
