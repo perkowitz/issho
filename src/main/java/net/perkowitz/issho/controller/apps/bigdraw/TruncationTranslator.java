@@ -3,7 +3,7 @@
  * This translator simply throws away any commands for pads/buttons outside of the
  * launchpad's range.
  */
-package net.perkowitz.issho.controller.apps.BigDraw;
+package net.perkowitz.issho.controller.apps.bigdraw;
 
 import lombok.Setter;
 import net.perkowitz.issho.controller.ControllerListener;

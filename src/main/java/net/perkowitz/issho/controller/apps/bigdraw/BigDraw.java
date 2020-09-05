@@ -7,7 +7,7 @@
  * BigDraw is implemented independently of a controller; translators can
  * be used to implement it on a controller with a smaller grid or fewer buttons.
  */
-package net.perkowitz.issho.controller.apps.BigDraw;
+package net.perkowitz.issho.controller.apps.bigdraw;
 
 import com.google.common.collect.Lists;
 import net.perkowitz.issho.controller.*;
@@ -16,8 +16,6 @@ import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.ElementSet;
 import net.perkowitz.issho.controller.elements.Pad;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
-import net.perkowitz.issho.util.MidiUtil;
-import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.util.List;

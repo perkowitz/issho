@@ -12,7 +12,7 @@
  * and canvas.
  *
  */
-package net.perkowitz.issho.controller.apps.BigDraw;
+package net.perkowitz.issho.controller.apps.bigdraw;
 
 import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
@@ -24,8 +24,8 @@ import net.perkowitz.issho.controller.novation.LaunchpadPro;
 
 import java.awt.*;
 
-import static net.perkowitz.issho.controller.apps.BigDraw.BigDraw.MAX_COLUMNS;
-import static net.perkowitz.issho.controller.apps.BigDraw.BigDraw.MAX_ROWS;
+import static net.perkowitz.issho.controller.apps.bigdraw.BigDraw.MAX_COLUMNS;
+import static net.perkowitz.issho.controller.apps.bigdraw.BigDraw.MAX_ROWS;
 
 public class ExpansionTranslator implements Translator, ControllerListener {
 

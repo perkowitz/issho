@@ -1,4 +1,4 @@
-package net.perkowitz.issho.controller.apps.Draw;
+package net.perkowitz.issho.controller.apps.draw;
 
 public interface DrawListener {
 
