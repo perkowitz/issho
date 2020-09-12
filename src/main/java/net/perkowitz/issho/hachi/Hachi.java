@@ -5,6 +5,7 @@ import net.perkowitz.issho.devices.GridDevice;
 import net.perkowitz.issho.devices.Keyboard;
 import net.perkowitz.issho.devices.launchpad.Launchpad;
 import net.perkowitz.issho.devices.launchpadpro.*;
+import net.perkowitz.issho.devices.yaeltex.HachiXL;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.deprecated.beatbox.BeatModule;
 import net.perkowitz.issho.hachi.modules.deprecated.beatbox.BeatUtil;
@@ -97,9 +98,10 @@ public class Hachi {
         System.out.printf("Getting app settings from %s...\n", settingsFile);
         settings = SettingsUtil.getSettings(settingsFile);
         Boolean textDisplay = (Boolean)settings.get("textDisplay");
-        if (textDisplay != null) {
-            TextDisplay.setEnabled(textDisplay);
+        if (textDisplay == null) {
+            textDisplay = false;
         }
+        TextDisplay.setEnabled(textDisplay);
 
         if (textDisplay) {
             Terminal.fg(TextDisplay.defaultColor);
@@ -242,6 +244,8 @@ public class Hachi {
                         gridDevice = new LaunchpadPro(output.getReceiver(), null);
                     } else if (type.equals("launchpad")) {
                         gridDevice = new Launchpad(output.getReceiver(), null);
+                    } else if (type.equals("yaeltex")) {
+                        gridDevice = new HachiXL(output.getReceiver(), null);
                     } else {
                         gridDevice = new LaunchpadPro(output.getReceiver(), null);
                     }
@@ -277,10 +281,9 @@ public class Hachi {
         for (Object controllerConfig : controllerConfigs) {
             Map<Object, Object> config = (Map<Object,Object>)controllerConfig;
             List<String> names = (List<String>)config.get("names");
-            String type = (String)config.get("type");
             MidiDevice output = MidiUtil.findMidiDevice(names.toArray(new String[0]), true, false);
             if (output == null) {
-                System.err.printf("Unable to find controller device matching name: %s\n", names);
+                System.err.printf("Unable to find MIDI output device matching name: %s\n", names);
             } else {
                 try {
                     output.open();
@@ -346,7 +349,7 @@ public class Hachi {
             System.err.println("Unable to find config settings for controllerMirror device.");
         }
         if (controllerInput == null || controllerOutput == null) {
-            System.err.printf("Unable to find controller device matching name: %s\n", names);
+            System.err.printf("Unable to find device matching name: %s\n", names);
             System.exit(1);
         }
 
