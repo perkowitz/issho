@@ -93,8 +93,8 @@ public class YaeltexHachiXL implements Controller, Receiver {
 
 
     public void initialize() {
-        for (int row = 0; row < 8; row++) {
-            for (int column = 0; column < 16; column++) {
+        for (int row = 0; row < PADS_MAX_ROWS; row++) {
+            for (int column = 0; column < PADS_MAX_COLUMNS; column++) {
                 setPad(Pad.at(0, row, column), Colors.BLACK);
             }
         }
@@ -260,13 +260,13 @@ public class YaeltexHachiXL implements Controller, Receiver {
     }
 
     private Button noteToButton(int note) {
-        if (note >= TOP_BUTTON_START_NOTE && note < TOP_BUTTON_START_NOTE + 8) {
+        if (note >= TOP_BUTTON_START_NOTE && note < TOP_BUTTON_START_NOTE + MAX_BUTTONS) {
             return Button.at(BUTTONS_TOP, note - TOP_BUTTON_START_NOTE);
-        } else if (note >= BOTTOM_BUTTON_START_NOTE && note < BOTTOM_BUTTON_START_NOTE + 8) {
+        } else if (note >= BOTTOM_BUTTON_START_NOTE && note < BOTTOM_BUTTON_START_NOTE + MAX_BUTTONS_BOTTOM) {
             return Button.at(BUTTONS_BOTTOM, note - BOTTOM_BUTTON_START_NOTE);
-        } else if (note >= LEFT_BUTTON_START_NOTE && note < LEFT_BUTTON_START_NOTE + 8) {
+        } else if (note >= LEFT_BUTTON_START_NOTE && note < LEFT_BUTTON_START_NOTE + MAX_BUTTONS) {
             return Button.at(BUTTONS_LEFT, note - LEFT_BUTTON_START_NOTE);
-        } else if (note >= RIGHT_BUTTON_START_NOTE && note < RIGHT_BUTTON_START_NOTE + 8) {
+        } else if (note >= RIGHT_BUTTON_START_NOTE && note < RIGHT_BUTTON_START_NOTE + MAX_BUTTONS) {
             return Button.at(BUTTONS_RIGHT, note - RIGHT_BUTTON_START_NOTE);
         }
         return Button.at(BUTTONS_TOP, 0);
