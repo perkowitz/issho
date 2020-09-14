@@ -102,6 +102,7 @@ public class LaunchpadPro implements Controller, Receiver {
     }
 
     public void setKnob(Knob knob, Color color) {}
+    public void setKnobValue(Knob knob, int value) {}
     public void setLight(Light light, Color color) {}
 
     @Override

@@ -79,13 +79,21 @@ public class ElementSet {
             if (invertIndex) {
                 buttonIndex = 7 - index;
             }
-            controls.add(Button.at(group, index));
+            controls.add(Button.at(group, buttonIndex));
         }
         return new ElementSet(controls);
     }
 
     public static ElementSet buttons(int group, int startIndex, int endIndex) {
         return buttons(group, startIndex, endIndex, false);
+    }
+
+    public static ElementSet knobs(int group, int startIndex, int endIndex) {
+        List<Element> controls = Lists.newArrayList();
+        for (int index = startIndex; index <= endIndex; index ++) {
+            controls.add(Knob.at(group, index));
+        }
+        return new ElementSet(controls);
     }
 
     public static ElementSet pads(int group, int startRow, int endRow, int startColumn, int endColumn) {

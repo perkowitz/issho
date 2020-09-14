@@ -132,6 +132,7 @@ public class AkaiFire implements Receiver, Controller {
     public void setKnob(Knob knob, Color color) {
         // in fact there is no display for the knobs
     }
+    public void setKnobValue(Knob knob, int value) {}
 
     public void setLight(Light light, Color color) {
         if (light.getGroup() != GROUP_LEFT || light.getIndex() < 0 || light.getIndex() >= LIGHTS_COUNT) {

@@ -106,7 +106,7 @@ public class ExpansionTranslator implements Translator, ControllerListener {
     }
 
     public void setKnob(Knob knob, Color color) {}
-
+    public void setKnobValue(Knob knob, int value) {}
     public void setLight(Light light, Color color) {}
 
 
