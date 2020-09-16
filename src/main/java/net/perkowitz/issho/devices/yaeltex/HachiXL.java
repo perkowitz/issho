@@ -14,7 +14,6 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.util.logging.Level.INFO;
 import static javax.sound.midi.ShortMessage.*;
 import static net.perkowitz.issho.devices.GridButton.Side.*;
 

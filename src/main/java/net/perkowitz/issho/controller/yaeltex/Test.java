@@ -61,13 +61,13 @@ public class Test {
         }
         Thread.sleep(DELAY);
 
-        System.out.println("Setting all pads to off...");
-        for (int row = 0; row < 8; row++) {
-            for (int column = 0; column < 16; column++) {
-                hachi.setPad(Pad.at(0, row, column), Colors.BLACK);
-                Thread.sleep(20);
-            }
+        System.out.println("Setting all knob buttons red...");
+        for (int index = 0; index < YaeltexHachiXL.MAX_KNOBS; index++) {
+            hachi.setButton(Button.at(YaeltexHachiXL.KNOB_BUTTONS, index), Colors.BRIGHT_RED);
         }
+        Thread.sleep(DELAY);
+
+        System.out.println("Setting all pads to off...");
         hachi.initialize();
         Thread.sleep(DELAY);
 
@@ -81,7 +81,6 @@ public class Test {
         }
         Thread.sleep(DELAY);
 
-        Thread.sleep(5000);
         hachi.initialize();
 
 

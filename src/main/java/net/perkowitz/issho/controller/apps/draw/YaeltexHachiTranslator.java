@@ -49,8 +49,11 @@ public class YaeltexHachiTranslator implements DrawController, ControllerListene
 
     // setPalette sets the color in the designated button group if within the LPP's index range.
     public void setPalette(int index, Color color) {
-        if (index >= 0 && index < YaeltexHachiXL.MAX_BUTTONS)  {
+        if (index >= 0 && index < YaeltexHachiXL.MAX_BUTTONS) {
             hachi.setButton(Button.at(PALETTE_GROUP, index), color);
+        }
+        if (index >= 0 && index < YaeltexHachiXL.MAX_KNOBS) {
+            hachi.setButton(Button.at(YaeltexHachiXL.KNOB_BUTTONS, index), color);
         }
     }
 
@@ -84,6 +87,8 @@ public class YaeltexHachiTranslator implements DrawController, ControllerListene
             if (id != null) {
                 listener.onButtonPressed(id);
             }
+        } else if (element.getType() == Element.Type.BUTTON && element.getGroup() == YaeltexHachiXL.KNOB_BUTTONS) {
+            listener.onPalettePressed(element.getIndex());
         }
     }
 

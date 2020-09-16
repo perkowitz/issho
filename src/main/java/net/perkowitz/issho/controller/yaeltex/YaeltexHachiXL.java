@@ -36,6 +36,7 @@ public class YaeltexHachiXL implements Controller, Receiver {
     public static final int BUTTONS_BOTTOM = 1;
     public static final int BUTTONS_LEFT = 2;
     public static final int BUTTONS_RIGHT = 3;
+    public static final int KNOB_BUTTONS = 4;
     public static final int MAX_BUTTONS = 16;
     public static final int MAX_BUTTONS_BOTTOM = 12;
     public static final int KNOBS_GROUP = 0;
@@ -48,11 +49,13 @@ public class YaeltexHachiXL implements Controller, Receiver {
     public static final ElementSet leftButtons = ElementSet.buttons(BUTTONS_LEFT, 0, MAX_BUTTONS);
     public static final ElementSet rightButtons = ElementSet.buttons(BUTTONS_RIGHT, 0, MAX_BUTTONS);
     public static final ElementSet knobs = ElementSet.knobs(KNOBS_GROUP, 0, MAX_KNOBS);
+    public static final ElementSet knobButtons = ElementSet.buttons(KNOB_BUTTONS, 0, MAX_KNOBS);
     private static int TOP_BUTTON_START_NOTE = 0;
     private static int BOTTOM_BUTTON_START_NOTE = 56;
     private static int LEFT_BUTTON_START_NOTE = 24;
     private static int RIGHT_BUTTON_START_NOTE = 40;
     private static int KNOBS_START_CC = 16;
+    private static int KNOB_BUTTONS_START_NOTE = KNOBS_START_CC;
 
 
     // The HachiXL uses an indexed color table. These are constants for common colors.
@@ -110,6 +113,7 @@ public class YaeltexHachiXL implements Controller, Receiver {
 
         for (int index = 0; index < MAX_KNOBS; index++) {
             setKnobValue(Knob.at(KNOBS_GROUP, index), 0);
+            setButton(Button.at(KNOB_BUTTONS, index), Colors.BLACK);
         }
     }
 
@@ -255,6 +259,8 @@ public class YaeltexHachiXL implements Controller, Receiver {
                 return button.getIndex() + LEFT_BUTTON_START_NOTE;
             case BUTTONS_RIGHT:
                 return button.getIndex() + RIGHT_BUTTON_START_NOTE;
+            case KNOB_BUTTONS:
+                return button.getIndex() + KNOB_BUTTONS_START_NOTE;
         }
         return 0;
     }
@@ -268,6 +274,8 @@ public class YaeltexHachiXL implements Controller, Receiver {
             return Button.at(BUTTONS_LEFT, note - LEFT_BUTTON_START_NOTE);
         } else if (note >= RIGHT_BUTTON_START_NOTE && note < RIGHT_BUTTON_START_NOTE + MAX_BUTTONS) {
             return Button.at(BUTTONS_RIGHT, note - RIGHT_BUTTON_START_NOTE);
+        } else if (note >= KNOB_BUTTONS_START_NOTE && note < KNOB_BUTTONS_START_NOTE + MAX_KNOBS) {
+            return Button.at(KNOB_BUTTONS, note - KNOB_BUTTONS_START_NOTE);
         }
         return Button.at(BUTTONS_TOP, 0);
     }
