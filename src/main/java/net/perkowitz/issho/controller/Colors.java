@@ -2,7 +2,7 @@
 
 package net.perkowitz.issho.controller;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class Colors {
 
@@ -34,7 +34,21 @@ public class Colors {
     public static final Color DIM_PINK = half(BRIGHT_PINK);
     public static final Color BRIGHT_PURPLE = new Color(128,  0, 255);
     public static final Color DIM_PURPLE = half(BRIGHT_PURPLE);
+    public static final Color LIGHT_BLUE = new Color(200, 218, 255);
+    public static final Color LIGHT_GREEN = new Color(180,  255, 160);
+    public static final Color BRIGHT_BLUEGRAY = new Color(200, 206, 218);
+    public static final Color DIM_BLUEGRAY = new Color(127, 135, 150);
+    public static final Color MEDIUM_BLUE = new Color(150, 190, 220);
+    public static final Color SKY_BLUE = new Color(0, 159, 255);
 
+    public static final Color[] standardPalette = new Color []{
+            BLACK, DARK_GRAY, GRAY, LIGHT_GRAY, WHITE,
+            DIM_RED, BRIGHT_RED, DIM_ORANGE, BRIGHT_ORANGE, DIM_YELLOW, BRIGHT_YELLOW,
+            DIM_GREEN, BRIGHT_GREEN, DIM_CYAN, BRIGHT_CYAN, DIM_BLUE, BRIGHT_BLUE,
+            DIM_PURPLE, BRIGHT_PURPLE, DIM_MAGENTA, BRIGHT_MAGENTA, DIM_PINK, BRIGHT_PINK,
+            LIGHT_BLUE, LIGHT_GREEN, BRIGHT_BLUEGRAY, DIM_BLUEGRAY, MEDIUM_BLUE, SKY_BLUE
+    };
+    
     public static final Color[] rainbow = new Color[]{BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_CYAN, BRIGHT_BLUE, BRIGHT_PURPLE, BRIGHT_MAGENTA};
 
     private static Color half(Color color) {

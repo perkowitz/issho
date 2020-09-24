@@ -57,47 +57,22 @@ public class YaeltexHachiXL implements Controller, Receiver {
     private static int KNOBS_START_CC = 16;
     private static int KNOB_BUTTONS_START_NOTE = KNOBS_START_CC;
 
-
-    // The HachiXL uses an indexed color table. These are constants for common colors.
-    private static Map<Color, Integer> colorMap = Maps.newHashMap();
-    static {
-        colorMap.put(Colors.BLACK, 0);
-        colorMap.put(Colors.WHITE, 127);
-        colorMap.put(Colors.GRAY, 1);
-        colorMap.put(Colors.LIGHT_GRAY, 2);
-        colorMap.put(Colors.DARK_GRAY, 71);
-        colorMap.put(Colors.BRIGHT_GREEN, 40);
-        colorMap.put(Colors.DIM_GREEN, 44);
-        colorMap.put(Colors.BRIGHT_RED, 1);
-        colorMap.put(Colors.DIM_RED, 2);
-        colorMap.put(Colors.BRIGHT_ORANGE, 13);
-        colorMap.put(Colors.DIM_ORANGE, 14);
-        colorMap.put(Colors.BRIGHT_BLUE, 73);
-        colorMap.put(Colors.DIM_BLUE, 74);
-        colorMap.put(Colors.BRIGHT_CYAN, 67);
-        colorMap.put(Colors.DIM_CYAN, 69);
-        colorMap.put(Colors.BRIGHT_YELLOW, 22);
-        colorMap.put(Colors.DIM_YELLOW, 24);
-        colorMap.put(Colors.BRIGHT_PINK, 116);
-        colorMap.put(Colors.DIM_PINK, 117);
-        colorMap.put(Colors.BRIGHT_MAGENTA, 106);
-        colorMap.put(Colors.DIM_MAGENTA, 107);
-        colorMap.put(Colors.BRIGHT_PURPLE, 97);
-        colorMap.put(Colors.DIM_PURPLE, 98);
-    }
-
+    // member variables
+    @Setter private Map<Color, Integer> colorMap = Maps.newHashMap();
     private MidiOut midiOut;
     @Setter private ControllerListener listener;
 
     public YaeltexHachiXL(MidiOut midiOut, ControllerListener listener) {
         this.midiOut = midiOut;
         this.listener = listener;
+        this.colorMap = ColorModes.twoBitMap;
     }
 
 
     public void initialize() {
         for (int row = 0; row < PADS_MAX_ROWS; row++) {
             for (int column = 0; column < PADS_MAX_COLUMNS; column++) {
+//                System.out.printf("initPad: %d, %d\n", row, column);
                 setPad(Pad.at(0, row, column), Colors.BLACK);
             }
         }
@@ -115,27 +90,38 @@ public class YaeltexHachiXL implements Controller, Receiver {
             setKnobValue(Knob.at(KNOBS_GROUP, index), 0);
             setButton(Button.at(KNOB_BUTTONS, index), Colors.BLACK);
         }
+
+        setButton(Button.at(BUTTONS_BOTTOM, 0), Colors.BLACK);
     }
 
     public void setPad(Pad pad, Color color) {
-//        System.out.printf("Haxl setPad: p=%s, c=%s, n=%d, v=%d\n", pad, color, padToNote(pad), colorToIndex(color));
+        if (pad.getRow() >= PADS_MAX_ROWS || pad.getColumn() >= PADS_MAX_COLUMNS
+                || pad.getRow() < 0 || pad.getColumn() < 0) {
+            return;
+        }
         midiOut.note(PADS_CHANNEL, padToNote(pad), colorToIndex(color));
     }
 
     public void setPad(Pad pad, int colorIndex) {
+        if (pad.getRow() >= PADS_MAX_ROWS || pad.getColumn() >= PADS_MAX_COLUMNS
+                || pad.getRow() < 0 || pad.getColumn() < 0) {
+            return;
+        }
         midiOut.note(PADS_CHANNEL, padToNote(pad), colorIndex);
     }
 
     public void setButton(Button button, Color color) {
-//        System.out.printf("Haxl setButton: b=%s, c=%s, n=%d\n", button, color, buttonToNote(button));
+        // TODO: check button within range
         midiOut.note(BUTTONS_CHANNEL, buttonToNote(button), colorToIndex(color));
     }
 
     public void setKnob(Knob knob, Color color) {
         // Knob colors are fixed at the moment
+        // TODO: check knob within range
     }
 
     public void setKnobValue(Knob knob, int value) {
+        // TODO: check knob within range
         midiOut.cc(KNOBS_CHANNEL, knob.getIndex() + KNOBS_START_CC, value);
     }
 
@@ -222,7 +208,7 @@ public class YaeltexHachiXL implements Controller, Receiver {
     }
 
     public void close() {
-
+        midiOut.close();
     }
 
 
@@ -235,6 +221,22 @@ public class YaeltexHachiXL implements Controller, Receiver {
         }
         return index;
     }
+
+//    private int colorToIndex(Color color) {
+//        int r = color.getRed() & 0b11000000;
+//        int g = color.getGreen() & 0b11000000;
+//        int b = color.getRGB() & 0b11100000;
+//        int i = (r >> 1) + (g >> 3) + (b >> 5);
+//        if (r != 0 || g != 0 || b != 0) {
+////            System.out.printf("colorToIndex: c=%s, r=%d, g=%d, b=%d, i=%d\n", color, r, g, b, i);
+//            System.out.printf("colorToIndex: c=%32s, r=%8s, g=%8s, b=%8s, i=%8s\n", color,
+//                    Integer.toString(r, 2),
+//                    Integer.toString(g, 2),
+//                    Integer.toString(b, 2),
+//                    Integer.toString(i, 2));
+//        }
+//        return i;
+//    }
 
     private int padToNote(Pad pad) {
         int note = pad.getRow() * 16 + pad.getColumn();

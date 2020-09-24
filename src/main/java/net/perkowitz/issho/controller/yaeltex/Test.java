@@ -3,10 +3,13 @@ package net.perkowitz.issho.controller.yaeltex;
 
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.MidiOut;
 import net.perkowitz.issho.controller.MidiSetup;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Knob;
 import net.perkowitz.issho.controller.elements.Pad;
+
+import java.awt.*;
 
 /**
  * Created by mikep on 7/28/20.
@@ -33,6 +36,7 @@ public class Test {
         }
 
         System.out.println("Initializing controller...");
+        hachi.setColorMap(ColorModes.twoBitMap);
         hachi.initialize();
         Thread.sleep(DELAY);
 
@@ -43,6 +47,7 @@ public class Test {
             }
         }
         Thread.sleep(DELAY);
+
 
         System.out.println("Setting all buttons green...");
         for (int group : new int[]{ YaeltexHachiXL.BUTTONS_TOP, YaeltexHachiXL.BUTTONS_LEFT, YaeltexHachiXL.BUTTONS_RIGHT }) {
@@ -55,21 +60,38 @@ public class Test {
         }
         Thread.sleep(DELAY);
 
-        System.out.println("Setting all knobs to full...");
-        for (int index = 0; index < YaeltexHachiXL.MAX_KNOBS; index++) {
-            hachi.setKnobValue(Knob.at(YaeltexHachiXL.KNOBS_GROUP, index), 127);
-        }
-        Thread.sleep(DELAY);
-
-        System.out.println("Setting all knob buttons red...");
-        for (int index = 0; index < YaeltexHachiXL.MAX_KNOBS; index++) {
-            hachi.setButton(Button.at(YaeltexHachiXL.KNOB_BUTTONS, index), Colors.BRIGHT_RED);
-        }
-        Thread.sleep(DELAY);
+//        System.out.println("Setting all knobs to full...");
+//        for (int index = 0; index < YaeltexHachiXL.MAX_KNOBS; index++) {
+//            hachi.setKnobValue(Knob.at(YaeltexHachiXL.KNOBS_GROUP, index), 127);
+//        }
+//        Thread.sleep(DELAY);
+//
+//        System.out.println("Setting all knob buttons red...");
+//        for (int index = 0; index < YaeltexHachiXL.MAX_KNOBS; index++) {
+//            hachi.setButton(Button.at(YaeltexHachiXL.KNOB_BUTTONS, index), Colors.BRIGHT_RED);
+//        }
+//        Thread.sleep(DELAY);
 
         System.out.println("Setting all pads to off...");
         hachi.initialize();
         Thread.sleep(DELAY);
+
+        System.out.println("Setting standard palette...");
+        int i = 0;
+        for (Color color : Colors.standardPalette) {
+            int row = i / 16;
+            int column = i % 16;
+            hachi.setPad(Pad.at(0, row, column), color);
+            i++;
+        }
+        Thread.sleep(DELAY);
+
+        System.out.println("Clearing pads...");
+        hachi.initialize();
+        Thread.sleep(DELAY);
+
+//        hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_RIGHT, 0), Colors.BLACK);
+//        hachi.setPad(Pad.at(YaeltexHachiXL.PADS_GROUP, 7, 15), Colors.BLACK);
 
         System.out.println("Setting all pads by index...");
         int c = 0;
@@ -81,10 +103,10 @@ public class Test {
         }
         Thread.sleep(DELAY);
 
+
+        System.out.println("Shutting down...");
         hachi.initialize();
-
-
-
+        midiSetup.close();
         System.exit(0);
     }
 

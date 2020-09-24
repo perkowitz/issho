@@ -76,7 +76,6 @@ public class YaeltexHachiTranslator implements DrawController, ControllerListene
     /***** ControllerListener implementation *****/
 
     public void onElementPressed(Element element, int value) {
-        // check the translator overridden elements first
         if (element.getType() == Element.Type.BUTTON && element.getGroup() == PALETTE_GROUP) {
             listener.onPalettePressed(element.getIndex());
         } else if (element.getType() == Element.Type.PAD && element.getGroup() == CANVAS_GROUP) {

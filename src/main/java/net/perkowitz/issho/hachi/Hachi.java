@@ -1,10 +1,13 @@
 package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
+import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 import net.perkowitz.issho.devices.GridDevice;
 import net.perkowitz.issho.devices.Keyboard;
 import net.perkowitz.issho.devices.launchpad.Launchpad;
 import net.perkowitz.issho.devices.launchpadpro.*;
+import net.perkowitz.issho.devices.yaeltex.HachiTranslator;
 import net.perkowitz.issho.devices.yaeltex.HachiXL;
 import net.perkowitz.issho.hachi.modules.*;
 import net.perkowitz.issho.hachi.modules.deprecated.beatbox.BeatModule;
@@ -245,7 +248,11 @@ public class Hachi {
                     } else if (type.equals("launchpad")) {
                         gridDevice = new Launchpad(output.getReceiver(), null);
                     } else if (type.equals("yaeltex")) {
-                        gridDevice = new HachiXL(output.getReceiver(), null);
+                        MidiOut midiOut = new MidiOut(output.getReceiver());
+                        YaeltexHachiXL hachi = new YaeltexHachiXL(midiOut, null);
+                        HachiTranslator hachiTranslator = new HachiTranslator(hachi);
+                        hachi.setListener(hachiTranslator);
+                        gridDevice = hachiTranslator;
                     } else {
                         gridDevice = new LaunchpadPro(output.getReceiver(), null);
                     }
