@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
+import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
 import javax.sound.midi.*;
 import java.util.List;
@@ -19,6 +20,7 @@ public class MidiSetup {
         deviceNameMap.put(Lists.newArrayList("Launchpad", "Standalone"), LaunchpadPro.name());  // on Mac
         deviceNameMap.put(Lists.newArrayList("Launchpad", "Midi Port"), LaunchpadPro.name());  // on Mac
         deviceNameMap.put(Lists.newArrayList("Launchpad", ",0,2"), LaunchpadPro.name());  // on Raspberry Pi
+        deviceNameMap.put(Lists.newArrayList("Hachi"), YaeltexHachiXL.name());
     }
 
     @Getter private List<Controller> controllers = Lists.newArrayList();
@@ -27,6 +29,10 @@ public class MidiSetup {
 
     public MidiSetup() {
         MidiDevice.Info[] midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
+//        for (MidiDevice.Info info : midiDeviceInfos) {
+//            System.out.printf("Found device: %s, %s\n", info.getName(), info.getDescription());
+//        }
+
         try {
             for (List<String> names : deviceNameMap.keySet()) {
                 System.out.printf("Searching for device matching: %s\n", names);
@@ -68,7 +74,10 @@ public class MidiSetup {
                         LaunchpadPro lpp = new LaunchpadPro(midiOut, null);
                         controllers.add(lpp);
                         transmitter.setReceiver(lpp);
-                    // } else if (some other controller type) {
+                    } if (YaeltexHachiXL.name().equals(deviceNameMap.get(names))) {
+                        YaeltexHachiXL hachi = new YaeltexHachiXL(midiOut, null);
+                        controllers.add(hachi);
+                        transmitter.setReceiver(hachi);
                     } else {
                         receiveDevice.close();
                         transmitDevice.close();

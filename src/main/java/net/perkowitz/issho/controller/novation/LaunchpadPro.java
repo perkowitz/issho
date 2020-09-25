@@ -44,6 +44,7 @@ public class LaunchpadPro implements Controller, Receiver {
 
     // The Launchpad uses an indexed color table. These are constants for common colors.
     private static Map<Color, Integer> colorMap = Maps.newHashMap();
+    private static Map<Integer, Color> colorIndexMap = Maps.newHashMap();
     static {
         colorMap.put(Colors.BLACK, 0);
         colorMap.put(Colors.WHITE, 3);
@@ -68,6 +69,10 @@ public class LaunchpadPro implements Controller, Receiver {
         colorMap.put(Colors.DIM_MAGENTA, 55);
         colorMap.put(Colors.BRIGHT_PURPLE, 49);
         colorMap.put(Colors.DIM_PURPLE, 51);
+
+        for (Color color : colorMap.keySet()) {
+            colorIndexMap.put(colorMap.get(color), color);
+        }
     }
 
     private MidiOut midiOut;
@@ -102,6 +107,7 @@ public class LaunchpadPro implements Controller, Receiver {
     }
 
     public void setKnob(Knob knob, Color color) {}
+    public void setKnobValue(Knob knob, int value) {}
     public void setLight(Light light, Color color) {}
 
     @Override
@@ -185,7 +191,7 @@ public class LaunchpadPro implements Controller, Receiver {
 
     /***** private implementation **************************************************************/
     
-    private int colorToIndex(Color color) {
+    private static int colorToIndex(Color color) {
         Integer index = colorMap.get(color);
         if (index == null) {
             return 0;
@@ -193,18 +199,26 @@ public class LaunchpadPro implements Controller, Receiver {
         return index;
     }
 
-    private int padToNote(Pad pad) {
+    public static Color indexToColor(Integer index) {
+        Color color = colorIndexMap.get(index);
+        if (color == null) {
+            return Colors.BLACK;
+        }
+        return color;
+    }
+
+    private static int padToNote(Pad pad) {
         return (7-pad.getRow()) * 10 + pad.getColumn() + 11;
     }
 
-    private Pad noteToPad(int note) {
+    private static Pad noteToPad(int note) {
         int column = note % 10 - 1;
         int row = 7 - (note / 10 - 1);
         return Pad.at(0, row, column);
 
     }
 
-    private int buttonToCc(net.perkowitz.issho.controller.elements.Button button) {
+    private static int buttonToCc(net.perkowitz.issho.controller.elements.Button button) {
 
         int index = button.getIndex();
         int flippedIndex = 7 - index;

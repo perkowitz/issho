@@ -6,6 +6,7 @@ import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.MidiSetup;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
+import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
 import java.awt.*;
 import java.util.List;
@@ -29,9 +30,9 @@ public class Draw implements DrawListener {
     public static final Color[] palette = new Color[]{
             BLACK, WHITE,
             BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_BLUE, BRIGHT_PURPLE,
+            BRIGHT_CYAN, BRIGHT_MAGENTA, BRIGHT_PINK,
             DARK_GRAY, GRAY,
             DIM_RED, DIM_ORANGE, DIM_YELLOW, DIM_GREEN, DIM_BLUE, DIM_PURPLE,
-            BRIGHT_CYAN, BRIGHT_MAGENTA, BRIGHT_PINK,
             DIM_CYAN, DIM_MAGENTA, DIM_PINK};
 
     // for managing app state
@@ -62,6 +63,10 @@ public class Draw implements DrawListener {
             if (c.toString() == LaunchpadPro.name()) {
 //                DrawController t = new LaunchpadProPassthruTranslator((LaunchpadPro) c, this);
                 DrawController t = new LaunchpadProExpansionTranslator((LaunchpadPro) c, this);
+                controllers.add(t);
+                c.setListener((ControllerListener) t);
+            } else if (c.toString() == YaeltexHachiXL.name()) {
+                DrawController t = new YaeltexHachiTranslator((YaeltexHachiXL) c, this);
                 controllers.add(t);
                 c.setListener((ControllerListener) t);
             }

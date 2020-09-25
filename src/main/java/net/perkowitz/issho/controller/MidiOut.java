@@ -12,8 +12,13 @@ public class MidiOut {
         this.receiver = receiver;
     }
 
+    public void close() {
+        receiver.close();
+    }
+
     public void note(int channel, int noteNumber, int velocity) {
 
+//        System.out.printf("-- note: n=%d, v=%d\n", noteNumber, velocity);
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);

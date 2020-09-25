@@ -18,6 +18,11 @@
         "names": [
           "JX-03"
         ]
+      },
+      {
+        "names": [
+          "HACHI"
+        ]
       }
     ],
     "midiInput": {
@@ -59,7 +64,7 @@
       "controllerNumbers": [ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 ]
     },
     {
-      "class": "StepModule",
+      "class": "StepModulexxx",
       "filePrefix": "step0"
     },
     {
