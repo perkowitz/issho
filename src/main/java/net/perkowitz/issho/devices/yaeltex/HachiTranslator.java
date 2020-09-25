@@ -81,9 +81,13 @@ public class HachiTranslator implements GridDevice, ControllerListener {
 
     /***** Receiver implementation *****/
 
-    // send doesn't do anything because the translator will listen to the YaeltexHachiXL device.
-    public void send(MidiMessage message, long timeStamp) { }
-    public void close() { }
+    public void send(MidiMessage message, long timeStamp) {
+        hachi.send(message, timeStamp);
+    }
+
+    public void close() {
+        hachi.close();
+    }
 
 
     /***** private implementation *****/
