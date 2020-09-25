@@ -48,8 +48,19 @@ public class Colors {
             DIM_PURPLE, BRIGHT_PURPLE, DIM_MAGENTA, BRIGHT_MAGENTA, DIM_PINK, BRIGHT_PINK,
             LIGHT_BLUE, LIGHT_GREEN, BRIGHT_BLUEGRAY, DIM_BLUEGRAY, MEDIUM_BLUE, SKY_BLUE
     };
-    
+
     public static final Color[] rainbow = new Color[]{BRIGHT_RED, BRIGHT_ORANGE, BRIGHT_YELLOW, BRIGHT_GREEN, BRIGHT_CYAN, BRIGHT_BLUE, BRIGHT_PURPLE, BRIGHT_MAGENTA};
+
+
+    /***** public helper functions *****/
+
+    public static Color randomFromPalette() {
+        int i = (int)(Math.random() * standardPalette.length);
+        return standardPalette[i];
+    }
+
+
+    /***** private implementation *****/
 
     private static Color half(Color color) {
         return new Color(color.getRed() / 2, color.getGreen() / 2, color.getBlue() / 2);

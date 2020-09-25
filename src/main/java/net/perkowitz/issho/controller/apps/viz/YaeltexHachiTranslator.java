@@ -22,8 +22,10 @@ public class YaeltexHachiTranslator implements VizController, ControllerListener
     private static Map<Viz.ButtonId, Integer> buttonToIndexMap = Maps.newHashMap();
     private static Map<Integer, Viz.ButtonId> indexToButtonMap = Maps.newHashMap();
     static {
-        buttonToIndexMap.put(Viz.ButtonId.QUIT, 0);
-        buttonToIndexMap.put(Viz.ButtonId.CLEAR, 1);
+        buttonToIndexMap.put(Viz.ButtonId.START, 0);
+        buttonToIndexMap.put(Viz.ButtonId.QUIT, 1);
+        buttonToIndexMap.put(Viz.ButtonId.CLEAR, 2);
+        indexToButtonMap.put(buttonToIndexMap.get(Viz.ButtonId.START), Viz.ButtonId.START);
         indexToButtonMap.put(buttonToIndexMap.get(Viz.ButtonId.QUIT), Viz.ButtonId.QUIT);
         indexToButtonMap.put(buttonToIndexMap.get(Viz.ButtonId.CLEAR), Viz.ButtonId.CLEAR);
     }
@@ -54,7 +56,7 @@ public class YaeltexHachiTranslator implements VizController, ControllerListener
     }
 
     public void setPattern(int index, Color color) {
-
+        hachi.setButton(Button.at(PATTERNS_GROUP, index), color);
     }
 
     public void setButton(Viz.ButtonId buttonId, Color color) {
@@ -70,6 +72,8 @@ public class YaeltexHachiTranslator implements VizController, ControllerListener
         if (element.getType() == Element.Type.PAD && element.getGroup() == CANVAS_GROUP) {
             Pad pad = (Pad) element;
             listener.onCanvasPressed(pad.getRow(), pad.getColumn());
+        } else if (element.getType() == Element.Type.BUTTON && element.getGroup() == PATTERNS_GROUP) {
+            listener.onPatternPressed(element.getIndex());
         } else if (element.getType() == Element.Type.BUTTON && element.getGroup() == BUTTONS_GROUP) {
             Viz.ButtonId id = indexToButtonMap.get(element.getIndex());
             if (id != null) {
