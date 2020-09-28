@@ -14,7 +14,7 @@ import java.util.*;
 public class ElementSet {
 
     @Getter private List<Element> elements;
-    private Map<Element, Element> elementMap;
+    private Map<Element, Integer> elementMap;
 
 
     /***** constructors ****************************************/
@@ -36,21 +36,12 @@ public class ElementSet {
         return elements.contains(element);
     }
 
-    public Element get(Element element) {
-        return elementMap.get(element);
-    }
-
     public Element get(int index) {
         return elements.get(index);
     }
 
-    public Integer getIndex(Element control) {
-        Element c = get(control);
-        if (c != null) {
-            return c.getIndex();
-        } else {
-            return null;
-        }
+    public Integer getIndex(Element element) {
+        return elementMap.get(element);
     }
 
     public int size() {
@@ -62,8 +53,8 @@ public class ElementSet {
 
     public void computeMap() {
         elementMap = Maps.newHashMap();
-        for (Element element : elements) {
-            elementMap.put(element, element);
+        for (int index=0; index < elements.size(); index++) {
+            elementMap.put(elements.get(index), index);
         }
     }
 
