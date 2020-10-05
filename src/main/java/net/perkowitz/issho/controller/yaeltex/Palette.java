@@ -36,8 +36,7 @@ public class Palette {
 
         hachi.setColorMap(ColorModes.twoBitMap);
         System.out.println("Initialize...");
-//        hachi.initialize();
-        Thread.sleep(1000);
+        hachi.initialize();
 
         System.out.println("Setting all pads by index...");
         int c = 0;

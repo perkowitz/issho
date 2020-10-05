@@ -38,62 +38,71 @@ public class Test {
         System.out.println("Initializing controller...");
         hachi.setColorMap(ColorModes.twoBitMap);
         hachi.initialize();
-        Thread.sleep(DELAY);
 
-        System.out.println("Setting all pads blue...");
+        for (int i = 0; i < 1; i++) {
+            francoTest();
+            Thread.sleep(3000);
+        }
+
+        System.out.println("Shutting down...");
+        hachi.initialize();
+        midiSetup.close();
+        System.exit(0);
+    }
+
+    private static void francoTest() throws Exception {
+        int smallDelay = 0;
+        int medDelay = 0;
+        int bigDelay = 1000;
+
+        hachi.initialize();
+        Thread.sleep(bigDelay);
+
+        hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 0), Colors.WHITE);
+        Thread.sleep(medDelay);
+        pads(Colors.BRIGHT_BLUE, smallDelay);
+        Thread.sleep(medDelay);
+        encoders(Colors.BLACK, smallDelay);
+        Thread.sleep(bigDelay);
+
+        hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 1), Colors.WHITE);
+        Thread.sleep(medDelay);
+        pads(Colors.BLACK, smallDelay);
+        Thread.sleep(medDelay);
+        encoders(Colors.BLACK, smallDelay);
+        Thread.sleep(bigDelay);
+
+        hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 2), Colors.WHITE);
+        Thread.sleep(medDelay);
+        pads(Colors.BRIGHT_RED, smallDelay);
+        Thread.sleep(medDelay);
+        encoders(Colors.BRIGHT_GREEN, smallDelay);
+        Thread.sleep(bigDelay);
+
+        hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 3), Colors.WHITE);
+        Thread.sleep(medDelay);
+        pads(Colors.BLACK, smallDelay);
+        Thread.sleep(medDelay);
+        encoders(Colors.BRIGHT_MAGENTA, smallDelay);
+    }
+
+    private static void pads(Color color, int delay) throws Exception {
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 16; column++) {
-                hachi.setPad(Pad.at(0, row, column), Colors.BRIGHT_BLUE);
+                hachi.setPad(Pad.at(0, row, column), color);
+                Thread.sleep(delay);
             }
         }
-        Thread.sleep(DELAY);
+    }
 
-
-        System.out.println("Setting all buttons green...");
-        for (int group : new int[]{ YaeltexHachiXL.BUTTONS_TOP, YaeltexHachiXL.BUTTONS_LEFT, YaeltexHachiXL.BUTTONS_RIGHT }) {
-            for (int index = 0; index < YaeltexHachiXL.MAX_BUTTONS; index++) {
-                hachi.setButton(Button.at(group, index), Colors.BRIGHT_GREEN);
-            }
+    private static void encoders(Color color, int delay) throws Exception {
+        for (int index = 0; index < 8; index++) {
+            hachi.setButton(Button.at(YaeltexHachiXL.KNOB_BUTTONS, index), color);
+            Thread.sleep(delay);
         }
-        for (int index = 0; index < YaeltexHachiXL.MAX_BUTTONS_BOTTOM; index++) {
-            hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_BOTTOM, index), Colors.BRIGHT_GREEN);
-        }
-        Thread.sleep(DELAY);
+    }
 
-//        System.out.println("Setting all knobs to full...");
-//        for (int index = 0; index < YaeltexHachiXL.MAX_KNOBS; index++) {
-//            hachi.setKnobValue(Knob.at(YaeltexHachiXL.KNOBS_GROUP, index), 127);
-//        }
-//        Thread.sleep(DELAY);
-//
-//        System.out.println("Setting all knob buttons red...");
-//        for (int index = 0; index < YaeltexHachiXL.MAX_KNOBS; index++) {
-//            hachi.setButton(Button.at(YaeltexHachiXL.KNOB_BUTTONS, index), Colors.BRIGHT_RED);
-//        }
-//        Thread.sleep(DELAY);
-
-        System.out.println("Setting all pads to off...");
-        hachi.initialize();
-        Thread.sleep(DELAY);
-
-        System.out.println("Setting standard palette...");
-        int i = 0;
-        for (Color color : Colors.standardPalette) {
-            int row = i / 16;
-            int column = i % 16;
-            hachi.setPad(Pad.at(0, row, column), color);
-            i++;
-        }
-        Thread.sleep(DELAY);
-
-        System.out.println("Clearing pads...");
-        hachi.initialize();
-        Thread.sleep(DELAY);
-
-//        hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_RIGHT, 0), Colors.BLACK);
-//        hachi.setPad(Pad.at(YaeltexHachiXL.PADS_GROUP, 7, 15), Colors.BLACK);
-
-        System.out.println("Setting all pads by index...");
+    private static void palette() {
         int c = 0;
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 16; column++) {
@@ -101,13 +110,6 @@ public class Test {
                 c++;
             }
         }
-        Thread.sleep(DELAY);
-
-
-        System.out.println("Shutting down...");
-        hachi.initialize();
-        midiSetup.close();
-        System.exit(0);
     }
 
 }

@@ -98,8 +98,8 @@ public class ColorModes {
         twoBitMap.put(Colors.LIGHT_GREEN, 120);
         twoBitMap.put(Colors.BRIGHT_BLUEGRAY, 121);
         twoBitMap.put(Colors.DIM_BLUEGRAY, 122);
-        twoBitMap.put(Colors.MEDIUM_BLUE, 123);
-        twoBitMap.put(Colors.SKY_BLUE, 124);
+        twoBitMap.put(Colors.SKY_BLUE, 123);
+        twoBitMap.put(Colors.DIM_SKY_BLUE, 124);
     }
 
 }
