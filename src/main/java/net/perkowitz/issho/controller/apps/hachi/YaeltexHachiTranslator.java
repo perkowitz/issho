@@ -1,6 +1,7 @@
 package net.perkowitz.issho.controller.apps.hachi;
 
 import com.google.common.collect.Lists;
+import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.elements.Button;
@@ -101,20 +102,27 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
         }
     }
 
-    public void showClock(int measure, int step, Color measureColor, Color stepColor, Color bothColor) {
+    public void showClock(int measure, int step, Color measureColor, Color stepColor, Color offColor) {
         int s = step % YaeltexHachiXL.PADS_MAX_COLUMNS;
+        int lastStep = (s + YaeltexHachiXL.PADS_MAX_COLUMNS - 1) % YaeltexHachiXL.PADS_MAX_COLUMNS;
         int m = measure % YaeltexHachiXL.PADS_MAX_COLUMNS;
-        for (int c = 0; c < YaeltexHachiXL.PADS_MAX_COLUMNS; c++) {
-            Color color = BLACK;
-            if (s == c && m == c) {
-                color = bothColor;
-            } else if (m == c) {
-                color = measureColor;
-            } else if (s == c) {
-                color = stepColor;
-            }
-            hachi.setPad(Pad.at(PADS_GROUP, CLOCK_ROW, c), color);
-        }
+        int lastMeasure = (m + YaeltexHachiXL.PADS_MAX_COLUMNS - 1) % YaeltexHachiXL.PADS_MAX_COLUMNS;
+        hachi.setPad(Pad.at(PADS_GROUP, CLOCK_ROW, lastStep), offColor);
+        hachi.setPad(Pad.at(PADS_GROUP, CLOCK_ROW, lastMeasure), offColor);
+        hachi.setPad(Pad.at(PADS_GROUP, CLOCK_ROW, s), stepColor);
+        hachi.setPad(Pad.at(PADS_GROUP, CLOCK_ROW, m), measureColor);
+
+//        for (int c = 0; c < YaeltexHachiXL.PADS_MAX_COLUMNS; c++) {
+//            Color color = BLACK;
+//            if (s == c && m == c) {
+//                color = bothColor;
+//            } else if (m == c) {
+//                color = measureColor;
+//            } else if (s == c) {
+//                color = stepColor;
+//            }
+//            hachi.setPad(Pad.at(PADS_GROUP, CLOCK_ROW, c), color);
+//        }
     }
 
     /***** ControllerListener implementation *****/

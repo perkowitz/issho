@@ -91,6 +91,7 @@ public class Hachi implements HachiListener {
         loadModules();
 
         initialize();
+        Thread.sleep(1000);
         draw();
         startTimer();
         stop.await();
@@ -141,7 +142,7 @@ public class Hachi implements HachiListener {
     }
 
     public void tick(boolean andReset) {
-        controller.showClock(measureCount, tickCount, mainPalette.On, mainPalette.KeyDim, mainPalette.Accent);
+        drawClock();
     }
 
     private void loadModules() {
@@ -163,7 +164,7 @@ public class Hachi implements HachiListener {
         drawMain();
         drawShihai();
         drawModule();
-        controller.showClock(0, tickCount, mainPalette.On, mainPalette.KeyDim, mainPalette.Accent);
+        drawClock();
     }
 
     public void drawMain() {
@@ -215,6 +216,9 @@ public class Hachi implements HachiListener {
         selectedModule.draw();
     }
 
+    private void drawClock() {
+        controller.showClock(measureCount, tickCount, mainPalette.On, modulePalette.Key, Colors.BLACK);
+    }
 
 
     /***** HachiListener implementation *****/
