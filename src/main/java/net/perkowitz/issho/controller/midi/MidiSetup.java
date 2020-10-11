@@ -1,16 +1,13 @@
 // MidiSetup contains midi devices found in the running environment.
 
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.midi;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.extern.java.Log;
-import net.perkowitz.issho.controller.midi.Clockable;
-import net.perkowitz.issho.controller.midi.DeviceRegistry;
-import net.perkowitz.issho.controller.midi.MidiIn;
-import net.perkowitz.issho.controller.midi.MidiOut;
+import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 

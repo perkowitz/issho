@@ -3,7 +3,7 @@ package net.perkowitz.issho.controller.yaeltex;
 
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
-import net.perkowitz.issho.controller.MidiSetup;
+import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Pad;
 

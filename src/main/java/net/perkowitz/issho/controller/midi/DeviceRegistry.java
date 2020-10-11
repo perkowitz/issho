@@ -7,7 +7,9 @@ import lombok.extern.java.Log;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

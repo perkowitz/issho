@@ -7,7 +7,6 @@ import lombok.extern.java.Log;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
-
 import java.util.List;
 import java.util.logging.Level;
 
