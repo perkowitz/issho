@@ -4,6 +4,7 @@ package net.perkowitz.issho.controller.novation;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.midi.MidiIn;
 import net.perkowitz.issho.util.MidiUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,7 +49,11 @@ public class LaunchpadProTest {
         MidiOut midiOut = new MidiOut(receiver);
         LaunchPadProTestListener listener = new LaunchPadProTestListener();
         LaunchpadPro lpp = new LaunchpadPro(midiOut, listener);
-        transmitter.setReceiver(lpp);
+
+        MidiIn midiIn = new MidiIn();
+        Transmitter transmitter = lppInput.getTransmitter();
+        transmitter.setReceiver(midiIn);
+        midiIn.addChannelListener(lpp);
         listener.setController(lpp);
 
         lpp.initialize();

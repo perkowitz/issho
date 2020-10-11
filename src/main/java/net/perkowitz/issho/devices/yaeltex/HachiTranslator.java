@@ -82,11 +82,10 @@ public class HachiTranslator implements GridDevice, ControllerListener {
     /***** Receiver implementation *****/
 
     public void send(MidiMessage message, long timeStamp) {
-        hachi.send(message, timeStamp);
+//        hachi.send(message, timeStamp);
     }
 
     public void close() {
-        hachi.close();
     }
 
 

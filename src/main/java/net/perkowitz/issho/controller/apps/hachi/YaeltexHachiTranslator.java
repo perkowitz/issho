@@ -64,7 +64,6 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
     }
 
     public void close() {
-        hachi.close();
     }
 
     public void setModuleSelect(int index, Color color) {

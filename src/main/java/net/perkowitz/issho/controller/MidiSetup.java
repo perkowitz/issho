@@ -4,94 +4,131 @@ package net.perkowitz.issho.controller;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.Getter;
+import lombok.extern.java.Log;
+import net.perkowitz.issho.controller.midi.Clockable;
+import net.perkowitz.issho.controller.midi.DeviceRegistry;
+import net.perkowitz.issho.controller.midi.MidiIn;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Transmitter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
+@Log
 public class MidiSetup {
 
-    // contains known mappings from strings to device types
-    private static Map<List<String>, String> deviceNameMap = Maps.newHashMap();
-    static {
-        deviceNameMap.put(Lists.newArrayList("Launchpad", "Standalone"), LaunchpadPro.name());  // on Mac
-        deviceNameMap.put(Lists.newArrayList("Launchpad", "Midi Port"), LaunchpadPro.name());  // on Mac
-        deviceNameMap.put(Lists.newArrayList("Launchpad", ",0,2"), LaunchpadPro.name());  // on Raspberry Pi
-        deviceNameMap.put(Lists.newArrayList("Hachi"), YaeltexHachiXL.name());
-    }
+    static { log.setLevel(Level.INFO); }
 
     @Getter private List<Controller> controllers = Lists.newArrayList();
-    private List<MidiDevice> openDevices = Lists.newArrayList();
+    private DeviceRegistry registry;
+    private Set<MidiDevice> openDevices = Sets.newHashSet();
+    private Set<MidiDevice> clocks = Sets.newHashSet();
+    private Clockable clockable = null;
+    private Map<String, MidiIn> inputs = Maps.newHashMap();
+    private Map<String, MidiOut> outputs = Maps.newHashMap();
 
 
-    public MidiSetup() {
-        MidiDevice.Info[] midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
-//        for (MidiDevice.Info info : midiDeviceInfos) {
-//            System.out.printf("Found device: %s, %s\n", info.getName(), info.getDescription());
-//        }
+    public MidiSetup() throws MidiUnavailableException{
+        registry = DeviceRegistry.withDefaults();
+        registry.registerDevices();
+        getInputs();
+        getOutputs();
+        createControllers();    
+    }
 
+    public void close() {
+        for (MidiDevice device : openDevices) {
+            device.close();
+        }
+    }
+
+    public void getInputs() throws MidiUnavailableException {
+        for (String name : registry.getInputDeviceNames()) {
+            MidiDevice device = registry.getInputDevice(name);
+            MidiIn input = new MidiIn();
+            openDevice(device);
+            Transmitter transmitter = device.getTransmitter();
+            transmitter.setReceiver(input);
+            inputs.put(name, input);
+        }
+    }
+
+    public void getOutputs() throws MidiUnavailableException {
+        for (String name : registry.getOutputDeviceNames()) {
+            MidiDevice device = registry.getOutputDevice(name);
+            openDevice(device);
+            Receiver receiver = device.getReceiver();
+            MidiOut output = new MidiOut(receiver);
+            outputs.put(name, output);
+        }
+    }
+
+    public void createControllers() {
+        Controller lpp = getController(LaunchpadPro.name());
+        if (lpp != null) controllers.add(lpp);
+        Controller hachi = getController(YaeltexHachiXL.name());
+        if (hachi != null) controllers.add(hachi);
+    }
+
+    // getController looks for device types for which there are designed controllers.
+    public Controller getController(String name) {
+        MidiIn input = inputs.get(name);
+        MidiOut output = outputs.get(name);
+        if (input != null && output != null) {
+            if (name.equals(LaunchpadPro.name())) {
+                LaunchpadPro lpp = new LaunchpadPro(output, null);
+                input.addChannelListener(lpp);
+                return lpp;
+            } else if (name.equals(YaeltexHachiXL.name())) {
+                YaeltexHachiXL hachi = new YaeltexHachiXL(output, null);
+                input.addChannelListener(hachi);
+                return hachi;
+            }
+
+        }
+        return null;
+    }
+    
+    // getMidiIn creates a MidiIn object and connects it to the specified device.
+    // Note that this will replace any previously-connected MidiIn.
+    public MidiIn getMidiIn(String name) throws MidiUnavailableException {
+        MidiDevice device = registry.getInputDevice(name);
+        if (device == null) return null;
+
+        MidiIn input = new MidiIn();
+        openDevice(device);
+        Transmitter transmitter = device.getTransmitter();
+        transmitter.setReceiver(input);
+        return input;
+    }
+
+    public void addClock(String name) {
         try {
-            for (List<String> names : deviceNameMap.keySet()) {
-                System.out.printf("Searching for device matching: %s\n", names);
-
-                MidiDevice receiveDevice = null;
-                MidiDevice transmitDevice = null;
-
-                for (int i = 0; i < midiDeviceInfos.length; i++) {
-                    int matches = 0;
-                    for (String name : names) {
-                        if (midiDeviceInfos[i].getName().toLowerCase().contains(name.toLowerCase()) ||
-                                midiDeviceInfos[i].getDescription().toLowerCase().contains(name.toLowerCase())) {
-                            matches++;
-                        }
-                    }
-
-                    MidiDevice device = MidiSystem.getMidiDevice(midiDeviceInfos[i]);
-                    boolean canReceive = device.getMaxReceivers() != 0;
-                    boolean canTransmit = device.getMaxTransmitters() != 0;
-                    if (matches == names.size() && canReceive) {
-                        receiveDevice = device;
-                    }
-                    if (matches == names.size() && canTransmit) {
-                        transmitDevice = device;
-                    }
-                }
-
-                if (receiveDevice != null && transmitDevice != null) {
-                    receiveDevice.open();
-                    Receiver receiver = receiveDevice.getReceiver();
-                    MidiOut midiOut = new MidiOut(receiver);
-                    openDevices.add(receiveDevice);
-
-                    transmitDevice.open();
-                    Transmitter transmitter = transmitDevice.getTransmitter();
-                    openDevices.add(transmitDevice);
-
-                    if (LaunchpadPro.name().equals(deviceNameMap.get(names))) {
-                        LaunchpadPro lpp = new LaunchpadPro(midiOut, null);
-                        controllers.add(lpp);
-                        transmitter.setReceiver(lpp);
-                    } if (YaeltexHachiXL.name().equals(deviceNameMap.get(names))) {
-                        YaeltexHachiXL hachi = new YaeltexHachiXL(midiOut, null);
-                        controllers.add(hachi);
-                        transmitter.setReceiver(hachi);
-                    } else {
-                        receiveDevice.close();
-                        transmitDevice.close();
-                    }
-                }
+            MidiDevice device = registry.getInputDevice(name);
+            if (device != null) {
+                openDevice(device);
+                clocks.add(device);
             }
         } catch (MidiUnavailableException e) {
             System.err.printf("MIDI not available: %s\n", e);
         }
     }
 
-    public void close() {
-        for (MidiDevice device : openDevices) {
-            device.close();
+
+    /***** private implementation *****/
+
+    private void openDevice(MidiDevice device) throws MidiUnavailableException {
+        if (!openDevices.contains(device)) {
+            device.open();
+            openDevices.add(device);
         }
     }
 
