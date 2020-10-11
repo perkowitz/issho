@@ -3,7 +3,7 @@ package net.perkowitz.issho.controller.novation;
 
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.controller.midi.MidiIn;
 import net.perkowitz.issho.util.MidiUtil;
 import org.apache.commons.lang3.StringUtils;

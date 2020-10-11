@@ -5,18 +5,13 @@ import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.midi.ChannelListener;
 
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
 import java.awt.*;
 import java.util.Map;
-
-import static javax.sound.midi.ShortMessage.*;
 
 
 /**

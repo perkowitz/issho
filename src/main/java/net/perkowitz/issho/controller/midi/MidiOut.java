@@ -1,4 +1,4 @@
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.midi;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;

@@ -6,16 +6,10 @@ import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.midi.ChannelListener;
+import net.perkowitz.issho.controller.midi.MidiOut;
 
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
 import java.awt.*;
 import java.util.Map;
-
-import static javax.sound.midi.ShortMessage.*;
-import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
-import static javax.sound.midi.ShortMessage.NOTE_OFF;
 
 
 /**

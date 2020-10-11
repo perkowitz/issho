@@ -2,6 +2,7 @@ package net.perkowitz.issho.controller.akai;
 
 import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.Button;
+import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.util.MidiUtil;
 
 import javax.sound.midi.MidiDevice;

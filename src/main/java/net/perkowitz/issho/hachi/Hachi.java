@@ -1,7 +1,7 @@
 package net.perkowitz.issho.hachi;
 
 import com.google.common.collect.Lists;
-import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.controller.midi.MidiIn;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 import net.perkowitz.issho.devices.GridDevice;
