@@ -11,10 +11,7 @@ import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Transmitter;
+import javax.sound.midi.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

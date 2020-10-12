@@ -7,9 +7,7 @@ import lombok.extern.java.Log;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +29,8 @@ public class DeviceRegistry {
     private static Map<List<String>, String> defaultNameMap = Maps.newHashMap();
     static {
         defaultNameMap.put(Lists.newArrayList("Launchpad", "Standalone"), LaunchpadPro.name());  // on Mac
-        defaultNameMap.put(Lists.newArrayList("Launchpad", "Midi Port"), LaunchpadPro.name());  // on Mac
-        defaultNameMap.put(Lists.newArrayList("Launchpad", ",0,2"), LaunchpadPro.name());  // on Raspberry Pi
+//        defaultNameMap.put(Lists.newArrayList("Launchpad", "Midi Port"), LaunchpadPro.name());  // on Mac
+//        defaultNameMap.put(Lists.newArrayList("Launchpad", ",0,2"), LaunchpadPro.name());  // on Raspberry Pi
         defaultNameMap.put(Lists.newArrayList("Hachi"), YaeltexHachiXL.name());
     }
 

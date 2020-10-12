@@ -8,6 +8,7 @@ import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.midi.ChannelListener;
 import net.perkowitz.issho.controller.midi.MidiOut;
 
+import javax.sound.midi.Receiver;
 import java.awt.*;
 import java.util.Map;
 
@@ -135,7 +136,14 @@ public class LaunchpadPro implements Controller, ChannelListener {
     }
 
     public void onCc(int channel, int ccNumber, int value) {
-
+        if (listener != null) {
+            Button button = ccToButton(ccNumber);
+            if (value == 0) {
+                listener.onElementReleased(button);
+            } else {
+                listener.onElementPressed(button, value);
+            }
+        }
     }
 
 

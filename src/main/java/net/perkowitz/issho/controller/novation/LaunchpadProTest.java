@@ -1,10 +1,14 @@
 // LaunchpadProTest runs a simple drawing program to test the Launchpad controller.
 package net.perkowitz.issho.controller.novation;
 
+import lombok.extern.java.Log;
+import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.Colors;
+import net.perkowitz.issho.controller.elements.Pad;
 import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.controller.midi.MidiIn;
+import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.util.MidiUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,10 +17,12 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 import java.util.Timer;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
 
 /**
  * Created by mikep on 7/28/20.
  */
+@Log
 public class LaunchpadProTest {
 
     private static MidiDevice lppInput;
@@ -29,45 +35,36 @@ public class LaunchpadProTest {
 
     public static void main(String args[]) throws Exception {
 
-        String[] lppNames = new String[] { "Launchpad", "Standalone" };
-        lppInput = MidiUtil.findMidiDevice(lppNames, false, true);
-        if (lppInput == null) {
-            System.err.printf("Unable to find controller input device matching name: %s\n", StringUtils.join(lppNames, ", "));
-            System.exit(1);
-        }
-        lppOutput = MidiUtil.findMidiDevice(lppNames, true, false);
-        if (lppOutput == null) {
-            System.err.printf("Unable to find controller output device matching name: %s\n", StringUtils.join(lppNames, ", "));
+        MidiSetup midiSetup = new MidiSetup();
+        Controller controller = midiSetup.getController(LaunchpadPro.name());
+        if (controller == null) {
+            log.log(Level.SEVERE, "No LaunchpadPro found");
             System.exit(1);
         }
 
-        lppInput.open();
-        transmitter = lppInput.getTransmitter();
-        lppOutput.open();
-        receiver = lppOutput.getReceiver();
-
-        MidiOut midiOut = new MidiOut(receiver);
         LaunchPadProTestListener listener = new LaunchPadProTestListener();
-        LaunchpadPro lpp = new LaunchpadPro(midiOut, listener);
+        controller.setListener(listener);
 
-        MidiIn midiIn = new MidiIn();
-        Transmitter transmitter = lppInput.getTransmitter();
-        transmitter.setReceiver(midiIn);
-        midiIn.addChannelListener(lpp);
-        listener.setController(lpp);
-
-        lpp.initialize();
-
+        controller.initialize();
         for (int i = 0; i < 7; i++) {
-            lpp.setButton(Button.at(LaunchpadPro.BUTTONS_BOTTOM, i + 1), Colors.rainbow[i]);
+            controller.setButton(Button.at(LaunchpadPro.BUTTONS_TOP, i + 1), Colors.rainbow[i]);
+            controller.setButton(Button.at(LaunchpadPro.BUTTONS_BOTTOM, i + 1), Colors.rainbow[i]);
+            controller.setButton(Button.at(LaunchpadPro.BUTTONS_LEFT, i + 1), Colors.rainbow[i]);
+            controller.setButton(Button.at(LaunchpadPro.BUTTONS_RIGHT, i + 1), Colors.rainbow[i]);
+        }
+
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                controller.setPad(Pad.at(LaunchpadPro.PADS_GROUP, r, c), Colors.WHITE);
+            }
         }
 
         stop.await();
 
-        lppInput.close();
-        lppOutput.close();
-
+        midiSetup.close();
         System.exit(0);
+
+
     }
 
 }
