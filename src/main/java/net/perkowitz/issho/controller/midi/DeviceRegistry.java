@@ -1,17 +1,12 @@
 package net.perkowitz.issho.controller.midi;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.Setter;
 import lombok.extern.java.Log;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
 import javax.sound.midi.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 /** DeviceRegistry
@@ -25,16 +20,25 @@ public class DeviceRegistry {
 
     static { log.setLevel(Level.INFO); }
 
-    // contains default mappings from strings to device type names
-    private static Map<List<String>, String> defaultNameMap = Maps.newHashMap();
+    private static Map<String, List<List<String>>> defaultNameStrings = Maps.newHashMap();
     static {
-        defaultNameMap.put(Lists.newArrayList("Launchpad", "Standalone"), LaunchpadPro.name());  // on Mac
-//        defaultNameMap.put(Lists.newArrayList("Launchpad", "Midi Port"), LaunchpadPro.name());  // on Mac
-//        defaultNameMap.put(Lists.newArrayList("Launchpad", ",0,2"), LaunchpadPro.name());  // on Raspberry Pi
-        defaultNameMap.put(Lists.newArrayList("Hachi"), YaeltexHachiXL.name());
+        defaultNameStrings.put(LaunchpadPro.name(),
+                Arrays.asList(
+                        Arrays.asList("Launchpad", "Standalone"),
+                        Arrays.asList("Launchpad", ",0,2")
+                ));
+        defaultNameStrings.put(YaeltexHachiXL.name(),
+                Arrays.asList(
+                        Arrays.asList("Hachi")
+                ));
+        defaultNameStrings.put("LaunchpadPro_MidiOut",
+                Arrays.asList(
+                        Arrays.asList("Launchpad", "Midi Port")
+                ));
     }
 
-    @Setter private Map<List<String>, String> deviceNameMap = Maps.newHashMap();
+    private static Map<String, List<List<String>>> nameStrings = Maps.newHashMap();
+//    @Setter private Map<List<String>, String> deviceNameMap = Maps.newHashMap();
     private Map<String, MidiDevice> inputDevices = Maps.newHashMap();
     private Map<String, MidiDevice> outputDevices = Maps.newHashMap();
 
@@ -67,68 +71,77 @@ public class DeviceRegistry {
         return outputDevices.get(name);
     }
 
-    // registerDevices finds all MIDI devices that match a registry entry.
     public void registerDevices() {
+
         MidiDevice.Info[] midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
         for (MidiDevice.Info info : midiDeviceInfos) {
 //            log.info(String.format("Found device: %s, %s", info.getName(), info.getDescription()));
         }
 
         try {
-            for (List<String> names : deviceNameMap.keySet()) {
-                log.info(String.format("Searching for device matching: %s", names));
-                for (int i = 0; i < midiDeviceInfos.length; i++) {
-                    int matches = 0;
-                    for (String name : names) {
-                        if (midiDeviceInfos[i].getName().toLowerCase().contains(name.toLowerCase()) ||
-                                midiDeviceInfos[i].getDescription().toLowerCase().contains(name.toLowerCase())) {
-                            matches++;
+            for (String name : defaultNameStrings.keySet()) {
+                List<List<String>> matchLists = defaultNameStrings.get(name);
+                log.info(String.format("Searching for %s device", name));
+                boolean found = false;
+                int i = 0;
+                while (i < midiDeviceInfos.length && !found) {
+                    int j = 0;
+                    while (j < matchLists.size() && !found) {
+                        List<String> matchStrings = matchLists.get(j);
+                        int matches = 0;
+                        for (String m : matchStrings) {
+                            m = m.toLowerCase();
+                            if (midiDeviceInfos[i].getName().toLowerCase().contains(m) ||
+                                    midiDeviceInfos[i].getDescription().toLowerCase().contains(m)) {
+                                matches++;
+                            }
                         }
-                    }
 
-                    String name = deviceNameMap.get(names);
-                    MidiDevice device = MidiSystem.getMidiDevice(midiDeviceInfos[i]);
-                    // an INPUT has a transmitter so you can get stuff from it
-                    boolean isInput = device.getMaxTransmitters() != 0;
-                    // an OUTPUT has a receiver so you can send to it
-                    boolean isOutput = device.getMaxReceivers() != 0;
-                    if (matches == names.size()) {
-                        log.info("Found device " + name);
-                        addDevice(name, device, isInput, isOutput);
+                        if (matches == matchStrings.size()) {
+                            MidiDevice device = MidiSystem.getMidiDevice(midiDeviceInfos[i]);
+                            log.info(String.format("Found device %s: %s", name, device));
+                            // an INPUT has a transmitter so you can get stuff from it
+                            boolean isInput = device.getMaxTransmitters() != 0;
+                            // an OUTPUT has a receiver so you can send to it
+                            boolean isOutput = device.getMaxReceivers() != 0;
+                            addDevice(name, device, isInput, isOutput);
+//                            found = true;
+                        }
+                        j++;
                     }
+                    i++;
                 }
             }
+
 
         } catch (MidiUnavailableException e) {
             System.err.printf("MIDI not available: %s\n", e);
         }
-
     }
-    
+
 
     /***** static methods *****/
 
     // fromMap returns a registry containing the entries in the map, without defaults.
-    public static DeviceRegistry fromMap(Map<List<String>, String> deviceNameMap) {
+    public static DeviceRegistry fromMap(Map<String, List<List<String>>> nameStrings) {
         DeviceRegistry r = new DeviceRegistry();
-        r.deviceNameMap = deviceNameMap;
+        r.defaultNameStrings = nameStrings;
         return r;
     }
 
     // withDefaults() returns a registry containing only the default values.
     public static DeviceRegistry withDefaults() {
         DeviceRegistry r = new DeviceRegistry();
-        r.deviceNameMap = new HashMap<List<String>, String>(defaultNameMap);
+        r.nameStrings = new HashMap<String, List<List<String>>>(defaultNameStrings);
         return r;
     }
 
     // withDefaults(r) returns a registry containing both the entries in r and the defaults.
     // Note that duplicate keys in r will override the defaults.
-    // TODO: this might not be true depending on the Lists.equal() function
     public static DeviceRegistry withDefaults(DeviceRegistry registry) {
         DeviceRegistry r = withDefaults();
-        for (Map.Entry<List<String>, String> e : r.deviceNameMap.entrySet()) {
-            r.deviceNameMap.put(e.getKey(), e.getValue());
+        for (Map.Entry<String, List<List<String>>> e : r.nameStrings.entrySet()) {
+            r.nameStrings.put(e.getKey(), e.getValue());
         }
         return r;
     }
