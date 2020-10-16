@@ -5,23 +5,19 @@ import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.MidiOut;
+import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.*;
+import net.perkowitz.issho.controller.midi.ChannelListener;
 
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
 import java.awt.*;
 import java.util.Map;
-
-import static javax.sound.midi.ShortMessage.*;
 
 
 /**
  * Created by mikep on 7/28/20.
  */
-public class YaeltexHachiXL implements Controller, Receiver {
+public class YaeltexHachiXL implements Controller, ChannelListener {
 
     private static int MIDI_REALTIME_COMMAND = 0xF0;
     private static int PADS_CHANNEL = 0;
@@ -136,79 +132,43 @@ public class YaeltexHachiXL implements Controller, Receiver {
         return "YaeltexHachiXL";
     }
 
-    /***** midi receiver implementation **************************************************************/
 
-    public void send(MidiMessage message, long timeStamp) {
+    /***** ChannelListener implementation *****/
 
-        if (message instanceof ShortMessage) {
-            ShortMessage shortMessage = (ShortMessage) message;
-            int command = shortMessage.getCommand();
-            int status = shortMessage.getStatus();
-
-            if (command == MIDI_REALTIME_COMMAND) {
-                switch (status) {
-                    case START:
-                        System.out.println("START");
-                        break;
-                    case STOP:
-                        System.out.println("STOP");
-                        break;
-                    case TIMING_CLOCK:
-                        System.out.println("TICK");
-                        break;
-                    default:
-//                        System.out.printf("REALTIME: %d\n", status);
-                        break;
+    public void onNoteOn(int channel, int noteNumber, int velocity) {
+        if (listener != null) {
+            if (channel == PADS_CHANNEL) {
+                Pad pad = noteToPad(noteNumber);
+                if (velocity == 0) {
+                    listener.onElementReleased(pad);
+                } else {
+                    listener.onElementPressed(pad, velocity);
                 }
-
-
-            } else {
-                switch (command) {
-                    case NOTE_ON:
-//                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            if (shortMessage.getChannel() == PADS_CHANNEL) {
-                                Pad pad = noteToPad(shortMessage.getData1());
-                                int velocity = shortMessage.getData2();
-                                if (velocity == 0) {
-                                    listener.onElementReleased(pad);
-                                } else {
-                                    listener.onElementPressed(pad, velocity);
-                                }
-                            } else if (shortMessage.getChannel() == BUTTONS_CHANNEL) {
-                                Button button = noteToButton(shortMessage.getData1());
-                                int velocity = shortMessage.getData2();
-                                if (velocity == 0) {
-                                    listener.onElementReleased(button);
-                                } else {
-                                    listener.onElementPressed(button, velocity);
-                                }
-                            }
-                        }
-                        break;
-                    case NOTE_OFF:
-//                        System.out.printf("NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            if (shortMessage.getChannel() == PADS_CHANNEL) {
-                                Pad pad = noteToPad(shortMessage.getData1());
-                                listener.onElementReleased(pad);
-                            } else if (shortMessage.getChannel() == BUTTONS_CHANNEL) {
-                                Button button = noteToButton(shortMessage.getData1());
-                                listener.onElementReleased(button);
-                            }
-                        }
-                        break;
-                    case CONTROL_CHANGE:
-//                        System.out.printf("MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        break;
-                    default:
+            } else if (channel == BUTTONS_CHANNEL) {
+                Button button = noteToButton(noteNumber);
+                if (velocity == 0) {
+                    listener.onElementReleased(button);
+                } else {
+                    listener.onElementPressed(button, velocity);
                 }
             }
         }
     }
 
-    public void close() {
-        midiOut.close();
+    public void onNoteOff(int channel, int noteNumber, int velocity) {
+        if (listener != null) {
+            if (channel == PADS_CHANNEL) {
+                Pad pad = noteToPad(noteNumber);
+                listener.onElementReleased(pad);
+            } else if (channel == BUTTONS_CHANNEL) {
+                Button button = noteToButton(noteNumber);
+                listener.onElementReleased(button);
+            }
+        }
+    }
+
+    public void onCc(int channel, int ccNumber, int value) {
+
     }
 
 

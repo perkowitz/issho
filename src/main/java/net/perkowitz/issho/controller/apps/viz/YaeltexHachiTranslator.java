@@ -48,7 +48,6 @@ public class YaeltexHachiTranslator implements VizController, ControllerListener
     }
 
     public void close() {
-        hachi.close();
     }
 
     public void setCanvas(int row, int column, Color color) {

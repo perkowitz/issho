@@ -8,6 +8,7 @@ import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.Knob;
 import net.perkowitz.issho.controller.elements.Light;
 import net.perkowitz.issho.controller.elements.Pad;
+import net.perkowitz.issho.controller.midi.MidiOut;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;

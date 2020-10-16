@@ -1,10 +1,16 @@
-package net.perkowitz.issho.controller;
+package net.perkowitz.issho.controller.midi;
+
+import lombok.extern.java.Log;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
+import java.util.logging.Level;
 
+@Log
 public class MidiOut {
+
+    static { log.setLevel(Level.OFF); }
 
     private Receiver receiver;
 
@@ -18,7 +24,7 @@ public class MidiOut {
 
     public void note(int channel, int noteNumber, int velocity) {
 
-//        System.out.printf("-- note: n=%d, v=%d\n", noteNumber, velocity);
+        log.info(String.format("note: ch=%s, n=%d, v=%d", channel, noteNumber, velocity));
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
@@ -32,6 +38,7 @@ public class MidiOut {
 
     public void cc(int channel, int ccNumber, int value) {
 
+        log.info(String.format("cc: ch=%s, n=%d, v=%d", channel, ccNumber, value));
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.CONTROL_CHANGE, channel, ccNumber, value);

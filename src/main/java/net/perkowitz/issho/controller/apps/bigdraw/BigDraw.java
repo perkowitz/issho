@@ -15,6 +15,7 @@ import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.ElementSet;
 import net.perkowitz.issho.controller.elements.Pad;
+import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 
 import java.awt.*;

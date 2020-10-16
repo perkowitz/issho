@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.MidiSetup;
+import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
@@ -72,8 +72,7 @@ public class Draw implements DrawListener {
             }
         }
 
-        // TODO: support more than one controller!!!
-        controller = controllers.get(0);
+        controller = new MultiController(controllers);
 
         // start up the app
         initialize();
@@ -142,6 +141,42 @@ public class Draw implements DrawListener {
         controller.setButton(ButtonId.QUIT, BRIGHT_RED);
         controller.setButton(ButtonId.CLEAR, DARK_GRAY);
         controller.setButton(ButtonId.CURRENT_COLOR, currentColor);
+    }
+
+    // TODO: make this a public class
+    private class MultiController implements DrawController {
+
+        private List<DrawController> controllers;
+
+        public MultiController(List<DrawController> controllers) {
+            this.controllers = controllers;
+        }
+
+        public void initialize() {
+            for (DrawController controller : controllers) {
+                controller.initialize();
+            }
+        }
+        public void setPalette(int index, Color color) {
+            for (DrawController controller : controllers) {
+                controller.setPalette(index, color);
+            }
+        }
+
+        public void setCanvas(int row, int column, Color color) {
+            for (DrawController controller : controllers) {
+                controller.setCanvas(row, column, color);
+            }
+
+        }
+
+        public void setButton(Draw.ButtonId buttonId , Color color) {
+            for (DrawController controller : controllers) {
+                controller.setButton(buttonId, color);
+            }
+        }
+
+
     }
 
 }

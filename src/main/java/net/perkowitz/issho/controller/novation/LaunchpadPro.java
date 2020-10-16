@@ -5,22 +5,18 @@ import lombok.Setter;
 import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.elements.Button;
+import net.perkowitz.issho.controller.midi.ChannelListener;
+import net.perkowitz.issho.controller.midi.MidiOut;
 
-import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
 import java.awt.*;
 import java.util.Map;
-
-import static javax.sound.midi.ShortMessage.*;
-import static javax.sound.midi.ShortMessage.CONTROL_CHANGE;
-import static javax.sound.midi.ShortMessage.NOTE_OFF;
 
 
 /**
  * Created by mikep on 7/28/20.
  */
-public class LaunchpadPro implements Controller, Receiver {
+public class LaunchpadPro implements Controller, ChannelListener {
 
     private static int MIDI_REALTIME_COMMAND = 0xF0;
     private static int CHANNEL = 0;
@@ -119,73 +115,35 @@ public class LaunchpadPro implements Controller, Receiver {
         return "LaunchpadPro";
     }
 
-    /***** midi receiver implementation **************************************************************/
+    /***** ChannelListener implementation *****/
 
-    public void send(MidiMessage message, long timeStamp) {
-
-        if (message instanceof ShortMessage) {
-            ShortMessage shortMessage = (ShortMessage) message;
-            int command = shortMessage.getCommand();
-            int status = shortMessage.getStatus();
-
-            if (command == MIDI_REALTIME_COMMAND) {
-                switch (status) {
-                    case START:
-                        System.out.println("START");
-                        break;
-                    case STOP:
-                        System.out.println("STOP");
-                        break;
-                    case TIMING_CLOCK:
-                        System.out.println("TICK");
-                        break;
-                    default:
-//                        System.out.printf("REALTIME: %d\n", status);
-                        break;
-                }
-
-
+    public void onNoteOn(int channel, int noteNumber, int velocity) {
+        if (listener != null) {
+            Pad pad = noteToPad(noteNumber);
+            if (velocity == 0) {
+                listener.onElementReleased(pad);
             } else {
-                switch (command) {
-                    case NOTE_ON:
-//                        System.out.printf("NOTE ON: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            Pad pad = noteToPad(shortMessage.getData1());
-                            int velocity = shortMessage.getData2();
-                            if (velocity == 0) {
-                                listener.onElementReleased(pad);
-                            } else {
-                                listener.onElementPressed(pad, velocity);
-                            }
-                        }
-                        break;
-                    case NOTE_OFF:
-//                        System.out.printf("NOTE OFF: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            Pad pad = noteToPad(shortMessage.getData1());
-                            listener.onElementReleased(pad);
-                        }
-                        break;
-                    case CONTROL_CHANGE:
-//                        System.out.printf("MIDI CC: %d, %d, %d\n", shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
-                        if (listener != null) {
-                            Button button = ccToButton(shortMessage.getData1());
-                            int velocity = shortMessage.getData2();
-                            if (velocity == 0) {
-                                listener.onElementReleased(button);
-                            } else {
-                                listener.onElementPressed(button, velocity);
-                            }
-                        }
-                        break;
-                    default:
-                }
+                listener.onElementPressed(pad, velocity);
             }
         }
     }
 
-    public void close() {
+    public void onNoteOff(int channel, int noteNumber, int velocity) {
+        if (listener != null) {
+            Pad pad = noteToPad(noteNumber);
+            listener.onElementReleased(pad);
+        }
+    }
 
+    public void onCc(int channel, int ccNumber, int value) {
+        if (listener != null) {
+            Button button = ccToButton(ccNumber);
+            if (value == 0) {
+                listener.onElementReleased(button);
+            } else {
+                listener.onElementPressed(button, value);
+            }
+        }
     }
 
 
@@ -198,7 +156,6 @@ public class LaunchpadPro implements Controller, Receiver {
         }
         return index;
     }
-
     public static Color indexToColor(Integer index) {
         Color color = colorIndexMap.get(index);
         if (color == null) {

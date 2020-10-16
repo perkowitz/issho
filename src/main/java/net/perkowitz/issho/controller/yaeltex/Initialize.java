@@ -1,11 +1,8 @@
 // Test runs a simple drawing program to test the Yaeltex controller.
 package net.perkowitz.issho.controller.yaeltex;
 
-import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
-import net.perkowitz.issho.controller.MidiSetup;
-import net.perkowitz.issho.controller.elements.Button;
-import net.perkowitz.issho.controller.elements.Pad;
+import net.perkowitz.issho.controller.midi.MidiSetup;
 
 /**
  * Created by mikep on 7/28/20.
