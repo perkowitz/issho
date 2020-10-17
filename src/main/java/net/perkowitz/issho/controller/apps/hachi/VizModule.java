@@ -45,10 +45,12 @@ public class VizModule implements Module {
     }
 
     public void onTick() {
-        int row = (int)(Math.random() * Hachi.MAX_ROWS);
-        int column = (int)(Math.random() * Hachi.MAX_COLUMNS);
-        int c = (int)(Math.random() * Colors.rainbow.length);
-        controller.setPad(Pad.at(0, row, column), Colors.rainbow[c]);
+        if (!muted) {
+            int row = (int) (Math.random() * Hachi.MAX_ROWS);
+            int column = (int) (Math.random() * Hachi.MAX_COLUMNS);
+            int c = (int) (Math.random() * Colors.rainbow.length);
+            controller.setPad(Pad.at(0, row, column), Colors.rainbow[c]);
+        }
     }
 
 

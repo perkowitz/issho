@@ -35,6 +35,7 @@ public class Hachi implements HachiListener, ClockListener {
     private List<HachiController> controllers = Lists.newArrayList();
     private MidiSetup midiSetup = null;
     private List<Module> modules;
+    private List<ControllerSwitch> moduleSwitches;
 
     // clock and timing
     private CountDownLatch stop = new CountDownLatch(1);
@@ -159,16 +160,32 @@ public class Hachi implements HachiListener, ClockListener {
 
     private void loadModules() {
         modules = Lists.newArrayList();
-        modules.add(new MockModule(controller, Palette.BLUE));
-        modules.add(new MockModule(controller, Palette.ORANGE));
-        modules.add(new MockModule(controller, Palette.YELLOW));
-        modules.add(new MockModule(controller, Palette.MAGENTA));
-        modules.add(new MockModule(controller, Palette.CYAN));
-        modules.add(new MockModule(controller, Palette.PURPLE));
-        modules.add(new MockModule(controller, Palette.PINK));
-        modules.add(new VizModule(controller, Palette.BLUE));
+        moduleSwitches = Lists.newArrayList();
+
+        Palette []ps = new Palette[]{
+                Palette.BLUE, Palette.ORANGE, Palette.YELLOW, Palette.MAGENTA,
+                Palette.CYAN, Palette.PURPLE, Palette.PINK, Palette.RED
+        };
+
+        // 7 MockModules
+        for (int i = 0; i < 7; i++) {
+            ControllerSwitch controllerSwitch = new ControllerSwitch(controller);
+            controllerSwitch.setEnabled(false);
+            Module module = new MockModule(controllerSwitch, ps[i]);
+            modules.add(module);
+            moduleSwitches.add(controllerSwitch);
+        }
+
+        // and 1 VizModule
+        ControllerSwitch controllerSwitch = new ControllerSwitch(controller);
+        controllerSwitch.setEnabled(false);
+        Module module = new VizModule(controllerSwitch, ps[7]);
+        modules.add(module);
+        moduleSwitches.add(controllerSwitch);
+
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);
+        moduleSwitches.get(selectedModuleIndex).setEnabled(true);
     }
 
     /***** draw *****/
@@ -238,9 +255,11 @@ public class Hachi implements HachiListener, ClockListener {
 
     public void onModuleSelectPressed(int index) {
         if (index >= 0 && index < modules.size()) {
+            moduleSwitches.get(selectedModuleIndex).setEnabled(false);
             selectedModuleIndex = index;
             selectedModule = modules.get(selectedModuleIndex);
             modulePalette = selectedModule.getPalette();
+            moduleSwitches.get(selectedModuleIndex).setEnabled(true);
             draw();
         }
     }
