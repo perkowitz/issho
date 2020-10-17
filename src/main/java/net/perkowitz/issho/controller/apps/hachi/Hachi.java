@@ -6,6 +6,8 @@ import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
+import net.perkowitz.issho.controller.midi.ClockListener;
+import net.perkowitz.issho.controller.midi.MidiIn;
 import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
@@ -17,7 +19,7 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 
-public class Hachi implements HachiListener {
+public class Hachi implements HachiListener, ClockListener {
 
     public static int MAX_ROWS = 8;
     public static int MAX_COLUMNS = 16;
@@ -81,6 +83,13 @@ public class Hachi implements HachiListener {
                 HachiController t = new YaeltexHachiTranslator((YaeltexHachiXL) c, this);
                 controllers.add(t);
                 c.setListener((ControllerListener) t);
+                MidiIn input = midiSetup.getMidiIn(YaeltexHachiXL.name());
+                if (input != null) {
+                    System.out.printf("Found MIDI input for %s\n", YaeltexHachiXL.name());
+                    input.addClockListener(this);
+                } else {
+                    System.out.printf("Unable to find MIDI input for %s\n", YaeltexHachiXL.name());
+                }
             }
         }
 
@@ -142,6 +151,9 @@ public class Hachi implements HachiListener {
     }
 
     public void tick(boolean andReset) {
+        for (Module module : modules) {
+            module.onTick();
+        }
         drawClock();
     }
 
@@ -154,6 +166,7 @@ public class Hachi implements HachiListener {
         modules.add(new MockModule(controller, Palette.CYAN));
         modules.add(new MockModule(controller, Palette.PURPLE));
         modules.add(new MockModule(controller, Palette.PINK));
+        modules.add(new VizModule(controller, Palette.BLUE));
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);
     }
@@ -273,6 +286,21 @@ public class Hachi implements HachiListener {
                 break;
         }
         draw();
+    }
+
+
+    /***** ClockListener implementation *****/
+
+    public void onStart(boolean restart) {
+        System.out.println("Hachi onStart");
+    }
+
+    public void onStop() {
+        System.out.println("Hachi onStop");
+    }
+    public void onTick() {
+        System.out.println("Hachi onTick");
+        tick(false);
     }
 
 

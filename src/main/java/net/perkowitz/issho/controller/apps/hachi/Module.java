@@ -1,6 +1,8 @@
 package net.perkowitz.issho.controller.apps.hachi;
 
-public interface Module {
+import net.perkowitz.issho.controller.midi.ClockListener;
+
+public interface Module extends ClockListener {
 
     public void setMuted(boolean muted);
     public void flipMuted();

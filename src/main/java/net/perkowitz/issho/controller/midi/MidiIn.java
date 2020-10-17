@@ -1,6 +1,7 @@
 package net.perkowitz.issho.controller.midi;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Setter;
 import lombok.extern.java.Log;
 
@@ -8,6 +9,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static javax.sound.midi.ShortMessage.*;
@@ -43,6 +45,17 @@ public class MidiIn implements Receiver {
         channelListeners.remove(listener);
     }
 
+    public void addClockListener(ClockListener listener) {
+        if (!clockListeners.contains(listener)) {
+            clockListeners.add(listener);
+        }
+    }
+
+    public void removeClockListener(ClockListener listener) {
+        clockListeners.remove(listener);
+    }
+
+
     /***** Receiver implementation ***************/
 
     public void close() {
@@ -63,21 +76,25 @@ public class MidiIn implements Receiver {
                 }
                 switch (status) {
                     case START:
+                        System.out.printf("MidiIn %s: START\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onStart(true);
                         }
                         break;
                     case STOP:
+                        System.out.printf("MidiIn %s: STOP\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onStop();
                         }
                         break;
                     case CONTINUE:
+                        System.out.printf("MidiIn %s: CONTINUE\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onStart(midiContinueAsStart);
                         }
                         break;
                     case TIMING_CLOCK:
+                        System.out.printf("MidiIn %s: TICK\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onTick();
                         }
