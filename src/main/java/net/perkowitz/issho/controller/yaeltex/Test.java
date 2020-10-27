@@ -36,6 +36,7 @@ public class Test {
         System.out.println("Initializing controller...");
         hachi.setColorMap(ColorModes.twoBitMap);
         hachi.initialize();
+        Thread.sleep(1000);
 
         for (int i = 0; i < 1; i++) {
             francoTest();
@@ -57,30 +58,30 @@ public class Test {
         Thread.sleep(bigDelay);
 
         hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 0), Colors.WHITE);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         pads(Colors.BRIGHT_BLUE, smallDelay);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         encoders(Colors.BLACK, smallDelay);
         Thread.sleep(bigDelay);
 
         hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 1), Colors.WHITE);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         pads(Colors.BLACK, smallDelay);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         encoders(Colors.BLACK, smallDelay);
         Thread.sleep(bigDelay);
 
         hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 2), Colors.WHITE);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         pads(Colors.BRIGHT_RED, smallDelay);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         encoders(Colors.BRIGHT_GREEN, smallDelay);
         Thread.sleep(bigDelay);
 
         hachi.setButton(Button.at(YaeltexHachiXL.BUTTONS_LEFT, 3), Colors.WHITE);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         pads(Colors.BLACK, smallDelay);
-        Thread.sleep(medDelay);
+//        Thread.sleep(medDelay);
         encoders(Colors.BRIGHT_MAGENTA, smallDelay);
     }
 
@@ -88,7 +89,7 @@ public class Test {
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 16; column++) {
                 hachi.setPad(Pad.at(0, row, column), color);
-                Thread.sleep(delay);
+//                Thread.sleep(delay);
             }
         }
     }

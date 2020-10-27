@@ -1,8 +1,6 @@
 package net.perkowitz.issho.controller.apps.hachi;
 
 
-import java.awt.*;
-
 public interface HachiListener {
 
     /***** Shihai methods *****/
@@ -13,6 +11,11 @@ public interface HachiListener {
 
     public void onKnobSet(int index, int value);
     public void onKnobModePressed(int index);
+
+    public void onModuleButtonPressed(int group, int index, int value);
+    public void onModuleButtonReleased(int group, int index);
+    public void onModulePadPressed(int row, int column, int value);
+    public void onModulePadReleased(int row, int column);
 
     // draw methods
     public void draw();

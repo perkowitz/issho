@@ -1,24 +1,19 @@
 package net.perkowitz.issho.controller.midi;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import lombok.Setter;
-import lombok.extern.java.Log;
+import net.perkowitz.issho.controller.Log;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
 
 import static javax.sound.midi.ShortMessage.*;
 
-@Log
 public class MidiIn implements Receiver {
 
-    static { log.setLevel(Level.OFF); }
-
+    private static final int LOG_LEVEL = Log.OFF;
     private static int MIDI_REALTIME_COMMAND = 0xF0;
 
     @Setter private boolean midiContinueAsStart = true;
@@ -63,7 +58,6 @@ public class MidiIn implements Receiver {
 
     public void send(MidiMessage message, long timeStamp) {
 
-        log.info(String.format("send: %s", message));
         if (message instanceof ShortMessage) {
             ShortMessage shortMessage = (ShortMessage) message;
             int command = shortMessage.getCommand();
@@ -76,25 +70,25 @@ public class MidiIn implements Receiver {
                 }
                 switch (status) {
                     case START:
-                        System.out.printf("MidiIn %s: START\n", this);
+//                        System.out.printf("MidiIn %s: START\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onStart(true);
                         }
                         break;
                     case STOP:
-                        System.out.printf("MidiIn %s: STOP\n", this);
+//                        System.out.printf("MidiIn %s: STOP\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onStop();
                         }
                         break;
                     case CONTINUE:
-                        System.out.printf("MidiIn %s: CONTINUE\n", this);
+//                        System.out.printf("MidiIn %s: CONTINUE\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onStart(midiContinueAsStart);
                         }
                         break;
                     case TIMING_CLOCK:
-                        System.out.printf("MidiIn %s: TICK\n", this);
+//                        System.out.printf("MidiIn %s: TICK\n", this);
                         for (ClockListener listener : clockListeners) {
                             listener.onTick();
                         }
@@ -110,6 +104,8 @@ public class MidiIn implements Receiver {
                 }
                 switch (command) {
                     case NOTE_ON:
+                        Log.log(this, LOG_LEVEL, "Note On (%d) %d:%d",
+                                shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         int velocity = shortMessage.getData2();
                         if (velocity == 0) {
                             for (ChannelListener listener : channelListeners) {
@@ -122,11 +118,15 @@ public class MidiIn implements Receiver {
                         }
                         break;
                     case NOTE_OFF:
+                        Log.log(this, LOG_LEVEL, "Note Off (%d) %d:%d",
+                                shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         for (ChannelListener listener : channelListeners) {
                             listener.onNoteOff(shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         }
                         break;
                     case CONTROL_CHANGE:
+                        Log.log(this, LOG_LEVEL, "CC (%d) %d:%d",
+                                shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         for (ChannelListener listener : channelListeners) {
                             listener.onCc(shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
                         }

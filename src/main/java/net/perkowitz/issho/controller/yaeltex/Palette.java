@@ -30,12 +30,14 @@ public class Palette {
         hachi.setColorMap(ColorModes.twoBitMap);
         System.out.println("Initialize...");
         hachi.initialize();
+        Thread.sleep(1000);
 
         System.out.println("Setting all pads by index...");
         int c = 0;
         for (int row = 0; row < 8; row++) {
             for (int column = 0; column < 16; column++) {
                 hachi.setPad(Pad.at(0, row, column), c);
+//                Thread.sleep(3);
                 c++;
             }
         }

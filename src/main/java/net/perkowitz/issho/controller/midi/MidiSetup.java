@@ -31,12 +31,22 @@ public class MidiSetup {
 
 
     public MidiSetup() throws MidiUnavailableException{
-        registry = DeviceRegistry.withDefaults();
-        registry.registerNamedDevices();
+        this(DeviceRegistry.withDefaults());
+//        this.registry = DeviceRegistry.withDefaults();
+//        this.registry.registerNamedDevices();
+//        findInputs();
+//        findOutputs();
+//        createControllers();
+    }
+
+    public MidiSetup(DeviceRegistry registry) throws MidiUnavailableException{
+        this.registry = registry;
+        this.registry.registerNamedDevices();
         findInputs();
         findOutputs();
-        createControllers();    
+        createControllers();
     }
+
 
     public void close() {
         for (MidiDevice device : openDevices) {
@@ -102,6 +112,16 @@ public class MidiSetup {
         Transmitter transmitter = device.getTransmitter();
         transmitter.setReceiver(input);
         return input;
+    }
+
+    // getMidiOut creates a MidiOut object and connects it to the specified device.
+    // Note that this will replace any previously-connected MidiOut.
+    public MidiOut getMidiOut(String name) throws MidiUnavailableException {
+        MidiDevice device = registry.getOutputDevice(name);
+        if (device == null) return null;
+
+        MidiOut output = new MidiOut(device.getReceiver());
+        return output;
     }
 
 

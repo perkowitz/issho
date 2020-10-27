@@ -38,7 +38,7 @@ public class DeviceRegistry {
                 ));
     }
 
-    private static Map<String, List<List<String>>> nameStrings = Maps.newHashMap();
+    private Map<String, List<List<String>>> nameStrings = Maps.newHashMap();
     @Getter private Map<String, MidiDevice> inputDevices = Maps.newHashMap();
     @Getter private Map<String, MidiDevice> outputDevices = Maps.newHashMap();
 
@@ -74,8 +74,8 @@ public class DeviceRegistry {
     public void registerNamedDevices() {
         try {
             MidiDevice.Info[] midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
-            for (String name : defaultNameStrings.keySet()) {
-                List<List<String>> matchLists = defaultNameStrings.get(name);
+            for (String name : nameStrings.keySet()) {
+                List<List<String>> matchLists = nameStrings.get(name);
                 log.info(String.format("Searching for %s device", name));
                 boolean found = false;
                 int i = 0;
@@ -140,7 +140,7 @@ public class DeviceRegistry {
     // fromMap returns a registry containing the entries in the map, without defaults.
     public static DeviceRegistry fromMap(Map<String, List<List<String>>> nameStrings) {
         DeviceRegistry r = new DeviceRegistry();
-        r.defaultNameStrings = nameStrings;
+        r.nameStrings = nameStrings;
         return r;
     }
 
@@ -155,7 +155,7 @@ public class DeviceRegistry {
     // Note that duplicate keys in r will override the defaults.
     public static DeviceRegistry withDefaults(DeviceRegistry registry) {
         DeviceRegistry r = withDefaults();
-        for (Map.Entry<String, List<List<String>>> e : r.nameStrings.entrySet()) {
+        for (Map.Entry<String, List<List<String>>> e : registry.nameStrings.entrySet()) {
             r.nameStrings.put(e.getKey(), e.getValue());
         }
         return r;

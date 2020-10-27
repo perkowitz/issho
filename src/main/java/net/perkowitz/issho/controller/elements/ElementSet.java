@@ -48,6 +48,9 @@ public class ElementSet {
         return elements.size();
     }
 
+    public List<Element> elements() {
+        return elements;
+    }
 
     /***** private methods ****************************************/
 
