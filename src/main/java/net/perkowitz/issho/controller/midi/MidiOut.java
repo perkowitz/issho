@@ -9,7 +9,7 @@ import javax.sound.midi.ShortMessage;
 
 public class MidiOut {
 
-    private static final int LOG_LEVEL = Log.INFO;
+    private static final int LOG_LEVEL = Log.OFF;
 
     //    public static int MIDI_ALL_NOTES_OFF_CC = 123;
     public static int MIDI_ALL_NOTES_OFF_CC = 120;
