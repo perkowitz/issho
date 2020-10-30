@@ -70,6 +70,9 @@ public class VizModule implements Module {
         }
     }
 
+    public void onClock(int measure, int beat, int pulse) {
+
+    }
 
 
 }

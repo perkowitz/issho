@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.apps.hachi.Palette;
 import net.perkowitz.issho.controller.apps.hachi.modules.Module;
 import net.perkowitz.issho.controller.apps.hachi.modules.ModuleController;
@@ -22,6 +23,8 @@ import static net.perkowitz.issho.controller.apps.hachi.modules.step.Stage.Marke
  * Created by optic on 10/24/16.
  */
 public class StepModule implements Module, ModuleListener {
+
+    private static final int LOG_LEVEL = Log.INFO;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -407,7 +410,7 @@ public class StepModule implements Module, ModuleListener {
         advance(andReset);
     }
 
-    public void clock(int measure, int beat, int pulse) {
+    public void onClock(int measure, int beat, int pulse) {
         if (pulse == 0 || pulse == 6 + swingOffset || pulse == 12 || pulse == 18 + swingOffset) {
             advance(beat == 0 && pulse == 0);
         }

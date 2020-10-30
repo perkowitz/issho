@@ -166,7 +166,7 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
 
 
 
-    public void showClock(int measure, int step, Color measureColor, Color stepColor, Color offColor) {
+    public void showClock(int measure, int beat, int pulse, Color measureColor, Color stepColor, Color offColor) {
 //        int s = step % YaeltexHachiXL.PADS_MAX_COLUMNS;
 //        int lastStep = (s + YaeltexHachiXL.PADS_MAX_COLUMNS - 1) % YaeltexHachiXL.PADS_MAX_COLUMNS;
 //        int m = measure % YaeltexHachiXL.PADS_MAX_COLUMNS;

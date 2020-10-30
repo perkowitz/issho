@@ -31,6 +31,9 @@ public class Hachi implements HachiListener, ClockListener {
     public static int MAX_MODULES = 8;
     public static int MAX_KNOBS = 8;
 
+    private static int PULSE_PER_BEAT = 24;
+    private static int BEAT_PER_MEASURE = 4;
+
     public enum KnobMode {
         MAIN, SHIHAI, MODULE1, MODULE2
     }
@@ -57,6 +60,9 @@ public class Hachi implements HachiListener, ClockListener {
     private boolean midiClockRunning = false;
     private int tickCount = 0;
     private int measureCount = 0;
+    private int beatCount = 0;
+    private int pulseCount = 0;
+    private int pulseDelta = 6; // currently internal clock only, which just counts 16th notes
     @Setter private boolean midiContinueAsStart = true;
     private int tempo = 120;
     private int tempoIntervalInMillis = 125 * 120 / tempo;
@@ -155,12 +161,7 @@ public class Hachi implements HachiListener, ClockListener {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (clockRunning) {
-                    tick(tickCount % 16 == 0);
-                    tickCount++;
-                    if (tickCount % 16 == 0) {
-                        measureCount++;
-                    }
-
+                    onTick();
                 }
                 tempoIntervalInMillis = 125 * 120 / tempo;
                 timer.cancel();
@@ -168,13 +169,6 @@ public class Hachi implements HachiListener, ClockListener {
                 startTimer();
             }
         }, tempoIntervalInMillis, tempoIntervalInMillis);
-    }
-
-    public void tick(boolean andReset) {
-        for (Module module : modules) {
-            module.onTick();
-        }
-        drawClock();
     }
 
     private void loadModules(MidiOut midiOut) {
@@ -213,6 +207,7 @@ public class Hachi implements HachiListener, ClockListener {
         selectedModule = modules.get(selectedModuleIndex);
         moduleTranslators.get(selectedModuleIndex).setEnabled(true);
     }
+
 
     /***** draw *****/
 
@@ -273,7 +268,7 @@ public class Hachi implements HachiListener, ClockListener {
     }
 
     private void drawClock() {
-        controller.showClock(measureCount, tickCount, mainPalette.On, modulePalette.Key, Colors.BLACK);
+        controller.showClock(measureCount, beatCount, pulseCount, mainPalette.On, modulePalette.Key, Colors.BLACK);
     }
 
 
@@ -303,8 +298,9 @@ public class Hachi implements HachiListener, ClockListener {
         Log.log(this, LOG_LEVEL, "%d", index);
         switch (index) {
             case 0:
-                tickCount = 0;
                 measureCount = 0;
+                beatCount = 0;
+                pulseCount = 0;
                 clockRunning = !clockRunning;
                 if (!clockRunning) {
                     midiOut.allNotesOff();
@@ -385,10 +381,23 @@ public class Hachi implements HachiListener, ClockListener {
     public void onStop() {
         System.out.println("Hachi onStop");
     }
+
     public void onTick() {
-        System.out.println("Hachi onTick");
-        tick(false);
+        for (Module module : modules) {
+            module.onClock(measureCount, beatCount, pulseCount);
+        }
+        drawClock();
+        pulseCount = (pulseCount + pulseDelta) % PULSE_PER_BEAT;
+        if (pulseCount == 0) {
+            beatCount = (beatCount + 1) % BEAT_PER_MEASURE;
+            if (beatCount == 0) {
+                measureCount++;
+            }
+        }
     }
 
+    public void onClock(int measure, int beat, int pulse) {
+        System.out.println("Hachi onClock");
+    }
 
 }

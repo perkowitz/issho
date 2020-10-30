@@ -66,9 +66,9 @@ public class MockModule implements Module {
     public void onStop() {
         System.out.println("MockModule onStop");
     }
-    public void onTick() {
-    }
+    public void onTick() {}
 
+    public void onClock(int measure, int beat, int pulse) {}
 
 
 }
