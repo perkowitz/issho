@@ -65,6 +65,12 @@ public class MidiOut {
         cc(channel, MIDI_RESET_ALL_CONTROLLERS, 0);
     }
 
+    public void allNotesOff() {
+        for (int channel = 0; channel < 16; channel++) {
+            allNotesOff(channel);
+        }
+    }
+
 
 
 }

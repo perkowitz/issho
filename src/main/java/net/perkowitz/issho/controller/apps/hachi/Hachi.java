@@ -48,6 +48,7 @@ public class Hachi implements HachiListener, ClockListener {
     private MidiSetup midiSetup = null;
     private List<Module> modules;
     private List<ModuleTranslator> moduleTranslators;
+    private MidiOut midiOut;
 
     // clock and timing
     private CountDownLatch stop = new CountDownLatch(1);
@@ -112,7 +113,7 @@ public class Hachi implements HachiListener, ClockListener {
 
         // load modules
 
-        MidiOut midiOut = midiSetup.getMidiOut("Extra");
+        midiOut = midiSetup.getMidiOut("Extra");
         loadModules(midiOut);
 
         initialize();
@@ -131,6 +132,7 @@ public class Hachi implements HachiListener, ClockListener {
     // quit cleans up anything it needs to and exits.
     private void quit() {
         controller.initialize();
+        midiOut.allNotesOff();
         stop.countDown();
     }
 
@@ -304,6 +306,9 @@ public class Hachi implements HachiListener, ClockListener {
                 tickCount = 0;
                 measureCount = 0;
                 clockRunning = !clockRunning;
+                if (!clockRunning) {
+                    midiOut.allNotesOff();
+                }
                 draw();
                 break;
             case 2:
