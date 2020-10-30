@@ -23,21 +23,30 @@ public class MidiSetup {
     static { log.setLevel(Level.INFO); }
 
     @Getter private List<Controller> controllers = Lists.newArrayList();
-    private DeviceRegistry registry;
+    @Getter private DeviceRegistry registry;
     private Set<MidiDevice> openDevices = Sets.newHashSet();
     private Set<MidiDevice> clocks = Sets.newHashSet();
-    private Clockable clockable = null;
     private Map<String, MidiIn> inputs = Maps.newHashMap();
     private Map<String, MidiOut> outputs = Maps.newHashMap();
 
 
     public MidiSetup() throws MidiUnavailableException{
-        registry = DeviceRegistry.withDefaults();
-        registry.registerDevices();
-        getInputs();
-        getOutputs();
-        createControllers();    
+        this(DeviceRegistry.withDefaults());
+//        this.registry = DeviceRegistry.withDefaults();
+//        this.registry.registerNamedDevices();
+//        findInputs();
+//        findOutputs();
+//        createControllers();
     }
+
+    public MidiSetup(DeviceRegistry registry) throws MidiUnavailableException{
+        this.registry = registry;
+        this.registry.registerNamedDevices();
+        findInputs();
+        findOutputs();
+        createControllers();
+    }
+
 
     public void close() {
         for (MidiDevice device : openDevices) {
@@ -45,7 +54,7 @@ public class MidiSetup {
         }
     }
 
-    public void getInputs() throws MidiUnavailableException {
+    private void findInputs() throws MidiUnavailableException {
         for (String name : registry.getInputDeviceNames()) {
             MidiDevice device = registry.getInputDevice(name);
             MidiIn input = new MidiIn();
@@ -56,7 +65,7 @@ public class MidiSetup {
         }
     }
 
-    public void getOutputs() throws MidiUnavailableException {
+    private void findOutputs() throws MidiUnavailableException {
         for (String name : registry.getOutputDeviceNames()) {
             MidiDevice device = registry.getOutputDevice(name);
             openDevice(device);
@@ -66,7 +75,7 @@ public class MidiSetup {
         }
     }
 
-    public void createControllers() {
+    private void createControllers() {
         Controller lpp = getController(LaunchpadPro.name());
         if (lpp != null) controllers.add(lpp);
         Controller hachi = getController(YaeltexHachiXL.name());
@@ -105,16 +114,14 @@ public class MidiSetup {
         return input;
     }
 
-    public void addClock(String name) {
-        try {
-            MidiDevice device = registry.getInputDevice(name);
-            if (device != null) {
-                openDevice(device);
-                clocks.add(device);
-            }
-        } catch (MidiUnavailableException e) {
-            System.err.printf("MIDI not available: %s\n", e);
-        }
+    // getMidiOut creates a MidiOut object and connects it to the specified device.
+    // Note that this will replace any previously-connected MidiOut.
+    public MidiOut getMidiOut(String name) throws MidiUnavailableException {
+        MidiDevice device = registry.getOutputDevice(name);
+        if (device == null) return null;
+
+        MidiOut output = new MidiOut(device.getReceiver());
+        return output;
     }
 
 

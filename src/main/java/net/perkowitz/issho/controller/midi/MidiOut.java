@@ -1,16 +1,19 @@
 package net.perkowitz.issho.controller.midi;
 
-import lombok.extern.java.Log;
+
+import net.perkowitz.issho.controller.Log;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
-import java.util.logging.Level;
 
-@Log
 public class MidiOut {
 
-    static { log.setLevel(Level.OFF); }
+    private static final int LOG_LEVEL = Log.OFF;
+
+    //    public static int MIDI_ALL_NOTES_OFF_CC = 123;
+    public static int MIDI_ALL_NOTES_OFF_CC = 120;
+    public static int MIDI_RESET_ALL_CONTROLLERS = 121;
 
     private Receiver receiver;
 
@@ -23,8 +26,9 @@ public class MidiOut {
     }
 
     public void note(int channel, int noteNumber, int velocity) {
+        Log.log(this, LOG_LEVEL, "(%d) %d %d", channel, noteNumber, velocity);
+        if (receiver == null) return;
 
-        log.info(String.format("note: ch=%s, n=%d, v=%d", channel, noteNumber, velocity));
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.NOTE_ON, channel, noteNumber, velocity);
@@ -37,8 +41,9 @@ public class MidiOut {
     }
 
     public void cc(int channel, int ccNumber, int value) {
+        Log.log(this, LOG_LEVEL, "(%d) %d %d", channel, ccNumber, value);
+        if (receiver == null) return;
 
-        log.info(String.format("cc: ch=%s, n=%d, v=%d", channel, ccNumber, value));
         try {
             ShortMessage message = new ShortMessage();
             message.setMessage(ShortMessage.CONTROL_CHANGE, channel, ccNumber, value);
@@ -53,5 +58,19 @@ public class MidiOut {
     public void sysex(byte[] bytes) {
         
     }
+
+    public void allNotesOff(int channel) {
+        if (receiver == null) return;
+        cc(channel, MIDI_ALL_NOTES_OFF_CC, 0);
+        cc(channel, MIDI_RESET_ALL_CONTROLLERS, 0);
+    }
+
+    public void allNotesOff() {
+        for (int channel = 0; channel < 16; channel++) {
+            allNotesOff(channel);
+        }
+    }
+
+
 
 }

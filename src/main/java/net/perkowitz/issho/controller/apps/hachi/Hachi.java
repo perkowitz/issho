@@ -1,23 +1,30 @@
 package net.perkowitz.issho.controller.apps.hachi;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.midi.MidiSetup;
+import net.perkowitz.issho.controller.Log;
+import net.perkowitz.issho.controller.apps.hachi.modules.MockModule;
+import net.perkowitz.issho.controller.apps.hachi.modules.Module;
+import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
+import net.perkowitz.issho.controller.midi.*;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
 import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 
-public class Hachi implements HachiListener {
+public class Hachi implements HachiListener, ClockListener {
+
+    private static final int LOG_LEVEL = Log.INFO;
+    static { Log.setLogLevel(Log.INFO); }
 
     public static int MAX_ROWS = 8;
     public static int MAX_COLUMNS = 16;
@@ -28,11 +35,20 @@ public class Hachi implements HachiListener {
         MAIN, SHIHAI, MODULE1, MODULE2
     }
 
+    // midi devices
+    private static Map<String, List<List<String>>> deviceNameStrings = Maps.newHashMap();
+    static {
+        deviceNameStrings.put("TestBus",Arrays.asList(Arrays.asList("TestBus")));
+        deviceNameStrings.put("Extra",Arrays.asList(Arrays.asList("Extra")));
+    }
+
     // for managing app state
     private HachiController controller;
     private List<HachiController> controllers = Lists.newArrayList();
     private MidiSetup midiSetup = null;
     private List<Module> modules;
+    private List<ModuleTranslator> moduleTranslators;
+    private MidiOut midiOut;
 
     // clock and timing
     private CountDownLatch stop = new CountDownLatch(1);
@@ -67,7 +83,8 @@ public class Hachi implements HachiListener {
     public void run() throws Exception {
 
         // MidiSetup does the work of matching available midi devices against supported controller types
-        midiSetup = new MidiSetup();
+        DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(deviceNameStrings));
+        midiSetup = new MidiSetup(registry);
         if (midiSetup.getControllers().size() == 0) {
             System.err.println("No supported MIDI controllers found.");
             System.exit(1);
@@ -81,6 +98,13 @@ public class Hachi implements HachiListener {
                 HachiController t = new YaeltexHachiTranslator((YaeltexHachiXL) c, this);
                 controllers.add(t);
                 c.setListener((ControllerListener) t);
+                MidiIn input = midiSetup.getMidiIn(YaeltexHachiXL.name());
+                if (input != null) {
+                    System.out.printf("Found MIDI input for %s\n", YaeltexHachiXL.name());
+                    input.addClockListener(this);
+                } else {
+                    System.out.printf("Unable to find MIDI input for %s\n", YaeltexHachiXL.name());
+                }
             }
         }
 
@@ -88,7 +112,9 @@ public class Hachi implements HachiListener {
         controller = controllers.get(0);
 
         // load modules
-        loadModules();
+
+        midiOut = midiSetup.getMidiOut("Extra");
+        loadModules(midiOut);
 
         initialize();
         Thread.sleep(1000);
@@ -106,11 +132,14 @@ public class Hachi implements HachiListener {
     // quit cleans up anything it needs to and exits.
     private void quit() {
         controller.initialize();
+        midiOut.allNotesOff();
         stop.countDown();
     }
 
     private void shutdown() {
         timer.cancel();
+        controller.initialize();
+        Log.delay(1000);
         controller.close();
         midiSetup.close();
         System.exit(0);
@@ -142,20 +171,47 @@ public class Hachi implements HachiListener {
     }
 
     public void tick(boolean andReset) {
+        for (Module module : modules) {
+            module.onTick();
+        }
         drawClock();
     }
 
-    private void loadModules() {
+    private void loadModules(MidiOut midiOut) {
         modules = Lists.newArrayList();
-        modules.add(new MockModule(controller, Palette.BLUE));
-        modules.add(new MockModule(controller, Palette.ORANGE));
-        modules.add(new MockModule(controller, Palette.YELLOW));
-        modules.add(new MockModule(controller, Palette.MAGENTA));
-        modules.add(new MockModule(controller, Palette.CYAN));
-        modules.add(new MockModule(controller, Palette.PURPLE));
-        modules.add(new MockModule(controller, Palette.PINK));
+        moduleTranslators = Lists.newArrayList();
+
+        Palette []ps = new Palette[]{
+                Palette.BLUE, Palette.MAGENTA, Palette.CYAN, Palette.PURPLE,
+                Palette.ORANGE, Palette.YELLOW, Palette.PINK, Palette.RED
+        };
+
+        // 6 MockModules
+        for (int i = 0; i < 3; i++) {
+            ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+            moduleTranslator.setEnabled(false);
+            Module module = new MockModule(moduleTranslator, ps[i]);
+            modules.add(module);
+            moduleTranslators.add(moduleTranslator);
+        }
+
+//        // 1 VizModule
+//        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+//        moduleTranslator.setEnabled(false);
+//        Module module = new VizModule(moduleTranslator, ps[6]);
+//        modules.add(module);
+//        moduleTranslators.add(moduleTranslator);
+
+        // 1 StepModule
+        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+        moduleTranslator.setEnabled(false);
+        Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
+        modules.add(module);
+        moduleTranslators.add(moduleTranslator);
+
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);
+        moduleTranslators.get(selectedModuleIndex).setEnabled(true);
     }
 
     /***** draw *****/
@@ -224,15 +280,19 @@ public class Hachi implements HachiListener {
     /***** HachiListener implementation *****/
 
     public void onModuleSelectPressed(int index) {
+        Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
+            moduleTranslators.get(selectedModuleIndex).setEnabled(false);
             selectedModuleIndex = index;
             selectedModule = modules.get(selectedModuleIndex);
             modulePalette = selectedModule.getPalette();
+            moduleTranslators.get(selectedModuleIndex).setEnabled(true);
             draw();
         }
     }
 
     public void onModuleMutePressed(int index) {
+        Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
             draw();
@@ -240,11 +300,15 @@ public class Hachi implements HachiListener {
     }
 
     public void onMainButtonPressed(int index) {
+        Log.log(this, LOG_LEVEL, "%d", index);
         switch (index) {
             case 0:
                 tickCount = 0;
                 measureCount = 0;
                 clockRunning = !clockRunning;
+                if (!clockRunning) {
+                    midiOut.allNotesOff();
+                }
                 draw();
                 break;
             case 2:
@@ -253,11 +317,47 @@ public class Hachi implements HachiListener {
         }
     }
 
-    public void onShihaiButtonPressed(int index) {}
+    public void onModuleButtonPressed(int group, int index, int value) {
+        Log.log(this, LOG_LEVEL, "%d:%d %d", group, index, value);
+        selectedModule.onButtonPressed(group, index, value);
+    }
 
-    public void onKnobSet(int index, int value) {}
+    public void onModuleButtonReleased(int group, int index) {
+        Log.log(this, LOG_LEVEL, "%d:%d", group, index);
+        selectedModule.onButtonReleased(group, index);
+    }
+
+    public void onModulePadPressed(int row, int column, int value) {
+        Log.log(this, LOG_LEVEL, "%d:%d %d", row, column, value);
+        selectedModule.onPadPressed(row, column, value);
+    }
+
+    public void onModulePadReleased(int row, int column) {
+        Log.log(this, LOG_LEVEL, "%d:%d", row, column);
+        selectedModule.onPadReleased(row, column);
+    }
+
+
+    public void onShihaiButtonPressed(int index) {
+        Log.log(this, LOG_LEVEL, "%d", index);
+    }
+
+    public void onKnobSet(int index, int value) {
+        Log.log(this, LOG_LEVEL, "%d %d", index, value);
+        switch (knobMode) {
+            case MAIN:
+                break;
+            case SHIHAI:
+                break;
+            case MODULE1:
+            case MODULE2:
+                // TODO work out how to deal with the knob mode switching
+                selectedModule.onKnob(index, value);
+        }
+    }
 
     public void onKnobModePressed(int index) {
+        Log.log(this, LOG_LEVEL, "%d", index);
         switch (index) {
             case 0:
                 knobMode = KnobMode.MAIN;
@@ -273,6 +373,21 @@ public class Hachi implements HachiListener {
                 break;
         }
         draw();
+    }
+
+
+    /***** ClockListener implementation *****/
+
+    public void onStart(boolean restart) {
+        System.out.println("Hachi onStart");
+    }
+
+    public void onStop() {
+        System.out.println("Hachi onStop");
+    }
+    public void onTick() {
+        System.out.println("Hachi onTick");
+        tick(false);
     }
 
 

@@ -1,6 +1,7 @@
 package net.perkowitz.issho.controller.midi;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import lombok.extern.java.Log;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
@@ -18,7 +19,7 @@ import java.util.logging.Level;
 @Log
 public class DeviceRegistry {
 
-    static { log.setLevel(Level.INFO); }
+    static { log.setLevel(Level.OFF); }
 
     private static Map<String, List<List<String>>> defaultNameStrings = Maps.newHashMap();
     static {
@@ -37,10 +38,9 @@ public class DeviceRegistry {
                 ));
     }
 
-    private static Map<String, List<List<String>>> nameStrings = Maps.newHashMap();
-//    @Setter private Map<List<String>, String> deviceNameMap = Maps.newHashMap();
-    private Map<String, MidiDevice> inputDevices = Maps.newHashMap();
-    private Map<String, MidiDevice> outputDevices = Maps.newHashMap();
+    private Map<String, List<List<String>>> nameStrings = Maps.newHashMap();
+    @Getter private Map<String, MidiDevice> inputDevices = Maps.newHashMap();
+    @Getter private Map<String, MidiDevice> outputDevices = Maps.newHashMap();
 
     // DeviceRegistry empty constructor should just be used for deserialization.
     public DeviceRegistry() {}
@@ -71,16 +71,11 @@ public class DeviceRegistry {
         return outputDevices.get(name);
     }
 
-    public void registerDevices() {
-
-        MidiDevice.Info[] midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
-        for (MidiDevice.Info info : midiDeviceInfos) {
-//            log.info(String.format("Found device: %s, %s", info.getName(), info.getDescription()));
-        }
-
+    public void registerNamedDevices() {
         try {
-            for (String name : defaultNameStrings.keySet()) {
-                List<List<String>> matchLists = defaultNameStrings.get(name);
+            MidiDevice.Info[] midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
+            for (String name : nameStrings.keySet()) {
+                List<List<String>> matchLists = nameStrings.get(name);
                 log.info(String.format("Searching for %s device", name));
                 boolean found = false;
                 int i = 0;
@@ -119,13 +114,33 @@ public class DeviceRegistry {
         }
     }
 
+    public void registerAllDevices() {
+        try {
+            MidiDevice.Info[] midiDeviceInfos = MidiSystem.getMidiDeviceInfo();
+            int i = 0;
+            for (MidiDevice.Info midiDeviceInfo : midiDeviceInfos) {
+                MidiDevice device = MidiSystem.getMidiDevice(midiDeviceInfos[i]);
+                String name = midiDeviceInfo.getName();
+                System.out.printf("Found device %s\n", name);
+                // an INPUT has a transmitter so you can get stuff from it
+                boolean isInput = device.getMaxTransmitters() != 0;
+                // an OUTPUT has a receiver so you can send to it
+                boolean isOutput = device.getMaxReceivers() != 0;
+                addDevice(name, device, isInput, isOutput);
+            }
+
+        } catch (MidiUnavailableException e) {
+            System.err.printf("MIDI not available: %s\n", e);
+        }
+    }
+
 
     /***** static methods *****/
 
     // fromMap returns a registry containing the entries in the map, without defaults.
     public static DeviceRegistry fromMap(Map<String, List<List<String>>> nameStrings) {
         DeviceRegistry r = new DeviceRegistry();
-        r.defaultNameStrings = nameStrings;
+        r.nameStrings = nameStrings;
         return r;
     }
 
@@ -140,7 +155,7 @@ public class DeviceRegistry {
     // Note that duplicate keys in r will override the defaults.
     public static DeviceRegistry withDefaults(DeviceRegistry registry) {
         DeviceRegistry r = withDefaults();
-        for (Map.Entry<String, List<List<String>>> e : r.nameStrings.entrySet()) {
+        for (Map.Entry<String, List<List<String>>> e : registry.nameStrings.entrySet()) {
             r.nameStrings.put(e.getKey(), e.getValue());
         }
         return r;
