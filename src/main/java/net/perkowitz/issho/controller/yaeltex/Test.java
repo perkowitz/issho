@@ -1,14 +1,19 @@
 // Test runs a simple drawing program to test the Yaeltex controller.
 package net.perkowitz.issho.controller.yaeltex;
 
+import com.google.common.collect.Maps;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.Log;
+import net.perkowitz.issho.controller.midi.DeviceRegistry;
 import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Pad;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mikep on 7/28/20.
@@ -21,10 +26,21 @@ public class Test {
     private static YaeltexHachiXL hachi = null;
     private static int testNumber = 1;
 
+    private static Map<String, List<List<String>>> deviceNameStrings = Maps.newHashMap();
+
 
     public static void main(String args[]) throws Exception {
 
-        midiSetup = new MidiSetup();
+        // settings
+        String controllerName = "hachi";
+        if (args.length > 0) {
+            controllerName = args[0];
+            deviceNameStrings.put(YaeltexHachiXL.name(), Arrays.asList(Arrays.asList(controllerName)));
+        }
+        System.out.printf("Testing controller \"%s\"\n", controllerName);
+
+        DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(deviceNameStrings));
+        midiSetup = new MidiSetup(registry);
         for (Controller controller : midiSetup.getControllers()) {
             if (controller.toString().equals(YaeltexHachiXL.name())) {
                 hachi = (YaeltexHachiXL)controller;
