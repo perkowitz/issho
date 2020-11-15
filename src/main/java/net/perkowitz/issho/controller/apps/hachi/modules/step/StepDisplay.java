@@ -67,7 +67,7 @@ public class StepDisplay {
                 Stage.Marker marker = StepUtil.markerPaletteMap.get(element);
                 Color color = StepUtil.MARKER_COLORS.get(marker);
                 controller.setButton(element.getGroup(), element.getIndex(), color);
-                Log.delay();
+//                Log.delay();
             }
         } else {
             for (Element element : StepUtil.markerElements.elements())  {

@@ -55,7 +55,7 @@ public class Test {
         hachi.setColorMap(ColorModes.twoBitMap);
         hachi.initialize();
 
-        simpleTests();
+        simpleTests2();
         Log.delay(1000);
 
 //        for (int i = 0; i < 1; i++) {
@@ -78,7 +78,7 @@ public class Test {
                 Colors.BRIGHT_BLUE, Colors.BRIGHT_MAGENTA, Colors.WHITE, Colors.GRAY
         };
 
-        for (int start=0; start < 1001; start += 1000) {
+        for (int start=40; start < 2000; start += 1000) {
             System.out.printf("***** start-delay=%d, buttons before\n", start);
             int c = 0;
             for (int delay=0; delay < 20; delay += 5) {
@@ -94,12 +94,47 @@ public class Test {
         }
     }
 
-    private static void simpleTest(int delay, int startDelay, Color color, boolean before) {
-        System.out.printf("Test #%d: Delay=%d, Start=%d, Before=%s, Color=%s\n", testNumber, delay, startDelay, before, color);
-        Log.delay(startDelay);
-        if (before) buttons(color, delay);
+    private static void simpleTests2() throws Exception {
+
+        int bigDelay = 2000;
+        int delay = 0;
+
+        Color colors[] = {
+                Colors.BRIGHT_RED, Colors.BRIGHT_ORANGE, Colors.BRIGHT_YELLOW, Colors.BRIGHT_GREEN,
+                Colors.BRIGHT_BLUE, Colors.BRIGHT_MAGENTA, Colors.WHITE, Colors.GRAY
+        };
+
+        Log.delay(bigDelay);
+        System.out.println("Initialize..");
+        pads(Colors.BRIGHT_PINK, delay);
+        Log.delay(bigDelay);
+
+
+        int c = 0;
+        for (int after=0; after <= 80; after += 20) {
+            System.out.printf("***** after-delay=%d, buttons before\n", after);
+//            hachi.initialize();
+            Log.delay(bigDelay);
+            for (int i = 0; i < 24; i++) {
+                Color color = colors[i % colors.length];
+                System.out.printf("Test #%d: AfterDelay=%d, Color=%s\n", testNumber, after, color);
+                pads(color, delay);
+                Log.delay(after);
+            }
+            pads(colors[c % colors.length], delay);
+            Log.delay(after);
+            System.out.println("");
+            Log.delay(bigDelay);
+            c++;
+        }
+    }
+
+    private static void simpleTest(int delay, int afterDelay, Color color, boolean before) {
+        System.out.printf("Test #%d: Delay=%d, AfterDelay=%d, Before=%s, Color=%s\n", testNumber, delay, afterDelay, before, color);
+//        if (before) buttons(color, delay);
         pads(color, delay);
-        if (!before) buttons(color, delay);
+//        if (!before) buttons(color, delay);
+        Log.delay(afterDelay);
         testNumber++;
     }
 

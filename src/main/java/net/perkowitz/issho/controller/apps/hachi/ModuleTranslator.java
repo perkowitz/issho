@@ -29,7 +29,7 @@ public class ModuleTranslator implements ModuleController {
             for (int group = 0; group < controller.BUTTON_GROUPS_COUNT(); group++) {
                 for (int index = 0; index < controller.BUTTONS_COUNT(group); index++) {
                     controller.setModuleButton(group, index, Colors.OFF);
-                    Log.delay();
+//                    Log.delay();
                 }
             }
             for (int row=0; row < controller.PAD_ROWS_COUNT(); row++) {

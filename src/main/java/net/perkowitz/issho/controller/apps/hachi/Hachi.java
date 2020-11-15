@@ -123,7 +123,6 @@ public class Hachi implements HachiListener, ClockListener {
         loadModules(midiOut);
 
         initialize();
-        Thread.sleep(1000);
         draw();
         startTimer();
         stop.await();
@@ -145,7 +144,6 @@ public class Hachi implements HachiListener, ClockListener {
     private void shutdown() {
         timer.cancel();
         controller.initialize();
-        Log.delay(1000);
         controller.close();
         midiSetup.close();
         System.exit(0);
