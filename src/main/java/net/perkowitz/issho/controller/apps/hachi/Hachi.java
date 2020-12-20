@@ -172,15 +172,31 @@ public class Hachi implements HachiListener, ClockListener {
                 Palette.ORANGE, Palette.YELLOW, Palette.PINK, Palette.RED
         };
 
+//         1 StepModule
+        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+        moduleTranslator.setEnabled(false);
+        Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
+        module.setPalette(ps[0]);
+        modules.add(module);
+        moduleTranslators.add(moduleTranslator);
+
+//         1 StepModule
+        moduleTranslator = new ModuleTranslator(controller);
+        moduleTranslator.setEnabled(false);
+        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
+        module.setPalette(ps[1]);
+        modules.add(module);
+        moduleTranslators.add(moduleTranslator);
+
         // 6 MockModules
-        for (int i = 0; i < 7; i++) {
-            ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+        for (int i = 0; i < 6; i++) {
+            moduleTranslator = new ModuleTranslator(controller);
             moduleTranslator.setEnabled(false);
             boolean r = false;
             if (i == 3) {
                 r = true;
             }
-            Module module = new MockModule(moduleTranslator, ps[i], r);
+            module = new MockModule(moduleTranslator, ps[i], r);
             modules.add(module);
             moduleTranslators.add(moduleTranslator);
         }
@@ -191,13 +207,6 @@ public class Hachi implements HachiListener, ClockListener {
 //        Module module = new VizModule(moduleTranslator, ps[6]);
 //        modules.add(module);
 //        moduleTranslators.add(moduleTranslator);
-
-//         1 StepModule
-        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
 
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);
@@ -286,7 +295,6 @@ public class Hachi implements HachiListener, ClockListener {
         Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
-            draw();
         }
     }
 

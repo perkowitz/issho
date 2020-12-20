@@ -262,6 +262,36 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
 
     public void onElementChanged(Element element, int delta) {}
 
-    public void onElementReleased(Element element) {}
+    public void onElementReleased(Element element) {
+        Log.log(this, LOG_LEVEL, "%s %d", element);
+//        if (moduleSelectButtons.contains(element)) {
+//            listener.onModuleSelectReleased(moduleSelectButtons.getIndex(element));
+//        } else if (moduleMuteButtons.contains(element)) {
+//            listener.onModuleMuteReleased(moduleMuteButtons.getIndex(element));
+//        } else if (mainButtons.contains(element)) {
+//            listener.onMainButtonReleased(mainButtons.getIndex(element));
+//        } else if (knobModeButtons.contains(element)) {
+//            listener.onKnobModeReleased(knobModeButtons.getIndex(element));
+        if (pads.contains(element)) {
+            Pad pad = (Pad)element;
+            listener.onModulePadReleased(pad.getRow(), pad.getColumn());
+        } else if (moduleButtonsLeft1.contains(element)) {
+            Log.log(this, LOG_LEVEL, "left1 %d:%d", MODULE_BUTTONS_GROUP_0, moduleButtonsLeft1.getIndex(element));
+            listener.onModuleButtonReleased(0, moduleButtonsLeft1.getIndex(element));
+        } else if (moduleButtonsLeft2.contains(element)) {
+            Log.log(this, LOG_LEVEL, "left2 %d:%d", MODULE_BUTTONS_GROUP_0, moduleButtonsLeft2.getIndex(element) + 5);
+            listener.onModuleButtonReleased(0, moduleButtonsLeft2.getIndex(element) + 5);
+        } else if (moduleButtonsRight1.contains(element)) {
+            Log.log(this, LOG_LEVEL, "right1 %d:%d", MODULE_BUTTONS_GROUP_1, moduleButtonsRight1.getIndex(element));
+            listener.onModuleButtonReleased(1, moduleButtonsRight1.getIndex(element));
+        } else if (moduleButtonsRight2.contains(element)) {
+            Log.log(this, LOG_LEVEL, "right2 %d:%d", MODULE_BUTTONS_GROUP_1, moduleButtonsRight2.getIndex(element) + 6);
+            listener.onModuleButtonReleased(1, moduleButtonsRight2.getIndex(element) + 6);
+        } else if (moduleButtonsBottom.contains(element)) {
+            Log.log(this, LOG_LEVEL, "bottom %d:%d", MODULE_BUTTONS_GROUP_2, moduleButtonsBottom.getIndex(element));
+            listener.onModuleButtonReleased(2, moduleButtonsBottom.getIndex(element));
+        }
+
+    }
 
 }

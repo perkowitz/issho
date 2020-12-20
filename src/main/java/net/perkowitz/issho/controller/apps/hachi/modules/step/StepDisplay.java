@@ -16,7 +16,6 @@ import java.awt.*;
 import static net.perkowitz.issho.controller.apps.hachi.modules.step.Stage.Marker.None;
 import static net.perkowitz.issho.controller.apps.hachi.modules.step.StepUtil.*;
 
-import net.perkowitz.issho.controller.apps.hachi.modules.step.StepUtil;
 
 /**
  * Created by optic on 10/25/16.
@@ -28,7 +27,7 @@ public class StepDisplay {
     @Getter @Setter private Palette palette = Palette.DEFAULT;
 
     @Setter private boolean settingsView = false;
-    @Setter private boolean isMuted = false;
+    private boolean muted = false;
     @Setter private boolean randomOrder = false;
     @Setter private boolean displayAltControls = false;
     @Setter private Stage.Marker currentMarker = None;
@@ -57,6 +56,11 @@ public class StepDisplay {
     public void drawActiveNote(int row, int column) {
         if (settingsView) return;
         controller.setPad(row, column, StepUtil.ACTIVE_NOTE_COLOR);
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+        drawLeftControls();
     }
 
     /***** draw main view ****************************************/
@@ -102,6 +106,7 @@ public class StepDisplay {
         controller.setButton(currentMarkerDisplayElement.getGroup(), currentMarkerDisplayElement.getIndex(), StepUtil.MARKER_COLORS.get(currentMarker));
         drawButton(StepUtil.altControlsElement, displayAltControls);
         drawButton(StepUtil.copyPatternElement, false);
+        drawButton(StepUtil.saveElement, false);
     }
 
     public void drawPatterns(StepMemory memory) {
@@ -114,7 +119,10 @@ public class StepDisplay {
     }
 
     public void drawButton(Element element, boolean isOn) {
-        Color color = isOn ? palette.On : palette.Off;
+        Color color = isOn ? palette.On : palette.Key;
+        if (muted) {
+            color = isOn ? palette.Off : palette.KeyDim;
+        }
         controller.setButton(element.getGroup(), element.getIndex(), color);
     }
 

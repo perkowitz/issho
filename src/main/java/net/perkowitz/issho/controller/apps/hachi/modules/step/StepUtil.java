@@ -65,6 +65,7 @@ public class StepUtil {
     public static Element currentMarkerDisplayElement = Button.at(BUTTONS_GROUP, 4);
     public static Element altControlsElement = Button.at(BUTTONS_GROUP, 2);
     public static Element copyPatternElement = Button.at(BUTTONS_GROUP, 3);
+    public static Element saveElement = Button.at(BUTTONS_GROUP, 0);
 
     // alt elements (used in place of marker elements when alt is enabled)
     public static Element shiftLeftElement = Button.at(MARKERS_GROUP, 0);
@@ -78,8 +79,8 @@ public class StepUtil {
     static {
         MARKER_COLORS.put(Stage.Marker.None, Colors.OFF);
         MARKER_COLORS.put(Stage.Marker.Note, Colors.SKY_BLUE);
-        MARKER_COLORS.put(Stage.Marker.Sharp, Colors.BRIGHT_CYAN);
-        MARKER_COLORS.put(Stage.Marker.Flat, Colors.DIM_CYAN);
+        MARKER_COLORS.put(Stage.Marker.Sharp, Colors.BRIGHT_YELLOW);
+        MARKER_COLORS.put(Stage.Marker.Flat, Colors.DIM_YELLOW);
         MARKER_COLORS.put(Stage.Marker.OctaveUp, Colors.BRIGHT_ORANGE);
         MARKER_COLORS.put(Stage.Marker.OctaveDown, Colors.DIM_ORANGE);
         MARKER_COLORS.put(Stage.Marker.VolumeUp, Colors.BRIGHT_GREEN);
@@ -89,7 +90,7 @@ public class StepUtil {
         MARKER_COLORS.put(Stage.Marker.Skip, Colors.DIM_RED);
         MARKER_COLORS.put(Stage.Marker.Slide, Colors.DARK_GRAY);
         MARKER_COLORS.put(Stage.Marker.Tie, Colors.BRIGHT_PINK);
-        MARKER_COLORS.put(Stage.Marker.Random, Colors.BRIGHT_YELLOW);
+        MARKER_COLORS.put(Stage.Marker.Random, Colors.DIM_CYAN);
     }
 
     public static Color ACTIVE_NOTE_COLOR = Colors.WHITE;
