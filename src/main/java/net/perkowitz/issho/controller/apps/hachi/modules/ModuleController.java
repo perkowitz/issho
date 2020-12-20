@@ -15,4 +15,5 @@ public interface ModuleController {
     public void setPad(int row, int column, Color color);
     public void setKnobValue(int index, int value);
     public void setKnobColor(int index, Color color);
+    public void flush();
 }

@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class YaeltexHachiTranslator implements HachiController, ControllerListener {
 
-    private static final int LOG_LEVEL = Log.INFO;
+    private static final int LOG_LEVEL = Log.OFF;
 
     private static final int MODULE_BUTTONS_GROUP = YaeltexHachiXL.BUTTONS_TOP;
     private static final int MAIN_BUTTONS_GROUP = YaeltexHachiXL.BUTTONS_LEFT;
@@ -138,14 +138,17 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
     public void setModuleButton(int group, int index, Color color) {
         int g = 0;
         int i = index;
+        boolean found = false;
         switch (group) {
             case 0:
                 // left buttons, but the top 6 buttons are reserved for other things
                 g = MODULE_BUTTONS_GROUP_0;
                 if (i >= 0 && i < 5) {
                     i += 3;
-                } else {
+                    found = true;
+                } else if (i < 10) {
                     i += 6;
+                    found = true;
                 }
                 break;
             case 1:
@@ -153,17 +156,29 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
                 g = MODULE_BUTTONS_GROUP_1;
                 if (i >= 0 && i < 6) {
                     i += 2;
-                } else {
+                    found = true;
+                } else if (i < 12) {
                     i += 4;
+                    found = true;
                 }
                 break;
             case 2:
+                // bottom buttons
                 g = MODULE_BUTTONS_GROUP_2;
+                if (i >= 0 && i < 12) {
+                    found = true;
+                }
                 break;
         }
-        hachi.setButton(Button.at(g, i), color);
+        if (found) {
+            hachi.setButton(Button.at(g, i), color);
+        }
     }
 
+
+    public void flush() {
+        hachi.flush();
+    }
 
 
     public void showClock(int measure, int beat, int pulse, Color measureColor, Color stepColor, Color offColor) {

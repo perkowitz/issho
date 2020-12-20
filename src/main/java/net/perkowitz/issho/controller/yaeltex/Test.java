@@ -109,6 +109,8 @@ public class Test {
         pads(Colors.BRIGHT_PINK, delay);
         Log.delay(bigDelay);
 
+        buttons(Colors.BRIGHT_BLUE, 0);
+
 
         int c = 0;
         for (int after=0; after <= 80; after += 20) {

@@ -20,15 +20,17 @@ import java.util.Map;
  */
 public class YaeltexHachiXL implements Controller, ChannelListener {
 
+    private static final int LOG_LEVEL = Log.OFF;
+
     private static int MIDI_REALTIME_COMMAND = 0xF0;
     private static int PADS_CHANNEL = 0;
     private static int BUTTONS_CHANNEL = 1;
     private static int KNOBS_CHANNEL = 0;
 
-    private static int MIDI_DELAY_MILLIS = 0;
-    private static int MIDI_DELAY_COUNT = 0;
+    private static int MIDI_DELAY_MILLIS = 50;
+    private static int MIDI_DELAY_COUNT = 200;
 
-    // HachXL buttons appear in 4 groups, one on each side of the device.
+    // HachiXL buttons appear in 4 groups, one on each side of the device.
     public static final int PADS_GROUP = 0;
     public static final int PADS_MAX_ROWS = 8;
     public static final int PADS_MAX_COLUMNS = 16;
@@ -112,8 +114,14 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
     }
 
     public void setButton(Button button, Color color) {
-        // TODO: check button within range
-        note(BUTTONS_CHANNEL, buttonToNote(button), colorToIndex(color));
+        Log.log(this, LOG_LEVEL, "Button:%s, Color=%s", button, color);
+        int max = MAX_BUTTONS;
+        if (button.getGroup() == BUTTONS_BOTTOM) {
+            max = MAX_BUTTONS_BOTTOM;
+        }
+        if (button.getIndex() >= 0 && button.getIndex() < max) {
+            note(BUTTONS_CHANNEL, buttonToNote(button), colorToIndex(color));
+        }
     }
 
     public void setKnob(Knob knob, Color color) {
@@ -127,6 +135,11 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
     }
 
     public void setLight(Light light, Color color) {}
+
+    public void flush() {
+        Log.delay(MIDI_DELAY_MILLIS);
+    }
+
 
     @Override
     public String toString() {

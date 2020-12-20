@@ -126,6 +126,8 @@ public class StepModule implements Module, ModuleListener {
 
     private void playStep(Step step) {
 
+        if (midiOut == null) return;
+        
         // there may be multiple markers to highlight in the step
         List<Integer> noteIndices = Lists.newArrayList();
         switch (step.getMode()) {

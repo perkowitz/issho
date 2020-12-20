@@ -65,4 +65,8 @@ public class ModuleTranslator implements ModuleController {
         }
     }
 
+    public void flush() {
+        controller.flush();
+    }
+
 }
