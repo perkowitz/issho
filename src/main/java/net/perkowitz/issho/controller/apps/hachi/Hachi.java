@@ -296,6 +296,7 @@ public class Hachi implements HachiListener, ClockListener {
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
         }
+        draw();
     }
 
     public void onMainButtonPressed(int index) {

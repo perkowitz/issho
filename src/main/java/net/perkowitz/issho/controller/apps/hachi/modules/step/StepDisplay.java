@@ -6,6 +6,7 @@ import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.apps.hachi.Palette;
 import net.perkowitz.issho.controller.apps.hachi.modules.ModuleController;
+import net.perkowitz.issho.controller.apps.hachi.modules.Settings;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.ElementSet;
@@ -23,6 +24,7 @@ import static net.perkowitz.issho.controller.apps.hachi.modules.step.StepUtil.*;
 public class StepDisplay {
 
     @Setter private ModuleController controller;
+    private Settings settingsModule;
     @Getter @Setter private int currentFileIndex = 0;
     @Getter @Setter private Palette palette = Palette.DEFAULT;
 
@@ -33,12 +35,14 @@ public class StepDisplay {
     @Setter private Stage.Marker currentMarker = None;
 
 
-    public StepDisplay(ModuleController controller) {
+    public StepDisplay(ModuleController controller, Settings settingsModule) {
         this.controller = controller;
+        this.settingsModule = settingsModule;
     }
 
 
     public void draw(StepMemory memory) {
+        initialize();
         drawMarkers();
         drawStages(memory);
         drawLeftControls();
@@ -85,7 +89,10 @@ public class StepDisplay {
     }
 
     public void drawStages(StepMemory memory) {
-        if (settingsView) return;
+        if (settingsView) {
+            settingsModule.draw();
+            return;
+        }
         for (int i = 0; i < StepPattern.STAGE_COUNT; i++) {
             drawStage(memory, i);
         }
@@ -107,6 +114,7 @@ public class StepDisplay {
         drawButton(StepUtil.altControlsElement, displayAltControls);
         drawButton(StepUtil.copyPatternElement, false);
         drawButton(StepUtil.saveElement, false);
+        drawButton(settingsElement, settingsView);
     }
 
     public void drawPatterns(StepMemory memory) {
@@ -119,6 +127,8 @@ public class StepDisplay {
     }
 
     public void drawButton(Element element, boolean isOn) {
+        if (settingsView && element != settingsElement) return;
+        
         Color color = isOn ? palette.On : palette.Key;
         if (muted) {
             color = isOn ? palette.Off : palette.KeyDim;

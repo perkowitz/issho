@@ -66,6 +66,7 @@ public class StepUtil {
     public static Element altControlsElement = Button.at(BUTTONS_GROUP, 2);
     public static Element copyPatternElement = Button.at(BUTTONS_GROUP, 3);
     public static Element saveElement = Button.at(BUTTONS_GROUP, 0);
+    public static Element settingsElement = Button.at(BUTTONS_GROUP, 5);
 
     // alt elements (used in place of marker elements when alt is enabled)
     public static Element shiftLeftElement = Button.at(MARKERS_GROUP, 0);
