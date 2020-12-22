@@ -25,7 +25,7 @@ public class Settings implements ModuleListener {
     private ModuleController controller;
     private Module module = null;
     private SaveableModule saveableModule = null;
-    private MidiModule midiModule = null;  // TODO midi class
+    private MidiModule midiModule = null;
 
 
     public Settings(ModuleController controller, Module module) {
