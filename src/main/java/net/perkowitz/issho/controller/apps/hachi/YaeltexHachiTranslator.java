@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class YaeltexHachiTranslator implements HachiController, ControllerListener {
 
-    private static final int LOG_LEVEL = Log.INFO;
+    private static final int LOG_LEVEL = Log.OFF;
 
     private static final int MODULE_BUTTONS_GROUP = YaeltexHachiXL.BUTTONS_TOP;
     private static final int MAIN_BUTTONS_GROUP = YaeltexHachiXL.BUTTONS_LEFT;
@@ -138,14 +138,17 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
     public void setModuleButton(int group, int index, Color color) {
         int g = 0;
         int i = index;
+        boolean found = false;
         switch (group) {
             case 0:
                 // left buttons, but the top 6 buttons are reserved for other things
                 g = MODULE_BUTTONS_GROUP_0;
                 if (i >= 0 && i < 5) {
                     i += 3;
-                } else {
+                    found = true;
+                } else if (i < 10) {
                     i += 6;
+                    found = true;
                 }
                 break;
             case 1:
@@ -153,20 +156,32 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
                 g = MODULE_BUTTONS_GROUP_1;
                 if (i >= 0 && i < 6) {
                     i += 2;
-                } else {
+                    found = true;
+                } else if (i < 12) {
                     i += 4;
+                    found = true;
                 }
                 break;
             case 2:
+                // bottom buttons
                 g = MODULE_BUTTONS_GROUP_2;
+                if (i >= 0 && i < 12) {
+                    found = true;
+                }
                 break;
         }
-        hachi.setButton(Button.at(g, i), color);
+        if (found) {
+            hachi.setButton(Button.at(g, i), color);
+        }
     }
 
 
+    public void flush() {
+        hachi.flush();
+    }
 
-    public void showClock(int measure, int step, Color measureColor, Color stepColor, Color offColor) {
+
+    public void showClock(int measure, int beat, int pulse, Color measureColor, Color stepColor, Color offColor) {
 //        int s = step % YaeltexHachiXL.PADS_MAX_COLUMNS;
 //        int lastStep = (s + YaeltexHachiXL.PADS_MAX_COLUMNS - 1) % YaeltexHachiXL.PADS_MAX_COLUMNS;
 //        int m = measure % YaeltexHachiXL.PADS_MAX_COLUMNS;
@@ -247,6 +262,36 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
 
     public void onElementChanged(Element element, int delta) {}
 
-    public void onElementReleased(Element element) {}
+    public void onElementReleased(Element element) {
+        Log.log(this, LOG_LEVEL, "%s %d", element);
+//        if (moduleSelectButtons.contains(element)) {
+//            listener.onModuleSelectReleased(moduleSelectButtons.getIndex(element));
+//        } else if (moduleMuteButtons.contains(element)) {
+//            listener.onModuleMuteReleased(moduleMuteButtons.getIndex(element));
+//        } else if (mainButtons.contains(element)) {
+//            listener.onMainButtonReleased(mainButtons.getIndex(element));
+//        } else if (knobModeButtons.contains(element)) {
+//            listener.onKnobModeReleased(knobModeButtons.getIndex(element));
+        if (pads.contains(element)) {
+            Pad pad = (Pad)element;
+            listener.onModulePadReleased(pad.getRow(), pad.getColumn());
+        } else if (moduleButtonsLeft1.contains(element)) {
+            Log.log(this, LOG_LEVEL, "left1 %d:%d", MODULE_BUTTONS_GROUP_0, moduleButtonsLeft1.getIndex(element));
+            listener.onModuleButtonReleased(0, moduleButtonsLeft1.getIndex(element));
+        } else if (moduleButtonsLeft2.contains(element)) {
+            Log.log(this, LOG_LEVEL, "left2 %d:%d", MODULE_BUTTONS_GROUP_0, moduleButtonsLeft2.getIndex(element) + 5);
+            listener.onModuleButtonReleased(0, moduleButtonsLeft2.getIndex(element) + 5);
+        } else if (moduleButtonsRight1.contains(element)) {
+            Log.log(this, LOG_LEVEL, "right1 %d:%d", MODULE_BUTTONS_GROUP_1, moduleButtonsRight1.getIndex(element));
+            listener.onModuleButtonReleased(1, moduleButtonsRight1.getIndex(element));
+        } else if (moduleButtonsRight2.contains(element)) {
+            Log.log(this, LOG_LEVEL, "right2 %d:%d", MODULE_BUTTONS_GROUP_1, moduleButtonsRight2.getIndex(element) + 6);
+            listener.onModuleButtonReleased(1, moduleButtonsRight2.getIndex(element) + 6);
+        } else if (moduleButtonsBottom.contains(element)) {
+            Log.log(this, LOG_LEVEL, "bottom %d:%d", MODULE_BUTTONS_GROUP_2, moduleButtonsBottom.getIndex(element));
+            listener.onModuleButtonReleased(2, moduleButtonsBottom.getIndex(element));
+        }
+
+    }
 
 }

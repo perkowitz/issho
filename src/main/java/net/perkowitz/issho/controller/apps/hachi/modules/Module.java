@@ -13,4 +13,5 @@ public interface Module extends ModuleListener, ClockListener {
     public Palette getPalette();
 
     public void draw();
+
 }

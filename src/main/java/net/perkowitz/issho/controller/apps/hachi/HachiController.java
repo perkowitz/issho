@@ -25,7 +25,8 @@ public interface HachiController  {
     public void setModulePad(int row, int column, Color color);
     public void setModuleButton(int group, int index, Color color);
 
-    public void showClock(int measure, int step, Color measureColor, Color stepColor, Color bothColor);
+    public void showClock(int measure, int beat, int pulse, Color measureColor, Color stepColor, Color bothColor);
+    public void flush();
 
     /***** sizes *****/
     public int MODULE_COUNT();   // max number of modules in select/mute buttons

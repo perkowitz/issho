@@ -23,13 +23,16 @@ import java.util.concurrent.CountDownLatch;
 
 public class Hachi implements HachiListener, ClockListener {
 
-    private static final int LOG_LEVEL = Log.INFO;
+    private static final int LOG_LEVEL = Log.OFF;
     static { Log.setLogLevel(Log.INFO); }
 
     public static int MAX_ROWS = 8;
     public static int MAX_COLUMNS = 16;
     public static int MAX_MODULES = 8;
     public static int MAX_KNOBS = 8;
+
+    private static int PULSE_PER_BEAT = 24;
+    private static int BEAT_PER_MEASURE = 4;
 
     public enum KnobMode {
         MAIN, SHIHAI, MODULE1, MODULE2
@@ -57,6 +60,9 @@ public class Hachi implements HachiListener, ClockListener {
     private boolean midiClockRunning = false;
     private int tickCount = 0;
     private int measureCount = 0;
+    private int beatCount = 0;
+    private int pulseCount = 0;
+    private int pulseDelta = 6; // currently internal clock only, which just counts 16th notes
     @Setter private boolean midiContinueAsStart = true;
     private int tempo = 120;
     private int tempoIntervalInMillis = 125 * 120 / tempo;
@@ -117,11 +123,12 @@ public class Hachi implements HachiListener, ClockListener {
         loadModules(midiOut);
 
         initialize();
-        Thread.sleep(1000);
         draw();
         startTimer();
+        Log.delay(1000);
+        onModuleSelectPressed(0);
         stop.await();
-        shutdown();
+        quit();
     }
 
     // initialize puts the controller in its starting state.
@@ -133,15 +140,6 @@ public class Hachi implements HachiListener, ClockListener {
     private void quit() {
         controller.initialize();
         midiOut.allNotesOff();
-        stop.countDown();
-    }
-
-    private void shutdown() {
-        timer.cancel();
-        controller.initialize();
-        Log.delay(1000);
-        controller.close();
-        midiSetup.close();
         System.exit(0);
     }
 
@@ -155,12 +153,7 @@ public class Hachi implements HachiListener, ClockListener {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (clockRunning) {
-                    tick(tickCount % 16 == 0);
-                    tickCount++;
-                    if (tickCount % 16 == 0) {
-                        measureCount++;
-                    }
-
+                    onTick();
                 }
                 tempoIntervalInMillis = 125 * 120 / tempo;
                 timer.cancel();
@@ -168,13 +161,6 @@ public class Hachi implements HachiListener, ClockListener {
                 startTimer();
             }
         }, tempoIntervalInMillis, tempoIntervalInMillis);
-    }
-
-    public void tick(boolean andReset) {
-        for (Module module : modules) {
-            module.onTick();
-        }
-        drawClock();
     }
 
     private void loadModules(MidiOut midiOut) {
@@ -186,33 +172,47 @@ public class Hachi implements HachiListener, ClockListener {
                 Palette.ORANGE, Palette.YELLOW, Palette.PINK, Palette.RED
         };
 
+//         1 StepModule
+        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+        moduleTranslator.setEnabled(false);
+        Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
+        module.setPalette(ps[0]);
+        modules.add(module);
+        moduleTranslators.add(moduleTranslator);
+
+//         1 StepModule
+        moduleTranslator = new ModuleTranslator(controller);
+        moduleTranslator.setEnabled(false);
+        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
+        module.setPalette(ps[1]);
+        modules.add(module);
+        moduleTranslators.add(moduleTranslator);
+
         // 6 MockModules
-        for (int i = 0; i < 3; i++) {
-            ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+        for (int i = 0; i < 6; i++) {
+            moduleTranslator = new ModuleTranslator(controller);
             moduleTranslator.setEnabled(false);
-            Module module = new MockModule(moduleTranslator, ps[i]);
+            boolean r = false;
+            if (i == 3) {
+                r = true;
+            }
+            module = new MockModule(moduleTranslator, ps[i], r);
             modules.add(module);
             moduleTranslators.add(moduleTranslator);
         }
 
-//        // 1 VizModule
+        // 1 VizModule
 //        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
 //        moduleTranslator.setEnabled(false);
 //        Module module = new VizModule(moduleTranslator, ps[6]);
 //        modules.add(module);
 //        moduleTranslators.add(moduleTranslator);
 
-        // 1 StepModule
-        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
-
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);
         moduleTranslators.get(selectedModuleIndex).setEnabled(true);
     }
+
 
     /***** draw *****/
 
@@ -273,7 +273,7 @@ public class Hachi implements HachiListener, ClockListener {
     }
 
     private void drawClock() {
-        controller.showClock(measureCount, tickCount, mainPalette.On, modulePalette.Key, Colors.BLACK);
+        controller.showClock(measureCount, beatCount, pulseCount, mainPalette.On, modulePalette.Key, Colors.BLACK);
     }
 
 
@@ -295,16 +295,17 @@ public class Hachi implements HachiListener, ClockListener {
         Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
-            draw();
         }
+        draw();
     }
 
     public void onMainButtonPressed(int index) {
         Log.log(this, LOG_LEVEL, "%d", index);
         switch (index) {
             case 0:
-                tickCount = 0;
                 measureCount = 0;
+                beatCount = 0;
+                pulseCount = 0;
                 clockRunning = !clockRunning;
                 if (!clockRunning) {
                     midiOut.allNotesOff();
@@ -385,10 +386,23 @@ public class Hachi implements HachiListener, ClockListener {
     public void onStop() {
         System.out.println("Hachi onStop");
     }
+
     public void onTick() {
-        System.out.println("Hachi onTick");
-        tick(false);
+        for (Module module : modules) {
+            module.onClock(measureCount, beatCount, pulseCount);
+        }
+        drawClock();
+        pulseCount = (pulseCount + pulseDelta) % PULSE_PER_BEAT;
+        if (pulseCount == 0) {
+            beatCount = (beatCount + 1) % BEAT_PER_MEASURE;
+            if (beatCount == 0) {
+                measureCount++;
+            }
+        }
     }
 
+    public void onClock(int measure, int beat, int pulse) {
+        System.out.println("Hachi onClock");
+    }
 
 }

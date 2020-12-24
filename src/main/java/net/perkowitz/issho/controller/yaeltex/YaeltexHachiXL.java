@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
+import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.*;
@@ -19,12 +20,17 @@ import java.util.Map;
  */
 public class YaeltexHachiXL implements Controller, ChannelListener {
 
+    private static final int LOG_LEVEL = Log.OFF;
+
     private static int MIDI_REALTIME_COMMAND = 0xF0;
     private static int PADS_CHANNEL = 0;
     private static int BUTTONS_CHANNEL = 1;
     private static int KNOBS_CHANNEL = 0;
 
-    // HachXL buttons appear in 4 groups, one on each side of the device.
+    private static int MIDI_DELAY_MILLIS = 50;
+    private static int MIDI_DELAY_COUNT = 200;
+
+    // HachiXL buttons appear in 4 groups, one on each side of the device.
     public static final int PADS_GROUP = 0;
     public static final int PADS_MAX_ROWS = 8;
     public static final int PADS_MAX_COLUMNS = 16;
@@ -57,6 +63,7 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
     @Setter private Map<Color, Integer> colorMap = Maps.newHashMap();
     private MidiOut midiOut;
     @Setter private ControllerListener listener;
+    private int midiCount = 0;
 
     public YaeltexHachiXL(MidiOut midiOut, ControllerListener listener) {
         this.midiOut = midiOut;
@@ -95,7 +102,7 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
                 || pad.getRow() < 0 || pad.getColumn() < 0) {
             return;
         }
-        midiOut.note(PADS_CHANNEL, padToNote(pad), colorToIndex(color));
+        note(PADS_CHANNEL, padToNote(pad), colorToIndex(color));
     }
 
     public void setPad(Pad pad, int colorIndex) {
@@ -103,12 +110,18 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
                 || pad.getRow() < 0 || pad.getColumn() < 0) {
             return;
         }
-        midiOut.note(PADS_CHANNEL, padToNote(pad), colorIndex);
+        note(PADS_CHANNEL, padToNote(pad), colorIndex);
     }
 
     public void setButton(Button button, Color color) {
-        // TODO: check button within range
-        midiOut.note(BUTTONS_CHANNEL, buttonToNote(button), colorToIndex(color));
+        Log.log(this, LOG_LEVEL, "Button:%s, Color=%s", button, color);
+        int max = MAX_BUTTONS;
+        if (button.getGroup() == BUTTONS_BOTTOM) {
+            max = MAX_BUTTONS_BOTTOM;
+        }
+        if (button.getIndex() >= 0 && button.getIndex() < max) {
+            note(BUTTONS_CHANNEL, buttonToNote(button), colorToIndex(color));
+        }
     }
 
     public void setKnob(Knob knob, Color color) {
@@ -118,10 +131,15 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
 
     public void setKnobValue(Knob knob, int value) {
         // TODO: check knob within range
-        midiOut.cc(KNOBS_CHANNEL, knob.getIndex() + KNOBS_START_CC, value);
+        cc(KNOBS_CHANNEL, knob.getIndex() + KNOBS_START_CC, value);
     }
 
     public void setLight(Light light, Color color) {}
+
+    public void flush() {
+        Log.delay(MIDI_DELAY_MILLIS);
+    }
+
 
     @Override
     public String toString() {
@@ -173,7 +191,26 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
 
 
     /***** private implementation **************************************************************/
-    
+
+    // introduce occasional delays to keep from overwhelming the controller
+    public void note(int channel, int noteNumber, int velocity) {
+        midiOut.note(channel, noteNumber, velocity);
+        midiCount++;
+        if (midiCount >= MIDI_DELAY_COUNT) {
+            midiCount = 0;
+            Log.delay(MIDI_DELAY_MILLIS);
+        }
+    }
+
+    // introduce occasional delays to keep from overwhelming the controller
+    public void cc(int channel, int ccNumber, int value) {
+        midiOut.cc(channel, ccNumber, value);
+        if (midiCount >= MIDI_DELAY_COUNT) {
+            midiCount = 0;
+            Log.delay(MIDI_DELAY_MILLIS);
+        }
+    }
+
     private int colorToIndex(Color color) {
         Integer index = colorMap.get(color);
         if (index == null) {

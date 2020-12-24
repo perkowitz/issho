@@ -4,6 +4,7 @@ import lombok.Setter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Log {
 
@@ -36,7 +37,7 @@ public class Log {
     public static void delay(int millis) {
         if (millis == 0) return;
         try {
-            Thread.sleep(millis);
+            TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {}
     }
 

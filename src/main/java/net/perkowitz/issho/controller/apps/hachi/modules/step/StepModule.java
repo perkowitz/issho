@@ -2,16 +2,18 @@ package net.perkowitz.issho.controller.apps.hachi.modules.step;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.apps.hachi.Palette;
+import net.perkowitz.issho.controller.apps.hachi.modules.*;
 import net.perkowitz.issho.controller.apps.hachi.modules.Module;
-import net.perkowitz.issho.controller.apps.hachi.modules.ModuleController;
-import net.perkowitz.issho.controller.apps.hachi.modules.ModuleListener;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.midi.MidiOut;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -21,27 +23,28 @@ import static net.perkowitz.issho.controller.apps.hachi.modules.step.Stage.Marke
 /**
  * Created by optic on 10/24/16.
  */
-public class StepModule implements Module, ModuleListener {
+public class StepModule implements Module, SaveableModule, MidiModule, ModuleListener {
+
+    private static final int LOG_LEVEL = Log.OFF;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
     private ModuleController controller;
+    private Settings settingsModule;
     private MidiOut midiOut;
 
-    @Getter @Setter private boolean muted = false;
-    @Getter @Setter private Palette palette = Palette.DEFAULT;
-
+    @Getter private boolean muted = false;
+    @Getter private Palette palette = Palette.DEFAULT;
 
     private StepMemory memory = new StepMemory();
     private StepDisplay stepDisplay;
-//    private SettingsSubmodule settingsModule;
     private boolean settingsView = false;
 
     private Set<Integer> onNotes = Sets.newHashSet();
 
     // file save/load
     private String filePrefix = "step";
-    private int currentFileIndex = 0;
+    @Getter @Setter private int fileIndex = 0;
 
     private int currentStageIndex = 0;
     private int currentStageStepIndex = 0;
@@ -60,11 +63,13 @@ public class StepModule implements Module, ModuleListener {
     public StepModule(ModuleController controller, MidiOut midiOut, Palette palette, String filePrefix) {
         this.controller = controller;
         this.midiOut = midiOut;
+        this.settingsModule = new Settings(controller, this);
         this.palette = palette;
         this.filePrefix = filePrefix;
+        load(fileIndex);
         currentSteps = currentStage().getSteps();
         currentMarker = Note;
-        stepDisplay = new StepDisplay(controller);
+        stepDisplay = new StepDisplay(controller, settingsModule);
         stepDisplay.setCurrentMarker(currentMarker);   // translate this
     }
 
@@ -85,7 +90,20 @@ public class StepModule implements Module, ModuleListener {
     }
 
     public void flipMuted() {
-        muted = !muted;
+        setMuted(!muted);
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+        if (muted) {
+            notesOff();
+        }
+        stepDisplay.setMuted(muted);
+    }
+
+    public void setPalette(Palette palette) {
+        this.palette = palette;
+        stepDisplay.setPalette(palette);
     }
 
     /***** private implementation ****************************************/
@@ -123,6 +141,8 @@ public class StepModule implements Module, ModuleListener {
 
     private void playStep(Step step) {
 
+        if (midiOut == null) return;
+        
         // there may be multiple markers to highlight in the step
         List<Integer> noteIndices = Lists.newArrayList();
         switch (step.getMode()) {
@@ -146,6 +166,8 @@ public class StepModule implements Module, ModuleListener {
                 stepDisplay.drawActiveNote(7-index, currentStageIndex);
             }
         }
+
+        if (muted) return;
 
         switch (step.getMode()) {
             case Play:
@@ -210,13 +232,7 @@ public class StepModule implements Module, ModuleListener {
     /***** Module implementation ***********************************/
 
     public void draw() {
-        stepDisplay.initialize();
-        if (settingsView) {
-//            settingsModule.redraw();
-//            stepDisplay.drawLeftControls();
-        } else {
-            stepDisplay.draw(memory);
-        }
+        stepDisplay.draw(memory);
     }
 
 
@@ -270,6 +286,11 @@ public class StepModule implements Module, ModuleListener {
     /***** ModuleListener implementation *****/
 
     public void onPadPressed(int row, int column, int value) {
+        if (settingsView) {
+            settingsModule.onPadPressed(row, column, value);
+            return;
+        }
+
         Stage stage = memory.currentPattern().getStage(column);
         int index = 7 - row;
         if (currentMarker == stage.getMarker(index)) {
@@ -282,13 +303,33 @@ public class StepModule implements Module, ModuleListener {
     }
 
     public void onPadReleased(int row, int column) {
+        if (settingsView) {
+            settingsModule.onPadReleased(row, column);
+            return;
+        }
     }
 
 
     public void onButtonPressed(int group, int index, int value) {
 
         Button button = Button.at(group, index);
-        if (button.equals(StepUtil.copyPatternElement)) {
+        Log.log(this, LOG_LEVEL, "button=%s", button);
+
+        if (button.equals(StepUtil.settingsElement)) {
+            settingsView = !settingsView;
+            stepDisplay.setSettingsView(settingsView);
+            if (settingsView) {
+                settingsModule.draw();
+            } else {
+                stepDisplay.drawStages(memory);
+            }
+            stepDisplay.drawButton(button, settingsView);
+
+        } else if (settingsView) {
+            settingsModule.onButtonPressed(group, index, value);
+            return;
+
+        } else if (button.equals(StepUtil.copyPatternElement)) {
             savingPattern = true;
             stepDisplay.drawButton(button, true);
 
@@ -297,6 +338,10 @@ public class StepModule implements Module, ModuleListener {
             stepDisplay.setDisplayAltControls(displayAltControls);
             stepDisplay.drawButton(button, displayAltControls);
             stepDisplay.drawMarkers();
+
+        } else if (button.equals(StepUtil.saveElement)) {
+            stepDisplay.drawButton(button, true);
+            this.save(fileIndex);
 
         } else if (StepUtil.markerElements.contains(button) && !displayAltControls) {
             Stage.Marker newMarker = StepUtil.markerPaletteMap.get(button);
@@ -363,7 +408,13 @@ public class StepModule implements Module, ModuleListener {
     }
 
     public void onButtonReleased(int group, int index) {
+        if (settingsView) {
+            settingsModule.onButtonReleased(group, index);
+            return;
+        }
+
         Button button = Button.at(group, index);
+        Log.log(this, LOG_LEVEL, "button=%s", button);
         if (button.equals(StepUtil.shiftLeftElement) && displayAltControls) {
             stepDisplay.drawButton(button, false);
 
@@ -374,6 +425,9 @@ public class StepModule implements Module, ModuleListener {
             savingPattern = false;
             stepDisplay.drawButton(button, false);
 
+        } else if (button.equals(StepUtil.saveElement)) {
+            stepDisplay.drawButton(button, false);
+
         } else if (StepUtil.patternElements.contains(button)) {
             stepDisplay.drawPatterns(memory);
 
@@ -381,6 +435,10 @@ public class StepModule implements Module, ModuleListener {
     }
 
     public void onKnob(int index, int value) {
+        if (settingsView) {
+            settingsModule.onKnob(index, value);
+            return;
+        }
     }
 
 
@@ -407,11 +465,84 @@ public class StepModule implements Module, ModuleListener {
         advance(andReset);
     }
 
-    public void clock(int measure, int beat, int pulse) {
+    public void onClock(int measure, int beat, int pulse) {
         if (pulse == 0 || pulse == 6 + swingOffset || pulse == 12 || pulse == 18 + swingOffset) {
             advance(beat == 0 && pulse == 0);
         }
     }
+
+
+    /***** MidiModule  implementation ****************************************/
+
+    public int getMidiChannel() {
+        return memory.getMidiChannel();
+    }
+    public void setMidiChannel(int channel) {
+        notesOff();
+        memory.setMidiChannel(channel);
+    }
+
+
+
+    /***** SaveableModule implementation ****************************************/
+
+    public void setFilePrefix(String filePrefix) {
+        this.filePrefix = filePrefix;
+    }
+
+    public String getFilePrefix() {
+        return filePrefix;
+    }
+
+    public void save() {
+        save(fileIndex);
+    }
+
+    public void save(int index) {
+        saveMemory(index, memory);
+    }
+
+    public void saveMemory(int index, StepMemory saveMemory) {
+        try {
+            String filename = filename(index);
+            File file = new File(filename);
+            if (file.exists()) {
+                // make a backup, but will overwrite any previous backups
+                Files.copy(file, new File(filename + ".backup"));
+            }
+            objectMapper.writeValue(file, saveMemory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void load() {
+        load(fileIndex);
+    }
+
+    public void load(int index) {
+        memory = loadMemory(index);
+//        settingsModule.setMidiChannel(memory.getMidiChannel());
+    }
+
+    public StepMemory loadMemory(int index) {
+        try {
+            String filename = filename(index);
+            File file = new File(filename);
+            if (file.exists()) {
+                return objectMapper.readValue(file, StepMemory.class);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new StepMemory();
+    }
+
+    private String filename(int index) {
+        return filePrefix + "-" + index + ".json";
+    }
+
 
 
 }

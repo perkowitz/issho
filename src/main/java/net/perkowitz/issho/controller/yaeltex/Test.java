@@ -1,14 +1,19 @@
 // Test runs a simple drawing program to test the Yaeltex controller.
 package net.perkowitz.issho.controller.yaeltex;
 
+import com.google.common.collect.Maps;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.Log;
+import net.perkowitz.issho.controller.midi.DeviceRegistry;
 import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Pad;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mikep on 7/28/20.
@@ -21,10 +26,21 @@ public class Test {
     private static YaeltexHachiXL hachi = null;
     private static int testNumber = 1;
 
+    private static Map<String, List<List<String>>> deviceNameStrings = Maps.newHashMap();
+
 
     public static void main(String args[]) throws Exception {
 
-        midiSetup = new MidiSetup();
+        // settings
+        String controllerName = "hachi";
+        if (args.length > 0) {
+            controllerName = args[0];
+            deviceNameStrings.put(YaeltexHachiXL.name(), Arrays.asList(Arrays.asList(controllerName)));
+        }
+        System.out.printf("Testing controller \"%s\"\n", controllerName);
+
+        DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(deviceNameStrings));
+        midiSetup = new MidiSetup(registry);
         for (Controller controller : midiSetup.getControllers()) {
             if (controller.toString().equals(YaeltexHachiXL.name())) {
                 hachi = (YaeltexHachiXL)controller;
@@ -39,7 +55,7 @@ public class Test {
         hachi.setColorMap(ColorModes.twoBitMap);
         hachi.initialize();
 
-        simpleTests();
+        simpleTests2();
         Log.delay(1000);
 
 //        for (int i = 0; i < 1; i++) {
@@ -62,7 +78,7 @@ public class Test {
                 Colors.BRIGHT_BLUE, Colors.BRIGHT_MAGENTA, Colors.WHITE, Colors.GRAY
         };
 
-        for (int start=0; start < 1001; start += 1000) {
+        for (int start=40; start < 2000; start += 1000) {
             System.out.printf("***** start-delay=%d, buttons before\n", start);
             int c = 0;
             for (int delay=0; delay < 20; delay += 5) {
@@ -78,12 +94,49 @@ public class Test {
         }
     }
 
-    private static void simpleTest(int delay, int startDelay, Color color, boolean before) {
-        System.out.printf("Test #%d: Delay=%d, Start=%d, Before=%s, Color=%s\n", testNumber, delay, startDelay, before, color);
-        Log.delay(startDelay);
-        if (before) buttons(color, delay);
+    private static void simpleTests2() throws Exception {
+
+        int bigDelay = 2000;
+        int delay = 0;
+
+        Color colors[] = {
+                Colors.BRIGHT_RED, Colors.BRIGHT_ORANGE, Colors.BRIGHT_YELLOW, Colors.BRIGHT_GREEN,
+                Colors.BRIGHT_BLUE, Colors.BRIGHT_MAGENTA, Colors.WHITE, Colors.GRAY
+        };
+
+        Log.delay(bigDelay);
+        System.out.println("Initialize..");
+        pads(Colors.BRIGHT_PINK, delay);
+        Log.delay(bigDelay);
+
+        buttons(Colors.BRIGHT_BLUE, 0);
+
+
+        int c = 0;
+        for (int after=0; after <= 80; after += 20) {
+            System.out.printf("***** after-delay=%d, buttons before\n", after);
+//            hachi.initialize();
+            Log.delay(bigDelay);
+            for (int i = 0; i < 24; i++) {
+                Color color = colors[i % colors.length];
+                System.out.printf("Test #%d: AfterDelay=%d, Color=%s\n", testNumber, after, color);
+                pads(color, delay);
+                Log.delay(after);
+            }
+            pads(colors[c % colors.length], delay);
+            Log.delay(after);
+            System.out.println("");
+            Log.delay(bigDelay);
+            c++;
+        }
+    }
+
+    private static void simpleTest(int delay, int afterDelay, Color color, boolean before) {
+        System.out.printf("Test #%d: Delay=%d, AfterDelay=%d, Before=%s, Color=%s\n", testNumber, delay, afterDelay, before, color);
+//        if (before) buttons(color, delay);
         pads(color, delay);
-        if (!before) buttons(color, delay);
+//        if (!before) buttons(color, delay);
+        Log.delay(afterDelay);
         testNumber++;
     }
 

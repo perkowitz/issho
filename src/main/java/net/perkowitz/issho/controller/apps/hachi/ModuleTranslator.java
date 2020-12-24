@@ -26,17 +26,23 @@ public class ModuleTranslator implements ModuleController {
 
     public void clear() {
         if (enabled) {
-            for (int group = 0; group < controller.BUTTON_GROUPS_COUNT(); group++) {
-                for (int index = 0; index < controller.BUTTONS_COUNT(group); index++) {
-                    controller.setModuleButton(group, index, Colors.OFF);
-                    Log.delay();
-                }
+            clearButtons();
+            clearPads();
+        }
+    }
+
+    private void clearButtons() {
+        for (int group = 0; group < controller.BUTTON_GROUPS_COUNT(); group++) {
+            for (int index = 0; index < controller.BUTTONS_COUNT(group); index++) {
+                controller.setModuleButton(group, index, Colors.OFF);
             }
-            for (int row=0; row < controller.PAD_ROWS_COUNT(); row++) {
-                for (int column = 0; column < controller.PAD_COLUMNS_COUNT(); column++) {
-                    setPad(row, column, Colors.OFF);
-//                    Log.delay();
-                }
+        }
+    }
+
+    public void clearPads() {
+        for (int row=0; row < controller.PAD_ROWS_COUNT(); row++) {
+            for (int column = 0; column < controller.PAD_COLUMNS_COUNT(); column++) {
+                setPad(row, column, Colors.OFF);
             }
         }
     }
@@ -63,6 +69,10 @@ public class ModuleTranslator implements ModuleController {
         if (enabled) {
             controller.setKnobColor(index, color);
         }
+    }
+
+    public void flush() {
+        controller.flush();
     }
 
 }
