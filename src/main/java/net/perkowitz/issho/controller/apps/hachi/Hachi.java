@@ -52,6 +52,7 @@ public class Hachi implements HachiListener, ClockListener {
     private List<Module> modules;
     private List<ModuleTranslator> moduleTranslators;
     private MidiOut midiOut;
+    private List<MidiIn> midiIns;
 
     // clock and timing
     private CountDownLatch stop = new CountDownLatch(1);
@@ -89,12 +90,23 @@ public class Hachi implements HachiListener, ClockListener {
     public void run() throws Exception {
 
         // MidiSetup does the work of matching available midi devices against supported controller types
+        // Any devices you want to open should be listed in deviceNameStrings
         DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(deviceNameStrings));
         midiSetup = new MidiSetup(registry);
         if (midiSetup.getControllers().size() == 0) {
             System.err.println("No supported MIDI controllers found.");
             System.exit(1);
         }
+
+        // TODO: pull inputs and outputs from config
+        midiIns = Lists.newArrayList();
+        MidiIn input = midiSetup.getMidiIn("Extra");
+        if (input != null) {
+            Log.log(this, LOG_LEVEL, "Found MIDI input for 'Extra': %s", input);
+            input.addClockListener(this);
+            midiIns.add(input);
+        }
+        midiOut = midiSetup.getMidiOut("Extra");
 
         // translators are app-specific, so create those based on controllers found
         for (Controller c : midiSetup.getControllers()) {
@@ -104,7 +116,7 @@ public class Hachi implements HachiListener, ClockListener {
                 HachiController t = new YaeltexHachiTranslator((YaeltexHachiXL) c, this);
                 controllers.add(t);
                 c.setListener((ControllerListener) t);
-                MidiIn input = midiSetup.getMidiIn(YaeltexHachiXL.name());
+                input = midiSetup.getMidiIn(YaeltexHachiXL.name());
                 if (input != null) {
                     System.out.printf("Found MIDI input for %s\n", YaeltexHachiXL.name());
                     input.addClockListener(this);
@@ -118,14 +130,13 @@ public class Hachi implements HachiListener, ClockListener {
         controller = controllers.get(0);
 
         // load modules
-
-        midiOut = midiSetup.getMidiOut("Extra");
+        // TODO: load from config
         loadModules(midiOut);
 
         initialize();
         draw();
         startTimer();
-        Log.delay(1000);
+        Log.delay(200);
         onModuleSelectPressed(0);
         stop.await();
         quit();
@@ -153,7 +164,7 @@ public class Hachi implements HachiListener, ClockListener {
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (clockRunning) {
-                    onTick();
+                    advance(pulseDelta);
                 }
                 tempoIntervalInMillis = 125 * 120 / tempo;
                 timer.cancel();
@@ -213,6 +224,20 @@ public class Hachi implements HachiListener, ClockListener {
         moduleTranslators.get(selectedModuleIndex).setEnabled(true);
     }
 
+    private void advance(int pulseDelta) {
+        for (Module module : modules) {
+            module.onClock(measureCount, beatCount, pulseCount);
+        }
+        drawClock();
+        pulseCount = (pulseCount + pulseDelta) % PULSE_PER_BEAT;
+        if (pulseCount == 0) {
+            beatCount = (beatCount + 1) % BEAT_PER_MEASURE;
+            if (beatCount == 0) {
+                measureCount++;
+            }
+        }
+
+    }
 
     /***** draw *****/
 
@@ -235,7 +260,7 @@ public class Hachi implements HachiListener, ClockListener {
         for (int index=0; index < 4; index++) {
             controller.setMainButton(index, mainPalette.KeyDim);
         }
-        if (clockRunning) {
+        if (clockRunning || midiClockRunning) {
             controller.setMainButton(0, mainPalette.On);
         }
         controller.setKnobModeButton(0, knobMode == KnobMode.MAIN ? mainPalette.Key : mainPalette.KeyDim);
@@ -310,7 +335,7 @@ public class Hachi implements HachiListener, ClockListener {
                 if (!clockRunning) {
                     midiOut.allNotesOff();
                 }
-                draw();
+                drawMain();
                 break;
             case 2:
                 quit();
@@ -381,23 +406,25 @@ public class Hachi implements HachiListener, ClockListener {
 
     public void onStart(boolean restart) {
         System.out.println("Hachi onStart");
+        for (Module module : modules) {
+            module.onStart(restart);
+        }
+        midiClockRunning = true;
+        drawMain();
     }
 
     public void onStop() {
         System.out.println("Hachi onStop");
+        midiClockRunning = false;
+        drawMain();
+        for (Module module : modules) {
+            module.onStop();
+        }
     }
 
     public void onTick() {
-        for (Module module : modules) {
-            module.onClock(measureCount, beatCount, pulseCount);
-        }
-        drawClock();
-        pulseCount = (pulseCount + pulseDelta) % PULSE_PER_BEAT;
-        if (pulseCount == 0) {
-            beatCount = (beatCount + 1) % BEAT_PER_MEASURE;
-            if (beatCount == 0) {
-                measureCount++;
-            }
+        if (midiClockRunning) {
+            advance(1);
         }
     }
 

@@ -70,25 +70,25 @@ public class MidiIn implements Receiver {
                 }
                 switch (status) {
                     case START:
-//                        System.out.printf("MidiIn %s: START\n", this);
+                        Log.log(this, LOG_LEVEL, "Start");
                         for (ClockListener listener : clockListeners) {
                             listener.onStart(true);
                         }
                         break;
                     case STOP:
-//                        System.out.printf("MidiIn %s: STOP\n", this);
+                        Log.log(this, LOG_LEVEL, "Stop");
                         for (ClockListener listener : clockListeners) {
                             listener.onStop();
                         }
                         break;
                     case CONTINUE:
-//                        System.out.printf("MidiIn %s: CONTINUE\n", this);
+                        Log.log(this, LOG_LEVEL, "Continue");
                         for (ClockListener listener : clockListeners) {
                             listener.onStart(midiContinueAsStart);
                         }
                         break;
                     case TIMING_CLOCK:
-//                        System.out.printf("MidiIn %s: TICK\n", this);
+                        Log.log(this, LOG_LEVEL, "Clock tick");
                         for (ClockListener listener : clockListeners) {
                             listener.onTick();
                         }
