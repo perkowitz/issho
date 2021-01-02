@@ -24,7 +24,7 @@ import java.util.concurrent.CountDownLatch;
 public class Hachi implements HachiListener, ClockListener {
 
     private static final int LOG_LEVEL = Log.OFF;
-    static { Log.setLogLevel(Log.INFO); }
+    private static final int LOG_PERF = Log.OFF;
 
     public static int MAX_ROWS = 8;
     public static int MAX_COLUMNS = 16;
@@ -43,6 +43,8 @@ public class Hachi implements HachiListener, ClockListener {
     static {
         deviceNameStrings.put("TestBus",Arrays.asList(Arrays.asList("TestBus")));
         deviceNameStrings.put("Extra",Arrays.asList(Arrays.asList("Extra")));
+        deviceNameStrings.put("SBX1",Arrays.asList(Arrays.asList("SBX1", "2,0,0")));
+        deviceNameStrings.put("SBX1-2",Arrays.asList(Arrays.asList("SBX1", "2,0,1")));
     }
 
     // for managing app state
@@ -89,6 +91,10 @@ public class Hachi implements HachiListener, ClockListener {
 
     public void run() throws Exception {
 
+        Log.addStopwatch();
+        Log.addStopwatch();
+        Log.addStopwatch();
+
         // MidiSetup does the work of matching available midi devices against supported controller types
         // Any devices you want to open should be listed in deviceNameStrings
         DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(deviceNameStrings));
@@ -102,11 +108,30 @@ public class Hachi implements HachiListener, ClockListener {
         midiIns = Lists.newArrayList();
         MidiIn input = midiSetup.getMidiIn("Extra");
         if (input != null) {
-            Log.log(this, LOG_LEVEL, "Found MIDI input for 'Extra': %s", input);
+            Log.log(this, Log.ALWAYS, "Found MIDI input for 'Extra': %s", input);
             input.addClockListener(this);
             midiIns.add(input);
         }
-        midiOut = midiSetup.getMidiOut("Extra");
+        input = midiSetup.getMidiIn("SBX1");
+        if (input != null) {
+            Log.log(this, Log.ALWAYS, "Found MIDI input for 'SBX1': %s", input);
+            input.addClockListener(this);
+            midiIns.add(input);
+        }
+        midiOut = midiSetup.getMidiOut("SBX1");
+        if (midiOut != null) {
+            Log.log(this, Log.ALWAYS, "Found MIDI output for 'SBX1': %s", midiOut);
+        } else {
+            midiOut = midiSetup.getMidiOut("Extra");
+            if (midiOut != null) {
+                Log.log(this, Log.ALWAYS, "Found MIDI output for 'Extra': %s", midiOut);
+            }
+        }
+        if (midiOut == null) {
+            System.err.println("No MIDI output found.");
+            System.exit(1);
+        }
+
 
         // translators are app-specific, so create those based on controllers found
         for (Controller c : midiSetup.getControllers()) {
@@ -118,10 +143,10 @@ public class Hachi implements HachiListener, ClockListener {
                 c.setListener((ControllerListener) t);
                 input = midiSetup.getMidiIn(YaeltexHachiXL.name());
                 if (input != null) {
-                    System.out.printf("Found MIDI input for %s\n", YaeltexHachiXL.name());
+                    Log.log(this, Log.ALWAYS, "Found MIDI input for %s: %s", YaeltexHachiXL.name(), input);
                     input.addClockListener(this);
                 } else {
-                    System.out.printf("Unable to find MIDI input for %s\n", YaeltexHachiXL.name());
+                    Log.log(this, Log.WARNING, "Unable to find MIDI input for %s", YaeltexHachiXL.name());
                 }
             }
         }
@@ -150,7 +175,9 @@ public class Hachi implements HachiListener, ClockListener {
     // quit cleans up anything it needs to and exits.
     private void quit() {
         controller.initialize();
-        midiOut.allNotesOff();
+        if (midiOut != null) {
+            midiOut.allNotesOff();
+        }
         System.exit(0);
     }
 
@@ -183,7 +210,7 @@ public class Hachi implements HachiListener, ClockListener {
                 Palette.ORANGE, Palette.YELLOW, Palette.PINK, Palette.RED
         };
 
-//         1 StepModule
+//        1 StepModule
         ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
         moduleTranslator.setEnabled(false);
         Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
@@ -225,10 +252,28 @@ public class Hachi implements HachiListener, ClockListener {
     }
 
     private void advance(int pulseDelta) {
+        // calculating and displaying times to track clock correctness/stability
+        String clock = String.format("%02d:%02d:%02d", measureCount, beatCount, pulseCount);
+        if (pulseCount == 0) {
+            if (beatCount == 0) {
+                Log.resetStopWatch(0);
+                Log.memory(this, LOG_PERF, "");
+                Log.log(this, LOG_PERF, "Measure -----");
+            }
+            Log.resetStopWatch(1);
+        }
+        boolean pulseBeat = pulseCount % 6 == 0;
+        if (pulseBeat) {
+            Log.resetStopWatch(2);
+            Log.log(this, LOG_PERF, "ADV %s - %s", clock, Log.stopWatchTimes());
+        }
+
+        // actual work of advancing the modules
         for (Module module : modules) {
             module.onClock(measureCount, beatCount, pulseCount);
         }
-        drawClock();
+//        drawClock();
+//        Log.log(this, LOG_PERF, "ADV %s - %s (post-modules)", clock, Log.stopWatchTimes());
         pulseCount = (pulseCount + pulseDelta) % PULSE_PER_BEAT;
         if (pulseCount == 0) {
             beatCount = (beatCount + 1) % BEAT_PER_MEASURE;
@@ -236,7 +281,7 @@ public class Hachi implements HachiListener, ClockListener {
                 measureCount++;
             }
         }
-
+//        Log.log(this, LOG_PERF, "ADV %s - %s (done)", clock, Log.stopWatchTimes());
     }
 
     /***** draw *****/
@@ -305,7 +350,7 @@ public class Hachi implements HachiListener, ClockListener {
     /***** HachiListener implementation *****/
 
     public void onModuleSelectPressed(int index) {
-        Log.log(this, LOG_LEVEL, "%d", index);
+//        Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
             moduleTranslators.get(selectedModuleIndex).setEnabled(false);
             selectedModuleIndex = index;
@@ -317,7 +362,7 @@ public class Hachi implements HachiListener, ClockListener {
     }
 
     public void onModuleMutePressed(int index) {
-        Log.log(this, LOG_LEVEL, "%d", index);
+//        Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
         }
@@ -332,7 +377,7 @@ public class Hachi implements HachiListener, ClockListener {
                 beatCount = 0;
                 pulseCount = 0;
                 clockRunning = !clockRunning;
-                if (!clockRunning) {
+                if (!clockRunning && midiOut != null) {
                     midiOut.allNotesOff();
                 }
                 drawMain();
@@ -405,7 +450,9 @@ public class Hachi implements HachiListener, ClockListener {
     /***** ClockListener implementation *****/
 
     public void onStart(boolean restart) {
-        System.out.println("Hachi onStart");
+        measureCount = beatCount = pulseCount = 0;
+        Log.log(this, LOG_LEVEL, "onStart %02d:%02d:%02d", measureCount, beatCount, pulseCount);
+        Log.resetAllStopWatches();
         for (Module module : modules) {
             module.onStart(restart);
         }
@@ -414,22 +461,21 @@ public class Hachi implements HachiListener, ClockListener {
     }
 
     public void onStop() {
-        System.out.println("Hachi onStop");
         midiClockRunning = false;
         drawMain();
         for (Module module : modules) {
             module.onStop();
         }
+//        Log.gc(this, Log.INFO);
     }
 
     public void onTick() {
         if (midiClockRunning) {
+            Log.log(this, LOG_PERF, "onTick %02d:%02d:%02d", measureCount, beatCount, pulseCount);
             advance(1);
         }
     }
 
-    public void onClock(int measure, int beat, int pulse) {
-        System.out.println("Hachi onClock");
-    }
+    public void onClock(int measure, int beat, int pulse) { }
 
 }
