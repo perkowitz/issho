@@ -102,18 +102,56 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
+<!--                    <execution>-->
+<!--                        <id>hachi</id>-->
+<!--                        <configuration>-->
+<!--                            <archive>-->
+<!--                                <manifest>-->
+<!--                                    <mainClass>net.perkowitz.issho.hachi.Hachi</mainClass>-->
+<!--                                </manifest>-->
+<!--                            </archive>-->
+<!--                            <descriptorRefs>-->
+<!--                                <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--                            </descriptorRefs>-->
+<!--                            <finalName>hachi</finalName>-->
+<!--                            <appendAssemblyId>false</appendAssemblyId>-->
+<!--                        </configuration>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>single</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>yaeltex-test</id>-->
+<!--                        <configuration>-->
+<!--                            <archive>-->
+<!--                                <manifest>-->
+<!--                                    <mainClass>net.perkowitz.issho.controller.yaeltex.Test</mainClass>-->
+<!--                                </manifest>-->
+<!--                            </archive>-->
+<!--                            <descriptorRefs>-->
+<!--                                <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--                            </descriptorRefs>-->
+<!--                            <finalName>yaeltex-test</finalName>-->
+<!--                            <appendAssemblyId>false</appendAssemblyId>-->
+<!--                        </configuration>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>single</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
                     <execution>
-                        <id>hachi</id>
+                        <id>yaeltex-hachi</id>
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>net.perkowitz.issho.hachi.Hachi</mainClass>
+                                    <mainClass>net.perkowitz.issho.controller.apps.hachi.Hachi</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>hachi</finalName>
+                            <finalName>yaeltex-hachi</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                         <phase>package</phase>
@@ -122,17 +160,17 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>yaeltex-test</id>
+                        <id>find-midi-devices</id>
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>net.perkowitz.issho.controller.yaeltex.Test</mainClass>
+                                    <mainClass>net.perkowitz.issho.util.FindMidiDevices</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>yaeltex-test</finalName>
+                            <finalName>find-midi-devices</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                         <phase>package</phase>

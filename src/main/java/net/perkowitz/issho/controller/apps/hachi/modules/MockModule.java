@@ -77,13 +77,9 @@ public class MockModule implements Module {
 
     /***** ClockListener implementation *****/
 
-    public void onStart(boolean restart) {
-        System.out.println("MockModule onStart");
-    }
+    public void onStart(boolean restart) { }
 
-    public void onStop() {
-        System.out.println("MockModule onStop");
-    }
+    public void onStop() { }
     public void onTick() {}
 
     public void onClock(int measure, int beat, int pulse) {}

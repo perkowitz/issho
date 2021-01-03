@@ -110,24 +110,20 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
 
     private void advance(boolean andReset) {
 
-        for (Integer redrawIndex : stagesToRedraw) {
-            stepDisplay.drawStage(memory, redrawIndex);
-        }
-        stagesToRedraw.clear();
+        // keep track of what needs to be redrawn AFTER midi notes are sent
+        boolean mustRedrawStages = false;
 
         if (andReset) {
             currentStageIndex = 0;
             currentStageStepIndex = 0;
             currentSteps = currentStage().getSteps();
-            // need to make sure stage0 has at least one step
+            // TODO: need to make sure stage0 has at least one step
             if (memory.getCurrentSessionIndex() != memory.getNextSessionIndex()) {
                 memory.setCurrentSessionIndex(memory.getNextSessionIndex());
 //                settingsModule.setCurrentSessionIndex(memory.getCurrentSessionIndex());
-                draw();
+                mustRedrawStages = true;
             }
         }
-
-        stagesToRedraw.add(currentStageIndex);
 
         // we assume that the current stage/step exists (make sure of that during increment)
         // and we don't recompute current steps until we go to next stage
@@ -135,6 +131,19 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
             nextStep();
         }
         playStep(currentSteps.get(currentStageStepIndex));
+
+        if (mustRedrawStages) {
+            stepDisplay.drawStages(memory);
+        } else {
+            // on the next step, we need to redraw this step to make sure the
+            // currently-playing note is highlighted and then turned off
+            // TODO: this doesn't work for multiple steps played on one stage, only displays first note
+            for (Integer redrawIndex : stagesToRedraw) {
+                stepDisplay.drawStage(memory, redrawIndex);
+            }
+        }
+        stagesToRedraw.clear();
+        stagesToRedraw.add(currentStageIndex);
 
         nextStep();
     }
@@ -174,6 +183,7 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
                 notesOff();
                 int note = step.getNote();
                 onNotes.add(note);
+                Log.log(this, Log.INFO, "        Note - %s", Log.stopWatchTimes());
                 midiOut.note(memory.getMidiChannel(), note, step.getVelocity());
                 break;
             case Tie:
