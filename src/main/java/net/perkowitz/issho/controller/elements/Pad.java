@@ -1,9 +1,14 @@
 // PadElement is like a button that appears in a 2D grid.
 package net.perkowitz.issho.controller.elements;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 
+import java.util.Map;
+
 public class Pad implements Element {
+
+    private static Map<String, Pad> instanceCache = Maps.newHashMap();
 
     @Getter private int group;
     @Getter private int row;
@@ -39,14 +44,24 @@ public class Pad implements Element {
 
     @Override
     public String toString() {
-        return String.format("Pad:%03d:%03d/%03d", group, row, column);
+        return toString(group, row, column);
     }
 
 
     /***** static methods *****/
 
+    private static String toString(int group, int row, int column) {
+        return String.format("Pad:%03d:%03d/%03d", group, row, column);
+    }
+
     public static Pad at(int group, int row, int column) {
-        return new Pad(group, row, column);
+        String s = toString(group, row, column);
+        Pad p = instanceCache.get(s);
+        if (p == null) {
+            p = new Pad(group, row, column);
+            instanceCache.put(s, p);
+        }
+        return p;
     }
 
     public static Pad to(int group, Pad pad) {

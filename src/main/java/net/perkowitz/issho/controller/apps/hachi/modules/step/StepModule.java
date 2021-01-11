@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.apps.hachi.Palette;
-import net.perkowitz.issho.controller.apps.hachi.modules.*;
 import net.perkowitz.issho.controller.apps.hachi.modules.Module;
+import net.perkowitz.issho.controller.apps.hachi.modules.*;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.midi.MidiOut;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -170,38 +170,39 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
             case Rest:
                 break;
         }
+
+        if (!muted) {
+            switch (step.getMode()) {
+                case Play:
+                    notesOff();
+                    int note = step.getNote();
+                    onNotes.add(note);
+//                    Log.log(this, Log.INFO, "Note - %s", Log.stopWatchTimes());
+                    midiOut.note(memory.getMidiChannel(), note, step.getVelocity());
+                    break;
+                case Tie:
+                    break;
+                case Rest:
+                    notesOff();
+                    break;
+                case Slide:
+                    note = step.getNote();
+                    midiOut.note(memory.getMidiChannel(), note, step.getVelocity());
+                    //                if (!onNotes.contains(step.getNote())) {
+                    //                    notesOff();
+                    //                }
+                    // NOTE: the Sub 37 requires you to send a note off for every note on, even if you send 2 note ons for the same note
+                    // not sure if other synths do this; if others do not, should remove this notesOff() and uncomment above if()
+                    notesOff();
+                    onNotes.add(note);
+                    break;
+            }
+        }
+
         for (Integer index : noteIndices) {
             if (index.equals(step.getHighlightedIndex()) || step.getMode() == Step.Mode.Tie) {
                 stepDisplay.drawActiveNote(7-index, currentStageIndex);
             }
-        }
-
-        if (muted) return;
-
-        switch (step.getMode()) {
-            case Play:
-                notesOff();
-                int note = step.getNote();
-                onNotes.add(note);
-                Log.log(this, Log.INFO, "        Note - %s", Log.stopWatchTimes());
-                midiOut.note(memory.getMidiChannel(), note, step.getVelocity());
-                break;
-            case Tie:
-                break;
-            case Rest:
-                notesOff();
-                break;
-            case Slide:
-                note = step.getNote();
-                midiOut.note(memory.getMidiChannel(), note, step.getVelocity());
-//                if (!onNotes.contains(step.getNote())) {
-//                    notesOff();
-//                }
-                // NOTE: the Sub 37 requires you to send a note off for every note on, even if you send 2 note ons for the same note
-                // not sure if other synths do this; if others do not, should remove this notesOff() and uncomment above if()
-                notesOff();
-                onNotes.add(note);
-                break;
         }
     }
 
