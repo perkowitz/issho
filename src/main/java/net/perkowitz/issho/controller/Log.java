@@ -37,13 +37,17 @@ public class Log {
             Instant now = Instant.now();
             String t = formatter.format(now);
             String s = "";
+            String sourceName = "static";
+            int sourceHash = -1;
+            if (source != null) {
+                sourceName = source.getClass().getSimpleName();
+                sourceHash = source.hashCode();
+            }
             if (showCallingMethod) {
                 String callingMethod = new Throwable().getStackTrace()[1].getMethodName();
-                s = String.format("%s [%s@%s.%s] %s\n", t,
-                        source.getClass().getSimpleName(), source.hashCode(), callingMethod, format);
+                s = String.format("%s [%s@%s.%s] %s\n", t, sourceName, sourceHash, callingMethod, format);
             } else {
-                 s = String.format("%s [%s@%s] %s\n", t,
-                         source.getClass().getSimpleName(), source.hashCode(), format);
+                 s = String.format("%s [%s@%s] %s\n", t, sourceName, sourceHash, format);
             }
             System.out.printf(s, args);
         }
@@ -65,6 +69,11 @@ public class Log {
         long free = runtime.freeMemory();
         long f = free / MEGABYTE;
         log(source, level, message + " Mem=%dMB, Free=%dMB (%d)", m, f, free);
+    }
+
+    public static long freeMem() {
+        long free = runtime.freeMemory();
+        return free / MEGABYTE;
     }
 
     public static void gc(Object source, int level) {

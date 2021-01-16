@@ -16,8 +16,8 @@ import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -129,7 +129,7 @@ public class Hachi implements HachiListener, ClockListener {
         }
         if (midiOut == null) {
             System.err.println("No MIDI output found.");
-            System.exit(1);
+//            System.exit(1);
         }
 
 
@@ -226,14 +226,20 @@ public class Hachi implements HachiListener, ClockListener {
         modules.add(module);
         moduleTranslators.add(moduleTranslator);
 
-        // 6 MockModules
-        for (int i = 0; i < 6; i++) {
+//         1 StepModule
+        moduleTranslator = new ModuleTranslator(controller);
+        moduleTranslator.setEnabled(false);
+        module = new StepModule(moduleTranslator, midiOut, ps[0], "step2");
+        module.setPalette(ps[2]);
+        modules.add(module);
+        moduleTranslators.add(moduleTranslator);
+
+        // 5 MockModules
+        int mocks = 5;
+        for (int i = 0; i < mocks; i++) {
             moduleTranslator = new ModuleTranslator(controller);
             moduleTranslator.setEnabled(false);
             boolean r = false;
-            if (i == 3) {
-                r = true;
-            }
             module = new MockModule(moduleTranslator, ps[i], r);
             modules.add(module);
             moduleTranslators.add(moduleTranslator);

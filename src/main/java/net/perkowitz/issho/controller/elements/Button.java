@@ -1,9 +1,14 @@
 // ButtonElement is an element that you can push and release.
 package net.perkowitz.issho.controller.elements;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 
+import java.util.Map;
+
 public class Button implements Element {
+
+    private static Map<String, Button> instanceCache = Maps.newHashMap();
 
     @Getter private int group;
     @Getter private int index;
@@ -37,14 +42,24 @@ public class Button implements Element {
 
     @Override
     public String toString() {
-        return String.format("Button:%03d:%03d", group, index);
+        return toString(group, index);
     }
 
 
     /***** static methods *****/
 
+    private static String toString(int group, int index) {
+        return String.format("Button:%03d:%03d", group, index);
+    }
+
     public static Button at(int group, int index) {
-        return new Button(group, index);
+        String s = toString(group, index);
+        Button b = instanceCache.get(s);
+        if (b == null) {
+            b = new Button(group, index);
+            instanceCache.put(s, b);
+        }
+        return b;
     }
 
     public static Button to(int group, Button button) {

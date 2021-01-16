@@ -6,10 +6,10 @@ import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.Log;
-import net.perkowitz.issho.controller.midi.MidiOut;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.midi.ChannelListener;
+import net.perkowitz.issho.controller.midi.MidiOut;
 
 import java.awt.*;
 import java.util.Map;
@@ -27,7 +27,10 @@ public class YaeltexHachiXL implements Controller, ChannelListener {
     private static int BUTTONS_CHANNEL = 1;
     private static int KNOBS_CHANNEL = 0;
 
-    private static int MIDI_DELAY_MILLIS = 50;
+    // TODO: this delay should be 50 ms for the controller to work smoothly
+    // but that delay messes with other timing, so...
+    // but with this delay too low, the yaeltex sometimes loses note messages
+    private static int MIDI_DELAY_MILLIS = 5;
     private static int MIDI_DELAY_COUNT = 200;
 
     // HachiXL buttons appear in 4 groups, one on each side of the device.
