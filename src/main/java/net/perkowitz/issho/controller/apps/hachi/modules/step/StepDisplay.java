@@ -23,6 +23,8 @@ import static net.perkowitz.issho.controller.apps.hachi.modules.step.StepUtil.*;
  */
 public class StepDisplay {
 
+    private static final int LOG_LEVEL = Log.OFF;
+
     @Setter private ModuleController controller;
     private Settings settingsModule;
     @Getter @Setter private int currentFileIndex = 0;
@@ -93,19 +95,22 @@ public class StepDisplay {
             settingsModule.draw();
             return;
         }
-        for (int i = 0; i < StepPattern.STAGE_COUNT; i++) {
+        for (int i = 0; i < StepModule.getStageCount(); i++) {
             drawStage(memory, i);
         }
     }
 
     public void drawStage(StepMemory memory, int stageIndex) {
         if (settingsView) return;
+
         Stage stage = memory.currentPattern().getStage(stageIndex);
-        ElementSet padColumn = StepUtil.stageColumns[stageIndex];
-        for (int markerIndex = 0; markerIndex < 8; markerIndex++) {
-            Stage.Marker marker = stage.getMarker(markerIndex);
-            Pad pad = (Pad)padColumn.get(markerIndex);
-            controller.setPad(7-pad.getRow(), pad.getColumn(), StepUtil.MARKER_COLORS.get(marker));
+        if (stage != null) {
+            ElementSet padColumn = StepUtil.stageColumns[stageIndex];
+            for (int markerIndex = 0; markerIndex < 8; markerIndex++) {
+                Stage.Marker marker = stage.getMarker(markerIndex);
+                Pad pad = (Pad) padColumn.get(markerIndex);
+                controller.setPad(7 - pad.getRow(), pad.getColumn(), StepUtil.MARKER_COLORS.get(marker));
+            }
         }
     }
 

@@ -218,21 +218,21 @@ public class Hachi implements HachiListener, ClockListener {
         modules.add(module);
         moduleTranslators.add(moduleTranslator);
 
-//         1 StepModule
-        moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
-        module.setPalette(ps[1]);
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
-
-//         1 StepModule
-        moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        module = new StepModule(moduleTranslator, midiOut, ps[0], "step2");
-        module.setPalette(ps[2]);
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
+////         1 StepModule
+//        moduleTranslator = new ModuleTranslator(controller);
+//        moduleTranslator.setEnabled(false);
+//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
+//        module.setPalette(ps[1]);
+//        modules.add(module);
+//        moduleTranslators.add(moduleTranslator);
+//
+////         1 StepModule
+//        moduleTranslator = new ModuleTranslator(controller);
+//        moduleTranslator.setEnabled(false);
+//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step2");
+//        module.setPalette(ps[2]);
+//        modules.add(module);
+//        moduleTranslators.add(moduleTranslator);
 
         // 5 MockModules
         int mocks = 5;

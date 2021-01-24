@@ -1,3 +1,19 @@
+/**
+ * StepModule
+ *
+ * Notes on stage count: originally, Step was designed for the Launchpad, and
+ * so supported 8 stages per pattern, to match the 8 columns of pads. With
+ * a larger controller, Step should be able to support more stages.
+ * - the module is set to 8 or 16 stage count
+ * - this setting is system-wide (static), not per pattern; it is not stored
+ * - Hachi can override the setting at launch based on hardware available
+ * - changing the setting affects the behavior but does not change the underlying data
+ * - if the setting is 8, stages >8 will be ignored
+ * - if a pattern has 8 stages and the setting is 16, the extra stages will be treated as "skip"
+ * - in that case, those stages can be edited and saved
+ *
+ *
+ */
 package net.perkowitz.issho.controller.apps.hachi.modules.step;
 
 import com.google.common.collect.Lists;
@@ -36,9 +52,9 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
     @Getter private boolean muted = false;
     @Getter private Palette palette = Palette.DEFAULT;
 
-    private StepMemory memory = new StepMemory();
     private StepDisplay stepDisplay;
-    private boolean settingsView = false;
+    @Getter @Setter private static int stageCount = 8;
+    private StepMemory memory = new StepMemory();
 
     private Set<Integer> onNotes = Sets.newHashSet();
 
@@ -46,6 +62,7 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
     private String filePrefix = "step";
     @Getter @Setter private int fileIndex = 0;
 
+    private boolean settingsView = false;
     private int currentStageIndex = 0;
     private int currentStageStepIndex = 0;
     private List<Step> currentSteps = null;
@@ -104,6 +121,14 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
     public void setPalette(Palette palette) {
         this.palette = palette;
         stepDisplay.setPalette(palette);
+    }
+
+    public void toggleStageCount() {
+        if (stageCount == 8) {
+            stageCount = 16;
+        } else {
+            stageCount = 8;
+        }
     }
 
     /***** private implementation ****************************************/
@@ -210,21 +235,32 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
         currentStageStepIndex++;
         currentSteps = currentStage().getSteps();
         int c = 0;
-        while (currentStageStepIndex >= currentSteps.size() && c <= StepPattern.STAGE_COUNT * 4) {
-            // this will just loop until c gets too big if all stages are SKIP
-//            stagesToRedraw.add(currentStageIndex);
-            if (randomOrder) {
-                currentStageIndex = (int)(Math.random() * StepPattern.STAGE_COUNT);
-            } else {
-                currentStageIndex++;
+//        try {
+            while (currentStageStepIndex >= currentSteps.size() && c <= stageCount * 4) {
+                // this will just loop until c gets too big if all stages are SKIP
+                //            stagesToRedraw.add(currentStageIndex);
+                if (randomOrder) {
+                    currentStageIndex = (int) (Math.random() * stageCount);
+                } else {
+                    currentStageIndex++;
+                }
+                currentStageIndex = currentStageIndex % stageCount;
+                if (currentStage() == null) {
+                    // if we run out of stages, just go back to the first stage
+                    currentStageIndex = 0;
+                }
+                if (currentStage().getRandomCount() > 0) {
+                    currentStage().computeSteps();
+                }
+                currentSteps = currentStage().getSteps();
+                currentStageStepIndex = 0;
+                c++;
             }
-            currentStageIndex = currentStageIndex % StepPattern.STAGE_COUNT;
-            if (currentStage().getRandomCount() > 0) {
-                currentStage().computeSteps();
-            }
-            currentSteps = currentStage().getSteps();
-            currentStageStepIndex = 0;
-        }
+            // TODO: figure out why NPEs are being swallowed here. is it because it's event handling?
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+
     }
 
     private Stage currentStage() {
@@ -262,7 +298,7 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
 
     public void jumpTo(int index) {
         if (index < 0) return;
-        currentStageIndex = index % StepPattern.STAGE_COUNT;
+        currentStageIndex = index % stageCount;
         currentStageStepIndex = 0;
         currentSteps = currentStage().getSteps();
     }
