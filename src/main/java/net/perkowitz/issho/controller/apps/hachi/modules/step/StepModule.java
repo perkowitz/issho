@@ -176,7 +176,7 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
     private void playStep(Step step) {
 
         if (midiOut == null) return;
-        
+
         // there may be multiple markers to highlight in the step
         List<Integer> noteIndices = Lists.newArrayList();
         switch (step.getMode()) {
@@ -232,35 +232,49 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
     }
 
     private void nextStep() {
-        currentStageStepIndex++;
-        currentSteps = currentStage().getSteps();
-        int c = 0;
-//        try {
+        try {
+            currentStageStepIndex++;
+            if (currentStage() == null) {
+                nextStage();
+                return;
+            }
+            currentSteps = currentStage().getSteps();
+            int c = 0;
             while (currentStageStepIndex >= currentSteps.size() && c <= stageCount * 4) {
                 // this will just loop until c gets too big if all stages are SKIP
                 //            stagesToRedraw.add(currentStageIndex);
-                if (randomOrder) {
-                    currentStageIndex = (int) (Math.random() * stageCount);
-                } else {
-                    currentStageIndex++;
-                }
-                currentStageIndex = currentStageIndex % stageCount;
-                if (currentStage() == null) {
-                    // if we run out of stages, just go back to the first stage
-                    currentStageIndex = 0;
-                }
-                if (currentStage().getRandomCount() > 0) {
-                    currentStage().computeSteps();
-                }
-                currentSteps = currentStage().getSteps();
-                currentStageStepIndex = 0;
+                nextStage();
                 c++;
             }
             // TODO: figure out why NPEs are being swallowed here. is it because it's event handling?
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
+    }
+
+    private void nextStage() {
+        if (randomOrder) {
+            currentStageIndex = (int) (Math.random() * stageCount);
+        } else {
+            currentStageIndex++;
+        }
+
+        while (currentStage() == null && currentStageIndex < stageCount) {
+            // TODO handle random
+            currentStageIndex++;
+        }
+        currentStageIndex = currentStageIndex % stageCount;
+        if (currentStage() == null) {
+            Stage stage = new Stage(currentStageIndex);
+            memory.currentPattern().setStage(currentStageIndex, stage);
+            stepDisplay.drawStage(memory, currentStageIndex);
+        }
+        if (currentStage().getRandomCount() > 0) {
+            currentStage().computeSteps();
+        }
+        currentSteps = currentStage().getSteps();
+        currentStageStepIndex = 0;
     }
 
     private Stage currentStage() {
@@ -270,7 +284,6 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
     private void notesOff() {
         for (Integer note : onNotes) {
             midiOut.note(memory.getMidiChannel(), note, 0);
-
         }
         onNotes.clear();
     }
@@ -340,6 +353,13 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
 
         Stage stage = memory.currentPattern().getStage(column);
         int index = 7 - row;
+        if (stage == null && column >= 0 && column <= getStageCount()) {
+            stage = new Stage(column);
+            memory.currentPattern().setStage(column, stage);
+            stepDisplay.drawStage(memory, column);
+        } else if (stage == null) {
+            return;
+        }
         if (currentMarker == stage.getMarker(index)) {
             stage.putMarker(index, Stage.Marker.None);
             controller.setPad(row, column, StepUtil.MARKER_COLORS.get(Stage.Marker.None));
@@ -461,7 +481,6 @@ public class StepModule implements Module, SaveableModule, MidiModule, ModuleLis
         }
 
         Button button = Button.at(group, index);
-        Log.log(this, LOG_LEVEL, "button=%s", button);
         if (button.equals(StepUtil.shiftLeftElement) && displayAltControls) {
             stepDisplay.drawButton(button, false);
 

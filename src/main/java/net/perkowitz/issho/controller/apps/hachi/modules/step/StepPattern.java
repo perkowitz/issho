@@ -36,6 +36,15 @@ public class StepPattern implements MemoryObject {
         return null;
     }
 
+    public void setStage(int index, Stage stage) {
+        if (index < 0 || index >= StepModule.getStageCount()) return;
+        
+        for (int i = stages.size(); i < StepModule.getStageCount(); i++) {
+            stages.add(null);
+        }
+        stages.set(index, stage);
+    }
+
     public void shift(int shiftAmount) {
 
         int stageCount = StepModule.getStageCount();
@@ -50,9 +59,9 @@ public class StepPattern implements MemoryObject {
         stages = Lists.newArrayList(shiftedStages);
     }
 
+    // for backwards compatibility in loading from JSON
     public void setStageCount(int stageCount) {
     }
-
     public int getStageCount() {
         return StepModule.getStageCount();
     }

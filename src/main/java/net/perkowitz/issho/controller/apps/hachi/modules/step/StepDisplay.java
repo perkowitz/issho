@@ -111,6 +111,10 @@ public class StepDisplay {
                 Pad pad = (Pad) padColumn.get(markerIndex);
                 controller.setPad(7 - pad.getRow(), pad.getColumn(), StepUtil.MARKER_COLORS.get(marker));
             }
+        } else {
+            for (int r = 0; r < 8; r++) {
+                controller.setPad(r, stageIndex, Colors.OFF);
+            }
         }
     }
 

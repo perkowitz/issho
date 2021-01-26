@@ -7,6 +7,7 @@ public interface HachiListener {
     public void onModuleSelectPressed(int index);
     public void onModuleMutePressed(int index);
     public void onMainButtonPressed(int index);
+    public void onMainButtonReleased(int index);
     public void onShihaiButtonPressed(int index);
 
     public void onKnobSet(int index, int value);
