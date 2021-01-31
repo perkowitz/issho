@@ -218,21 +218,21 @@ public class Hachi implements HachiListener, ClockListener {
         modules.add(module);
         moduleTranslators.add(moduleTranslator);
 
-//         1 StepModule
-        moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
-        module.setPalette(ps[1]);
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
-
-//         1 StepModule
-        moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        module = new StepModule(moduleTranslator, midiOut, ps[0], "step2");
-        module.setPalette(ps[2]);
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
+////         1 StepModule
+//        moduleTranslator = new ModuleTranslator(controller);
+//        moduleTranslator.setEnabled(false);
+//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
+//        module.setPalette(ps[1]);
+//        modules.add(module);
+//        moduleTranslators.add(moduleTranslator);
+//
+////         1 StepModule
+//        moduleTranslator = new ModuleTranslator(controller);
+//        moduleTranslator.setEnabled(false);
+//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step2");
+//        module.setPalette(ps[2]);
+//        modules.add(module);
+//        moduleTranslators.add(moduleTranslator);
 
         // 5 MockModules
         int mocks = 5;
@@ -356,7 +356,6 @@ public class Hachi implements HachiListener, ClockListener {
     /***** HachiListener implementation *****/
 
     public void onModuleSelectPressed(int index) {
-//        Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
             moduleTranslators.get(selectedModuleIndex).setEnabled(false);
             selectedModuleIndex = index;
@@ -368,7 +367,6 @@ public class Hachi implements HachiListener, ClockListener {
     }
 
     public void onModuleMutePressed(int index) {
-//        Log.log(this, LOG_LEVEL, "%d", index);
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
         }
@@ -387,11 +385,21 @@ public class Hachi implements HachiListener, ClockListener {
                     midiOut.allNotesOff();
                 }
                 drawMain();
+                controller.setMainButton(index, mainPalette.On);
                 break;
             case 2:
+                controller.setMainButton(index, mainPalette.On);
                 quit();
                 break;
+            case 3:
+                controller.setMainButton(index, mainPalette.On);
+                midiOut.allNotesOff();
+                break;
         }
+    }
+
+    public void onMainButtonReleased(int index) {
+        controller.setMainButton(index, mainPalette.KeyDim);
     }
 
     public void onModuleButtonPressed(int group, int index, int value) {

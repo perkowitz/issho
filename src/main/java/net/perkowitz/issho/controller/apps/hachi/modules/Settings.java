@@ -2,6 +2,8 @@ package net.perkowitz.issho.controller.apps.hachi.modules;
 
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Log;
+import net.perkowitz.issho.controller.apps.hachi.modules.step.Step;
+import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
 import net.perkowitz.issho.hachi.Saveable;
 
 import java.awt.*;
@@ -15,6 +17,8 @@ public class Settings implements ModuleListener {
     private static final int SAVEABLE_SAVE_ROW = 3;
     private static final int SAVEABLE_INDEX_COUNT = 8;
     private static final int MIDIMODULE_CHANNEL_ROW = 7;
+    private static final int STEP_STAGE_ROW = 5;
+    private static final int STEP_STAGE_COLUMN = 0;
 
     private static final Color SELECTED_COLOR = Colors.WHITE;
     private static final Color SESSION_COLOR = Colors.SKY_BLUE;
@@ -26,6 +30,9 @@ public class Settings implements ModuleListener {
     private Module module = null;
     private SaveableModule saveableModule = null;
     private MidiModule midiModule = null;
+    private StepModule stepModule = null;
+
+    private boolean lengthSettable = false;
 
 
     public Settings(ModuleController controller, Module module) {
@@ -37,12 +44,16 @@ public class Settings implements ModuleListener {
         if (module instanceof MidiModule) {
             midiModule = (MidiModule) module;
         }
+        if (module instanceof StepModule) {
+            stepModule = (StepModule) module;
+        }
     }
 
     public void draw() {
         controller.clearPads();
         drawSaveable();
         drawMidi();
+        drawStep();
     }
 
     private void drawSaveable() {
@@ -65,6 +76,16 @@ public class Settings implements ModuleListener {
         }
     }
 
+    private void drawStep() {
+        if (stepModule != null) {
+            Color color = Colors.DIM_PURPLE;
+            if (stepModule.getStageCount() != 8) {
+                color = SELECTED_COLOR;
+            }
+            controller.setPad(STEP_STAGE_ROW, STEP_STAGE_COLUMN, color);
+        }
+    }
+
 
     /***** ModuleListener implementation *****/
 
@@ -73,9 +94,8 @@ public class Settings implements ModuleListener {
             saveableModule.setFileIndex(column);
             saveableModule.load();
             drawSaveable();
-        }
 
-        if (row == SAVEABLE_SAVE_ROW && saveableModule != null) {
+        } else if (row == SAVEABLE_SAVE_ROW && saveableModule != null) {
             saveableModule.setFileIndex(column);
             saveableModule.save();
             drawSaveable();
@@ -83,6 +103,10 @@ public class Settings implements ModuleListener {
         } else if (row == MIDIMODULE_CHANNEL_ROW && midiModule != null) {
             midiModule.setMidiChannel(column);
             drawMidi();
+
+        } else if (row == STEP_STAGE_ROW && column == STEP_STAGE_COLUMN && stepModule != null) {
+            stepModule.toggleStageCount();
+            drawStep();
         }
     }
 

@@ -3,6 +3,7 @@ package net.perkowitz.issho.controller.apps.hachi.modules.step;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.MemoryUtil;
 
@@ -13,37 +14,56 @@ import java.util.List;
  */
 public class StepPattern implements MemoryObject {
 
-    public static int STAGE_COUNT = 8;
-
     @Getter @Setter private int index;
-    @Getter private Stage[] stages = new Stage[STAGE_COUNT];
+    @Getter private List<Stage> stages;
 
 
     public StepPattern() {}
 
     public StepPattern(int index) {
         this.index = index;
-        for (int i = 0; i < STAGE_COUNT; i++) {
-            stages[i] = new Stage(i);
+        stages = Lists.newArrayList();
+        for (int i = 0; i < StepModule.getStageCount(); i++) {
+            stages.add(new Stage(i));
         }
     }
 
 
     public Stage getStage(int index) {
-        return stages[index];
+        if (index >= 0 && index < stages.size()) {
+            return stages.get(index);
+        }
+        return null;
+    }
+
+    public void setStage(int index, Stage stage) {
+        if (index < 0 || index >= StepModule.getStageCount()) return;
+        
+        for (int i = stages.size(); i < StepModule.getStageCount(); i++) {
+            stages.add(null);
+        }
+        stages.set(index, stage);
     }
 
     public void shift(int shiftAmount) {
 
-        Stage[] shiftedStages = new Stage[STAGE_COUNT];
-        for (int i = 0; i < stages.length; i++) {
-            int shifted = (i + shiftAmount + STAGE_COUNT) % STAGE_COUNT;
+        int stageCount = StepModule.getStageCount();
+        Stage[] shiftedStages = new Stage[stageCount];
+        for (int i = 0; i < stages.size(); i++) {
+            int shifted = (i + shiftAmount + stageCount) % stageCount;
             Stage stage = new Stage(shifted);
-            stage = Stage.copy(stages[i]);
+            stage = Stage.copy(stages.get(i));
             stage.setIndex(shifted);
             shiftedStages[shifted] = stage;
         }
-        stages = shiftedStages;
+        stages = Lists.newArrayList(shiftedStages);
+    }
+
+    // for backwards compatibility in loading from JSON
+    public void setStageCount(int stageCount) {
+    }
+    public int getStageCount() {
+        return StepModule.getStageCount();
     }
 
 
@@ -69,7 +89,7 @@ public class StepPattern implements MemoryObject {
         if (memoryObject instanceof StepPattern) {
             Stage stage = (Stage) memoryObject;
             stage.setIndex(index);
-            stages[index] = stage;
+            stages.set(index, stage);
         } else {
             System.out.printf("Cannot put object %s of type %s in object %s\n", memoryObject, memoryObject.getClass().getSimpleName(), this);
         }
@@ -96,8 +116,8 @@ public class StepPattern implements MemoryObject {
 
     public static StepPattern copy(StepPattern pattern, int newIndex) {
         StepPattern newPattern = new StepPattern(newIndex);
-        for (int i = 0; i < STAGE_COUNT; i++) {
-            newPattern.stages[i] = Stage.copy(pattern.stages[i]);
+        for (int i = 0; i < pattern.stages.size(); i++) {
+            newPattern.stages.add(Stage.copy(pattern.stages.get(i)));
         }
         return newPattern;
     }

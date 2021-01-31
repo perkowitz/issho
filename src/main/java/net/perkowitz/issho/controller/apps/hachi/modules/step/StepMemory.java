@@ -23,7 +23,6 @@ public class StepMemory implements MemoryObject {
     @Getter @Setter private int midiChannel;
 
 
-
     public StepMemory() {
         for (int i = 0; i < SESSION_COUNT; i++) {
             sessions[i] = new StepSession(i);

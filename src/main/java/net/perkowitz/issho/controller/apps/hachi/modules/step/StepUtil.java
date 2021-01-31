@@ -43,6 +43,14 @@ public class StepUtil {
             ElementSet.pads(0, 0, 8, 5, 5),
             ElementSet.pads(0, 0, 8, 6, 6),
             ElementSet.pads(0, 0, 8, 7, 7),
+            ElementSet.pads(0, 0, 8, 8, 8),
+            ElementSet.pads(0, 0, 8, 9, 9),
+            ElementSet.pads(0, 0, 8, 10, 10),
+            ElementSet.pads(0, 0, 8, 11, 11),
+            ElementSet.pads(0, 0, 8, 12, 12),
+            ElementSet.pads(0, 0, 8, 13, 13),
+            ElementSet.pads(0, 0, 8, 14, 14),
+            ElementSet.pads(0, 0, 8, 15, 15),
     };
 
     // markers

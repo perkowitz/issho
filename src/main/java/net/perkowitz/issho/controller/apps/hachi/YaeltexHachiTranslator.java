@@ -275,6 +275,8 @@ public class YaeltexHachiTranslator implements HachiController, ControllerListen
         if (pads.contains(element)) {
             Pad pad = (Pad)element;
             listener.onModulePadReleased(pad.getRow(), pad.getColumn());
+        } else if (mainButtons.contains(element)) {
+            listener.onMainButtonReleased(mainButtons.getIndex(element));
         } else if (moduleButtonsLeft1.contains(element)) {
             Log.log(this, LOG_LEVEL, "left1 %d:%d", MODULE_BUTTONS_GROUP_0, moduleButtonsLeft1.getIndex(element));
             listener.onModuleButtonReleased(0, moduleButtonsLeft1.getIndex(element));
