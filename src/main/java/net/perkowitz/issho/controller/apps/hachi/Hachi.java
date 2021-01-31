@@ -399,7 +399,7 @@ public class Hachi implements HachiListener, ClockListener {
     }
 
     public void onMainButtonReleased(int index) {
-        controller.setMainButton(index, mainPalette.Key);
+        controller.setMainButton(index, mainPalette.KeyDim);
     }
 
     public void onModuleButtonPressed(int group, int index, int value) {
