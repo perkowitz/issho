@@ -1,0 +1,79 @@
+{
+  "filePrefix": "project1/",
+  "midiContinueAsStart": true,
+  "midiSendRealtime": false,
+  "debugMode": true,
+  "textDisplay": false,
+  "devices": {
+    "controllers": [
+      {
+        "type": "launchpadpro",
+        "names": [
+          "Launchpad",
+          "Standalone"
+        ]
+      }
+    ],
+    "midiOutputs": [
+      {
+        "type": "launchpadpro",
+        "names": [
+          "Launchpad Pro",
+          "Midi Port"
+        ]
+      }
+    ],
+    "midiInput": {
+      "names":[
+        "Launchpad Pro",
+        "Midi Port"
+      ]
+    }
+  },
+  "modules": [
+    {
+      "class": "StepModule",
+      "filePrefix": "step0"
+    },
+    {
+      "class": "StepModule",
+      "filePrefix": "step1"
+    },
+    {
+      "class": "StepModule",
+      "filePrefix": "step2"
+    },
+    {
+      "class": "MockModule",
+      "filePrefix": "mock0"
+    },
+    {
+      "class": "MockModule",
+      "filePrefix": "mock0"
+    },
+    {
+      "name": "G2 Drums",
+      "class": "SeqModule",
+      "mode": "beat",
+      "palette": "Red",
+      "tiesEnabled": false,
+      "filePrefix": "seqBeat0",
+      "controllerNumbers": [ 16, 17, 18, 19, 20, 21, 22, 23, 81, 82, 83, 84, 85, 86, 87, 88 ]
+    },
+    {
+      "name": "shruthi",
+      "class": "SeqModule",
+      "mode": "mono",
+      "palette": "Blue",
+      "tiesEnabled": true,
+      "filePrefix": "seqMono0",
+      "midiNoteOffset": 12,
+      "controllerNumbers": [ 21, 25, 20, 24, 74, 71, 102, 105, 29, 30, 27, 28, 103, 113, 114, 111 ],
+      "controllers": ["pwm1", "pwm2", "shape1", "shape2", "freq", "res", "env1>freq", "env1d", "mix", "sub", "detune", "mixop", "lfo>freq", "rate1", "rate2", "env2r"]
+    },
+    {
+      "class": "StepModulexxx",
+      "filePrefix": "step1"
+    }
+  ]
+}

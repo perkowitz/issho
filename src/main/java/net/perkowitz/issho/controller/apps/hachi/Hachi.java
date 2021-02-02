@@ -4,16 +4,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
-import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.Controller;
-import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.Log;
+import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.apps.hachi.modules.MockModule;
 import net.perkowitz.issho.controller.apps.hachi.modules.Module;
 import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
 import net.perkowitz.issho.controller.midi.*;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 
 import java.awt.*;
 import java.util.List;
@@ -91,9 +90,7 @@ public class Hachi implements HachiListener, ClockListener {
 
     public void run() throws Exception {
 
-        Log.addStopwatch();
-        Log.addStopwatch();
-        Log.addStopwatch();
+        Config config = Config.fromJsonFile("h2-dev.json");
 
         // MidiSetup does the work of matching available midi devices against supported controller types
         // Any devices you want to open should be listed in deviceNameStrings
@@ -156,7 +153,8 @@ public class Hachi implements HachiListener, ClockListener {
 
         // load modules
         // TODO: load from config
-        loadModules(midiOut);
+//        loadModules2(midiOut);
+        loadModules(config, midiOut);
 
         initialize();
         draw();
@@ -201,7 +199,8 @@ public class Hachi implements HachiListener, ClockListener {
         }, tempoIntervalInMillis, tempoIntervalInMillis);
     }
 
-    private void loadModules(MidiOut midiOut) {
+    private void loadModules(Config config, MidiOut midiOut) {
+
         modules = Lists.newArrayList();
         moduleTranslators = Lists.newArrayList();
 
@@ -210,47 +209,36 @@ public class Hachi implements HachiListener, ClockListener {
                 Palette.ORANGE, Palette.YELLOW, Palette.PINK, Palette.RED
         };
 
-//        1 StepModule
-        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
-        module.setPalette(ps[0]);
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
+        ArrayNode moduleConfigs = config.getModules();
+        Iterator<JsonNode> iter = moduleConfigs.getElements();
+        while (iter.hasNext()) {
+            JsonNode node = iter.next();
+            String className = node.get("class").getTextValue();
+//            String paletteName = node.get("palette").getTextValue();
+            String filePrefix = node.get("filePrefix").getTextValue();
+            if (filePrefix == null) {
+                filePrefix = className.toLowerCase() + (modules.size() + 1);
+            }
 
-////         1 StepModule
-//        moduleTranslator = new ModuleTranslator(controller);
-//        moduleTranslator.setEnabled(false);
-//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
-//        module.setPalette(ps[1]);
-//        modules.add(module);
-//        moduleTranslators.add(moduleTranslator);
-//
-////         1 StepModule
-//        moduleTranslator = new ModuleTranslator(controller);
-//        moduleTranslator.setEnabled(false);
-//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step2");
-//        module.setPalette(ps[2]);
-//        modules.add(module);
-//        moduleTranslators.add(moduleTranslator);
+            Palette palette = ps[modules.size() % ps.length];
 
-        // 5 MockModules
-        int mocks = 5;
-        for (int i = 0; i < mocks; i++) {
-            moduleTranslator = new ModuleTranslator(controller);
-            moduleTranslator.setEnabled(false);
-            boolean r = false;
-            module = new MockModule(moduleTranslator, ps[i], r);
-            modules.add(module);
-            moduleTranslators.add(moduleTranslator);
+            if (className.equals("StepModule")) {
+                ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+                moduleTranslator.setEnabled(false);
+                Module module = new StepModule(moduleTranslator, midiOut, palette, filePrefix);
+                module.setPalette(palette);
+                modules.add(module);
+                moduleTranslators.add(moduleTranslator);
+
+            } else if (className.equals("MockModule")) {
+                ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
+                moduleTranslator.setEnabled(false);
+                Module module = new MockModule(moduleTranslator, palette, false);
+                modules.add(module);
+                moduleTranslators.add(moduleTranslator);
+
+            }
         }
-
-        // 1 VizModule
-//        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-//        moduleTranslator.setEnabled(false);
-//        Module module = new VizModule(moduleTranslator, ps[6]);
-//        modules.add(module);
-//        moduleTranslators.add(moduleTranslator);
 
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);
@@ -289,6 +277,7 @@ public class Hachi implements HachiListener, ClockListener {
         }
 //        Log.log(this, LOG_PERF, "ADV %s - %s (done)", clock, Log.stopWatchTimes());
     }
+
 
     /***** draw *****/
 
