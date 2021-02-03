@@ -37,15 +37,7 @@ public class Hachi implements HachiListener, ClockListener {
         MAIN, SHIHAI, MODULE1, MODULE2
     }
 
-    // midi devices
-    private static Map<String, List<List<String>>> deviceNameStrings = Maps.newHashMap();
-    static {
-        deviceNameStrings.put("TestBus",Arrays.asList(Arrays.asList("TestBus")));
-        deviceNameStrings.put("Extra",Arrays.asList(Arrays.asList("Extra")));
-        deviceNameStrings.put("SBX1",Arrays.asList(Arrays.asList("SBX1", "2,0,0")));
-        deviceNameStrings.put("SBX1-2",Arrays.asList(Arrays.asList("SBX1", "2,0,1")));
-    }
-
+    // for managing app state
     // for managing app state
     private HachiController controller;
     private List<HachiController> controllers = Lists.newArrayList();
@@ -90,45 +82,26 @@ public class Hachi implements HachiListener, ClockListener {
 
     public void run() throws Exception {
 
-        Config config = Config.fromJsonFile("h2-dev.json");
+        Config config = new Config("h2-dev.json", "h2-registry.json");
 
         // MidiSetup does the work of matching available midi devices against supported controller types
-        // Any devices you want to open should be listed in deviceNameStrings
-        DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(deviceNameStrings));
+        // Any devices you want to open should be listed in the registry json file
+        DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(config.getDeviceNameStrings()));
         midiSetup = new MidiSetup(registry);
         if (midiSetup.getControllers().size() == 0) {
             System.err.println("No supported MIDI controllers found.");
             System.exit(1);
         }
 
-        // TODO: pull inputs and outputs from config
-        midiIns = Lists.newArrayList();
-        MidiIn input = midiSetup.getMidiIn("Extra");
-        if (input != null) {
-            Log.log(this, Log.ALWAYS, "Found MIDI input for 'Extra': %s", input);
-            input.addClockListener(this);
-            midiIns.add(input);
-        }
-        input = midiSetup.getMidiIn("SBX1");
-        if (input != null) {
-            Log.log(this, Log.ALWAYS, "Found MIDI input for 'SBX1': %s", input);
-            input.addClockListener(this);
-            midiIns.add(input);
-        }
-        midiOut = midiSetup.getMidiOut("SBX1");
-        if (midiOut != null) {
-            Log.log(this, Log.ALWAYS, "Found MIDI output for 'SBX1': %s", midiOut);
-        } else {
-            midiOut = midiSetup.getMidiOut("Extra");
-            if (midiOut != null) {
-                Log.log(this, Log.ALWAYS, "Found MIDI output for 'Extra': %s", midiOut);
-            }
-        }
-        if (midiOut == null) {
+        midiIns = config.getMidiIns(midiSetup, this);
+        List<MidiOut> midiOuts = config.getMidiOuts(midiSetup);
+        if (midiOuts.size() == 0) {
             System.err.println("No MIDI output found.");
 //            System.exit(1);
+        } else {
+            // TODO: support multiple midi outs
+            midiOut = midiOuts.get(0);
         }
-
 
         // translators are app-specific, so create those based on controllers found
         for (Controller c : midiSetup.getControllers()) {
@@ -138,7 +111,7 @@ public class Hachi implements HachiListener, ClockListener {
                 HachiController t = new YaeltexHachiTranslator((YaeltexHachiXL) c, this);
                 controllers.add(t);
                 c.setListener((ControllerListener) t);
-                input = midiSetup.getMidiIn(YaeltexHachiXL.name());
+                MidiIn input = midiSetup.getMidiIn(YaeltexHachiXL.name());
                 if (input != null) {
                     Log.log(this, Log.ALWAYS, "Found MIDI input for %s: %s", YaeltexHachiXL.name(), input);
                     input.addClockListener(this);

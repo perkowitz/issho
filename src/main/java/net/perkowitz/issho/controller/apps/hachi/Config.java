@@ -2,17 +2,24 @@ package net.perkowitz.issho.controller.apps.hachi;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.apps.hachi.modules.MockModule;
 import net.perkowitz.issho.controller.apps.hachi.modules.Module;
 import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
+import net.perkowitz.issho.controller.midi.ClockListener;
+import net.perkowitz.issho.controller.midi.MidiIn;
 import net.perkowitz.issho.controller.midi.MidiOut;
+import net.perkowitz.issho.controller.midi.MidiSetup;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.type.TypeReference;
 
+import javax.sound.midi.MidiUnavailableException;
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Config {
 
@@ -21,13 +28,57 @@ public class Config {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     private JsonNode mainConfig;
+    private JsonNode registryConfig;
     @Getter private List<Module> modules;
     @Getter private List<ModuleTranslator> moduleTranslators;
+
+    public Config(String configFile, String registryFile) throws IOException {
+        this.mainConfig = readJsonFile(configFile);
+        this.registryConfig = readJsonFile(registryFile);
+    }
 
     public Config(JsonNode mainConfig) {
         this.mainConfig = mainConfig;
     }
 
+    public Map<String, List<List<String>>> getDeviceNameStrings() {
+        Map<String, List<List<String>>> result = objectMapper.convertValue(registryConfig.get("deviceNameStrings"),
+                new TypeReference<Map<String, List<List<String>>>>(){});
+        return result;
+    }
+
+    public List<MidiIn> getMidiIns(MidiSetup midiSetup, ClockListener listener) throws MidiUnavailableException {
+        List<String> names = objectMapper.convertValue(registryConfig.get("midiInNames"),
+                new TypeReference<List<String>>(){});
+
+        List<MidiIn> midiIns = Lists.newArrayList();
+        for (String name : names) {
+            MidiIn input = midiSetup.getMidiIn(name);
+            if (input != null) {
+                Log.log(this, Log.ALWAYS, "Found MIDI input for '%s': %s", name, input);
+                input.addClockListener(listener);
+                midiIns.add(input);
+            }
+        }
+
+        return midiIns;
+    }
+
+    public List<MidiOut> getMidiOuts(MidiSetup midiSetup) throws MidiUnavailableException {
+        List<String> names = objectMapper.convertValue(registryConfig.get("midiOutNames"),
+                new TypeReference<List<String>>(){});
+
+        List<MidiOut> midiOuts = Lists.newArrayList();
+        for (String name : names) {
+            MidiOut output = midiSetup.getMidiOut(name);
+            if (output != null) {
+                Log.log(this, Log.ALWAYS, "Found MIDI output for '%s': %s", name, output);
+                midiOuts.add(output);
+            }
+        }
+
+        return midiOuts;
+    }
 
     public void loadModules(HachiController controller, MidiOut midiOut) {
 
@@ -81,7 +132,7 @@ public class Config {
 
     /***** static methods *****/
 
-    public static Config fromJsonFile(String filename) throws IOException {
+    public static JsonNode readJsonFile(String filename) throws IOException {
 
         InputStream inputStream = null;
         try {
@@ -94,7 +145,7 @@ public class Config {
             }
 
             if (inputStream != null) {
-                return new Config(objectMapper.readTree(inputStream));
+                return objectMapper.readTree(inputStream);
             }
             throw new FileNotFoundException("Config file '" + filename + "' not found in the classpath or path");
 
@@ -108,5 +159,4 @@ public class Config {
 
         return null;
     }
-
 }
