@@ -151,10 +151,7 @@ public class Hachi implements HachiListener, ClockListener {
         // TODO: support more than one controller!!!
         controller = controllers.get(0);
 
-        // load modules
-        // TODO: load from config
-//        loadModules2(midiOut);
-        loadModules(config, midiOut);
+        loadModules(config, controller, midiOut);
 
         initialize();
         draw();
@@ -199,46 +196,11 @@ public class Hachi implements HachiListener, ClockListener {
         }, tempoIntervalInMillis, tempoIntervalInMillis);
     }
 
-    private void loadModules(Config config, MidiOut midiOut) {
+    private void loadModules(Config config, HachiController controller, MidiOut midiOut) {
 
-        modules = Lists.newArrayList();
-        moduleTranslators = Lists.newArrayList();
-
-        Palette []ps = new Palette[]{
-                Palette.BLUE, Palette.MAGENTA, Palette.CYAN, Palette.PURPLE,
-                Palette.ORANGE, Palette.YELLOW, Palette.PINK, Palette.RED
-        };
-
-        ArrayNode moduleConfigs = config.getModules();
-        Iterator<JsonNode> iter = moduleConfigs.getElements();
-        while (iter.hasNext()) {
-            JsonNode node = iter.next();
-            String className = node.get("class").getTextValue();
-//            String paletteName = node.get("palette").getTextValue();
-            String filePrefix = node.get("filePrefix").getTextValue();
-            if (filePrefix == null) {
-                filePrefix = className.toLowerCase() + (modules.size() + 1);
-            }
-
-            Palette palette = ps[modules.size() % ps.length];
-
-            if (className.equals("StepModule")) {
-                ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-                moduleTranslator.setEnabled(false);
-                Module module = new StepModule(moduleTranslator, midiOut, palette, filePrefix);
-                module.setPalette(palette);
-                modules.add(module);
-                moduleTranslators.add(moduleTranslator);
-
-            } else if (className.equals("MockModule")) {
-                ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-                moduleTranslator.setEnabled(false);
-                Module module = new MockModule(moduleTranslator, palette, false);
-                modules.add(module);
-                moduleTranslators.add(moduleTranslator);
-
-            }
-        }
+        config.loadModules(controller, midiOut);
+        modules = config.getModules();
+        moduleTranslators = config.getModuleTranslators();
 
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);

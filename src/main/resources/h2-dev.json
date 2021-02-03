@@ -33,22 +33,27 @@
   "modules": [
     {
       "class": "StepModule",
+      "palette": "Blue",
       "filePrefix": "step0"
     },
     {
       "class": "StepModule",
+      "palette": "Purple",
       "filePrefix": "step1"
     },
     {
       "class": "StepModule",
+      "palette": "Cyan",
       "filePrefix": "step2"
     },
     {
       "class": "MockModule",
+      "palette": "Red",
       "filePrefix": "mock0"
     },
     {
       "class": "MockModule",
+      "palette": "Orange",
       "filePrefix": "mock0"
     },
     {
