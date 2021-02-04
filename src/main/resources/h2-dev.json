@@ -4,32 +4,6 @@
   "midiSendRealtime": false,
   "debugMode": true,
   "textDisplay": false,
-  "devices": {
-    "controllers": [
-      {
-        "type": "launchpadpro",
-        "names": [
-          "Launchpad",
-          "Standalone"
-        ]
-      }
-    ],
-    "midiOutputs": [
-      {
-        "type": "launchpadpro",
-        "names": [
-          "Launchpad Pro",
-          "Midi Port"
-        ]
-      }
-    ],
-    "midiInput": {
-      "names":[
-        "Launchpad Pro",
-        "Midi Port"
-      ]
-    }
-  },
   "modules": [
     {
       "class": "StepModule",

@@ -225,12 +225,7 @@ public class Hachi implements HachiListener, ClockListener {
 
     public void drawMain() {
         for (int index=0; index < modules.size(); index++) {
-            Palette palette = mainPalette;
-            if (drawModuleSelectInColor) {
-                palette = modules.get(index).getPalette();
-            }
-            controller.setModuleSelect(index, index == selectedModuleIndex ? mainPalette.On : palette.KeyDim);
-            controller.setModuleMute(index, modules.get(index).isMuted() ? mainPalette.Off : palette.KeyDim);
+            drawModuleSelectAndMute(index);
         }
         for (int index=0; index < 4; index++) {
             controller.setMainButton(index, mainPalette.KeyDim);
@@ -260,6 +255,15 @@ public class Hachi implements HachiListener, ClockListener {
             controller.setKnobColor(index, color);
         }
 
+    }
+
+    private void drawModuleSelectAndMute(int index) {
+        Palette palette = mainPalette;
+        if (drawModuleSelectInColor) {
+            palette = modules.get(index).getPalette();
+        }
+        controller.setModuleSelect(index, index == selectedModuleIndex ? mainPalette.On : palette.KeyDim);
+        controller.setModuleMute(index, modules.get(index).isMuted() ? mainPalette.Off : palette.KeyDim);
     }
 
     public void drawShihai() {
@@ -293,8 +297,11 @@ public class Hachi implements HachiListener, ClockListener {
     public void onModuleMutePressed(int index) {
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
+            drawModuleSelectAndMute(index);
+            if (index == selectedModuleIndex) {
+                drawModule();
+            }
         }
-        draw();
     }
 
     public void onMainButtonPressed(int index) {
