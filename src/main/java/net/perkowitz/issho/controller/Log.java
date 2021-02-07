@@ -100,6 +100,8 @@ public class Log {
     }
 
     public static String stopWatchTimes() {
+        if (stopWatches.size() == 0) return "";
+
         List<String> times = Lists.newArrayList();
         Instant now = Instant.now();
         for (Instant stopWatch : stopWatches) {

@@ -1,0 +1,24 @@
+{
+  "deviceNameStrings": {
+    "TestBus": [
+      ["TestBus"]
+    ],
+    "Extra": [
+      ["Extra"]
+    ],
+    "SBX1": [
+      ["SBX1", "2,0,0"]
+    ],
+    "SBX1-2": [
+      ["SBX1", "2,0,1"]
+    ]
+  },
+  "midiInNames": [
+    "Extra",
+    "SBX1"
+  ],
+  "midiOutNames": [
+    "Extra",
+    "SBX1"
+  ]
+}

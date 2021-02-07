@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
-import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.Controller;
-import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.Log;
+import net.perkowitz.issho.controller.*;
 import net.perkowitz.issho.controller.apps.hachi.modules.MockModule;
 import net.perkowitz.issho.controller.apps.hachi.modules.Module;
 import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
@@ -38,15 +35,7 @@ public class Hachi implements HachiListener, ClockListener {
         MAIN, SHIHAI, MODULE1, MODULE2
     }
 
-    // midi devices
-    private static Map<String, List<List<String>>> deviceNameStrings = Maps.newHashMap();
-    static {
-        deviceNameStrings.put("TestBus",Arrays.asList(Arrays.asList("TestBus")));
-        deviceNameStrings.put("Extra",Arrays.asList(Arrays.asList("Extra")));
-        deviceNameStrings.put("SBX1",Arrays.asList(Arrays.asList("SBX1", "2,0,0")));
-        deviceNameStrings.put("SBX1-2",Arrays.asList(Arrays.asList("SBX1", "2,0,1")));
-    }
-
+    // for managing app state
     // for managing app state
     private HachiController controller;
     private List<HachiController> controllers = Lists.newArrayList();
@@ -84,54 +73,44 @@ public class Hachi implements HachiListener, ClockListener {
 
 
     public static void main(String args[]) throws Exception {
+
+        String configFile = null;
+        String registryFile = null;
+        if (args.length > 1) {
+            configFile = args[0];
+            registryFile = args[1];
+        } else {
+            System.out.println("Usage: hachi <config.json> <registry.json>");
+            System.exit(1);
+        }
+
         Hachi hachi = new Hachi();
-        hachi.run();
+        hachi.run(configFile, registryFile);
     }
 
 
-    public void run() throws Exception {
+    public void run(String configFile, String registryFile) throws Exception {
 
-        Log.addStopwatch();
-        Log.addStopwatch();
-        Log.addStopwatch();
+        Config config = new Config(configFile, registryFile);
 
         // MidiSetup does the work of matching available midi devices against supported controller types
-        // Any devices you want to open should be listed in deviceNameStrings
-        DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(deviceNameStrings));
+        // Any devices you want to open should be listed in the registry json file
+        DeviceRegistry registry = DeviceRegistry.withDefaults(DeviceRegistry.fromMap(config.getDeviceNameStrings()));
         midiSetup = new MidiSetup(registry);
         if (midiSetup.getControllers().size() == 0) {
             System.err.println("No supported MIDI controllers found.");
             System.exit(1);
         }
 
-        // TODO: pull inputs and outputs from config
-        midiIns = Lists.newArrayList();
-        MidiIn input = midiSetup.getMidiIn("Extra");
-        if (input != null) {
-            Log.log(this, Log.ALWAYS, "Found MIDI input for 'Extra': %s", input);
-            input.addClockListener(this);
-            midiIns.add(input);
-        }
-        input = midiSetup.getMidiIn("SBX1");
-        if (input != null) {
-            Log.log(this, Log.ALWAYS, "Found MIDI input for 'SBX1': %s", input);
-            input.addClockListener(this);
-            midiIns.add(input);
-        }
-        midiOut = midiSetup.getMidiOut("SBX1");
-        if (midiOut != null) {
-            Log.log(this, Log.ALWAYS, "Found MIDI output for 'SBX1': %s", midiOut);
-        } else {
-            midiOut = midiSetup.getMidiOut("Extra");
-            if (midiOut != null) {
-                Log.log(this, Log.ALWAYS, "Found MIDI output for 'Extra': %s", midiOut);
-            }
-        }
-        if (midiOut == null) {
+        midiIns = config.getMidiIns(midiSetup, this);
+        List<MidiOut> midiOuts = config.getMidiOuts(midiSetup);
+        if (midiOuts.size() == 0) {
             System.err.println("No MIDI output found.");
 //            System.exit(1);
+        } else {
+            // TODO: support multiple midi outs
+            midiOut = midiOuts.get(0);
         }
-
 
         // translators are app-specific, so create those based on controllers found
         for (Controller c : midiSetup.getControllers()) {
@@ -141,7 +120,7 @@ public class Hachi implements HachiListener, ClockListener {
                 HachiController t = new YaeltexHachiTranslator((YaeltexHachiXL) c, this);
                 controllers.add(t);
                 c.setListener((ControllerListener) t);
-                input = midiSetup.getMidiIn(YaeltexHachiXL.name());
+                MidiIn input = midiSetup.getMidiIn(YaeltexHachiXL.name());
                 if (input != null) {
                     Log.log(this, Log.ALWAYS, "Found MIDI input for %s: %s", YaeltexHachiXL.name(), input);
                     input.addClockListener(this);
@@ -154,9 +133,7 @@ public class Hachi implements HachiListener, ClockListener {
         // TODO: support more than one controller!!!
         controller = controllers.get(0);
 
-        // load modules
-        // TODO: load from config
-        loadModules(midiOut);
+        loadModules(config, controller, midiOut);
 
         initialize();
         draw();
@@ -201,56 +178,11 @@ public class Hachi implements HachiListener, ClockListener {
         }, tempoIntervalInMillis, tempoIntervalInMillis);
     }
 
-    private void loadModules(MidiOut midiOut) {
-        modules = Lists.newArrayList();
-        moduleTranslators = Lists.newArrayList();
+    private void loadModules(Config config, HachiController controller, MidiOut midiOut) {
 
-        Palette []ps = new Palette[]{
-                Palette.BLUE, Palette.MAGENTA, Palette.CYAN, Palette.PURPLE,
-                Palette.ORANGE, Palette.YELLOW, Palette.PINK, Palette.RED
-        };
-
-//        1 StepModule
-        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-        moduleTranslator.setEnabled(false);
-        Module module = new StepModule(moduleTranslator, midiOut, ps[0], "step0");
-        module.setPalette(ps[0]);
-        modules.add(module);
-        moduleTranslators.add(moduleTranslator);
-
-////         1 StepModule
-//        moduleTranslator = new ModuleTranslator(controller);
-//        moduleTranslator.setEnabled(false);
-//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step1");
-//        module.setPalette(ps[1]);
-//        modules.add(module);
-//        moduleTranslators.add(moduleTranslator);
-//
-////         1 StepModule
-//        moduleTranslator = new ModuleTranslator(controller);
-//        moduleTranslator.setEnabled(false);
-//        module = new StepModule(moduleTranslator, midiOut, ps[0], "step2");
-//        module.setPalette(ps[2]);
-//        modules.add(module);
-//        moduleTranslators.add(moduleTranslator);
-
-        // 5 MockModules
-        int mocks = 5;
-        for (int i = 0; i < mocks; i++) {
-            moduleTranslator = new ModuleTranslator(controller);
-            moduleTranslator.setEnabled(false);
-            boolean r = false;
-            module = new MockModule(moduleTranslator, ps[i], r);
-            modules.add(module);
-            moduleTranslators.add(moduleTranslator);
-        }
-
-        // 1 VizModule
-//        ModuleTranslator moduleTranslator = new ModuleTranslator(controller);
-//        moduleTranslator.setEnabled(false);
-//        Module module = new VizModule(moduleTranslator, ps[6]);
-//        modules.add(module);
-//        moduleTranslators.add(moduleTranslator);
+        config.loadModules(controller, midiOut);
+        modules = config.getModules();
+        moduleTranslators = config.getModuleTranslators();
 
         selectedModuleIndex = 0;
         selectedModule = modules.get(selectedModuleIndex);
@@ -290,6 +222,7 @@ public class Hachi implements HachiListener, ClockListener {
 //        Log.log(this, LOG_PERF, "ADV %s - %s (done)", clock, Log.stopWatchTimes());
     }
 
+
     /***** draw *****/
 
     public void draw() {
@@ -301,12 +234,7 @@ public class Hachi implements HachiListener, ClockListener {
 
     public void drawMain() {
         for (int index=0; index < modules.size(); index++) {
-            Palette palette = mainPalette;
-            if (drawModuleSelectInColor) {
-                palette = modules.get(index).getPalette();
-            }
-            controller.setModuleSelect(index, index == selectedModuleIndex ? mainPalette.On : palette.KeyDim);
-            controller.setModuleMute(index, modules.get(index).isMuted() ? mainPalette.Off : palette.KeyDim);
+            drawModuleSelectAndMute(index);
         }
         for (int index=0; index < 4; index++) {
             controller.setMainButton(index, mainPalette.KeyDim);
@@ -336,6 +264,15 @@ public class Hachi implements HachiListener, ClockListener {
             controller.setKnobColor(index, color);
         }
 
+    }
+
+    private void drawModuleSelectAndMute(int index) {
+        Palette palette = mainPalette;
+        if (drawModuleSelectInColor) {
+            palette = modules.get(index).getPalette();
+        }
+        controller.setModuleSelect(index, index == selectedModuleIndex ? mainPalette.On : palette.KeyDim);
+        controller.setModuleMute(index, modules.get(index).isMuted() ? mainPalette.Off : palette.KeyDim);
     }
 
     public void drawShihai() {
@@ -369,8 +306,11 @@ public class Hachi implements HachiListener, ClockListener {
     public void onModuleMutePressed(int index) {
         if (index >= 0 && index < modules.size()) {
             modules.get(index).flipMuted();
+            drawModuleSelectAndMute(index);
+            if (index == selectedModuleIndex) {
+                drawModule();
+            }
         }
-        draw();
     }
 
     public void onMainButtonPressed(int index) {

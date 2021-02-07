@@ -1,8 +1,10 @@
 package net.perkowitz.issho.controller.apps.hachi;
 
+import com.google.common.collect.Maps;
 import net.perkowitz.issho.controller.Colors;
 
 import java.awt.*;
+import java.util.Map;
 
 public class Palette {
 
@@ -14,6 +16,8 @@ public class Palette {
     public Color Accent = Colors.BRIGHT_YELLOW;
     public Color AccentDim = Colors.DIM_YELLOW;
 
+    private static Map<String,Palette> lookup = Maps.newHashMap();
+
 
     public Palette(String name, Color key, Color keyDim, Color off, Color on, Color accent, Color accentDim) {
         this.Name = name;
@@ -23,6 +27,7 @@ public class Palette {
         this.On = on;
         this.Accent = accent;
         this.AccentDim = accentDim;
+        lookup.put(name.toLowerCase(), this);
     }
 
     public Palette(String name, Color key, Color keyDim) {
@@ -47,5 +52,8 @@ public class Palette {
     public static final Palette PINK = new Palette("Pink", Colors.BRIGHT_PINK, Colors.DIM_PINK);
     public static final Palette MAGENTA = new Palette("Magenta", Colors.BRIGHT_MAGENTA, Colors.DIM_MAGENTA);
 
+    public static Palette fromName(String name) {
+        return lookup.get(name.toLowerCase());
+    }
 
 }

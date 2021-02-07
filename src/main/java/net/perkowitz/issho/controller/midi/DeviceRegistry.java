@@ -21,6 +21,7 @@ public class DeviceRegistry {
 
     static { log.setLevel(Level.OFF); }
 
+    // name strings for supported hachi controllers
     private static Map<String, List<List<String>>> defaultNameStrings = Maps.newHashMap();
     static {
         defaultNameStrings.put(LaunchpadPro.name(),
