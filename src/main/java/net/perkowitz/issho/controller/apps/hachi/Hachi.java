@@ -11,8 +11,6 @@ import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
 import net.perkowitz.issho.controller.midi.*;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 
 import java.awt.*;
 import java.util.List;
@@ -75,14 +73,25 @@ public class Hachi implements HachiListener, ClockListener {
 
 
     public static void main(String args[]) throws Exception {
+
+        String configFile = null;
+        String registryFile = null;
+        if (args.length > 1) {
+            configFile = args[0];
+            registryFile = args[1];
+        } else {
+            System.out.println("Usage: hachi <config.json> <registry.json>");
+            System.exit(1);
+        }
+
         Hachi hachi = new Hachi();
-        hachi.run();
+        hachi.run(configFile, registryFile);
     }
 
 
-    public void run() throws Exception {
+    public void run(String configFile, String registryFile) throws Exception {
 
-        Config config = new Config("h2-dev.json", "h2-registry.json");
+        Config config = new Config(configFile, registryFile);
 
         // MidiSetup does the work of matching available midi devices against supported controller types
         // Any devices you want to open should be listed in the registry json file
