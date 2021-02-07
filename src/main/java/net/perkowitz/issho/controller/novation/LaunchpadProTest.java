@@ -2,15 +2,11 @@
 package net.perkowitz.issho.controller.novation;
 
 import lombok.extern.java.Log;
+import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.elements.Button;
-import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.elements.Pad;
-import net.perkowitz.issho.controller.midi.MidiOut;
-import net.perkowitz.issho.controller.midi.MidiIn;
 import net.perkowitz.issho.controller.midi.MidiSetup;
-import net.perkowitz.issho.util.MidiUtil;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;

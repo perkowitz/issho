@@ -1,6 +1,6 @@
 package net.perkowitz.issho.controller;
 
-import net.perkowitz.issho.controller.elements.*;
+import net.perkowitz.issho.controller.elements.Element;
 
 public class ControllerListenerTest implements ControllerListener {
 

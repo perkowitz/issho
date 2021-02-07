@@ -18,8 +18,8 @@ import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.Translator;
-import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.elements.Button;
+import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 
 import java.awt.*;

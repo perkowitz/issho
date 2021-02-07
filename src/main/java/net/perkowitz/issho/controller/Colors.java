@@ -2,7 +2,7 @@
 
 package net.perkowitz.issho.controller;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class Colors {
 

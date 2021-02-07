@@ -7,7 +7,7 @@ import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.Pad;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Map;
 
 public class LaunchpadProPassthruTranslator implements DrawController, ControllerListener {

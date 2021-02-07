@@ -2,8 +2,6 @@ package net.perkowitz.issho.controller;
 
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Element;
-import net.perkowitz.issho.controller.elements.Knob;
-import net.perkowitz.issho.controller.elements.Pad;
 
 /**
  * Created by mikep on 7/28/20.

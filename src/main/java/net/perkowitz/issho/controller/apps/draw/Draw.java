@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static net.perkowitz.issho.controller.Colors.*;
-import static net.perkowitz.issho.controller.Colors.BLACK;
 
 public class Draw implements DrawListener {
 
