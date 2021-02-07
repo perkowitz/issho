@@ -2,13 +2,14 @@ package net.perkowitz.issho.controller.novation;
 
 import com.google.common.collect.Maps;
 import lombok.Setter;
-import net.perkowitz.issho.controller.*;
-import net.perkowitz.issho.controller.elements.*;
+import net.perkowitz.issho.controller.Colors;
+import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
 import net.perkowitz.issho.controller.elements.Button;
+import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.midi.ChannelListener;
 import net.perkowitz.issho.controller.midi.MidiOut;
 
-import javax.sound.midi.Receiver;
 import java.awt.*;
 import java.util.Map;
 

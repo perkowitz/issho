@@ -1,10 +1,10 @@
 package net.perkowitz.issho.controller.novation;
 
 import lombok.Setter;
-import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
+import net.perkowitz.issho.controller.elements.Element;
 
 import java.awt.*;
 

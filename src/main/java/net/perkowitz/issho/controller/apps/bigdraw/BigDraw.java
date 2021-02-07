@@ -10,7 +10,10 @@
 package net.perkowitz.issho.controller.apps.bigdraw;
 
 import com.google.common.collect.Lists;
-import net.perkowitz.issho.controller.*;
+import net.perkowitz.issho.controller.Colors;
+import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
+import net.perkowitz.issho.controller.Translator;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.ElementSet;

@@ -5,10 +5,10 @@ import com.google.common.collect.Maps;
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Controller;
 import net.perkowitz.issho.controller.Log;
-import net.perkowitz.issho.controller.midi.DeviceRegistry;
-import net.perkowitz.issho.controller.midi.MidiSetup;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Pad;
+import net.perkowitz.issho.controller.midi.DeviceRegistry;
+import net.perkowitz.issho.controller.midi.MidiSetup;
 
 import java.awt.*;
 import java.util.Arrays;

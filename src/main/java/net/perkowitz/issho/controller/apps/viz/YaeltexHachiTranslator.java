@@ -2,9 +2,6 @@ package net.perkowitz.issho.controller.apps.viz;
 
 import com.google.common.collect.Maps;
 import net.perkowitz.issho.controller.ControllerListener;
-import net.perkowitz.issho.controller.apps.draw.Draw;
-import net.perkowitz.issho.controller.apps.draw.DrawController;
-import net.perkowitz.issho.controller.apps.draw.DrawListener;
 import net.perkowitz.issho.controller.elements.Button;
 import net.perkowitz.issho.controller.elements.Element;
 import net.perkowitz.issho.controller.elements.Pad;

@@ -1,20 +1,21 @@
 package net.perkowitz.issho.controller.apps.hachi;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
-import net.perkowitz.issho.controller.*;
-import net.perkowitz.issho.controller.apps.hachi.modules.MockModule;
+import net.perkowitz.issho.controller.Colors;
+import net.perkowitz.issho.controller.Controller;
+import net.perkowitz.issho.controller.ControllerListener;
+import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.apps.hachi.modules.Module;
-import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
 import net.perkowitz.issho.controller.midi.*;
 import net.perkowitz.issho.controller.novation.LaunchpadPro;
 import net.perkowitz.issho.controller.yaeltex.YaeltexHachiXL;
 
 import java.awt.*;
 import java.util.List;
-import java.util.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 

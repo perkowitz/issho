@@ -2,9 +2,7 @@ package net.perkowitz.issho.controller.apps.hachi.modules;
 
 import net.perkowitz.issho.controller.Colors;
 import net.perkowitz.issho.controller.Log;
-import net.perkowitz.issho.controller.apps.hachi.modules.step.Step;
 import net.perkowitz.issho.controller.apps.hachi.modules.step.StepModule;
-import net.perkowitz.issho.hachi.Saveable;
 
 import java.awt.*;
 

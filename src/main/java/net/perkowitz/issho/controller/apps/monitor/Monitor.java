@@ -1,11 +1,12 @@
 package net.perkowitz.issho.controller.apps.monitor;
 
 import com.google.common.collect.Sets;
-import net.perkowitz.issho.controller.midi.DeviceRegistry;
 import net.perkowitz.issho.controller.midi.MidiMonitor;
-import net.perkowitz.issho.controller.midi.MidiSetup;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Transmitter;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 

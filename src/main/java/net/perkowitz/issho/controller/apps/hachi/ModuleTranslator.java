@@ -9,7 +9,6 @@ package net.perkowitz.issho.controller.apps.hachi;
 import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.controller.Colors;
-import net.perkowitz.issho.controller.Log;
 import net.perkowitz.issho.controller.apps.hachi.modules.ModuleController;
 
 import java.awt.*;

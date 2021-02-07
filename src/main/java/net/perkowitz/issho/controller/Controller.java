@@ -1,7 +1,9 @@
 package net.perkowitz.issho.controller;
 
-import net.perkowitz.issho.controller.elements.*;
 import net.perkowitz.issho.controller.elements.Button;
+import net.perkowitz.issho.controller.elements.Knob;
+import net.perkowitz.issho.controller.elements.Light;
+import net.perkowitz.issho.controller.elements.Pad;
 
 import java.awt.*;
 
