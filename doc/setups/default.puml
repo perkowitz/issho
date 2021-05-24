@@ -1,0 +1,24 @@
+@startuml
+title
+Hachi Connection Diagram: Default 0.0.4
+end title
+
+package default_setup {
+component "clocksource" as clk
+component "midimerge" as mrg
+node LaunchpadPro as lpp
+node synth
+
+node RPI {
+component  "Hachi" as hachi
+}
+
+clk --> mrg: clock
+clk --> hachi: clock
+
+hachi ==> mrg: midi
+
+mrg --> lpp: midi+clock
+lpp --> synth: midi+clock
+}
+@enduml

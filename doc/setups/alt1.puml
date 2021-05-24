@@ -1,0 +1,17 @@
+@startuml
+title
+Hachi Connection Diagram: Alt1 0.0.1
+end title
+
+package alternative_setup? {
+node APCMini as apc
+node synth as synth2
+
+node RPI3 {
+component  "Hachi=clocksource" as hachic
+}
+
+hachic <-up-> apc: midi
+hachic --> synth2: midi
+}
+@enduml
