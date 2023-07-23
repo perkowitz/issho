@@ -277,7 +277,6 @@ public class Hachi {
     /**
      * getMidiOutputs reads MIDI device descriptions from the config and finds the
      * corresponding connected devices.
-     * @return List of GridDevice objects
      */
     private static void getMidiOutputs() {
 
@@ -489,6 +488,8 @@ public class Hachi {
                     String m = ((String)moduleSettings.get("mode")).toLowerCase();
                     if (m.equals("mono")) {
                         mode = MONO;
+                    } else if (m.equals("mcbeat")) {
+                        mode = MCBEAT;
                     } else {
                         mode = BEAT;
                     }

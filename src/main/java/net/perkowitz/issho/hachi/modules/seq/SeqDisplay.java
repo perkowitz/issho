@@ -13,8 +13,7 @@ import java.util.Map;
 
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.*;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.*;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.*;
 
 
 /**
@@ -47,7 +46,7 @@ public class SeqDisplay {
     /**
      * redraw should know how to draw everything
      *
-     * @param memory
+     * @param memory    - a SeqMemory object
      */
     public void redraw(SeqMemory memory) {
         if (!settingsView) {
@@ -108,7 +107,7 @@ public class SeqDisplay {
 
         switch (editMode) {
             case GATE:
-                if (mode == BEAT) {
+                if (mode == BEAT || mode == MCBEAT) {
                     for (int index = 0; index < SeqUtil.BEAT_TRACK_COUNT; index++) {
                         drawTrack(memory, index);
                     }
@@ -142,7 +141,7 @@ public class SeqDisplay {
         if (track == null) {
             return;
         }
-        if (mode == BEAT) {
+        if (mode == BEAT || mode == MCBEAT) {
             if (editMode == GATE) {
                 GridControl selectControl = SeqUtil.trackSelectControls.get(index);
                 Color color = palette.get(SeqUtil.COLOR_TRACK_SELECTION);
@@ -160,7 +159,7 @@ public class SeqDisplay {
 
         if (settingsView) return;
 
-        if (mode == BEAT && editMode != CONTROL ) {
+        if ((mode == BEAT || mode == MCBEAT) && editMode != CONTROL ) {
             SeqTrack track = memory.getSelectedPattern().getTrack(index);
             if (track == null) {
                 return;
@@ -190,7 +189,7 @@ public class SeqDisplay {
             }
             GridControl muteControl = SeqUtil.trackMuteControls.get(index);
             muteControl.draw(display, color);
-        } else if (mode == BEAT) {
+        } else if (mode == BEAT || mode == MCBEAT) {
             trackMuteControls.draw(display, Color.OFF);
         }
     }
@@ -357,7 +356,7 @@ public class SeqDisplay {
     }
 
     public void drawControl(GridControl control, boolean isOn) {
-        Color color = palette.get(isOn ? COLOR_ON : COLOR_OFF);;
+        Color color = palette.get(isOn ? COLOR_ON : COLOR_OFF);
         if (settingsControl.equals(control) || muteControl.equals(control)) {
             color = palette.get(isOn ? COLOR_LEFT_DEFAULT_ON : COLOR_LEFT_DEFAULT_OFF);
         } else if (randomControl.equals(control)) {

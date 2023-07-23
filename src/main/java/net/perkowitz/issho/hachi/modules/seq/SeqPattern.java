@@ -11,6 +11,7 @@ import java.util.List;
 
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.STEP_COUNT;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MCBEAT;
 
 /**
  * Created by optic on 2/25/17.
@@ -34,9 +35,14 @@ public class SeqPattern implements MemoryObject {
         this.index = index;
 
         // for beat mode, create multiple tracks
-        if (mode == BEAT) {
+        if (mode == BEAT || mode == MCBEAT) {
+            int note;
             for (int i = 0; i < SeqUtil.BEAT_TRACK_COUNT; i++) {
-                tracks.add(new SeqTrack(i, SeqUtil.BEAT_TRACK_NOTES[i]));
+                note = SeqUtil.BEAT_TRACK_NOTES[i];
+                if (mode == MCBEAT) {
+                    note = SeqUtil.MC101_TRACK_NOTES[i];
+                }
+                tracks.add(new SeqTrack(i, note));
             }
         } else {
             tracks.add(new SeqTrack(0, null));
@@ -123,9 +129,7 @@ public class SeqPattern implements MemoryObject {
 
     public List<MemoryObject> list() {
         List<MemoryObject> objects = Lists.newArrayList();
-        for (SeqTrack track : tracks) {
-            objects.add(track);
-        }
+        objects.addAll(tracks);
         return objects;
     }
 

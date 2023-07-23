@@ -28,7 +28,7 @@ public class SeqUtil {
     public static float VALUE_FACTOR_127 = 128 / 7;
 
     public enum SeqMode {
-        BEAT, MONO, PARA
+        BEAT, MONO, PARA, MCBEAT
     }
     public enum EditMode {
         GATE, CONTROL, PITCH, STEP, JUMP
@@ -36,6 +36,8 @@ public class SeqUtil {
 
     public static int[] BEAT_TRACK_NOTES = new int[] { 49, 37, 39, 51, 42, 44, 46, 50,
             36, 38, 40, 41, 43, 45, 47, 48 };
+    public static int[] MC101_TRACK_NOTES = new int[] { 49, 37, 39, 51, 42, 54, 46, 56,
+            36, 38, 41, 45, 48, 62, 63, 64 };
 
     /***** Labels for text output *****/
     public static String[] ROW_LABELS_BEAT = new String[]{

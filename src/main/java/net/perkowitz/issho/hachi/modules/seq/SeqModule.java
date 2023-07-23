@@ -26,8 +26,7 @@ import java.util.Set;
 import static net.perkowitz.issho.hachi.modules.seq.SeqStep.GateMode.*;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.*;
 import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.EditMode.*;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
-import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MONO;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.*;
 
 
 /**
@@ -87,7 +86,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         this.seqDisplay.setMode(mode);
         this.filePrefix = filePrefix;
         this.settingsModule = new SettingsSubmodule(true, true, true, true);
-        this.tiesEnabled = (mode != BEAT);
+        this.tiesEnabled = (mode != BEAT && mode != MCBEAT);
         load(0);
     }
 
@@ -102,6 +101,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     public String[] buttonLabels() {
         switch (mode) {
             case BEAT:
+            case MCBEAT:
                 return BUTTON_LABELS_BEAT;
             case MONO:
                 return BUTTON_LABELS_MONO;
@@ -112,6 +112,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     public String[] rowLabels() {
         switch (mode) {
             case BEAT:
+            case MCBEAT:
                 return ROW_LABELS_BEAT;
             case MONO:
                 return ROW_LABELS_MONO;
@@ -247,7 +248,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
         // THEN update track displays
         for (SeqTrack track : memory.getPlayingPattern().getTracks()) {
             // if the playing pattern is different from the currently selected pattern, get the equivalent track from the playing pattern
-            if (mode == BEAT) {
+            if (mode == BEAT || mode == MCBEAT) {
                 seqDisplay.drawTrack(memory, track.getIndex());
                 seqDisplay.drawTrackMute(memory, track.getIndex());
             } else if (mode == MONO) {
@@ -348,7 +349,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
     /***** Multitrack implementation ************************************/
 
     public int trackCount() {
-        if (mode == BEAT) {
+        if (mode == BEAT || mode == MCBEAT) {
             return SeqUtil.BEAT_TRACK_COUNT;
         }
         return 1;
@@ -517,7 +518,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             memory.getCurrentSession().toggleControlTrackEnabled(index);
             seqDisplay.drawTracks(memory);
 
-        } else if (mode == BEAT && trackMuteControls.contains(control)) {
+        } else if ((mode == BEAT || mode == MCBEAT) && trackMuteControls.contains(control)) {
             int index = trackMuteControls.getIndex(control);
             memory.getCurrentSession().toggleTrackEnabled(index);
             seqDisplay.drawTracks(memory);
@@ -588,7 +589,7 @@ public class SeqModule extends MidiModule implements Module, Clockable, GridList
             int index = trackSelectControls.getIndex(control);
             switch (editMode) {
                 case GATE:
-                    if (mode == BEAT) {
+                    if (mode == BEAT || mode == MCBEAT) {
                         memory.selectTrack(index);
                         seqDisplay.drawTracks(memory);
                         seqDisplay.drawSteps(memory);

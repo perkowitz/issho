@@ -5,8 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 import net.perkowitz.issho.hachi.MemoryObject;
 import net.perkowitz.issho.hachi.MemoryUtil;
+import net.perkowitz.issho.hachi.modules.deprecated.rhythm.models.Track;
 
 import java.util.List;
+
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.BEAT;
+import static net.perkowitz.issho.hachi.modules.seq.SeqUtil.SeqMode.MCBEAT;
 
 /**
  * Created by optic on 2/25/17.
@@ -37,7 +41,7 @@ public class SeqSession implements MemoryObject {
         }
 
         // in beat mode, we have multiple tracks; in other modes, just one
-        if (mode == SeqUtil.SeqMode.BEAT) {
+        if (mode == BEAT || mode == MCBEAT) {
             for (int i = 0; i < SeqUtil.BEAT_TRACK_COUNT; i++) {
                 tracksEnabled.add(true);
             }
@@ -100,9 +104,7 @@ public class SeqSession implements MemoryObject {
 
     public List<MemoryObject> list() {
         List<MemoryObject> objects = Lists.newArrayList();
-        for (SeqPattern pattern : patterns) {
-            objects.add(pattern);
-        }
+        objects.addAll(patterns);
         return objects;
     }
 
@@ -144,13 +146,8 @@ public class SeqSession implements MemoryObject {
                 newSession.patterns.set(i, SeqPattern.copy(session.patterns.get(i), i));
             }
 
-            for (Boolean enabled : session.tracksEnabled) {
-                newSession.tracksEnabled.add(enabled);
-            }
-
-            for (Boolean enabled : session.controlTracksEnabled) {
-                newSession.controlTracksEnabled.add(enabled);
-            }
+            newSession.tracksEnabled.addAll(session.tracksEnabled);
+            newSession.controlTracksEnabled.addAll(session.controlTracksEnabled);
 
             newSession.chainStartIndex = session.chainStartIndex;
             newSession.chainEndIndex = session.chainEndIndex;
